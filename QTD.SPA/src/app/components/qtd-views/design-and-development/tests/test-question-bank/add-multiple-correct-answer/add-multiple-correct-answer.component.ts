@@ -151,7 +151,7 @@ export class AddMultipleCorrectAnswerComponent implements OnInit {
     var options = new TestItemMcqCreateOptions();
     options.testItemId = id;
     this.distractors.forEach((data, i) => {
-      options.isCorrect = this.mcaForm.get(`isCorrect${data.id}`)?.value;
+      options.isCorrect = this.mcaForm.get(`isCorrect${data.id}`)?.value ?? false;
       options.choiceDescription = this.mcaForm.get(`description${data.id}`)?.value;
       options.number = i + 1;
       this.testItemService.createMcq(options).then((_) => {
