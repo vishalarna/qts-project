@@ -1,0 +1,39 @@
+<mat-dialog-content>
+    <div class="flex flex-row justify-between items-center mt-2 mb-4">
+      <p mat-dialog-title textContent="Criteria Edit">Criteria Edit</p>
+      <app-button
+        ButtonType="icon"
+        class="mt--4"
+        icon="close"
+        mat-dialog-close="true"
+      ></app-button>
+    </div>
+    <div style="border-bottom: 1px solid #ccc; margin-bottom: 10px;"></div>
+    <div class="w-screen pr-3 form_container">
+        You have edited the criteria statement for  <strong>{{ taskCriteriaVM?.completeTaskNumber }} {{ taskCriteriaVM?.description }}</strong>.
+        <p> 
+            The edited criteria statement will only be applicable for this Simulator Scenario. If you would like the edits to the criteria statement to be available for the overall {{("Task" | labelReplacement)| async}}, navigate to 
+            <span style="color: green;">My Data > {{("Task" | labelReplacement)| async}}s </span> to enter the criteria statement in that view.
+        </p> 
+      </div>   
+      <div style="border-bottom: 1px solid #ccc; margin-bottom: 10px;"></div>    
+  </mat-dialog-content>
+  <mat-dialog-actions class="flex flex-row justify-end">
+    <app-button
+      size="sm"
+      class="share_button"
+      variant="contained"
+      color="secondary"
+      text="Take me to {{('Task' | labelReplacement)| async}} View"
+      (clicked)="goToTaskView()"
+    ></app-button>
+    <app-button
+      size="sm"
+      class="share_button"
+      variant="contained"
+      color="secondary"
+      text="Back to Scenario"
+      (clicked)="backToScenario()"
+    ></app-button>
+  </mat-dialog-actions>
+  

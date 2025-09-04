@@ -1,0 +1,140 @@
+﻿[
+  {
+    "Id": 1,
+    "Name": "Employees Overview",
+    "GroupName": null,
+    "CategoryName":  "My Data"
+  },
+  {
+    "Id": 2,
+    "Name": "Position Overview",
+    "GroupName": null,
+    "CategoryName": "My Data"
+  },
+  {
+    "Id": 3,
+    "Name": "Certificate Overview",
+    "GroupName": null,
+    "CategoryName": "My Data"
+  },
+  {
+    "Id": 4,
+    "Name": "Tasks Overview",
+    "GroupName": null,
+    "CategoryName": "My Data"
+  },
+  {
+    "Id": 5,
+    "Name": "EO Overview",
+    "GroupName": null,
+    "CategoryName": "My Data"
+  },
+  {
+    "Id": 6,
+    "Name": "Procedure Overview",
+    "GroupName": null,
+    "CategoryName": "My Data"
+  },
+  {
+    "Id": 7,
+    "Name": "Safty Hazards",
+    "GroupName": null,
+    "CategoryName": "My Data"
+  },
+  {
+    "Id": 8,
+    "Name": "Tools",
+    "GroupName": null,
+    "CategoryName": "My Data"
+  },
+  {
+    "Id": 9,
+    "Name": "Regulatory Requirements",
+    "GroupName": null,
+    "CategoryName": "Design & Development"
+  },
+  {
+    "Id": 10,
+    "Name": "Training Programs",
+    "GroupName": null,
+    "CategoryName": "Design & Development"
+  },
+  {
+    "Id": 11,
+    "Name": "Providers & ILAs",
+    "GroupName": null,
+    "CategoryName": "Design & Development"
+  },
+  {
+    "Id": 12,
+    "Name": "Test Items and Tests",
+    "GroupName": null,
+    "CategoryName": "Design & Development"
+  },
+  {
+    "Id": 13,
+    "Name": "Upcoming classes (ability to enter value and select days/weeks/months)",
+    "GroupName": "Class Scheduling",
+    "CategoryName": "Implimentation"
+  },
+  {
+    "Id": 14,
+    "Name": "Pending Self-Registration Approval",
+    "GroupName": "Class Scheduling",
+    "CategoryName": "Implimentation"
+  },
+  {
+    "Id": 15,
+    "Name": "Waitlist",
+    "GroupName": "Class Scheduling",
+    "CategoryName": "Implimentation"
+  },
+  {
+    "Id": 16,
+    "Name": "Pretest/Test/Retake Completion Stats",
+    "GroupName": "Class Scheduling",
+    "CategoryName": "Implimentation"
+  },
+  {
+    "Id": 17,
+    "Name": "CBT Completion Stats",
+    "GroupName": "Class Scheduling",
+    "CategoryName": "Implimentation"
+  },
+  {
+    "Id": 18,
+    "Name": "EMP Completion (ability to set the value and day/weeks/months)",
+    "GroupName": "Task Qualitifcation Overview",
+    "CategoryName": "Implimentation"
+  },
+  {
+    "Id": 19,
+    "Name": "Evaluations",
+    "GroupName": "Task Qualitifcation Overview",
+    "CategoryName": "Implimentation"
+  },
+  {
+    "Id": 20,
+    "Name": "CBTs",
+    "GroupName": "Task Qualitifcation Overview",
+    "CategoryName": "Implimentation"
+  },
+  {
+    "Id": 21,
+    "Name": "Procedure Review",
+    "GroupName": "Task Qualitifcation Overview",
+    "CategoryName": "Implimentation"
+  },
+  {
+    "Id": 22,
+    "Name": "IDP Review",
+    "GroupName": "Task Qualitifcation Overview",
+    "CategoryName": "Implimentation"
+  },
+  {
+    "Id": 23,
+    "Name": "Task Qualitifcations",
+    "GroupName": "Task Qualitifcation Overview",
+    "CategoryName": "Implimentation"
+  }
+]

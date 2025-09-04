@@ -1,0 +1,49 @@
+<app-header title="Database Settings" [canGoBack]="false"></app-header>
+<div class="row flex-row justify-content-between mb-3 m-0 p-2 align-items-center ">
+  <div class="panel-heading">
+     <p class="text-wrap">Quality Training Systems production</p>
+   </div>
+    <button *ngIf="dasboardsettingData" type="button" class="btn-class" (click)="togglePannel(true)">Customize
+     Dashboard</button>
+  </div>
+ 
+     <div class="flypanel-outer-wrapper" *ngIf="isPanelOpen">
+       <div class="flypanel">
+         <app-customize-dashboard [ClientUserSettings_Dashboard]="dasboardsettingData" 
+         [completeEvent]="completeCustomizeDashboardSubject.asObservable()"
+         (OnSaveClickedEvent)="handleCustomizeDashboardClickEvent($event)">
+         </app-customize-dashboard>
+         <div class="flex flex-row justify-content-end gap-2 flypanel-close">
+           <button type="button" class="close-btn" (click)="togglePannel(false)">X</button>
+         </div>
+       </div>
+     </div>
+ 
+   <mat-tab-group animationDuration="0ms" [selectedIndex]="getSelectedTabIndex()" (selectedTabChange)="onTabChange($event)">
+     <mat-tab label="PRODUCT OVERVIEW">
+       <app-product-overview *ngIf="licenseSettingData" [ClientSettings_License]="licenseSettingData"
+         [completeEvent]="completeLicenseSubject.asObservable()"
+         (OnSaveClickedEvent)="handleLicenseSaveClick($event)"></app-product-overview>
+     </mat-tab>
+     <mat-tab label="GENERAL SETTINGS">
+       <app-general-database-settings *ngIf="generalSettingsData" [generalSettings]="generalSettingsData"
+         [completeEvent]="completeGeneralSettingsSubject.asObservable()" [publicUrlSetting]="publicUrlSettingSubject.asObservable()"
+         (OnSaveClickedEvent)="handleGeneralSettingsSaveClick($event)" [publicUrl]="publicUrl"></app-general-database-settings>
+     </mat-tab>
+     <mat-tab label="LABEL REPLACEMENT">
+       <app-label-replacement *ngIf="labelReplacementData" [ClientSettings_Labels]="labelReplacementData"
+         [completeEvent]="completeLabelReplacementSubject.asObservable()"
+         (OnSaveClickedEvent)="handleLabelReplacementSaveClick($event)"></app-label-replacement>
+     </mat-tab>
+     <mat-tab label="FEATURES">
+    <app-features *ngIf="featureData" [clientSettings_Features] = "featureData" (onFeatureSaveClickedEvent) ="handleFeatureSaveClick($event)"  
+    (onFeatureUrlClickedEvent)="onFeatureUrlClicked($event)" [publicUrl]="publicUrl" [publicUrlSetting]="publicUrlSettingSubject.asObservable()"></app-features>     
+    </mat-tab>
+     <mat-tab label="EMP SETTINGS" *ngIf="false">
+       NO FIGMA YET
+     </mat-tab>
+     <mat-tab label="USER ROLES AND PERMISSIONS" *ngIf="false">
+       <app-user-role-and-permissions></app-user-role-and-permissions>
+     </mat-tab>
+   </mat-tab-group>
+ 

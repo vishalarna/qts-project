@@ -1,0 +1,31 @@
+[
+  {
+    "Id": 1,
+    "StudentEvaluationId": 1,
+    "QuestionBankId": 1,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 2,
+    "StudentEvaluationId": 2,
+    "QuestionBankId": 2,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 3,
+    "StudentEvaluationId": 3,
+    "QuestionBankId": 3,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 4,
+    "StudentEvaluationId": 4,
+    "QuestionBankId": 4,
+    "Deleted": false,
+    "Active": true
+  }
+
+]

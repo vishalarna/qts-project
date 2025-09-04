@@ -1,0 +1,79 @@
+<aside class="sidebar h-screen sticky top-0 flex flex-col overflow-auto px-4">
+
+    <div class="items-centers ml-12 mt-4 mb-4 ">
+        <div class="float-left mt-4">
+            <app-button type="button" ButtonType='icon' icon='menu' (clicked)="toggleMainMenu()"
+                class="float-left btn-text">
+            </app-button>
+        </div>
+        <div class="ml-4">
+            <img class="flex-auto w-1/2 h-auto" src="./assets/img/qtd.png">
+        </div>
+    </div>
+
+   <h3><b class="cursor-pointer" routerLink="/my-data/definitions/overview">{{("Definition" | labelReplacement)| async}}s</b></h3>
+    <div class="mr-4 mb-2">
+        <input [ngModel]="filter" (ngModelChange)="searchFilter($event)" placeholder="Search {{('Definition' | labelReplacement)| async}}s"
+            class="py-2 w-full" />
+    </div>
+
+    <div class="flex flex-row  items-center text-gray-four  text-xs btn-group">
+        <div class="flex flex-row cursor-pointer">
+            <span> Showing:
+                <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+                    <p *ngIf="showActive" class="font-bold">
+                        Active
+                    </p>
+                    <p *ngIf="!showActive" class="font-bold">
+                        Inactive
+                    </p>
+
+                </label>
+                <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+            </span>
+        </div>
+        <mat-menu #menu="matMenu">
+            <label mat-menu-item *ngIf="!showActive" (click)="showActive=true">
+                Active</label>
+
+            <label mat-menu-item *ngIf="showActive" (click)="showActive=false">
+                Inactive</label>
+        </mat-menu>
+    </div>
+    <div class="flex flex-col  px-6 text-sm text-black">
+        <h5 id="loading" *ngIf="navList.length==0">Loading ...</h5>
+        <ng-container *ngIf="navList.length>0">
+            <span *ngFor="let m of navList">
+                <app-menu-item [HasChildren]="m.Children!=undefined && m.Children.length>0" [Title]="m.Title"
+                    [RoutePath]="m.RoutePath" [RouteParams]="m.RouteParams" [Children]="m.Children" [isVisible] = "m.isVisible"></app-menu-item>
+            </span>
+        </ng-container>
+    </div>
+
+
+    <div class="flex flex-row space-x-4 text-sm  mb-3">
+        <app-button text="Add New" size="sm" leftIcon="add" rightIcon="expand_more" [matMenuTriggerFor]="addMenu">
+        </app-button>
+        <mat-menu #addMenu="matMenu">
+            <label mat-menu-item (click)="openFlyInPanel(addInstructorCategory)">Category</label>
+            <label mat-menu-item (click)="openFlyInPanel(addInstructor)">{{("Definition" | labelReplacement)| async}}s</label>
+        </mat-menu>
+        <!-- <mat-menu #addMenu="matMenu">
+            <label mat-menu-item>Category</label>
+            <label mat-menu-item>Instructor</label>
+        </mat-menu> -->
+
+        <app-button variant="text" class="mt-2" text="Bulk Edit" icon="edit" iconPosition="left"
+            routerLink=""></app-button>
+    </div>
+    <!-- routerLink="/my-data/bulkedit/procedure" -->
+</aside>
+
+<ng-template #addInstructorCategory>
+    <app-fly-panel-add-definition-category (refresh)="refreshNavBarData()" (closed)="flyPanelService.close()">
+    </app-fly-panel-add-definition-category>
+</ng-template>
+
+<ng-template #addInstructor>
+    <app-fly-panel-add-definition (closed)="flyPanelService.close();refreshNavBarData()"></app-fly-panel-add-definition>
+</ng-template>

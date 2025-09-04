@@ -1,0 +1,62 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+@*<div class="row">
+        <div class="col-lg-4">
+            @Html.ActionLink("Log into QTD","Index", "Login", new { @redirect = @QTD2.Infrastructure.Configuration.SettingsConfigHelper.QTDDomain })
+        </div>
+
+        <div class="col-lg-4">
+            @Html.ActionLink("Log into EMP", "Index", "Login", new { @redirect = @QTD2.Infrastructure.Configuration.SettingsConfigHelper.EMPDomain })
+        </div>
+        <div class="col-lg-4">
+            @Html.ActionLink("Log into Admin", "Index", "Login", new { @redirect = @QTD2.Infrastructure.Configuration.SettingsConfigHelper.AdminDomain })
+        </div>
+    </div>*@
+
+<div class="row d-flex justify-content-center">
+    <div class="col-12 text-center mt-5">
+        <p style="font-weight:bold">@Localizer["HomeIndexViewHeader"]</p>
+    </div>
+
+
+    <div class="col-4 mt-5 text-center">
+        <div class="card">
+            <h5 class="card-header font-weight-normal">@Localizer["QTD"]</h5>
+            <div class="card-body">
+                <p class="card-text">@Localizer["SignInQTDUserInstructions"]</p>
+                <a href="@(QTD2.Infrastructure.Configuration.SettingsConfigHelper.QTDDomain+"/Receiving")" class="btn btn-success mt-4">@Localizer["Continue"]</a>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-4 mt-5 text-center">
+
+        <div class="card">
+            <h5 class="card-header font-weight-normal">@Localizer["EMP"]</h5>
+            <div class="card-body">
+                <p class="card-text">@Localizer["SignInEMPUserInstructions"]</p>
+                <a href="@(QTD2.Infrastructure.Configuration.SettingsConfigHelper.EMPDomain+"/Receiving")" class="btn btn-light mt-4">@Localizer["Continue"]</a>
+            </div>
+        </div>
+
+    </div>
+
+
+    <div class="col-4 mt-5 text-center">
+
+        <div class="card">
+            <h5 class="card-header font-weight-normal">@Localizer["Admin"]</h5>
+            <div class="card-body">
+                <p class="card-text">@Localizer["SignInAdminUserInstructions"]</p>
+                <a href="@(QTD2.Infrastructure.Configuration.SettingsConfigHelper.AdminDomain+"/Receiving")" class="btn btn-light mt-4">@Localizer["Continue"]</a>
+</div>
+        </div>
+
+    </div>
+</div>

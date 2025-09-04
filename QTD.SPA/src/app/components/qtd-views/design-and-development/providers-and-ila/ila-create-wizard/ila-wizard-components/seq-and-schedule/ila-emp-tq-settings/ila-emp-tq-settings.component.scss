@@ -1,0 +1,39 @@
+:host ::ng-deep .modifiedTextbox input {
+  border: none !important;
+  padding-top: 0rem !important;
+  padding-bottom: 0rem !important;
+  height:2rem;
+  width: 5.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.pl-50{
+ padding-left: 30px;
+}
+
+.multiple-sign{
+  padding-left:55px;
+}
+
+:host ::ng-deep .modifiedTextbox input {
+  border: none !important;
+  padding-top: 0rem !important;
+  padding-bottom: 0rem !important;
+  height:2rem;
+  width: 5.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.cdk-drag-handle.disabled {
+  pointer-events: none;
+  cursor: default;
+}
+
+.cdk-drag-handle {
+  pointer-events: all;
+  color: darkgrey !important;
+  cursor: move;
+}
+.cursor-pointer{
+  cursor: pointer;
+}

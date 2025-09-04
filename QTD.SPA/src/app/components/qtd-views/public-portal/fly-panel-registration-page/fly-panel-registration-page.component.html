@@ -1,0 +1,164 @@
+<div class="flex justify-between items-center px-12 pt-3 sticky-header">
+    <div>
+        <app-label class="font-weight-bold text-xl" [text]="'Registration Form'"></app-label>
+    </div>
+    <div>
+        <app-button (click)="flyPanelSrvc.close()" ButtonType="icon" icon="close"></app-button>
+    </div>
+</div>
+<div class="spinner-class">
+    <app-spinner *ngIf="loader"></app-spinner>
+</div>
+<div class="flex justify-center" style="align-items: center" *ngIf="!loader">
+    <div style="width: 95%">
+        <section class="flex flex-col p-2 rounded-sm">
+            <div class="flex justify-content class-detail">
+                <span class="font-semibold px-3 w-25">Course Name:</span>
+                <span class="px-3">{{ classDetails.publicILA.ilaNickName }}</span>
+            </div>
+            <div class="flex justify-content class-detail">
+                <span class="font-semibold px-3 w-25">Delivery Method:</span>
+                <span class="px-3">{{ classDetails.publicILA.deliveryMethodName }}</span>
+            </div>
+            <div class="flex justify-content class-detail">
+                <span class="font-semibold px-3 w-25">Start Time:</span>
+                <span class="px-3">{{ classDetails.startDateTime | date: 'shortDate'}} {{classDetails.classStartTime |
+                    date:'shortTime'}}</span>
+            </div>
+            <div class="flex justify-content class-detail">
+                <span class="font-semibold px-3 w-25">End Time:</span>
+                <span class="px-3">{{ classDetails.endDateTime | date: 'shortDate'}} {{classDetails.classEndTime |
+                    date:'shortTime'}} </span>
+            </div>
+        </section>
+        <section class="flex flex-col p-2 rounded-sm">
+            <form [formGroup]="registrationForm" class="flex flex-col">
+                <div class="flex flex-row px-6 mt-2">
+                    <div class="flex flex-col float-left pr-4 mb-1 cell-width">
+                        <app-label [for]="'firstName'" [text]="'First Name'"
+                            class="mt-2 float-left label required"></app-label>
+                        <app-textbox aria-label="first name" type="text" placeholder="Enter first name"
+                            formControlName="firstName" required>
+                        </app-textbox>
+
+                        <app-input-error
+                            *ngIf="registrationForm.get('firstName')?.invalid || registrationForm.get('firstName')?.hasError('whitespaceOnly')"
+                            text="Employee First Name Is Required Or Contains WhiteSpaces">
+                        </app-input-error>
+                    </div>
+                    <div class="flex flex-col float-left pr-4 mb-1 cell-width">
+                        <app-label [for]="'lastName'" [text]="'Last Name'"
+                            class="mt-2 float-left label required"></app-label>
+                        <app-textbox aria-label="last name" type="text" placeholder="Enter last name"
+                            formControlName="lastName" required>
+                        </app-textbox>
+
+                        <app-input-error
+                            *ngIf="registrationForm.get('lastName')?.invalid || registrationForm.get('lastName')?.hasError('whitespaceOnly')"
+                            text="Employee Last Name Is Required Or Contains WhiteSpaces">
+                        </app-input-error>
+                    </div>
+                </div>
+
+                <div class="flex flex-row px-6 mt-1">
+                    <div class="flex flex-col float-left pr-4 mb-1 cell-width">
+                        <app-label [for]="'emailAddr'" [text]="'Email Address'"
+                            class="mt-2 float-left label required"></app-label>
+                        <app-textbox aria-label="email address" type="text" placeholder="Enter email address"
+                            formControlName="emailAddr" required>
+                        </app-textbox>
+
+                        <app-input-error
+                            *ngIf="registrationForm.get('emailAddr')?.hasError('required')"
+                            text="Email Address Is Required Or Contains WhiteSpaces">
+                        </app-input-error>
+                        <app-input-error *ngIf="registrationForm.get('emailAddr')?.invalid && !registrationForm.get('emailAddr')?.hasError('required')"
+                            text="Invalid Email Address">
+                        </app-input-error>
+                    </div>
+                    <div class="flex flex-col float-left pr-4 mb-1 cell-width">
+                        <app-label [for]="'organizations'" text="Organization"
+                            class="mt-2 float-left label"></app-label>
+                        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                            <mat-select placeholder="{{organizationPlaceholder}}"
+                                formControlName="org">
+                                <mat-option [value]="org.name" *ngFor="let org of organizations" [hidden]="!org.active">
+                                    {{org.name}}
+                                </mat-option>
+                            </mat-select>
+                             <button *ngIf="registrationForm.get('org').value" matSuffix mat-icon-button
+                                    type="button" aria-label="Clear"
+                                    (click)="clearSelection('org'); $event.stopPropagation()">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div class="flex flex-col px-6 mt-2">
+                    <app-label class="font-weight-bold text-xl mt-2"
+                        [text]="'NERC Certificate Information'"></app-label>
+                    <div class="flex flex-col float-left pr-4 mb-1 w-50">
+                        <app-label [for]="'certificates'" text="Certificates" class="mt-2 float-left"></app-label>
+                        <div class="flex-col">
+                            <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                                <mat-select placeholder="Select Certificate" formControlName="nerccerttype">
+                                    <mat-option [value]="cert.name" *ngFor="let cert of nercCerts"
+                                        [hidden]="!cert.active">
+                                        {{cert.name}}
+                                    </mat-option>
+                                </mat-select>
+                                <button *ngIf="registrationForm.get('nerccerttype').value" matSuffix mat-icon-button
+                                    type="button" aria-label="Clear"
+                                    (click)="clearSelection('nerccerttype'); $event.stopPropagation()">
+                                    <mat-icon>close</mat-icon>
+                                </button>
+                            </mat-form-field>
+                            <app-input-error
+                                *ngIf="(!certTypeFilled && expiryFilled && certFilled) || (!certTypeFilled && (certFilled || expiryFilled)) "
+                                text="NERC Certification type required to be filled">
+                            </app-input-error>
+                        </div>
+                    </div>
+                    <div class="flex flex-col float-left pr-4 mb-1 w-50">
+                        <app-label [for]="'nerccert'" [text]="'NERC Certificate Number'"
+                            class="mt-2 float-left label"></app-label>
+                        <div class="flex-col">
+                            <app-textbox aria-label="nerc certificate" type="text"
+                                placeholder="Enter Certificate Number" formControlName="nerccert">
+                            </app-textbox>
+                            <app-input-error
+                                *ngIf="(!certFilled && expiryFilled && certTypeFilled) || (!certFilled && (certTypeFilled || expiryFilled)) "
+                                text="NERC Certificate number is required to be filled">
+                            </app-input-error>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-row ">
+                        <div class="flex flex-col float-left pr-6 mb-1 w-50">
+                            <app-label [for]="'Expiration Date'" [text]="'NERC Certificate Expiration Date'"
+                                class="mt-2 float-left label"></app-label>
+                            <div class="flex-col">
+                                <app-date formControlName="expiryDate" placeholder="Select Date">
+                                </app-date>
+                                <app-input-error
+                                    *ngIf="(!expiryFilled && certTypeFilled && certFilled) || (!expiryFilled && (certFilled || certTypeFilled)) "
+                                    text="Expiry Date is required to be filled">
+                                </app-input-error>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="flex flex-row-reverse px-16">
+                    <div class="flex flex-row float-left mb-6">
+                        <div class="flex flex-row">
+                            <app-button [disabled]=" !registrationForm.valid || disableSave || processing "
+                                (clicked)="onSubmit()" text="Submit" [spinner]="processing" size="sm"></app-button>
+                        </div>
+                    </div>
+                </div>
+
+            </form>
+        </section>
+    </div>
+</div>

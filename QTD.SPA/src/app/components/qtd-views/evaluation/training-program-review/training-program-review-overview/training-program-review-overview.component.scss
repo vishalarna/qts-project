@@ -1,0 +1,93 @@
+.col-divider{
+    border-right: 1px solid #ebebeb;
+    padding: 0 1rem 0 0;
+    margin-bottom: 1rem;
+}
+.mat-sort-header-content{
+    font-weight: 400;
+}
+.training-review-side-overlay{
+    background-color: #fff;
+    position: fixed;
+    height: 100%;
+    right: 0;
+    top: 0;
+    z-index: 1000;
+}
+
+.close-btn{
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+.border-b-0{
+  border-bottom: 0px !important;
+  &.check-box-wrapr{
+    max-width: 48px;;
+  }
+}
+.action-icon-td{
+  max-width: 60px;
+}
+.table-header-cell div, .table-header-cell{
+  color: #7A807E !important;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400 !important;
+  line-height: 166%; 
+  letter-spacing: 0.4px;
+}
+.position-td{
+  max-width: 100px;
+  padding-left: 16px;
+}
+.review-date-td{
+  max-width: 120px;
+  padding-left: 16px;
+}
+.customcolorgreen {
+    background-color: rgba(92, 155, 49, 0.1);
+    color: rgba(92, 155, 49, 1);
+  }
+.customcolorblue
+  {
+    background-color: rgba(238, 247, 255, 1);
+    color: rgba(66, 132, 192, 1);
+  }
+
+  .customcolorpink{
+    background-color: rgba(255, 249, 232, 1);
+    color:rgba(255, 207, 92, 1);
+  }
+
+  .bubbles-div{
+    padding: 0.5rem 0.5rem 0.5rem 0;
+    flex-wrap: wrap;
+    display: flex;
+    gap: 10px;
+    .bubble{
+      padding: 0.2rem 0.5rem;
+      border-radius: 22px;
+      color: #5c9b31;
+      border: 1px solid #5c9b31;
+    }
+}
+.overview-tiles-active{
+  color: #5C9B31;
+font-size: 1.25rem;
+font-weight: 600;
+}
+.overview-tiles-inactive{
+  color: #FA5943;
+font-size: 1.25rem;
+font-weight: 600;
+}
+.overview-tiles-training-program{
+color: #15372C;
+font-size: 1.25rem;
+font-weight: 600;
+}
+.card-shadow{
+  box-shadow: 0px 4px 30px 0px rgba(122, 128, 126, 0.10);
+}

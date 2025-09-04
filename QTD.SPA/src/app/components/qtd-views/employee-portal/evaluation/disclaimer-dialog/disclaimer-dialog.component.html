@@ -1,0 +1,202 @@
+<mat-dialog-content>
+  <div class="flex flex-row justify-between items-center mt-2 border-b-2" style="align-items:center;">
+    <p mat-dialog-title>Disclaimer</p>
+    <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+    <app-icon
+      class="cursor-pointer"
+      icon="close"
+      (click)="closeDialog()"
+    ></app-icon>
+  </div>
+
+  <!-- <div class="w-full mt-5" style="display:grid;">
+    <span style="grid-row: 1;grid-column: 1;" class=" text-gray-400 text-lg">ILA Details</span>
+    <div style="grid-row: 2;" class="flex flex-row w-full justify-between">
+      <div style="grid-column: 1;" class="flex flex-col">
+        <span>
+          Quality Trainings Co.
+        </span>
+        <span class="text-gray-400">
+          Provider Name
+        </span>
+      </div>
+      <div style="grid-column: 2;" class="flex flex-col">
+        <span>
+          QTS_036
+        </span>
+        <span class="text-gray-400">
+          ILA NO.
+        </span>
+      </div>
+    </div>
+    <div style="grid-row: 3;" class="flex flex-row w-full justify-between">
+      <div style="grid-column: 1;" class="flex flex-col">
+        <span>
+          Mitigate System Disturbances
+        </span>
+        <span class="text-gray-400">
+          ILA Title
+        </span>
+      </div>
+      <div style="grid-column: 2;" class="flex flex-col">
+        <span>
+          Lauren Broox
+        </span>
+        <span class="text-gray-400">
+          Instructor
+        </span>
+      </div>
+    </div>
+    <div style="grid-row: 4;" class="flex flex-row w-full justify-between">
+      <div style="grid-column: 1;">
+        <span>
+          14-A, Street III, Pine Avenue, CA
+        </span>
+        <span class="text-gray-400">
+          Location
+        </span>
+      </div>
+      <div style="grid-column: 2;" class="flex flex-col">
+        <span>
+          May 24th, 2022
+        </span>
+        <span class="text-gray-400">
+          Completion Date
+        </span>
+      </div>
+    </div>
+    <div class="flex flex-row">
+      <mat-checkbox class="mr-3"></mat-checkbox>
+      <label>I agree that by checking this box, that I am providing class evaluation feedback for an ILA that I have completed.</label>
+    </div>
+  </div> -->
+
+  <div class="mt-4 mb-4" style="display:grid;row-gap: 2rem;">
+    <div style="grid-row: 1;grid-column: 1;">
+      <span class=" text-gray-400 text-lg">{{("ILA" | labelReplacement)| async}} Details</span>
+    </div>
+    <div style="grid-row: 2;grid-column: 1;">
+      <div class="flex flex-col">
+        <span class="font-bold">
+          {{selectedRowData.providerName}}
+        </span>
+        <span class="text-gray-400">
+          Provider Name
+        </span>
+      </div>
+    </div>
+    <div style="grid-row: 2;grid-column: 2;">
+      <div class="flex flex-col">
+        <span class="font-bold">
+          {{selectedRowData.ilaNumber}}
+        </span>
+        <span class="text-gray-400">
+          {{("ILA" | labelReplacement)| async}} NO.
+        </span>
+      </div>
+    </div>
+    <div style="grid-row: 3;grid-column: 1;">
+      <div class="flex flex-col">
+        <span class="font-bold">
+          {{selectedRowData.ilaTitleOnly}}
+        </span>
+        <span class="text-gray-400">
+          {{("ILA" | labelReplacement)| async}} Title
+        </span>
+      </div>
+    </div>
+    <div style="grid-row: 3;grid-column: 2;">
+      <div class="flex flex-col">
+        <span class="font-bold">
+          {{selectedRowData.instructorName}}
+        </span>
+        <span class="text-gray-400">
+          {{("Instructor" | labelReplacement)| async}}
+        </span>
+      </div>
+    </div>
+    <div style="grid-row: 4;grid-column: 1;">
+      <div class="flex flex-col">
+        <span class="font-bold">
+          {{selectedRowData.locationName}}
+        </span>
+        <span class="text-gray-400">
+          {{("Location" | labelReplacement)| async}}s
+        </span>
+      </div>
+    </div>
+    <div style="grid-row: 4;grid-column: 2;">
+      <div class="flex flex-col">
+        <span class="font-bold">
+          {{selectedRowData.completionDate}}
+        </span>
+        <span class="text-gray-400">
+          Completion Date
+        </span>
+      </div>
+    </div>
+    <div style="grid-row: 5;grid-column: 1;">
+      <div class="flex flex-col">
+        <span class="font-bold">
+          {{datePipe.transform(selectedRowData.classStartDate, "MM-dd-yyyy")}}
+        </span>
+        <span class="text-gray-400">
+         Start Date
+        </span>
+      </div>
+    </div>
+    <div style="grid-row: 5;grid-column: 2;">
+      <div class="flex flex-col">
+        <span class="font-bold">
+          {{datePipe.transform(selectedRowData.classEndDate, "MM-dd-yyyy")}}
+        </span>
+        <span class="text-gray-400">
+          End Date
+        </span>
+      </div>
+    </div>
+  </div>
+  <form [formGroup]="disclaimerForm" class="flex flex-row pb-4 border-b-2">
+    <mat-checkbox formControlName="tos" class="mr-3"></mat-checkbox>
+    <span>I agree that by checking this box, that I am providing class evaluation feedback for an {{("ILA" | labelReplacement)| async}} that I have completed.</span>
+  </form>
+  <mat-dialog-actions align="end">
+    <div class="flex flex-row mt-2" style="align-items:center;">
+      <app-button (clicked)="closeDialog()" class="mb-4 mr-2" color="blueBorder" text="Close" size="sm"></app-button>
+      <app-button (clicked)="openDialog(confirm)" [disabled]="!disclaimerForm.get('tos').value" class="mb-4" text="Start Evaluation" size="sm" color="blue"></app-button>
+    </div>
+  </mat-dialog-actions>
+</mat-dialog-content>
+
+<ng-template #confirm>
+  <!-- <app-qtd-dialogue
+  [confirmText]="'Ok'" [cancelText]="'Cancel'"
+  [description]="'To start the student evaluation you must agree to the statement above by checking the box.'"
+  [header]="'Start Evaluation'"
+  (canceled)="dialogRef.close()"
+  (confirmed)="dialogRef.close()"
+  ></app-qtd-dialogue> -->
+
+  <mat-dialog-content>
+    <div class="flex flex-row justify-between items-center mt-2 border-b-2" style="align-items:center;">
+      <p mat-dialog-title>Start Evaluation</p>
+      <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+      <app-icon
+        class="cursor-pointer"
+        icon="close"
+        (click)="dialogRef.close()"
+      ></app-icon>
+    </div>
+
+    <div class="border-b-2 py-5">
+      <span>To start the student evaluation you must agree to the statement above by checking the box.</span>
+    </div>
+
+    <mat-dialog-actions align="end">
+      <div class="flex flex-row mt-2" style="align-items:center;">
+        <span (click)="dialogRef.close()" class="mr-4 cursor-pointer">Close</span>
+        <app-button (clicked)="dialogRef.close()" color="blue" text="Ok" size="sm"></app-button>
+      </div>
+    </mat-dialog-actions>
+  </mat-dialog-content>
+</ng-template>

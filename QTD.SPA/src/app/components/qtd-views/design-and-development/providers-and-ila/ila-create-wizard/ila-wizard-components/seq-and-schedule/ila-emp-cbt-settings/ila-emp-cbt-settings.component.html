@@ -1,0 +1,169 @@
+<ng-container>
+  <div class="flex flex-col">
+    <form [formGroup]="trainingForm">
+      <div
+        class="
+          border-gray-one border-0.5
+          bg-white-one
+          rounded
+          mb-8
+          pb-4
+          pt-4
+          pl-16
+          pr-16
+        "
+      >
+        <div class="flex flex-col mb-3">
+          <ul>
+            <li>
+              <p class="text-base font-bold">
+                CBT Release Settings
+              </p>
+            </li>
+
+
+            <li class="pt-3">
+              <mat-checkbox formControlName="cbtRequiredForCource" >
+                CBT required for course</mat-checkbox
+              >
+            </li>
+            <li>
+              <div class="flex flex-row justify-between">
+                <div>
+                  <span class="text-md"
+                    >Previously Imported CBT</span
+                  >
+                </div>
+                <div>
+                  <span class="text-qtd mr-2">
+                    Disconnect Scorm Package
+                  </span>
+                  |
+                  <span class="text-qtd ml-2"
+                    >Import Scorm Package
+                  </span>
+                </div>
+              </div>
+            </li>
+            <li
+              class="py-2 px-2 my-2"
+              style="background: #f7f1ff"
+            >
+              <div class="flex flex-row justify-between">
+                <div>
+                  <app-icon icon="description"></app-icon>
+                  <span class="text-md"
+                    >Transmission System Operator.pdf</span
+                  >
+                </div>
+                <div>
+                  <span class="text-gray-400">
+                    Date Imported: 21-10-22
+                  </span>
+                </div>
+              </div>
+            </li>
+
+            <li class="pt-3">
+              <mat-checkbox formControlName="releaseCBTLearningContract">
+                Release CBT Learning Contract</mat-checkbox
+              >
+            </li>
+            <li class="pt-2">
+              <div class="flex flex-col">
+                <app-label
+                  text=" Enter CBT Learning Contract {{('Instruction' | labelReplacement)| async}}s"
+                ></app-label>
+                <ckeditor
+                  formControlName="cbtLearningContractInstructions"
+                  [editor]="Editor"
+                  (ready)="onReady($event)"
+                >
+                </ckeditor>
+              </div>
+            </li>
+            <li class="pt-2">
+              <div class="flex flex-col">
+                <mat-checkbox
+                  formControlName="makeAvailableOnClassStartDate"
+                  >Make CBT available on class start date and
+                  time</mat-checkbox
+                >
+              </div>
+            </li>
+            <li class="pt-2">
+              <mat-checkbox
+                formControlName="makeAvailableOnClassEndDate"
+                >Make CBT available on class end date and
+                time</mat-checkbox
+              >
+            </li>
+
+            <li class="pt-2">
+              <mat-checkbox
+                formControlName="makeAvailableAfterPretestCompleted"
+                >Make CBT available after pretest is
+                completed</mat-checkbox
+              >
+            </li>
+            <li class="pt-2">
+              <div class="flex flex-col">
+                <p>CBT Due Date</p>
+                <span class="text-gray-400"
+                  >The number of days/weeks following the class
+                  end date/time students have to complete the
+                  CBT in EMP. After this due date, the CBT will
+                  be removed from EMP and Students will not be
+                  awarded a grade.</span
+                >
+              </div>
+            </li>
+
+            <li>
+              <div class="flex flex-col">
+                <div style="width: 22%; position: relative;">
+                  <br>
+                  <mat-select
+
+                 formControlName="cbtDueDate"
+                 class="
+                   appearance-none
+                   rounded
+                   border
+                   w-full
+                   px-4
+                   py-2.5
+                   align-item-end
+                   bg-white
+                 "
+               >
+                 <mat-option
+                   *ngFor="let p of numberOfDays"
+                   [value]="p"
+                 >
+                   {{ p }}
+                 </mat-option>
+               </mat-select>
+                 <span class="mr-4 text-gray-400" style="position: absolute; top: 48%; right: 15%;">Days</span>
+               </div>
+
+              </div>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+      <div class="flex flex-row justify-end">
+
+        <app-button
+          type="submit"
+          size="sm"
+          text="Save"
+          [disabled]="trainingForm.invalid"
+          (click)="saveInfoCBTRelease()"
+        >
+        </app-button>
+      </div>
+    </form>
+  </div>
+</ng-container>

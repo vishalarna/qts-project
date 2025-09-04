@@ -1,0 +1,65 @@
+<div class="container-fluid">
+    <h1 class="panel-heading">Public Class Schedule Request</h1>
+    <div class="row switch-box">
+        <div class="col-md-12">
+            <div class="row heighttop align-items-center">
+                <div class="col-md-12 p-0">
+                    <app-notifications-enabled [events]="eventToggle.asObservable()"
+                        (onNotificationEnabledToggleChangeEvent)="handleToggleValueChange($event)"
+                        [enabled]="this.notification.enabled" [mode]="mode" [timingText]="this.notification.timingText">
+                    </app-notifications-enabled>
+                </div>
+            </div>
+           
+            <div class="row heighttop">
+                <h1 class="section-header">Notification Settings</h1>
+                <div class="col-md-12 p-0 txt-label ">
+                    <div class="row justify-content-between m-auto" style="align-items: center">
+                        <h5 class="sub-header">Notification</h5>
+                    </div>
+                </div>
+                <div class="col-md-12 p-0 txt-label" style="margin-top: 20px;">
+                    Default Message
+                </div>
+                <br>
+                <div class="col-md-12 p-0">
+                    <app-email-template-editor [emailData]="notification.steps[0].template"
+                        [events]="eventFirstTemplate.asObservable()" [mode]="mode" [order]="1" (click)="select($event)"
+                        (templateModifiedEvent)="handleEmailTemplateModifiedEvent($event)">
+                    </app-email-template-editor>
+                </div>                
+                <div class="row template-bottomform">                    
+                    <div class="col md-6 p-0">
+                        <div class="d-flex template-bottom justify-content-end">
+                            <div class="label-flex">
+                                <label class="m-0">Email Frequency</label>
+                            </div>
+                            <div class="form-flex">
+                                <select class="form-control"
+                                    [value]="this.getStepCustomSettingsValue('Email Frequency', 1)"
+                                    [disabled]="mode === 'read' ? true : false"
+                                    (change)="handleCustomSettingChange(1, 'Email Frequency', $any($event.target).value.toString())">
+                                    <option>As Submitted</option>
+                                    <option>Weekly</option>
+                                    <option>Daily</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+          <div class="col-md-12">
+            <app-email-address-editor
+              [mode]="mode"
+              [events]="firstEmailSetting.asObservable()"
+              [others]="getStepCustomSettingsValue('Send To Others', 1)"
+              [showRecipients]="false"
+              (customRecipientsChangeEvent)="handleEmailAddressEditorChangeEvent($event, 1)"></app-email-address-editor>
+          </div>
+        </div>
+
+               
+            </div>
+        </div>
+    </div>
+</div>

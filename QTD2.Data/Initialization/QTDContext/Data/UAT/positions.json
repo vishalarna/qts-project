@@ -1,0 +1,58 @@
+[
+  {
+    "PositionNumber": 1,
+    "PositionAbbreviation": "TSO",
+    "PositionTitle": "Transmission System Operator",
+    "PositionDescription": "Transmission System Operator",
+    "IsPublished": true
+  },
+  {
+    "PositionNumber": 2,
+    "PositionAbbreviation": "SSO",
+    "PositionTitle": "Senior System Operator",
+    "PositionDescription": "Senior System Operator",
+    "IsPublished": true
+  },
+  {
+    "PositionNumber": 3,
+    "PositionAbbreviation": "SS",
+    "PositionTitle": "Shift Supervisor",
+    "PositionDescription": "Shift Supervisor",
+    "IsPublished": true
+  },
+  {
+    "PositionNumber": 4,
+    "PositionAbbreviation": "GO",
+    "PositionTitle": "Generation Operator",
+    "PositionDescription": "Generation Operator",
+    "IsPublished": true
+  },
+  {
+    "PositionNumber": 5,
+    "PositionAbbreviation": "TA",
+    "PositionTitle": "Training Administrator",
+    "PositionDescription": "Training Administrator",
+    "IsPublished": true
+  },
+  {
+    "PositionNumber": 6,
+    "PositionAbbreviation": "TP",
+    "PositionTitle": "Transmission Planner",
+    "PositionDescription": "Transmission Planner",
+    "IsPublished": true
+  },
+  {
+    "PositionNumber": 7,
+    "PositionAbbreviation": "DSO",
+    "PositionTitle": "Distribution System Operator",
+    "PositionDescription": "Distribution System Operator",
+    "IsPublished": true
+  },
+  {
+    "PositionNumber": 8,
+    "PositionAbbreviation": "Line",
+    "PositionTitle": "Lineman",
+    "PositionDescription": "Lineman",
+    "IsPublished": true
+  }
+]

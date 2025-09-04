@@ -1,0 +1,35 @@
+<div>
+  <div class="flex flex-row justify-between items-center px-3 mt-4">
+    <p *ngIf="!editSuggestion" class="text-xl font-bold text-gray-900">Add {{("Task" | labelReplacement)| async}} Specific Suggestion</p>
+    <p *ngIf="editSuggestion"  class="text-xl font-bold text-gray-900">Add {{("Task" | labelReplacement)| async}} Specific Suggestion</p>
+    <app-button (clicked)="closed.emit('fp-add-step')" ButtonType='icon' icon="close">
+    </app-button>
+  </div>
+  <div class="w-11/12 ml-4 mt-4 flex flex-col">
+    <div class="mt-3">
+      <app-label [for]="'number'" text="Suggestion Number"></app-label>
+      <app-textbox [disabled]="true" [(ngModel)]="number"></app-textbox>
+    </div>
+    <div class="mt-3">
+      <app-label [for]="'description'" text="Description"></app-label>
+      <ckeditor [(ngModel)]="description" [editor]="editor">
+      </ckeditor>
+      <app-input-error *ngIf="description.length < 1" text="Description is required"></app-input-error>
+    </div>
+    <div class="flex flex-row-reverse">
+      <div class="self-end pt-12">
+        <app-button *ngIf="editSuggestion" [disabled]="spinner || description.length<1" [spinner]="spinner" (clicked)="updateSuggestion()" text="Update" size="sm">
+        </app-button>
+      </div>
+    </div>
+
+    <div class="flex flex-row justify-between">
+      <mat-checkbox  *ngIf="!editSuggestion" [(ngModel)]="anotherCheck"> Add Another {{("Task" | labelReplacement)| async}} Specific Suggestion
+      </mat-checkbox>
+
+      <app-button *ngIf="!editSuggestion" [disabled]="spinner || description.length<1" [spinner]="spinner" (clicked)="saveSuggestion()" text="Save" size="sm">
+      </app-button>
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,135 @@
+<section class="p-3 flex flex-col w-full">
+  <app-data-loader *ngIf="!events"></app-data-loader>
+  <div *ngIf="events && !hasILATrainings && events?.procedureReviewList.length < 1 && events?.taskQualificationList.length < 1" class="flex w-full p-5" style="align-items:center;justify-content:center;">
+    <span>No training scheduled for today</span>
+  </div>
+  <div *ngIf="events && (hasILATrainings || events?.procedureReviewList.length > 0) || (events?.taskQualificationList.length > 0)" class="bg-white flex flex-col w-full">
+      <mat-expansion-panel #ilaPanel style="border-radius:0px;" class="w-full" [hideToggle]="true" *ngFor="let ilaEvent of events?.ilaList" [hidden]="ilaEvent.trainings.length < 1">
+        <mat-expansion-panel-header class="customStyle" >
+          <div class="flex mt-2">
+            <app-icon class="text-gray-400" icon="arrow_drop_down"></app-icon>
+          </div>
+          <div style="align-items:center;" class="flex flex-row w-full justify-between">
+            <div style="width:70%;" class="flex flex-col mt-2">
+              <div class="flex flex-row mb-2">
+                <span class="text-gray-400 mr-2">{{("ILA" | labelReplacement)| async}}:</span>
+                <span class="font-bold">{{ilaEvent.ilaTitle}}</span>
+              </div>
+              <div class="flex flex-row justify-between mb-2">
+                <div class="flex flex-row" style="align-items:center;">
+                  <img style="height:20px;width:20px;border-radius:100%;" [src]="events.picture" onerror="this.src='assets/img/ImageNotFound.jpg'">
+                  <span class="text-gray-500 text-xs ml-1">{{events.firstName + ' ' + (events.middleName === null || events.middleName === undefined || events.middleName === '' ? '':events.middleName) + events.lastName}}</span>
+                </div>
+                <div class="flex flex-row" style="align-items:center;">
+                  <app-icon class="text-gray-500 text-xs" icon="calendar_today"></app-icon>
+                  <span class="text-gray-500 text-xs ml-1">{{ (ilaEvent.startDateTime | dateFormat | async) + ' - ' + (ilaEvent.endDateTime | dateFormat | async)}}</span>
+                </div>
+                <div class="flex flex-row" style="align-items:center;">
+                  <app-icon class="text-gray-500 text-xs" icon="location_on"></app-icon>
+                  <span class="text-gray-500 text-xs ml-1">{{ilaEvent.location}}</span>
+                </div>
+              </div>
+            </div>
+            <div style="width:25%;">
+              <app-button (clicked)="ilaPanel.toggle();openViewCoursePanel(ilaEvent.ilaId,ilaEvent.parentId,viewCourse)" text="View Course Info" size="sm" color="blueBorder"></app-button>
+            </div>
+          </div>
+        </mat-expansion-panel-header>
+
+        <div class="flex flex-col w-full p-3">
+          <div class="flex flex-col w-full" *ngFor="let training of ilaEvent.trainings">
+            <div *ngIf="training.status !== 'Completed'" class="flex flex-row w-full justify-between border-b-2 py-3">
+              <div class="flex flex-row" style="width:40%;align-items: center;">
+                <span class="mr-4" style="width:10px;height:10px;" [ngClass]="{'greenBullet':training.testType==='Pretest' || training.testType === 'NA','redBullet':training.testType==='Final Test','yellowBullet':training.testType==='Retake'}"></span>
+                <span class="mr-5">{{training.testType === "NA" ? training.title:training.testType}}</span>
+                <span>{{"Due On " + (training.dueDate | dateFormat | async)}}</span>
+              </div>
+              <div class="flex" style="width:60%;justify-content: flex-end;">
+                <app-button (clicked)="selectedTemplateRef = training.type === 'Student Evaluation'?disclaimer:null;start({type:training.type,id:training.id,parentId:training.parentId})" *ngIf="training.status === 'Not Started'" text="Start" size="sm"></app-button>
+                <app-button (clicked)="selectedTemplateRef = training.type === 'Student Evaluation'?disclaimer:null;start({type:training.type,id:training.id,parentId:training.parentId})" *ngIf="training.status === 'In Progress' && training.type !== 'Test'" text="In Progress" size="sm"></app-button>
+                <app-button [disabled]="true" color="blue" [matTooltip]="'For security reasons this test has been disabled.  Contact your training manager to restart this test'" *ngIf="training.status === 'In Progress' && training.type === 'Test'" text="In Progress" size="sm"></app-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-expansion-panel>
+
+      <mat-expansion-panel #procPanel style="border-radius:0px;" [hideToggle]="true" (click)="$event.stopPropagation()" *ngFor="let procEvent of events?.procedureReviewList">
+        <mat-expansion-panel-header (click)="procPanel.toggle()" class="customStyle" style="height:100% !important;">
+          <div class="flex mt-2">
+            <app-icon class="text-gray-400" icon="arrow_drop_down"></app-icon>
+          </div>
+          <div style="align-items:center;" class="flex flex-row w-full justify-between">
+            <div style="width:70%;" class="flex flex-col mt-2">
+              <div class="flex flex-row mb-2">
+                <span class="text-gray-400 mr-2">{{("Procedure" | labelReplacement)| async}} Review:</span>
+                <span class="font-bold">{{procEvent.title}}</span>
+              </div>
+              <div class="flex flex-row justify-between mb-2">
+                <div class="flex flex-row" style="align-items:center;">
+                  <img style="height:20px;width:20px;border-radius:100%;" [src]="events.picture" onerror="this.src='assets/img/ImageNotFound.jpg'">
+                  <span class="text-gray-500 text-xs ml-1">{{events.firstName + ' ' + (events.middleName === null || events.middleName === undefined || events.middleName === '' ? '':events.middleName) + events.lastName}}</span>
+                </div>
+                <div class="flex flex-row" style="align-items:center;">
+                  <app-icon class="text-gray-500 text-xs" icon="calendar_today"></app-icon>
+                  <span class="text-gray-500 text-xs ml-1">{{ (procEvent.startDateTime | dateFormat | async) + ' - ' + (procEvent.endDateTime | dateFormat | async)}}</span>
+                </div>
+                <div class="flex flex-row" style="align-items:center;">
+                  <app-icon class="text-gray-500 text-xs" icon="location_on"></app-icon>
+                  <span class="text-gray-500 text-xs ml-1">{{procEvent.location}}</span>
+                </div>
+              </div>
+            </div>
+            <div class="flex" style="width:25%;justify-content:flex-end;">
+              <app-button (clicked)="start({type:procEvent.type,id:procEvent.id,parentId:procEvent.procedureId})" class="flex" style="width:60%;" *ngIf="procEvent.status ==='Not Started'" text="Start" size="sm"></app-button>
+              <app-button (clicked)="start({type:procEvent.type,id:procEvent.id,parentId:procEvent.procedureId})" class="flex" style="width:60%;" *ngIf="procEvent.status ==='In Progress'" text="In Progress" size="sm"></app-button>
+            </div>
+          </div>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+      <!-- Task Qualification Panels -->
+      <mat-expansion-panel #tqPanel style="border-radius:0px;" [hideToggle]="true" (click)="$event.stopPropagation()" *ngFor="let tqEvent of events?.taskQualificationList">
+        <mat-expansion-panel-header (click)="tqPanel.toggle()" class="customStyle" style="height:100% !important;">
+          <div class="flex mt-2">
+            <app-icon class="text-gray-400" icon="arrow_drop_down"></app-icon>
+          </div>
+          <div style="align-items:center;" class="flex flex-row w-full justify-between">
+            <div style="width:70%;" class="flex flex-col mt-2">
+              <div class="flex flex-row mb-2">
+                <span class="text-gray-400 mr-2">{{("Task" | labelReplacement)| async}} Qualification:</span>
+                <span class="font-bold">{{tqEvent.title}}</span>
+              </div>
+              <div class="flex flex-row justify-between mb-2">
+                <div class="flex flex-row" style="align-items:center;">
+                  <img style="height:20px;width:20px;border-radius:100%;" [src]="events.picture" onerror="this.src='assets/img/ImageNotFound.jpg'">
+                  <span class="text-gray-500 text-xs ml-1">{{events.firstName + ' ' + (events.middleName === null || events.middleName === undefined || events.middleName === '' ? '':events.middleName) + events.lastName}}</span>
+                </div>
+                <div class="flex flex-row" style="align-items:center;">
+                  <app-icon class="text-gray-500 text-xs" icon="calendar_today"></app-icon>
+                  <span class="text-gray-500 text-xs ml-1">{{(tqEvent.startDateTime === null ? 'N/A': (tqEvent.startDateTime | dateFormat | async)) + ' - ' + (tqEvent.endDateTime === null ? 'N/A': (tqEvent.endDateTime | dateFormat | async))}}</span>
+                </div>
+                <!-- <div class="flex flex-row" style="align-items:center;">
+                  <app-icon class="text-gray-500 text-xs" icon="location_on"></app-icon>
+                  <span class="text-gray-500 text-xs ml-1">{{procEvent.location}}</span>
+                </div> -->
+              </div>
+            </div>
+            <div class="flex" style="width:25%;justify-content:flex-end;">
+              <!-- <app-button (clicked)="start({type:procEvent.type,id:procEvent.id,parentId:procEvent.id})" class="flex" style="width:60%;" *ngIf="procEvent.status ==='Not Started'" text="Start" size="sm"></app-button>
+              <app-button (clicked)="start({type:procEvent.type,id:procEvent.id,parentId:procEvent.id})" class="flex" style="width:60%;" *ngIf="procEvent.status ==='In Progress'" text="In Progress" size="sm"></app-button> -->
+            </div>
+          </div>
+        </mat-expansion-panel-header>
+      </mat-expansion-panel>
+  </div>
+</section>
+
+<ng-template #disclaimer>
+  <app-disclaimer-dialog [selectedRowData]="selectedRow" (closed)="dialog.closeAll();">
+
+  </app-disclaimer-dialog>
+</ng-template>
+
+<ng-template #viewCourse>
+  <app-flypanel-view-course-info (closed)="flypanelService.close();" [ilaId]="ILAId" [classId]="classId"></app-flypanel-view-course-info>
+</ng-template>

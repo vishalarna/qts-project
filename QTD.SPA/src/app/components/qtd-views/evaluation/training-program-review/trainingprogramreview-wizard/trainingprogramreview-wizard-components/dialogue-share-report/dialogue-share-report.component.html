@@ -1,0 +1,58 @@
+<ng-container>
+  <mat-dialog-content>
+    <!-- header starts here -->
+    <div class="flex flex-row justify-between items-center my-2 border-bottom">
+      <p class="mb-0" mat-dialog-title [textContent]="inputHeader"></p>
+      <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+      <app-button
+        ButtonType="icon"
+        icon="close"
+        (clicked)="xClick()"
+      ></app-button>
+    </div>
+    <!-- header ends here -->
+    <form [formGroup]="shareDialogueForm">
+      <div class="pt-3">
+        <app-label [for]="'letter'" text="Share review with"></app-label>
+        <app-textbox
+          type="text"
+          formControlName="tos"
+          (keyup)="tosChange()"
+          [placeholder]="'Enter email address, seperate multiple with comma'"
+        ></app-textbox>
+        <div *ngIf="isInvalidEmails" class="error">Invalid email addresses</div>
+      </div>
+      <div class="pt-3">
+        <app-label [for]="'letter'" text="Deliver this review via"></app-label>
+        <mat-select
+          formControlName="exportType"
+          class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+        >
+          <mat-option value="PDF">
+            PDF
+          </mat-option>
+        </mat-select>
+      </div>
+      <div class="pt-3">
+        <app-label [for]="'letter'" text="Message(Optional)"></app-label>
+        <div clas="ck-editor">
+          <ckeditor formControlName="optionalText" [config]="configCKEditor" [editor]="Editor" toolbarPosition="bottom"></ckeditor>
+        </div>
+      </div>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions class="flex flex-row justify-end border-top mt-2">
+    <!-- (clicked)="confirm()"
+        (clicked)="cancel()" -->
+    <app-button
+      type="button"
+      (clicked)="shareClick()"
+      [text]="'Share'"
+      color="secondary" size="sm"
+      class="mr-2"
+      [disabled]="true"
+    >
+    </app-button>
+  </mat-dialog-actions>
+</ng-container>

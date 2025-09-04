@@ -1,0 +1,288 @@
+<div class="pt-4 pb-4">
+
+          <div>INDIVIDUAL DEVELOPMENT PLAN (IDP)</div>
+
+  <div class="flex flex-row flex-wrap mt-3 justify-between mb-3" style="align-items:center;justify-content: flex-end;">
+    <div class="border-1 rounded-sm bg-white flex flex-row pt-2 pb-1 pl-4 pr-3" style="height:fit-content">
+      <div class="mr-4">
+        <app-icon icon="account_tree" class="mr-2 text-gray-400"></app-icon>
+        <app-label class="text-gray-400" text="Map"></app-label>
+      </div>
+      <div class="pr-2">
+        <app-icon class="mr-2" icon="format_list_bulleted"
+                  style="color:rgb(92, 155, 49);outline: 2px rgb(92, 155, 49)"></app-icon>
+        <app-label style="color:rgb(92, 155, 49);outline: 2px rgb(92, 155, 49)" text="List"></app-label>
+      </div>
+    </div>
+  </div>
+  <div>
+
+    <section class="flex flex-col bg-white border-2 p-3">
+
+      <div class="flex flex-row justify-between border-b-2 pb-2">
+        <div class="flex flex-row" style="align-items:center; width: 40%;">
+          <span style="width:45%">
+            Showing {{dataSource === undefined || dataSource === null || dataSource.data === undefined || dataSource.data === null ? "0" : dataSource.data.length}}
+            class schedules
+          </span>
+          <mat-select (valueChange)="SelectedYearValueChanged($event)" [(value)]="selected"
+                      class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white"
+                      style="width:30%"
+                      required>
+            <mat-option *ngFor="let i of range" [value]="i">
+              {{i}}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="flex flex-row">
+          <app-button class="mr-2" color="secondary" text="Filters" size="sm" leftIcon="filter_alt"
+                      rightIcon="keyboard_arrow_down" (click)="openFlyInPanel(filterEmp)">
+          </app-button>
+          <app-button text="Add {{('ILA' | labelReplacement)| async}}s " size="sm" icon="add" iconPosition="left"
+                      (click)="openFlyInPanel(downLoadILa)">
+          </app-button>
+        </div>
+
+      </div>
+      <app-spinner *ngIf="showSpinner"></app-spinner>
+
+      <mat-table *ngIf="!showSpinner" [dataSource]="dataSource" matSort class="w-full" [multiTemplateDataRows]="true" [resizableTable]="true">
+        <ng-container matColumnDef="ilaNumber">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{("ILA" | labelReplacement)| async}} No.</mat-header-cell>
+          <mat-cell *matCellDef="let row" [class.enrolledRow]="row.hasEnrolledInAnyClass"
+              [ngClass]="!row.ilaActive ? 'inactive' : ''">
+              <app-button variant="text" icon="arrow_drop_down"
+              (clicked)="(expandedData = expandedData === row ?null:row);getLinkedSchedulingClasses(row.id);$event.stopPropagation();tempILAId = row.ilaId;">
+            </app-button>
+              {{ row.ilaNumber }}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="ilaTitle">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{("ILA" | labelReplacement)| async}} Title</mat-header-cell>
+          <mat-cell *matCellDef="let row" [class.enrolledRow]="row.hasEnrolledInAnyClass"
+              [ngClass]="!row.ilaActive ? 'inactive' : ''">
+            {{ row.ilaTitle }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="ilaStatus">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>{{("ILA" | labelReplacement)| async}} Status</mat-header-cell>
+          <mat-cell *matCellDef="let row" [class.enrolledRow]="row.hasEnrolledInAnyClass"
+             >
+              <div class="d-inline-block">
+                <p class="py-2 px-4 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+                  [ngClass]="{'customcolorgreen':row.status==='active','bg-gray-100':row.status!=='active'}">
+                  {{ row.ilaActive ? 'ACTIVE' : 'INACTIVE' }}
+                </p>
+              </div>
+          </mat-cell>
+        </ng-container>
+        
+        <ng-container matColumnDef="deliveryMethod">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Delivery Method</mat-header-cell>
+          <mat-cell *matCellDef="let row" [class.enrolledRow]="row.hasEnrolledInAnyClass"
+              [ngClass]="!row.ilaActive ? 'inactive' : ''">
+            {{ row.deliveryMethod }}
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="testLinked">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>Test Linked</mat-header-cell>
+          <mat-cell *matCellDef="let row" [class.enrolledRow]="row.hasEnrolledInAnyClass"
+              [ngClass]="!row.ilaActive ? 'inactive' : ''">
+            {{ row.testLinked === true ? 'Yes' : 'No' }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="cbtLinked">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>CBT Linked</mat-header-cell>
+          <mat-cell *matCellDef="let row" [class.enrolledRow]="row.hasEnrolledInAnyClass"
+              [ngClass]="!row.ilaActive ? 'inactive' : ''">
+            {{ row.cbtLinked === true ? 'Yes' : 'No' }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="selfRegistrationEnabled">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Self Registration Enabled
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" [class.enrolledRow]="row.hasEnrolledInAnyClass"
+              [ngClass]="!row.ilaActive ? 'inactive' : ''">
+            {{ row.selfRegister === true ? 'Yes' : 'No' }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="hasEnrolledInAnyClass">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Class Enrolled
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" [class.enrolledRow]="row.hasEnrolledInAnyClass"
+              [ngClass]="!row.ilaActive ? 'inactive' : ''">
+            {{ row.hasEnrolledInAnyClass === true ? 'Yes' : 'No' }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef></mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="flex flex-row items-center text-gray-four btn-group">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <app-icon icon="more_horiz"></app-icon>
+              </button>
+              <mat-menu backdropClass="qtd__menu" #menu="matMenu">
+                <!--     <label (click)="openEmpPage('view',row.id)" mat-menu-item translate>L.Open</label> -->
+                <label mat-menu-item translate
+                       (click)="openFlyInPanelObjectives(viewObjectives,row.ilaId)">View Objectives</label>
+                <label mat-menu-item translate [disabled]="row.active === false"
+                       (click)="selectedIDPvm=row;openFlyInPanel(enrollEmp)">Enroll</label>
+                <label mat-menu-item translate [disabled]="row.hasEnrolledInAnyClass === true"
+                       (click)="deleteAsync(row.id)">Delete</label>
+              </mat-menu>
+            </div>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="expandedDetail">
+          <mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns">
+            <div style="width: 100%;" class="example-element-detail"
+              [@detailExpand]="row === expandedData ? 'expanded' : 'collapsed'">
+
+              <div class="mt-4" *ngIf="toggle===false" [attr.colspan]="displayedExpandedColumns">
+                <ng-container class="mt-4" [attr.colspan]="displayedExpandedColumns"
+                  *ngTemplateOutlet="!toggle ? expandedTable : null"></ng-container>
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row class="example-element-row" [class.example-expanded-row]="expandedData === row"
+          *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+        <!--Expanded Details row-->
+      <!-- Expanded Details row -->
+      <mat-row [ngStyle]="{'display' : expandedData && expandedData === row ? 'block' : 'none'}"
+      *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></mat-row>
+
+
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">No IDPs Found</td>
+        </tr>
+      </mat-table>
+      <mat-paginator #paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+                     aria-label="Select page of periodic elements">
+      </mat-paginator>
+    </section>
+  </div>
+
+  <section class="mt-5">
+    <mat-accordion>
+      <mat-expansion-panel #panel [expanded]="true" hideToggle>
+        <mat-expansion-panel-header>
+          <mat-panel-title class="text-lg font-bold flex flex-row justify-between w-full">
+            <div>{{("Employee" | labelReplacement)| async}} Specific IDP Info</div>
+            <mat-icon>{{panel.expanded ? 'keyboard_arrow_down' : 'keyboard_arrow_up'}}</mat-icon>
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <textarea class="w-full rounded-sm p-3 border-2" [(ngModel)]="idpInformation" [defaultValue]="idpInformation">
+
+        </textarea>
+        <div class="flex w-full mt-3" style="justify-content:flex-end;">
+          <app-button size="sm" text="Save" [disabled]="idpInformation === null || idpInformation === '' || saveSpinner"
+                      [spinner]="saveSpinner" (clicked)="saveIDPInfo()"></app-button>
+        </div>
+      </mat-expansion-panel>
+    </mat-accordion>
+  </section>
+</div>
+
+<ng-template #expandedTable>
+  <div class="table-expand-wrap" style="width:100%">
+  <app-data-loader *ngIf="!expandedTableDataSource"></app-data-loader>
+  <mat-table *ngIf="expandedTableDataSource"
+  [dataSource]="expandedTableDataSource" matSort>
+     <ng-container matColumnDef="plannedDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Planned Date</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{ row.plannedDateLocal === null ? "N/A" : (row.plannedDateLocal | dateFormat)| async }}
+       </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="startDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Start Date</mat-header-cell>
+      <mat-cell *matCellDef="let row" >
+        {{ row.startDateLocal  === null ? "N/A" : (row.startDateLocal  | dateFormat) | async }}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="endDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Completed Date</mat-header-cell>
+      <mat-cell *matCellDef="let row" >
+        {{ row.completionDateLocal  === null ? "N/A" : (row.completionDateLocal  | dateFormat) | async }}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="grade">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Grade</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{ row.grade }}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="score">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Score</mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{ row.score }}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="flex flex-row items-center text-gray-four btn-group">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <app-icon icon="more_horiz"></app-icon>
+          </button>
+          <mat-menu backdropClass="qtd__menu" #menu="matMenu">
+            <label mat-menu-item translate
+                   (click)="selectedIDPvm=row;openFlyInPanel(addEditGrade);selectedIDPvm.ilaId = tempILAId"
+                   [disabled]="row.classScheduleId === null || row.classScheduleId === ''">Add/Edit Grade</label>
+            <label mat-menu-item translate [disabled]="row.classScheduleId === null || row.classScheduleId === '' || row.endDate"
+                   (click)="selectedIDPvm=row;unlinkEmployee(unlinkEmployeeModal)">Unenroll {{("Employee" | labelReplacement)| async}}</label>
+          </mat-menu>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedExpandedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedExpandedColumns"></mat-row>
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center " *matNoDataRow>
+      <td class="mat-cell w-full m-2">No Classes Scheduled</td>
+    </tr>
+    </mat-table>
+  </div>
+  </ng-template>
+
+
+<ng-template #viewObjectives>
+  <app-fly-panel-linked-objectives [ILAid]="selectedILDId">
+
+  </app-fly-panel-linked-objectives>
+</ng-template>
+
+<ng-template #addEditGrade>
+  <app-fly-panel-add-edit-grade [selectedIDPvm]="selectedIDPvm" (refresh)="refresh()" [employeeName]="employeeName">
+
+  </app-fly-panel-add-edit-grade>
+</ng-template>
+
+<ng-template #enrollEmp>
+  <app-fly-panel-enroll-employee (refreshIDPs)="readyData()" [selectedIDPvm]="selectedIDPvm"
+                                 [EmployeeName]="employeeName" [Employeeid]="empId"></app-fly-panel-enroll-employee>
+</ng-template>
+<ng-template #filterEmp>
+  <app-fly-panel-filter-idp [FilterData]="filterOptions" (FilterEmployeesEvent)="FilterEmployeesEvent($event)">
+
+  </app-fly-panel-filter-idp>
+</ng-template>
+
+<ng-template #unlinkEmployeeModal>
+  <app-qtd-dialogue [isHTML]="true" header="Unenroll Students" [description]="unlinkDescription" cancelText="No"
+                    confirmText="Yes" [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()"
+                    (confirmed)="Unlink($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #downLoadILa>
+  <app-fly-panel-downlod-ilas (refresh)="refresh()" [EmpName]="employeeName" [yearNow]="selected"
+      [alreadyLinkedILAs]="LinkedIds"></app-fly-panel-downlod-ilas>
+</ng-template>

@@ -1,0 +1,109 @@
+<!-- header starts here -->
+<div class="flex flex-row justify-between items-center px-12 mt-5" >
+    <p class="text-xl font-semibold text-gray-900">Simulator Scenario Details</p>
+    <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+  </div>
+  <!-- header ends here -->
+
+  <!--Content Starts Here-->
+<div class="mt-8" [formGroup]="createNewSimulation">
+    <div class="ml-12 mr-12">
+        <p class="font-normal">{{("ILA" | labelReplacement)| async}} Name</p>
+        <input type="text" formControlName="ILANames" class="h-10 border w-23/24 rounded p-2 bg-white-one" placeholder="Enter {{('ILA' | labelReplacement)| async}} Name" [disabled]="true" />
+    </div>
+
+    <div class="ml-12 mr-12 mt-8">
+        <p class="font-normal">Scenario Title</p>
+        <input type="text" [disabled]="true" formControlName="ScenarioTitle" class="h-10 border w-23/24 rounded p-2 bg-white-one" placeholder="Enter Scenario Title"/>
+    </div>
+  
+    <div class="ml-12 mr-12 mt-10">
+        <p class="font-normal">Scenario Description/{{("Task" | labelReplacement)| async}}s</p>
+        <ckeditor [editor]="Editor" [disabled]="true" formControlName="ScenarioDescription" (ready)="onReady($event)"></ckeditor>
+        <mat-checkbox class="mt-4" [checked]="true">Make avaliable in Simulator Scenario Library <app-icon class="ml-2" icon="help_outline"></app-icon></mat-checkbox>
+    </div>
+
+    <div class="ml-12 mr-12 mt-8">
+        <app-button variant="text" iconPosition="left" icon="link" text="Link Scenario Objectives"></app-button>
+
+        <div class="mat-elevation-z8 mt-3 " *ngIf="EOArray.length > 0">
+          <mat-table [dataSource]="DataSource" matSort class="rounded-sm rounded">
+              <ng-container matColumnDef="number">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> #
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.number}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="type">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Type
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.type}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="description">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Description
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
+              </ng-container>
+
+              <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+          </mat-table>
+
+      </div>
+          
+    </div>
+
+    <div class="ml-12 mr-12 mt-12">
+        <app-button variant="text" iconPosition="left" icon="link" text="Link {{('Task' | labelReplacement)| async}}"></app-button>
+
+        <div class="mat-elevation-z8 mt-3" *ngIf="TaskArray.length > 0">
+          <mat-table [dataSource]="TaskDataSource" matSort class="rounded-sm rounded">
+              <ng-container matColumnDef="number">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> #
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.number}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="type">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Type
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.type}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="description">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> Description
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
+              </ng-container>
+
+              <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+          </mat-table>
+
+      </div>
+    </div>
+
+    <div class="ml-12 mr-12 mt-8">
+        <app-label text="Scenario {{('Position'| labelReplacement)| async}}" class="mt-6"></app-label>
+        <div class=" flex flex-row h-10 border w-23/24 rounded p-2 bg-white-one">
+          <p class="px-1" [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px','height':'20px'}" *ngFor="let i of PositionArray">{{i.name}}</p>
+        </div>
+        <!-- <input type="text" [value]="i.name" class="" placeholder="Enter Positions"/> -->
+      <!--   <mat-form-field appearance="outline" class="text-sm dropdown w-full">                      
+            <mat-select multiple placeholder="Select Scenario Position">                    
+              <mat-select-trigger>
+                <mat-chip-list>
+                  <mat-chip *ngFor="let i of PositionArray"
+                    [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}">
+                    {{ i.name }}
+                    <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove></app-icon>
+                  </mat-chip>
+                </mat-chip-list>
+              </mat-select-trigger> 
+            </mat-select>
+          </mat-form-field> -->
+    </div>
+
+</div>
+<!--Content Ends Here-->
+
+<div class="w-36 float-right mr-12 mt-8">
+    <app-button (clicked)="OnLinkILA()" color="secondary" text="Link to {{('ILA' | labelReplacement)| async}}" size="sm"></app-button>
+  </div>

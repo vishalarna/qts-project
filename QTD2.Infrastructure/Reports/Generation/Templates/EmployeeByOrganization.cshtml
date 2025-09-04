@@ -1,0 +1,206 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center; "><b>@Model.Title </b></div>
+                <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.Organizations.Any(x => x.EmployeeOrganizations.Any()))
+    {
+        <tr style=" border-bottom: 2px solid #000; border-collapse: collapse" class="open-border-table-row">
+            <td style="border: none; padding: 0px;" class="strip-container" colspan="7">
+                @{int j = 1;}
+                @foreach (var organization in Model.Organizations)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:separate;border-spacing:0">
+                            <tbody>
+                                <tr>
+                                    <td colspan="4" style="border: none !important; padding-top: 0; font-size: 18px ">
+                                        <b> @organization.Name </b>
+                                    </td>
+                                </tr>
+                                <tr style=" border-bottom: 2px solid #000; border-collapse: collapse">
+                                    <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name</th>
+                                    @if (Model.DisplayColumns.Where(r => r == "Employee Number").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Number</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Email Address").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left">Email Address</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Task Qualification Evaluator").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Qualification Evaluator</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "NERC Cert Type").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left">NERC Cert Type</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "NERC Cert #").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left">NERC Cert #</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "NERC Cert Issue Date").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left">NERC Cert Issue Date</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "NERC Cert Recert Date").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left">NERC Cert Recert Date</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "NERC Cert Expiration Date").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left">NERC Cert Expiration Date</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Employee Notes").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 2px solid #000; border-collapse: collapse " align="left" width="8%">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Notes</th>
+                                    }
+                                </tr>
+                                @{
+                                    var emporganization = organization.EmployeeOrganizations.Distinct();
+                                }
+                                @foreach (var employeeOrganization in emporganization.OrderBy(e => e.Employee.Person.LastName).ThenBy(e => e.Employee.Person.FirstName))
+                                {
+                                    var employees = employeeOrganization.Employee;
+                                    var employeePositions = employees.EmployeePositions.Where(r => r.Active).ToList();
+                                    var employeeEmailAddress = employees.Person.Username;
+
+                                    var nercCert = employees.EmployeeCertifications.Where(r => r.Active && r.Certification.CertifyingBodyId == 1).FirstOrDefault();
+                                    <tr>
+                                        <td style=" border: none !important;">@employees.Person.LastName, @employees.Person.FirstName</td>
+                                        @if (Model.DisplayColumns.Where(r => r == "Employee Number").Count() > 0)
+                                        {
+                                            <td style=" border: none !important;">@employees.EmployeeNumber</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Email Address").Count() > 0)
+                                        {
+                                            <td style=" border: none !important;">@(employeeEmailAddress == null ? "" : employeeEmailAddress)</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                        {
+                                            <td style="border:none;">
+                                                @String.Join(", ", employeePositions.Select(x => x.Position.PositionTitle + " (" + x.Position.PositionAbbreviation + ")" + (x.Trainee ? " [Trainee]" : "")).Distinct())
+                                            </td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Task Qualification Evaluator").Count() > 0)
+                                        {
+                                            <td style=" border: none !important;">@(employees.TQEqulator ? "Yes" : "No")</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "NERC Cert Type").Count() > 0)
+                                        {
+                                            <td style=" border: none !important;">@(nercCert == null ? "" : nercCert.Certification.Name)</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "NERC Cert #").Count() > 0)
+                                        {
+                                            <td style=" border: none !important;">@(nercCert == null ? "" : nercCert.CertificationNumber)</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "NERC Cert Issue Date").Count() > 0)
+                                        {
+                                            <td style=" border: none !important;">@(nercCert == null ? "" : nercCert.IssueDate.ToString("MM/dd/yyyy"))</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "NERC Cert Recert Date").Count() > 0)
+                                        {
+                                            <td style=" border: none !important;">@(nercCert == null ? "" : nercCert.RenewalDate.HasValue ? nercCert.RenewalDate.Value.ToString("MM/dd/yyyy") : "")</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "NERC Cert Expiration Date").Count() > 0)
+                                        {
+                                            <td style=" border: none !important;">@(nercCert == null ? "" : nercCert.ExpirationDate.HasValue ? nercCert.ExpirationDate.Value.ToString("MM/dd/yyyy") : "")</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Employee Notes").Count() > 0)
+                                        {
+                                            <td style=" border: none !important; width:8%">@(new RawString(employees.Notes??"N/A"))</td>
+                                        }
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (!organization.Equals(Model.Organizations.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{j++;}
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>

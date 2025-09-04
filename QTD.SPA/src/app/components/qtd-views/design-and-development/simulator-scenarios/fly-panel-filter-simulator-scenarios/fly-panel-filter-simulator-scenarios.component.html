@@ -1,0 +1,297 @@
+<div
+  class="
+    flex flex-row
+    justify-between
+    border-b
+    items-center
+    header-spacing
+    fly-container-wrapper
+  "
+>
+  <h1 class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+    Filter Simulator Scenarios
+  </h1>
+  <button class="focus:outline-none" (click)="closeFlyPanel()">
+    <svg
+      class="w-6 h-6"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M6 18L18 6M6 6l12 12"
+      ></path>
+    </svg>
+  </button>
+</div>
+
+<form [formGroup]="filterSimulatorScenariosForm" class="fly-container-wrapper">
+  <div class="form-wraper">
+    <div class="card-wraper">
+      <div class="flex-row">
+        <div>
+          <app-label
+            [for]="'provider'"
+            text="Provider"
+            class="mt-6 float-left label label-style"
+          ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select
+              #provSelect="matSelect"
+              placeholder="Select Provider"
+              style="margin-right: 14px"
+              (click)="handleProviderFilters()"
+              (selectionChange)="selectProvider($event.value); this.filterSimulatorScenariosForm.get('ila').setValue(null);"
+              formControlName="provider"
+            >
+              <input
+                matInput
+                class="pt-3 pb-3 pl-3"
+                type="text"
+                formControlName="searchTxt"
+                (keyup)="providerSearch()"
+                placeholder="Enter Text to Search"
+              />
+              <mat-option *ngFor="let i of provider_list" [value]="i.id">
+                {{ i.name }}
+              </mat-option>
+            </mat-select>
+            <button
+              *ngIf="filterSimulatorScenariosForm.get('provider').value"
+              matSuffix
+              mat-icon-button
+              type="button"
+              aria-label="Clear"
+              (click)="clearProviderSelection(); $event.stopPropagation()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <div>
+          <app-label
+            [for]="'ila'"
+            text="{{ 'ILA' | labelReplacement | async }}"
+            class="mt-6 float-left label label-style"
+          ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select
+              #ilaSelect="matSelect"
+              #selectControl
+              [disabled]="filterSimulatorScenariosForm.get('provider')?.value == null"
+              formControlName="ila"
+              (click)="handleILAFilters()"
+              placeholder="Select {{ 'ILA' | labelReplacement | async }}"
+              [ngClass]="{'loading-disabled': filterSimulatorScenariosForm.get('provider')?.value == null}"
+              style="margin-right: 4px"
+            >
+              <input
+                (keyup)="ilaSearch()"
+                formControlName="ilaSearch"
+                class="pt-3 pb-3 pl-3"
+                type="text"
+                matInput
+                placeholder="Enter Text to Search"
+              />
+              <mat-option *ngFor="let option of ila_list" [value]="option.name">
+                {{
+                  option.number === null ||
+                  option.number === undefined ||
+                  option.number === ""
+                    ? "N/A"
+                    : option.number
+                }}
+                - {{ option.name }}
+              </mat-option>
+            </mat-select>
+            <button
+              *ngIf="filterSimulatorScenariosForm.get('ila').value"
+              matSuffix
+              mat-icon-button
+              type="button"
+              aria-label="Clear"
+              (click)="clearILASelection(); $event.stopPropagation()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </div>
+
+      <div class="flex flex-row">
+        <div class="w-100">
+          <app-label
+            [for]="'position'"
+            text="{{ 'Position' | labelReplacement | async }}"
+            class="mt-6 float-left label label-style"
+            (click)="filterData()"
+          ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select
+              #posSelect="matSelect"
+              formControlName="position"
+              placeholder="Select {{ 'Position' | labelReplacement | async }}"
+            >
+              <input
+                matInput
+                class="pt-3 pb-3 pl-3 w-100"
+                type="text"
+                formControlName="searchPosition"
+                (keyup)="positionSearch()"
+                placeholder="Enter Text to Search"
+              />
+              <mat-option
+                *ngFor="let i of positions"
+                [value]="i.positionTitle"
+                >{{ i.positionTitle }}</mat-option
+              >
+            </mat-select>
+            <button
+              *ngIf="filterSimulatorScenariosForm.get('position').value"
+              matSuffix
+              mat-icon-button
+              type="button"
+              aria-label="Clear"
+              (click)="clearPositionSelection(); $event.stopPropagation()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="pt-3 flex status-level">
+        <div class="flex input-box-wrap status-levelBox">
+          <div class="flex flex-col float-left w-100">
+            <app-label
+              [for]="'difficultyLevel'"
+              text="Difficulty Level"
+              class="mt-6 float-left label label-style"
+            ></app-label>
+            <mat-form-field
+              appearance="outline"
+              class="text-sm dropdown w-full"
+            >
+              <mat-select
+                #difficultySelect="matSelect"
+                formControlName="difficultyLevel"
+                placeholder="Select Difficulty Level"
+              >
+                <mat-option
+                  *ngFor="let level of difficultyLevel"
+                  [value]="level.difficulty"
+                  >{{ level.difficulty }}</mat-option
+                >
+              </mat-select>
+              <button
+                *ngIf="
+                  filterSimulatorScenariosForm.get('difficultyLevel').value
+                "
+                matSuffix
+                mat-icon-button
+                type="button"
+                aria-label="Clear"
+                (click)="
+                  clearDifficultyLevelSelection(); $event.stopPropagation()
+                "
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </mat-form-field>
+          </div>
+        </div>
+        <div class="flex flex-col float-left w-100 status-levelBox">
+          <app-label
+            [for]="'status'"
+            text="Status"
+            class="mt-6 float-left label label-style"
+          ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select
+              #statusSelect="matSelect"
+              formControlName="status"
+              placeholder="Select Status"
+            >
+              <mat-option
+                *ngFor="let scenario of simulatorScenarioStatuses"
+                [value]="scenario.status"
+              >
+                {{ scenario.status }}</mat-option
+              >
+            </mat-select>
+            <button
+              *ngIf="filterSimulatorScenariosForm.get('status').value"
+              matSuffix
+              mat-icon-button
+              type="button"
+              aria-label="Clear"
+              (click)="clearStatusSelection(); $event.stopPropagation()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex">
+    <div class="flex flex-col float-left w-100 status-levelBox">
+      <app-label
+        [for]="'activestatus'"
+        text="Active Status"
+        class="mt-6 float-left label label-style"
+      ></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+        <mat-select
+          #activeStatusSelect="matSelect"
+          formControlName="activeStatus"
+          placeholder="Select Active Status"
+        >
+          <mat-option value="Active">Active </mat-option>
+          <mat-option value="Inactive">Inactive </mat-option>
+        </mat-select>
+        <button
+          *ngIf="filterSimulatorScenariosForm.get('activeStatus').value"
+          matSuffix
+          mat-icon-button
+          type="button"
+          aria-label="Clear"
+          (click)="clearActiveStatusSelection(); $event.stopPropagation()"
+        >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="label-box">
+    <input type="checkbox" formControlName="simScenariosNotLinkedToILA" />
+    <label
+      >Simulator Scenarios not linked to an
+      {{ "ILA" | labelReplacement | async }}</label
+    >
+  </div>
+
+  <div
+    class="
+      d-flex
+      justify-content-between
+      align-items-center
+      pt-3
+      fly-btn-wrapper
+    "
+  >
+    <app-button
+      variant="outlined"
+      (clicked)="applyFiltersClick()"
+      position="right"
+      size="sm"
+      text="Apply Filters"
+      color="primary"
+      class="font-weight-normal"
+    ></app-button>
+  </div>
+</form>

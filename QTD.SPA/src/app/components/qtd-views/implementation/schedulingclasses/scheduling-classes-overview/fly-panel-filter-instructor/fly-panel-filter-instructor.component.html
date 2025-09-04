@@ -1,0 +1,32 @@
+
+<ng-container >
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900" >Filter {{("Instructor" | labelReplacement)| async}}</p>
+      <app-button [disabled]="showSpinner" (click)="closeProvider()" ButtonType='icon' icon="close"></app-button>
+    </div>
+    <form [formGroup]="instructorForm">
+      <div class="flex flex-row px-12">
+          <div class="flex flex-col float-left pr-4 mb-6" style="width: 100vw;">
+              <app-label required [for]="'Instructor'" text="Select {{('Instructor' | labelReplacement)| async}}"
+              class="mt-6 float-left label required">
+            </app-label>
+              <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+
+                <mat-select formControlName="Instructor" placeholder="Select {{('Instructor' | labelReplacement)| async}}" required (selectionChange)="onOptionSelection($event)">
+              <mat-option *ngFor="let p of instructor_list" [value]="p.id">
+                {{p.instructorName}}
+              </mat-option>
+
+            </mat-select>
+                </mat-form-field>
+         </div>
+        
+     
+     </div>
+     <div class="px-12 mt-8 float-right py-3">
+      <app-button [spinner]="showSpinner" [disabled]="instructorForm.invalid ||showSpinner"  (click)="selectInstructorName();selectInstructor()" type="button" size="sm"
+        color="secondary" text="Apply Filter">
+      </app-button>
+    </div>
+  </form>
+  </ng-container>

@@ -1,0 +1,11 @@
+<!-- list starts here -->
+<div class="flex flex-col text-sm">
+  <div *ngFor="let item of clientNotifications"
+       [ngClass]="{'data-panel-selected': item.name === selectedNotification, 'data-panel' : item.name != selectedNotification }">
+    <div (click)="getSelectedNotification(item)">
+      {{item.name | dynamicLabelReplacement| async}}<span><mat-icon>keyboard_arrow_right</mat-icon></span>
+    </div>
+    <!-- <app-emp-default (firstFunction)="getContent($event)"></app-emp-default> -->
+  </div>
+</div>
+<!-- list ends here -->

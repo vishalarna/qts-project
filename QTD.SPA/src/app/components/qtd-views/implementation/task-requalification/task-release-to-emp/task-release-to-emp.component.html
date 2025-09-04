@@ -1,0 +1,147 @@
+<div class="flex flex-col">
+  <section class="flex flex-row justify-between" style="align-items:baseline">
+    <span class="font-bold text-lg">Pending Qualifications</span>
+    <div class="flex flex-row">
+      <app-button (clicked)="multiSelectData = selection.selected;recallTaskQualDialog(recallTaskDialog);" *ngIf="selection.selected.length > 0" class="mr-2" ButtonType="button" size="sm"
+        text="Recall {{('Task' | labelReplacement)| async}} Qualification"></app-button>
+      <app-button *ngIf="selection.selected.length === 0" [matMenuTriggerFor]="release" ButtonType="button" icon="keyboard_arrow_down" iconPosition="right"
+        color="secondary" size="sm" text="Release {{('Task' | labelReplacement)| async}} & Skill Qualification"></app-button>
+      <mat-menu #release="matMenu">
+        <label (click)="openFlyPanel(releaseTask)" class="label_style" mat-menu-item>By {{("Task" | labelReplacement)| async}} and Skill</label>
+        <label (click)="openFlyPanel(releaseByEmp)" class="label_style" mat-menu-item>By {{("Employee" | labelReplacement)| async}}</label>
+      </mat-menu>
+    </div>
+  </section>
+
+  <app-data-loader *ngIf="tqLoader"></app-data-loader>
+  <section *ngIf="!tqLoader" class="flex flex-col bg-white mt-3 rounded-sm mat-elevation-z3">
+    <mat-form-field class="searchField" appearance="outline">
+      <div class="flex flex-row">
+        <mat-icon matPrefix>search</mat-icon>
+        <input (input)="inputChange()" [(ngModel)]="filterString" type="text" matInput
+          placeholder="Enter keywords to search">
+          <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+  
+      </div>
+      
+    </mat-form-field>
+    <table (matSortChange)="sortChanged($event)" matSort class="w-full" style="border-top:0.8px solid #E1E5E4" mat-table [dataSource]="dataSource">
+      <ng-container matColumnDef="cb">
+        <th style="width:5%;" mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null"
+          [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [checked]="selection.hasValue() && isAllSelected()" ></mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <mat-checkbox [checked]="selection.selected.includes(row)" (change)="checkChange($event,row)"></mat-checkbox>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="empName">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+          {{("Employee" | labelReplacement)| async}} Name
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span class="linkText">{{row.empLName + ", " + row.empFName}}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="taskNumber">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+          {{("Task" | labelReplacement)| async}} Number
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{row.taskNumber}}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="releaseDate">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+          Release Date
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{row.releaseDate === null ? "N/A":row.releaseDate | date:'MM/dd/yyyy'}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="dueDate">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+          Due Date
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{row.dueDate === null ? "N/A" :row.dueDate| date:'MM/dd/yyyy'}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="evaluatorName">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+          Evaluator Name(s)
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{row.evaluatorName.length > 0 ? row.evaluatorName.substring(0,row.evaluatorName.length-2):"N/A"}}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="requiredTaskQuals">
+        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+          Total Required {{("Task" | labelReplacement)| async}} Quals
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{row.requiredTaskQuals}}
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>
+
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <app-icon [matMenuTriggerFor]="actions" icon="more_horiz" class="text-gray-400 cursor-pointer"></app-icon>
+          <mat-menu #actions="matMenu">
+            <label (click)="openUpdateDateDialog(updateDateDialog,row)" class="label_style" mat-menu-item>Update Release & Due Date</label>
+            <label (click)="openRecallDialog(recallDialog,row)" class="label_style" mat-menu-item>Recall {{("Task" | labelReplacement)| async}} & Skill Qualification</label>
+            <label (click)="openUpdateReassignDialog(reassignDialog,row)" class="label_style" mat-menu-item>Reassign {{("Task" | labelReplacement)| async}} Qualification</label>
+          </mat-menu>
+        </td>
+      </ng-container>
+      <ng-container  matColumnDef="empCommaSepName">
+        <th [hidden]="true" mat-header-cell *matHeaderCellDef>
+
+        </th>
+        <td [hidden]="true" mat-cell *matCellDef="let row">
+
+      </ng-container>
+
+      <tr mat-header-row class="pl-2 pr-2" *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row class="pr-2 pl-2" *matRowDef="let row; columns: displayedColumns"></tr>
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">No Evaluator Records Found</td>
+      </tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #paginator="matPaginator">
+
+    </mat-paginator>
+  </section>
+</div>
+
+
+<ng-template #recallDialog>
+  <app-qtd-dialogue [cancelText]="'No'" [confirmText]="'Yes'" header="Recall {{('Task' | labelReplacement)| async}} Qualification"
+    [description]="description" (confirmed)="recallTaskQual()" (canceled)="dialog.closeAll()"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #updateDateDialog>
+  <app-task-requal-update-date-dialog [selectedData]="selectedData" (confirmed)="updateDate($event)" (canceled)="dialog.closeAll()"></app-task-requal-update-date-dialog>
+</ng-template>
+
+<ng-template #reassignDialog>
+  <app-task-requal-reassign-task-requal [selectedData]="selectedData" (confirmed)="reassignEvaluators($event)" (canceled)="dialog.closeAll()"></app-task-requal-reassign-task-requal>
+</ng-template>
+
+
+<ng-template #recallTaskDialog>
+  <app-recall-task-qualification-dialog [multiSelectData]="multiSelectData" (confirmed)="performRecall()" (canceled)="dialog.closeAll()"></app-recall-task-qualification-dialog>
+</ng-template>
+
+
+<ng-template #releaseTask>
+  <app-flypanel-release-task-qualification (refresh)="readyData();flyPanelService.close()" (closed)="flyPanelService.close()"></app-flypanel-release-task-qualification>
+</ng-template>
+
+<ng-template #releaseByEmp>
+  <app-flypanel-release-task-qual-by-emp (refresh)="readyData();flyPanelService.close()" (closed)="flyPanelService.close()"></app-flypanel-release-task-qual-by-emp>
+</ng-template>

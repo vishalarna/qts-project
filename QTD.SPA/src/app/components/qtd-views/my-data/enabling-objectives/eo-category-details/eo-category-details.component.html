@@ -1,0 +1,67 @@
+<div *ngIf="!category">
+  <app-data-loader></app-data-loader>
+</div>
+<div *ngIf="category" class="ml-4 mr-4 px-8">
+  <div class="flex flex-row flex-wrap mt-3 justify-between border-b pb-3">
+    <div class="flex flex-col">
+      <!-- <p class="text-xs text-gray-four">PowerCo Procedures</p> -->
+      <p class="font-bold text-lg">{{category.number}} {{category.title}}</p>
+    </div>
+    <div class="flex flex-row  items-center text-gray-four btn-group">
+      <div class="cursor-pointer bg-gray-200 p-2 rounded">
+        <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+          <span *ngIf="category.active" class="font-bold">
+            <span style="color:green" class="mr-1 text-lg">●</span>
+            Active
+          </span>
+          <span *ngIf="!category.active" class="font-bold">
+            <span style="color:red" class="mr-1 text-lg">●</span>
+            Inactive
+          </span>
+
+        </label>
+        <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+      </div>
+      <mat-menu #menu="matMenu">
+        <label *ngIf="!category.active" (click)="activeModal(dialogModal,true)" mat-menu-item>
+          <span style="color:green" class="mr-1 text-lg">●</span>Make
+          Active</label>
+        <span [matTooltip]="hasLinks ? 'The Make Inactive option is not available due to linked data in EO.':''">
+          <label *ngIf="category.active" [disabled]="hasLinks" (click)="activeModal(dialogModal,false)" mat-menu-item>
+            <span style="color:red" class="mr-1 text-lg">●</span> Make
+            Inactive</label>
+        </span>
+
+      </mat-menu>
+
+      <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" [matMenuTriggerFor]="dropmenu">
+      </app-button>
+      <mat-menu #dropmenu="matMenu">
+        <label (click)="openFlyPanel(editPanel)" class="label_style" [disabled]="!category.active"
+          mat-menu-item>Edit</label>
+        <span [matTooltip]="hasLinks ? 'The Delete option is not available due to linked data in EO.':''">
+          <label class="label_style" [disabled]="!category.active || hasLinks" (click)="deleteModal(dialogModal)"
+          mat-menu-item>Delete</label>
+        </span>
+      </mat-menu>
+    </div>
+  </div>
+
+  <div class="flex flex-row flex-wrap mt-3 justify-between border-b pb-3" style="color : rgba(0, 13, 9, 1);">
+    <p class="text-xm">
+      {{category.description}}
+    </p>
+  </div>
+
+</div>
+
+<ng-template #dialogModal>
+  <app-qtd-dialogue [header]="header" [description]="description" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="showReason ? getDataWithReason($event) : getData()"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #editPanel>
+  <app-flypanel-eo-category (refreshCateforyData)="category = $event" [hasSpace]="true"
+    (closed)="flyPanelService.close()" [category]="category"></app-flypanel-eo-category>
+</ng-template>

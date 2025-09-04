@@ -1,0 +1,33 @@
+<!-- Forms card starts here -->
+<div class="bg-white shadow-md rounded px-12 py-12 ">
+    <h1 class="text-2xl font-semibold text-gray-900" translate>L.LoginViewHeader</h1>
+
+    <!-- form starts here -->
+    <form class="block text-sm" [formGroup]="loginForm" autocomplete="on" (ngSubmit)="signInUser(this)">
+        <div class="mt-6">
+            <app-label [for]="'username'" [text]="'Email'"></app-label>
+
+            <app-textbox type="email" [name]="'username'" formControlName="username" [defaultValue]="Username"
+                         [placeholder]="'Enter Email'" cy="email">
+            </app-textbox>
+            <app-input-error
+                    *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.hasError('required')"
+                    [text]="'Email is Required'"
+                    cy="email-is-required">
+            </app-input-error>
+            <app-input-error 
+                *ngIf="loginForm.get('username')?.invalid && loginForm.get('username')?.hasError('email')"
+                [text]="'Enter Valid Email'"
+                cy="enter-valid-email">
+            </app-input-error>
+        </div>
+
+        <div class="text-center mt-6">
+            <app-button color="primary" size="lg" [disabled]="loginForm.invalid || processing" [spinner]="processing"
+                        text="Login" cy="login">
+            </app-button>
+        </div>
+    </form>
+    <!-- form ends here -->
+</div>
+<!-- Forms card ends here -->

@@ -1,0 +1,41 @@
+.mat-column-select {
+    flex: 0 0 60px;
+  }
+  
+  .mat-column-image {
+    flex: 0 0 75px;
+  }
+  
+
+  .mat-column-employees{
+    flex: 0 0 111px;
+  }
+  .mat-table {
+    background: white;
+    width: fit-content;
+}
+
+.float-container {
+    border: 3px solid #fff;
+}
+
+.float-child {
+    width: 50%;
+    float: left;
+    //border: 2px solid red;
+}
+.blue{
+    margin-left: 50%;
+}
+.employee-filter-label{
+  font-size: 1.125rem;
+  font-weight: 500;
+  margin-right: 25px !important; 
+  margin-bottom: 0;
+  max-width: 21rem;
+  word-wrap: break-word;
+}
+.no-employees-linked{
+  text-align: center;
+  margin-top: 20px;
+}

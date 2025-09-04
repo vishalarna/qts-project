@@ -1,0 +1,123 @@
+<div class="container">
+    <h2>Review and Publish</h2>
+    <div class="training-issue-details card">
+      <h3 class="card-header"><strong>Training Issue Details</strong></h3>
+      <div class="details">
+        <div class="detail-row">
+          <div class="detail">
+            <strong>Issue ID:</strong> 
+            <div class="text-gray-400 text-sm font-weight-normal">{{this.inputTrainingIssue_Vm?.issueCode}}</div>
+          </div>
+          <div class="detail">
+            <strong>Issue Title:</strong> 
+            <div class="text-gray-400 text-sm font-weight-normal">{{this.inputTrainingIssue_Vm?.issueTitle}}</div>
+          </div>
+        </div>
+        <div class="detail">
+          <strong>Issue Description:</strong> 
+          <div>{{this.inputTrainingIssue_Vm?.description}}</div>
+        </div>
+        <div class="detail-row">
+          <div class="detail">
+            <strong>Created Date:</strong> 
+            <div class="text-gray-400 text-sm font-weight-normal">{{(this.inputTrainingIssue_Vm?.createdDate | dateFormat)| async}}</div>
+          </div>
+          <div class="detail">
+            <strong>Due Date:</strong> 
+            <div class="text-gray-400 text-sm font-weight-normal">{{(this.inputTrainingIssue_Vm?.dueDate| dateFormat)| async}}</div>
+          </div>
+          <div class="detail">
+            <strong>Status:</strong> 
+            <div class="text-gray-400 text-sm font-weight-normal">{{this.inputTrainingIssue_Vm?.status}}</div>
+          </div>
+          <div class="detail">
+            <strong>Severity Level:</strong> 
+            <div class="text-gray-400 text-sm font-weight-normal">{{this.inputTrainingIssue_Vm?.severityLevel}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="driver card">
+      <h3 class="card-header"><strong>Driver</strong></h3>
+      <div class="text-content text-gray-400 text-sm font-weight-normal">
+        <p>{{this.inputTrainingIssue_Vm?.driverType}}</p>
+        <p>{{this.inputTrainingIssue_Vm?.driverSubType}}</p>
+      </div>
+    </div>
+  
+  <div class="data-element card">
+    <h3 class="card-header"><strong>Data Element</strong></h3>
+    <div class="text-content text-gray-400 text-sm font-weight-normal">
+      <p>{{this.inputTrainingIssue_Vm?.dataElement?.dataElementCategory}}</p>
+      <p>{{this.inputTrainingIssue_Vm?.dataElement?.dataElementType}} - {{this.inputTrainingIssue_Vm?.dataElement?.dataElementDescription}}</p>
+    </div>
+  </div>
+
+    <div class="planned-response card">
+      <h3 class="card-header"><strong>Planned Response</strong></h3>
+      <div class="text-content text-gray-400 text-sm font-weight-normal" [innerHTML]="inputTrainingIssue_Vm?.plannedResponse"></div>
+    </div>
+
+    <div class="action-items card">
+        <h3 class="card-header"><strong>Action Items</strong></h3>
+        <mat-table [dataSource]="dataSource" matSort>
+            <ng-container matColumnDef="actionStep">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="text-gray-400 text-sm font-weight-normal">Action Step</div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{row?.actionItemName}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="assignedTo">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="text-gray-400 text-sm font-weight-normal">Assigned To</div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{row?.assigneeName}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="priority">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="text-gray-400 text-sm font-weight-normal">
+                  Priority
+                </div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{row?.priority}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="dateAssigned">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="text-gray-400 text-sm font-weight-normal">Date Assigned</div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{(row?.dateAssigned | dateFormat)| async}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="dueDate">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="text-gray-400 text-sm font-weight-normal">Due Date</div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">{{(row?.dueDate| dateFormat)| async}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="text-gray-400 text-sm font-weight-normal">Status</div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <p class="py-2 px-4 m-0 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+                   [ngClass]="{'customcolorgreen': row.status === 'In Progress' || row.status === 'Completed',
+                     'customcolorpink': row.status == 'Not Started'}">
+                  {{ row.status }}
+                </p>
+              </mat-cell>
+            </ng-container>
+      
+            <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+            <tr class="mat-row flex text-center" *matNoDataRow>
+              <td class="mat-cell w-full">No Data</td>
+            </tr>
+          </mat-table>
+          <mat-paginator
+            #metaPaginator="matPaginator"
+            [pageSizeOptions]="[20, 40, 60]"
+            showFirstLastButtons
+            aria-label="Select page of periodic elements"
+          ></mat-paginator>
+      </div>
+</div> 

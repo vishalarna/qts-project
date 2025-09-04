@@ -1,0 +1,55 @@
+<div *ngIf="isLoading" class="spinner">
+<app-spinner ></app-spinner>
+</div>
+<ng-container *ngIf="!isLoading">
+<form [formGroup]="instanceForm" class="flex flex-col px-12 py-12">
+    <ng-container>
+        <div class="flex flex-row justify-between">
+            <p *ngIf="instanceFlyInMode == 'create'" class="font-bold text-lg m-0 p-0">New Instance</p>
+            <p *ngIf="instanceFlyInMode == 'edit'" class="font-bold text-lg m-0 p-0">Edit Instance</p>
+            <app-button ButtonType="icon" icon="close" (clicked)="closed.emit()"></app-button>
+        </div>
+    </ng-container>
+
+    <div class="mt-4">
+        <app-label class="label required" [for]="'instanceName'" [text]="'Instance Name'"></app-label>
+        <app-textbox type="text" placeholder="Enter Instance Name" formControlName="instanceName" (input)="setDatabaseNameValue($event)"></app-textbox>
+    </div>
+    <div class="mt-4" >
+        <app-label class="label required" [text]="'Default Identity Provider'"></app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-100 select-identity-provider-dropdown">
+            <mat-select placeholder="Select Identity Provider" formControlName="identityProvider" [disabled] = "instanceFlyInMode == 'create'?true:false">
+                <ng-container *ngIf = "instanceFlyInMode == 'create'" >
+                    <mat-option [value] = "defaultIdentityProvider?.id" >{{defaultIdentityProvider?.name}}</mat-option>
+                </ng-container>
+                <ng-container *ngIf = "instanceFlyInMode == 'edit'">
+                    <mat-option *ngFor = "let idp of instanceIdentityProviders" [value]="idp.id">{{idp.name}}</mat-option>
+                </ng-container>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="mt-4">
+        <app-label class="label required" [for]="'databaseName'" [text]="'Database Name'"></app-label>
+        <app-textbox type="text" placeholder="Enter Database Name" formControlName="databaseName"></app-textbox>
+        <app-input-error *ngIf="instanceForm.get('instanceName').value == instanceForm.get('databaseName').value && instanceForm.get('databaseName').value && instanceFlyInMode != 'edit'"
+                text="Database name must be different than Instance Name"></app-input-error>
+    </div>
+    <div class="mt-4">
+        <app-label class="label required" [for]="'clientAccountNumber'" [text]="'Client Account Number'"></app-label>
+            <app-textbox type="number" placeholder="Enter Client Account Number" formControlName="clientAccountNumber"></app-textbox>
+    </div>
+    <div class="mt-4">
+        <label>SCORM Tenant Name</label>
+        <app-label [for]="'scormTenantName'" [text]="'SCORM Tenant Name'"></app-label>
+        <app-textbox type="text" placeholder="Enter SCORM Tenant Name" formControlName="scormTenantName"></app-textbox>
+    </div>
+    <mat-checkbox formControlName="isInBeta"  class="mt-3"> Is In Beta</mat-checkbox>
+    <mat-checkbox formControlName="mfaEnabled"  class="mt-3">MFAEnabled</mat-checkbox>
+    <section class="flex w-full ml-2 mt-3" style="justify-content:flex-end;">
+        <app-button *ngIf="instanceFlyInMode == 'create'" [spinner]="loader" [disabled]="isDisableSaveButton()" (clicked)="createInstanceAsync()" ButtonType="button" color="secondary" size="sm"
+            text="Save"></app-button>
+        <app-button *ngIf="instanceFlyInMode == 'edit'" [spinner]="loader" [disabled]="isDisableUpdateButton()" (clicked)="updateInstanceAsync()" ButtonType="button" color="secondary" size="sm"
+            text="Update"></app-button>
+    </section>
+</form>
+</ng-container>

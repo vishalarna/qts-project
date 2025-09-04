@@ -1,0 +1,37 @@
+<ng-container>
+    <div class="px-12">
+
+
+    <div class="flex flex-row justify-between items-center mt-5 mb-3">
+      <p class="text-xl font-bold text-gray-900">
+    
+        <ng-container> 
+          {{("Employee" | labelReplacement)| async}} on Waitlist
+        </ng-container>
+        
+        
+      </p>
+
+      <app-button (click)="closeflyPanel()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+      <div class="flex flex-row my-3 justify-between"  *ngFor="let item of empList">
+        <div class="flex flex-row" style="align-items: center;">
+            <img class="rounded-full mr-2 mt-1" style="width:2rem;height:2rem"              
+            [src]="'assets/img/ImageNotFound.jpg'">
+            <div class="flex flex-col">
+                {{item}}
+                <span class="text-gray-400">
+                    lauren.broox@qts.com
+                </span>
+            </div>
+            
+          </div>
+        <div>
+            <app-button text="Accept & Enroll" icon="done" iconPosition="left" color="secondary" size="sm"></app-button>
+        </div>
+      </div>
+</div>
+  </ng-container>
+    
+  

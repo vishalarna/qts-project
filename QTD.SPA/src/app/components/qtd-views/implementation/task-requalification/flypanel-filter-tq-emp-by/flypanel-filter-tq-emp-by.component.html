@@ -1,0 +1,50 @@
+<div class="flex w-full p-5">
+  <!-- Position Filter Section -->
+  <div *ngIf="mode === 'Position'" class="flex flex-col w-full">
+    <!-- Header Section -->
+    <section class="flex flex-row justify-between">
+      <span class="text-lg font-bold">Filter By {{("Position" | labelReplacement)| async}}s</span>
+      <app-icon class="cursor-pointer" (click)="closed.emit()" icon="close"></app-icon>
+    </section>
+
+    <section class="flex flex-col mt-4">
+      <form [formGroup]="filterForm">
+        <app-label text="{{('Position' | labelReplacement)| async}}"></app-label>
+        <mat-select placeholder="Select {{('Position' | labelReplacement)| async}}" class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white" formControlName="pos">
+          <mat-option value="">All {{("Position" | labelReplacement)| async}}s</mat-option>
+          <mat-option [value]="pos.id" *ngFor="let pos of positions" [hidden]="!pos.active">
+            {{pos.positionTitle}}
+          </mat-option>
+        </mat-select>
+        <app-input-error *ngIf="filterForm.get('pos')?.hasError('required')" text="Please Select  {{('Position' | labelReplacement)| async}} To filter by"></app-input-error>
+        <div class="flex flex-row mt-3" style="justify-content:flex-end">
+          <app-button [disabled]="filterForm.invalid" ButtonType="button" size="sm" text="Select" (clicked)="selectPosition()"></app-button>
+        </div>
+      </form>
+    </section>
+  </div>
+
+  <!-- Status Filter Section -->
+  <div *ngIf="mode === 'Status'" class="flex flex-col w-full">
+    <!-- Header Section -->
+    <section class="flex flex-row justify-between">
+      <span class="text-lg font-bold">Filter By Status</span>
+      <app-icon class="cursor-pointer" (click)="closed.emit()" icon="close"></app-icon>
+    </section>
+
+    <section class="flex flex-col mt-4">
+      <form [formGroup]="filterForm">
+        <app-label text="Status"></app-label>
+        <mat-select class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white" placeholder="Select Status" formControlName="status">
+          <mat-option [value]="status" *ngFor="let status of statusData">
+            {{status}}
+          </mat-option>
+        </mat-select>
+        <app-input-error *ngIf="filterForm.get('status')?.hasError('required')" text="Please Select a Status to Filter By"></app-input-error>
+        <div class="flex flex-row mt-3" style="justify-content:flex-end">
+          <app-button [disabled]="filterForm.invalid" ButtonType="button" size="sm" text="Select" (clicked)="selectStatus()"></app-button>
+        </div>
+      </form>
+    </section>
+  </div>
+</div>

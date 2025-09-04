@@ -1,0 +1,118 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+    <!-- <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBack()">
+    </app-button> -->
+    <div class="flex flex-row items-center space-x-4 w-full justify-between">
+        <h1>{{("Procedure" | labelReplacement)| async}} Review</h1>
+        <div class="justify-between">
+
+            <app-button type="button" color="blueBorder" text="Exit"
+                (clicked)="exitDialog(exitTest)">
+            </app-button>
+            <app-button color="blue" type="button" text="Submit" style="margin-left: 10px;" [disabled]="comment==='' || radioAnswer===''" *ngIf="isItemsDisable===true"  (clicked)="exitDialogUpDate(saveDialog)"   >
+            </app-button>
+        </div>
+    </div>
+</mat-toolbar>
+
+
+<div class="mt-5 flex justify-center" style="align-items:center;">
+    <div style="width:50%;">
+        <!-- Top Header Section -->
+        <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm">
+            <div class="float-container">
+
+                <div class="float-child">
+                    <h2 class="green">{{("Procedure" | labelReplacement)| async}} Name </h2>
+                    <p class="green">{{procedureReviewObject?.procedureName===null || procedureReviewObject?.procedureName===undefined ?'N/A':procedureReviewObject?.procedureName}}</p>
+                    <h2 class="green">{{("Procedure" | labelReplacement)| async}} Review Title </h2>
+                    <p class="green">{{procedureReviewObject?.procedureReviewTitle===null || procedureReviewObject?.procedureReviewTitle===undefined ?'N/A':procedureReviewObject?.procedureReviewTitle}} </p>
+                  </div>
+
+                  <div class="float-child">
+                      <h2 class="green">{{("Procedure" | labelReplacement)| async}} No. </h2>
+                      <p class="green">{{procedureReviewObject?.procedureNumber===null || procedureReviewObject?.procedureNumber===undefined ?'N/A':procedureReviewObject?.procedureNumber}} </p>
+                      <h2 class="green">Due Date </h2>
+                      <p class="green">{{ procedureReviewObject?.procedureReviewDueDate| dateFormat | async }}</p>
+                  </div>
+            </div>
+            <div class="float-child-instruction">
+                <h2 class="green">{{("Procedure" | labelReplacement)| async}} Review {{("Instruction" | labelReplacement)| async}}s</h2>
+                <div [ngClass]="procedureReviewObject?.instructions?.trim().toLowerCase().includes('<p>') ? '':'mb-3'"
+                    style="color:#7A807E;" class="mr-4 font-medium"
+                    [innerHTML]="procedureReviewObject?.instructions === undefined ?'N/A':procedureReviewObject?.instructions">
+                </div>
+            </div>
+            <div class="float-child-link">
+                <h2 class="green">{{("Procedure" | labelReplacement)| async}} Review Link/PDF</h2>
+                <p class="green" *ngIf="procedureReviewObject?.hyperLink===''">
+                  <app-textbox [disabled]="true" [defaultValue]="procedureReviewObject.fileName"></app-textbox>
+                  <app-button type="button" *ngIf="procedureReviewObject.file!=''" color="blueBorder"  size="sm" class="button-style" (clicked)="showPdf(procedureReviewObject)" text="Download"
+                  >
+              </app-button>
+            </p>
+                <div *ngIf="procedureReviewObject?.hyperLink!==''">
+                    <a class="green text-lg" (click)="linkOPened()" [href]="procedureReviewObject?.hyperLink" target="_blank">{{procedureReviewObject?.hyperLink}}</a>
+                </div>
+            </div>
+        </section>
+        <!-- Section With Test Data -->
+        <div >
+            <ng-container >
+                <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm"
+                    style="margin-bottom: 5rem;" >
+                    <div>
+                        <app-label class="green label required font-weight-bold text-xl" text="{{('Procedure' | labelReplacement)| async}} Review Acknowledgement"></app-label>
+                        <div style="border-bottom:0.8px solid #E1E5E4;" class="pb-2 flex flex-row mt-2 mb-4">
+                            <div [ngClass]="procedureReviewObject?.acknowledgement?.trim().toLowerCase().includes('<p>') ? '':'mb-3'"
+                                style="color:#7A807E;" class="mr-4 ml-2 font-medium"
+                                [innerHTML]="procedureReviewObject?.acknowledgement === undefined ?'N/A':procedureReviewObject?.acknowledgement">
+                            </div>
+                        </div>
+                        <!-- For True False -->
+                        <div class="mb-4">
+                            <mat-radio-group class="example-radio-group" [(ngModel)]="radioAnswer" disabled="{{isItemsDisable}}">
+                                    <mat-radio-button value="true">
+                                        True
+                                    </mat-radio-button>
+                                    <mat-radio-button value="false">
+                                        False
+                                </mat-radio-button>
+                            </mat-radio-group>
+                        </div>
+
+                        <div class="mb-4">
+                            <mat-label>Comments</mat-label><br><br>
+                          <textarea style="width: 95%; height: 200px; border: 1px solid gray; padding: 10px;" [(ngModel)]="comment" [disabled]="isItemsDisable"></textarea>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-row justify-between" *ngIf="isItemsDisable===false">
+                        <div>
+                            <!-- <app-button type="button" color="secondary" size="sm" class="mr-5" text="Back" (click)="goBack()"
+                                >
+                            </app-button> -->
+                        </div>
+                        <div>
+                            <app-button color="blue" [disabled]="radioAnswer== null" type="button" size="sm" text="Next" (clicked)="viewResult()"></app-button>
+                        </div>
+                    </div>
+                </section>
+            </ng-container>
+        </div>
+
+
+    </div>
+
+</div>
+
+<ng-template #exitTest>
+    <app-qtd-dialogue header="Exit {{('Procedure' | labelReplacement)| async}} Review" [description]="exitDescription" confirmText="Yes"
+        [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()" (confirmed)="exitConformation($event)">
+    </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #saveDialog>
+    <app-qtd-dialogue header="Submit {{('Procedure' | labelReplacement)| async}} Review" [description]="saveDescription" confirmText="Yes"
+        [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()" (confirmed)="saveResponse()">
+    </app-qtd-dialogue>
+</ng-template>

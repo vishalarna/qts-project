@@ -1,0 +1,62 @@
+[
+  {
+    "Name": "Provider1",
+    "Number":  "PRD-1",
+    "ProviderLevelId": 1,
+    "ContactName": "Provider1",
+    "ContactTitle": "Providers",
+    "ContactEmail": "Qts@gmail.com",
+    "IsPriority": true,
+    "IsNERC": false,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "Name": "Provider2",
+    "Number": "PRD-2",
+    "ProviderLevelId": 2,
+    "ContactName": "Provider2",
+    "ContactTitle": "Providers2",
+    "ContactEmail": "Qts@gmail.com",
+    "IsPriority": true,
+    "IsNERC": true,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "Provider3",
+    "Number": "PRD-3",
+    "ProviderLevelId": 3,
+    "ContactName": "Provider3",
+    "ContactTitle": "Providers3",
+    "ContactEmail": "Qts@gmail.com",
+    "IsPriority": false,
+    "IsNERC": true,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "Provider4",
+    "Number": "PRD-4",
+    "ProviderLevelId": 2,
+    "ContactName": "Provider4",
+    "ContactTitle": "Providers4",
+    "ContactEmail": "Qts@gmail.com",
+    "IsPriority": true,
+    "IsNERC": false,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "Provider5",
+    "Number": "PRD-5",
+    "ProviderLevelId": 1,
+    "ContactName": "Provider5",
+    "ContactTitle": "Providers5",
+    "ContactEmail": "Qts@gmail.com",
+    "IsPriority": true,
+    "IsNERC": false,
+    "Deleted": false,
+    "Active": false
+  }
+]

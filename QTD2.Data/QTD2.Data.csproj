@@ -1,0 +1,441 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Configurations>Debug;Release;UAT</Configurations>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="QTDContext.cs~RFb8c5fe8.TMP" />
+  </ItemGroup>
+  <ItemGroup Condition="'$(Configuration)' != 'Debug'">
+    <Compile Remove="**/Migrations/**/20240920082537_UpdateDocumentTypeToClassScheduleEmployee.Designer.cs;**/Migrations/**/20240917083555_ApplyDataBaseCorrectionScripts.Designer.cs;**/Migrations/**/20240916111705_AddPublishStateToVersionILAs.Designer.cs;**/Migrations/**/20240912071221_AddTableData_ClassScheduleTQEMPSettings.Designer.cs;**/Migrations/**/20240911130609_CreateTableClassSchedule_TQEMPSettings.Designer.cs;**/Migrations/**/20240910132816_AddTableDataClassSchedule_EMPSettings.Designer.cs;**/Migrations/**/20240910131959_CreateTableClassSchedule_TestReleaseEMPSettings.Designer.cs;**/Migrations/**/20240905110715_UpdateReport_StudentEvaluationResultInstructorLed.Designer.cs;**/Migrations/**/20240903074833_ModifyStudentEvaluationInstructorLedReport.Designer.cs;**/Migrations/**/20240828083127_UpdateReportTotalNercCEHForyeartoDate.Designer.cs;**/Migrations/**/20240823162145_UpdateTrainingProgramReviewFilterNames.Designer.cs;**/Migrations/**/20240813061026_UpdateReportTotalNERCCEHsfortheYeartoDate.Designer.cs;**/Migrations/**/20240809060812_AddReportEmployeeIDPCompletionStatusReport.Designer.cs;**/Migrations/**/20240808132745_AddReport-EmployeeCourseScheduleforGivenYear.Designer.cs;**/Migrations/**/20240807063922_ModifyReportSkeletonSubCategoryInNERCReport.Designer.cs;**/Migrations/**/20240806061034_AddEmployeeTrainingTowardAllCertandReqTrainingSummaryReport.Designer.cs;**/Migrations/**/20240805064147_AddReliabilityRelatedTaskImpactMatrixReport.Designer.cs;**/Migrations/**/20240802065631_AddDataToEmployeeHistoryTableandReport.Designer.cs;**/Migrations/**/20240802060505_AddPropertiesToEmployeeHistory.Designer.cs;**/Migrations/**/20240801064336_UpdateReportSkeletonSubcategoriesInTaskQualandReqRec.Designer.cs;**/Migrations/**/20240730132102_AddReportProcedureReviewCompletionHistoryByEmployee.Designer.cs;**/Migrations/**/20240730115535_ADDClassSchedule_Roster_TimeRecordEntity.Designer.cs;**/Migrations/**/20240729145036_UpdateTQEmployeeNavProps.Designer.cs;**/Migrations/**/20240726142042_UpdateReportColumnNERCRecertification.Designer.cs;**/Migrations/**/20240725080155_AddReportEmployeeDelinquencyReport.Designer.cs;**/Migrations/**/20240723061317_AddReportYearToDateHoursForCertifiedEmployees.Designer.cs;**/Migrations/**/20240722094547_UpdateVersionNumberInExistingVersionILA.Designer.cs;**/Migrations/**/20240722075341_AddVersionNumberToVersionILAs.Designer.cs;**/Migrations/**/20240719114442_UpdateTrainingProgramCompletionReport.Designer.cs;**/Migrations/**/20240717055053_UpdateReportFormByItself.Designer.cs;**/Migrations/**/20240715145717_UpdateILAStudentEvaluationLinksRecord.Designer.cs;**/Migrations/**/20240715072935_UpdateEvaluationReleaseEMPSettings.Designer.cs;**/Migrations/**/20240711121204_UpdateILAStudentEvaluationLink.Designer.cs;**/Migrations/**/20240710140601_ModifyStudentEvaluationTitle.Designer.cs;**/Migrations/**/20240708153848_ModifyStudentEvaluationReport.Designer.cs;**/Migrations/**/20240703065822_UpdateReportDisplayColumnsInAllReports.Designer.cs;**/Migrations/**/20240702095343_UpdateColumnProcedureReviewHistoryReport.Designer.cs;**/Migrations/**/20240701060932_UpdateFilterForTaskAndEoByPosition.Designer.cs;**/Migrations/**/20240628101208_AddDisplayColumnToRecordAndTaskEOReport.Designer.cs;**/Migrations/**/20240627141337_UpdateDuplicateInstructorEmails.Designer.cs;**/Migrations/**/20240624114825_RemoveEntity_RegRequirementIlaLinks.Designer.cs;**/Migrations/**/20240624114054_CopyData_RRIlaLinksToIlaRRLinks.Designer.cs;**/Migrations/**/20240614140504_AddSeedDataTrainingIssuesTables.Designer.cs;**/Migrations/**/20240614134328_CreateTrainingIssuesTables.Designer.cs;**/Migrations/**/20240611154605_UpdateReportFilter_TaskQualificationRecords.Designer.cs;**/Migrations/**/20240610060027_UpdateReportSubCategories.Designer.cs;**/Migrations/**/20240606142520_AddDisplayColumns_ProcedureReviewCompletionHistoryReport.Designer.cs;**/Migrations/**/20240605073149_ModifySimulatorScenarioFromOldTonNew.Designer.cs;**/Migrations/**/20240604031108_AddReportDIFSurveyAggregateResults.Designer.cs;**/Migrations/**/20240603060536_AddOrderTOReportSkeleton.Designer.cs;**/Migrations/**/20240531075054_OverrideExistingTaskListReviewReport.Designer.cs;**/Migrations/**/20240531061444_AddOrganizationColumnToILACompletionHistoryReport.Designer.cs;**/Migrations/**/20240530083323_DropCertNumberFromCertification.Designer.cs;**/Migrations/**/20240530075018_UpdateTaskListReviewReportDisplayColumns.Designer.cs;**/Migrations/**/20240528105913_UpdateReport_TaskQualificationRecord.Designer.cs;**/Migrations/**/20240524102452_AddEmailNotification_SimulatorScenarioCollaboration.Designer.cs;**/Migrations/**/20240523110517_AddAnnualPositionsTaskListReviewReport.Designer.cs;**/Migrations/**/20240522162009_MapSimulatorScenarioData.Designer.cs;**/Migrations/**/20240520143521_AddTaskListReviewDocumentType.Designer.cs;**/Migrations/**/20240515080519_CreatedtableforSimulatorScenario.Designer.cs;**/Migrations/**/20240515065659_RenameSimulatorScenarioWithOld.Designer.cs;**/Migrations/**/20240514141814_UpdateFilterOption_ProcedureReviewCompletionHistory.Designer.cs;**/Migrations/**/20240508133241_RemoveUnusedEmpSettingsDueDateColumns.Designer.cs;**/Migrations/**/20240508110014_CreateTaskListReviewTable.Designer.cs;**/Migrations/**/20240506100728_UpdateEmpSettingsReleaseTypes.Designer.cs;**/Migrations/**/20240503102912_CreateTableEmpSettingsReleaseTypes.Designer.cs;**/Migrations/**/20240502155336_UpdateFiltersName_ListOfCertifiedOperators.Designer.cs;**/Migrations/**/20240430111407_UpdateClientSettings_NotificationSteps_template.Designer.cs;**/Migrations/**/20240426122905_AddColumns_InReports.Designer.cs;**/Migrations/**/20240425133827_UpdateEmployeeNumber.Designer.cs;**/Migrations/**/20240424121904_AddTimeZoneColumn_generalSettings.Designer.cs;**/Migrations/**/20240423085436_UpdateClientSettingsNotification_Admin.Designer.cs;**/Migrations/**/20240412094434_RemoveFilter_ClassRoster.Designer.cs;**/Migrations/**/20240411113057_UpdateReport_EmployeeByOrganization.Designer.cs;**/Migrations/**/20240410072545_RemoveAdminEmailColumn.Designer.cs;**/Migrations/**/20240409120453_AdminEMPCompletionNotificationTableAdded.Designer.cs;**/Migrations/**/20240408073918_UpdateActivityNotificationsTable.Designer.cs;**/Migrations/**/20240405061932_AddandModifyClientSettingLabelReplacement.Designer.cs;**/Migrations/**/20240403132755_ClientSettings_Feature.Designer.cs;**/Migrations/**/20240329094033_Update_TblClientSettings_GeneralSettings.Designer.cs;**/Migrations/**/20240328082720_ModifyTitle_IWBILADesign_Segment.Designer.cs;**/Migrations/**/20240328070630_AddTitle_IWBILADesign_Segment.Designer.cs;**/Migrations/**/20240314132000_AddEmailNotification_AdminEmployeePortalCompletions.Designer.cs;**/Migrations/**/20240313073623_UpdateFilterOption_ClassRoster.Designer.cs;**/Migrations/**/20240311213717_UpdateTestObjects.Designer.cs;**/Migrations/**/20240306075158_UpdateTable_ReportSkeletonFilters.Designer.cs;**/Migrations/**/20240304063341_ModifyTestSpecification.Designer.cs;**/Migrations/**/20240301121236_UpdateTestSpecification.Designer.cs;**/Migrations/**/20240229135224_ModifyReport_ILADesignSpecification.Designer.cs;**/Migrations/**/20240229101111_ModifyReports_ClassSignInSheet.Designer.cs;**/Migrations/**/20240229074954_AddSeedDataToDifSurvey.Designer.cs;**/Migrations/**/20240227063225_UpdateReportCategories.Designer.cs;**/Migrations/**/20240226122200_AddReports_ClassSignInSheet.Designer.cs;**/Migrations/**/20240221150944_RemoveILATopicId.Designer.cs;**/Migrations/**/20240221080901_CreatedTableForDifSurveys.Designer.cs;**/Migrations/**/20240221073516_RemoveColumn_VersionILATable.Designer.cs;**/Migrations/**/20240219074546_UpdateTrainingProgramCompletionHistory.Designer.cs;**/Migrations/**/20240216120526_AddTableILATopicLink.Designer.cs;**/Migrations/**/20240216063806_ModifyReportSkeletonFilter.Designer.cs;**/Migrations/**/20240215064451_AddColumn_ClassScheduleEvaluationRoster.Designer.cs;**/Migrations/**/20240214113757_UpdateReport_ILALessonPlan.Designer.cs;**/Migrations/**/20240213064930_ModifyReportSkeletonColumnandfilter.Designer.cs;**/Migrations/**/20240212135436_Notifications_AddOnlineCourseNotification.Designer.cs;**/Migrations/**/20240212070506_AddFilters_ProcedureReviewCompletionHistory.Designer.cs;**/Migrations/**/20240209122316_AddColumn_ILATaskObjectiveLinksTable.Designer.cs;**/Migrations/**/20240208134139_AddAcknowledgementColumn_ProcedureReviewTable.Designer.cs;**/Migrations/**/20240207112243_UpdateColumn_EmployeeCertificationsTable.Designer.cs;**/Migrations/**/20240202115023_ModifyReportSkeletonColumns.Designer.cs;**/Migrations/**/20240202104639_AddColumnCertifyingBodiesTable.Designer.cs;**/Migrations/**/20240202072513_AddReportDisplayColumnsOJTGuide.Designer.cs;**/Migrations/**/20240201200138_CBTScormRegistrationScore_CompletedDate.Designer.cs;**/Migrations/**/20240201195747_CBTScormRegistrationScore_NullableScore.Designer.cs;**/Migrations/**/20240201173012_ClassScheduleEmployee_NullableScore.Designer.cs;**/Migrations/**/20240131125708_ClientSettingNotifications_TemplatesModify.Designer.cs;**/Migrations/**/20240122063231_ModifyTaskQualification.Designer.cs;**/Migrations/**/20240120172250_ModifyILAPositionLinkUniqueContraint.Designer.cs;**/Migrations/**/20240118145630_Update-CustomEoNumber-type.Designer.cs;**/Migrations/**/20240107181605_InitialMigration.Designer.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity" Version="2.2.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QTD2.Domain\QTD2.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Initialization\QTDAuthentication\Data\Development\app-users.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDAuthentication\Data\UAT\app-users.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\category_sh.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\classSchedule.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\classScheduleEmployees.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\classSchedule_Evaluation_Roster.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\clients.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\clientSettings_GeneralSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\clientSettings_LabelReplacements.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\clientSettings_License.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\clientSettings_License_ProductInfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\clientSettings_notifications.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\clientUserSettings_dashboard.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\dashboard_settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\defaultsettings_notifications.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\documentType.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\dutyArea.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\employee-positions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\employees.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\employee_certifications.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\employee_organization.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\employee_tasks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\enabling_objectives.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\enabling_objectives_category.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\enabling_objectives_sub_category.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\enabling_objectives_topic.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\enabling_objective_employee_links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\idp_review.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ilaTraineeEvaluations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_EnablingObjective_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_Evaluator_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_NERCAudience_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_Position_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_PreRequisite_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_Procedure_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_SafetyHazard_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_Segment_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_TaskObjective_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_TrainingTopic_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ila_Uploads.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\instructors.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\issuing_authority_procedures.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\issuing_authority_req.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\location.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\location_categories.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\organizations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\persons.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\positions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\position_histories.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\position_SQ.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\procedureReviews.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\procedureReview_Employees.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\procedures.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\providers.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\questionBanks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\ratingScale.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\regulatory_requirements.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\reports.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\report_skeleton_category.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\report_skeleton.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\report_summary.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\safety_hazards.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\segments.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\selfRegistrationOptions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\studentEvaluationForms.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\studentEvaluationQuestions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\studentEvaluations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\studentEvaluationWithoutEmp.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\studentEvaluation_Questions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\sub_duty_area.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\taskQualificationEvaluatorLinks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\taskqualifications.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\tasks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\position_tasks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\tasks_position.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\testItemFillBlanks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\testItemMCQs.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\testItems.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\testItemShortAnswers.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\testItemTrueFalses.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\tests.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\test_item_links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\trainingProgramReview.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\trainingProgramReviews.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\trainingPrograms.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Development\trainingPrograms_ILA_Links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Production\clientSettings_notifications.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Production\reports.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\Production\report_skeleton.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\category_sh.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\classSchedule.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\clients.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\clientSettings_GeneralSettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\clientSettings_LabelReplacements.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\clientSettings_License.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\clientSettings_License_ProductInfo.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\clientSettings_notifications.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\clientUserSettings_dashboard.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\dashboard_settings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\defaultsettings_notifications.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\documentType.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\dutyArea.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\employee-positions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\employees.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\employee_certifications.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\employee_organization.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\employee_tasks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\enabling_objectives.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\enabling_objectives_category.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\enabling_objectives_sub_category.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\enabling_objectives_topic.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\enabling_objective_employee_links.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\idp_review.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\ila.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\issuing_authority_procedures.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\issuing_authority_req.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\organizations.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\persons.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\positions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\position_SQ.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\position_tasks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\procedures.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\providers.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\ratingScale.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\regulatory_requirements.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\reports.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\report_skeleton.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\report_summary.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\safety_hazards.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\studentEvaluationForms.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\studentEvaluationQuestions.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\sub_duty_area.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\taskQualificationEvaluatorLinks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\tasks.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Initialization\QTDContext\Data\UAT\tasks_position.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Migrations\QTD\" />
+  </ItemGroup>
+</Project>

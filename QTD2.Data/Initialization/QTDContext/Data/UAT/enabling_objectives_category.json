@@ -1,0 +1,30 @@
+[
+  {
+    "ID": 1,
+    "Title": "Power System, Facilities and Equipment",
+    "Number": 1,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "ID": 2,
+    "Title": "Generating Units",
+    "Number": 2,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "ID": 3,
+    "Title": "Protection",
+    "Number": 3,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "ID": 4,
+    "Title": "Power System Control and Operation",
+    "Number": 4,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  }
+]

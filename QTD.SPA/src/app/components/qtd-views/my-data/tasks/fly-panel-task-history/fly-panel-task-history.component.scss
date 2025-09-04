@@ -1,0 +1,48 @@
+table{
+  width: 100%;
+ }
+
+ .mat-column-version {
+  width: 22%;
+ }
+
+ .mat-column-date {
+  width: 15%;
+ }
+
+ .mat-column-changeby {
+  width: 16%;
+ }
+
+ .mat-column-actions {
+  width: 32%;
+ }
+
+ .mat-column-requalificationRequired {
+  width: 15%;
+ }
+
+ .History-requalification{
+padding: 10px 10px 10px 10px;
+ }
+
+ .mat-column-name{
+  flex: 0 0 130px;
+}
+
+.mat-column-desc{
+  flex: 0 0 150px;
+}
+
+.mat-column-modifyDate{
+  flex: 0 0 280px;
+}
+
+.Requalification-wrapper{
+  padding-left: 1rem;
+}
+
+.filter-task-history-data{
+  height:68vh;
+  overflow: auto;
+}

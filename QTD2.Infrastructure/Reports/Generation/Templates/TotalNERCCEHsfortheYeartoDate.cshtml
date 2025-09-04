@@ -1,0 +1,259 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center;word-break:break-word;width:60%;">
+                    <b style="display: block; color: #020378; font-weight: bold; font-size: 16px; text-align: center; margin-top: 8px;">@Model.Title </b>
+                </div>
+                <div><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.CertificationFulfillmentStatuses.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+
+                <table class="table">
+                    <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse;">
+                        @if (Model.DisplayColumns.Contains("Employee Name"))
+                        {
+                            <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 1px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">
+                                @("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name
+                            </th>
+                        }
+                        @if (Model.DisplayColumns.Contains("Position Abbreviation"))
+                        {
+                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">
+                                @("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s Abbreviation
+                            </th>
+                        }
+                        @if (Model.DisplayColumns.Contains("Organization"))
+                        {
+                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">
+                                Organization
+                            </th>
+                        }
+                        @if (Model.DisplayColumns.Contains("Certificate Name"))
+                        {
+                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">
+                                Certificate Name
+                            </th>
+                        }
+                        @if (Model.DisplayColumns.Contains("Certificate Number"))
+                        {
+                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">
+                                Certificate Number
+                            </th>
+                        }
+
+                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" colspan="4">
+                            Total CEHs as of Date of Report
+                        </th>
+                    </tr>
+
+                    <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse;">
+                        @if (Model.DisplayColumns.Contains("Planned for Current Year"))
+                        {
+                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; text-align: center; vertical-align: bottom; padding: 5px;">
+                                Planned for the Year to
+                            </th>
+                        }
+                        @if (Model.DisplayColumns.Contains("Scheduled to Complete YTD"))
+                        {
+                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; text-align: center; vertical-align: bottom; padding: 5px;">
+                                Scheduled for the Year to *
+                            </th>
+                        }
+                        @if (Model.DisplayColumns.Contains("Completed YTD"))
+                        {
+                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; text-align: center; vertical-align: bottom; padding: 5px;">
+                                Completed as of this *
+                            </th>
+                        }
+                        @if (Model.DisplayColumns.Contains("Still to Complete YTD"))
+                        {
+                            <th style="border-bottom: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;">
+                                Still to Complete *
+                            </th>
+                        }
+                    </tr>
+
+                    @{
+                        int currentYear = DateTime.Now.Year;
+                        DateTime currentDate = DateTime.Now.Date;
+                        DateTime startDate = new DateTime(currentYear, 1, 1);
+                        DateTime endDate = new DateTime(currentYear, 12, 31);
+
+                        var CehDataRecords = Model.CertificationFulfillmentStatuses
+                        .GroupBy(x => new { x.EmployeeId, x.Employee })
+                        .Select(m => new
+                        {
+                            Employee = m.Key.Employee,
+                            FulfillmentStatusData = m.ToList()
+                        })
+                        .OrderBy(x => x.Employee?.Person?.LastName);
+                    }
+
+                    @foreach (var certDetail in CehDataRecords)
+                    {
+                        @{var planned = certDetail.FulfillmentStatusData
+                               .SelectMany(fs => fs.FulfillmentRecords)
+                               .Where(fr => fr.ClassScheduledDate >= startDate && fr.ClassScheduledDate <= endDate)
+                               .Sum(fr => fr.CEHScheduled);
+
+                            var scheduled = certDetail.FulfillmentStatusData
+                             .SelectMany(fs => fs.FulfillmentRecords)
+                             .Where(fr => fr.ClassScheduledDate >= startDate && fr.ClassScheduledDate <= currentDate)
+                             .Sum(fr => fr.CEHScheduled);
+
+                            var completed = certDetail.FulfillmentStatusData
+                             .SelectMany(fs => fs.FulfillmentRecords)
+                             .Where(fr => fr.ClassScheduledDate >= startDate && fr.ClassScheduledDate <= currentDate)
+                             .Sum(fr => fr.CEHAwarded);
+
+                            var pending = certDetail.FulfillmentStatusData
+                             .SelectMany(fs => fs.FulfillmentRecords)
+                             .Where(fr => fr.ClassScheduledDate >= startDate && fr.ClassScheduledDate <= endDate)
+                             .Sum(fr => fr.CEHPending);
+                        }
+                <tr style="border-bottom: 1px solid #000">
+                    @if (Model.DisplayColumns.Contains("Employee Name"))
+                    {
+                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                            @certDetail.Employee.Person?.LastName, @certDetail.Employee.Person?.FirstName
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Position Abbreviation"))
+                    {
+                        var posAbbList = certDetail.Employee?.EmployeePositions?
+                            .Select(empPos => empPos.Position?.PositionAbbreviation).ToList();
+
+                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                            @(new RawString(string.Join("<br />", posAbbList)))
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Organization"))
+                    {
+                        var posOrgList = certDetail.Employee?.EmployeeOrganizations?
+                            .Select(empOrg => empOrg.Organization?.Name).ToList();
+
+                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                            @(new RawString(string.Join("<br />", posOrgList)))
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Certificate Name"))
+                    {
+                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                            @foreach (var cert in certDetail.FulfillmentStatusData.Select(x=>x.CertificationName).Distinct())
+                            {
+                                <div>@cert</div>
+                            }
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Certificate Number"))
+                    {
+                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                            @foreach (var item in certDetail.FulfillmentStatusData)
+                            {
+                                <div>@item.CertificationNumber</div>
+                            }
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Planned for Current Year"))
+                    {
+                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                            @planned
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Scheduled to Complete YTD"))
+                    {
+                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                            @scheduled
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Completed YTD"))
+                    {
+                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                            @completed
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Still to Complete YTD"))
+                    {
+                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                            @pending
+                        </td>
+                    }
+                </tr>
+                    }
+                </table>
+
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border: none;">
+            <td style="border: none; text-align: center;">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+
+</table>

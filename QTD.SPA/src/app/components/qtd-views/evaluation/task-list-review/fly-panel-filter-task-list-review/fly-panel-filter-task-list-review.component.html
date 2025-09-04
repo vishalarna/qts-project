@@ -1,0 +1,117 @@
+<div class="flex flex-row justify-between border-b items-center header-spacing">
+  <h1 class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+    Filter {{ "Task" | labelReplacement | async }} List Review
+  </h1>
+  <button class="focus:outline-none" (click)="closeFlyPanel()">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" ></path>
+    </svg>
+  </button>
+</div>
+<form [formGroup]="filterTaskListReviewForm" class="container-spacing">
+  <div class="flex gap-20">
+    <div class="mb-3 input-box w-full">
+      <app-label [for]="'Type'" text="Type" class="font-weight-bold" ></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+        <mat-select formControlName="type" placeholder="Select Type">
+          <mat-option *ngFor="let taskListReviewType of taskListReviewTypes" [value]="taskListReviewType.type">{{taskListReviewType.type}}</mat-option>
+        </mat-select>
+        <button *ngIf="filterTaskListReviewForm.get('type').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('type'); $event.stopPropagation()" >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+    <div class="mb-3 input-box w-full">
+      <app-label [for]="'Review Status'" text="Review Status" class="font-weight-bold" ></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+        <mat-select formControlName="reviewStatus" placeholder="Select Review Status">
+          <mat-option *ngFor="let taskListReviewStatus of taskListReviewStatuses" [value]="taskListReviewStatus.type">{{taskListReviewStatus.type}}</mat-option>
+        </mat-select>
+        <button *ngIf="filterTaskListReviewForm.get('reviewStatus').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('reviewStatus'); $event.stopPropagation()" >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="flex gap-20 mb-3">
+    <div class="input-box position-relative w-full">
+      <app-label text="Review Period Start" class="font-weight-bold" ></app-label>
+      <div class="flex position-relative">
+        <app-date formControlName="reviewPeriodStart" [maxDate]="filterTaskListReviewForm.get('reviewPeriodEnd')?.value" placeholder="Select Date" class="w-100" >
+        </app-date>
+        <button *ngIf="filterTaskListReviewForm.get('reviewPeriodStart').value" class="close-icon" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('reviewPeriodStart'); $event.stopPropagation()" >
+          <mat-icon class="icon">close</mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="input-box date-picker-wraper w-full">
+      <app-label text="Review Period End" class="font-weight-bold"></app-label>
+      <div class="flex position-relative">
+        <app-date formControlName="reviewPeriodEnd" [minDate] = "filterTaskListReviewForm.get('reviewPeriodStart')?.value" placeholder="Select Date" class="w-100" >
+        </app-date>
+        <button *ngIf="filterTaskListReviewForm.get('reviewPeriodEnd').value" class="close-icon" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('reviewPeriodEnd'); $event.stopPropagation()" >
+          <mat-icon class="icon">close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="flex gap-20 w-full">
+    <div class="input-box date-picker-wraper w-full">
+      <app-label text="Review Approval Date" class="font-weight-bold" ></app-label>
+      <div class="flex position-relative">
+        <app-date formControlName="reviewApprovalDate" placeholder="Select Date" class="w-100" >
+        </app-date>
+        <button *ngIf="filterTaskListReviewForm.get('reviewApprovalDate').value" class="close-icon" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('reviewApprovalDate'); $event.stopPropagation()" >
+          <mat-icon class="icon">close</mat-icon>
+        </button>
+      </div>
+    </div>
+    <div class="input-box">
+      <app-label [for]="'Status'" text="Status" class="font-weight-bold" ></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full mt-1">
+        <mat-select formControlName="status" placeholder="Select Status">
+          <mat-option *ngFor="let status of statuses" [value]="status">{{status}}</mat-option>
+        </mat-select>
+        <button *ngIf="filterTaskListReviewForm.get('status').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('status'); $event.stopPropagation()" >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="flex gap-20 align-items-center w-full">
+    <div class="mb-3 input-box">
+      <app-label [for]="'Task Review Status'" text="{{ 'Task' | labelReplacement | async }} Review Status" class="font-weight-bold"
+      ></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+        <mat-select formControlName="taskReviewStatus" placeholder="Select Status" >
+          <mat-option *ngFor="let taskReviewStatus of taskReviewStatuses" [value]="taskReviewStatus.status">{{taskReviewStatus.status}}</mat-option>
+        </mat-select>
+        <button *ngIf="filterTaskListReviewForm.get('taskReviewStatus').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('taskReviewStatus'); $event.stopPropagation()" >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+    <div class="input-box mb-3">
+      <app-label text="Position" class="font-weight-bold"></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select  #positionSelect="matSelect" placeholder="Select Position" formControlName="position" (click) = "positionFilterSearch()">
+            <input matInput class="pt-3 pb-3 pl-3 w-100" type="text"  formControlName ='positionSearchText'  (input)="positionSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)" placeholder="Enter Text to Search" >
+            <mat-option *ngFor="let pos of allPositions" [value]="pos.positionTitle">
+              {{ pos.positionTitle}} 
+            </mat-option>
+          </mat-select>
+          <button *ngIf="filterTaskListReviewForm.get('position').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('position'); $event.stopPropagation()" >
+            <mat-icon>close</mat-icon>
+          </button>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="flex gap-20 align-items-center w-full">
+    <div class="checkbox-warp w-full">
+      <mat-checkbox formControlName="onlyMyTaskReviews" >Only My {{ 'Task' | labelReplacement | async }} Reviews</mat-checkbox>
+    </div>
+  </div>
+  <div class="flex justify-end">
+    <app-button variant="outlined" (clicked)="applyFiltersClick()" position="right" size="sm" text="Apply Filters" color="primary" class="font-weight-normal" ></app-button>
+  </div>
+</form>

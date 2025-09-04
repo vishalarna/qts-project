@@ -1,0 +1,413 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    .expired-row {
+        color: gray;
+        font-style: italic;
+    }
+
+    .status-not-started {
+        color: red;
+    }
+
+    .status-in-progress {
+        color: black;
+        font-weight:bold;
+    }
+
+    .status-completed {
+        color: green;
+    }
+
+    .rich-text {
+        display: inline-block;
+    }
+
+        .rich-text p {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .rich-text figure {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .rich-text img {
+            width: 400px !important;
+            height: auto !important;
+            display: block !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            object-fit: cover;
+            overflow: hidden;
+        }
+
+        .rich-text ul, .rich-text ol {
+            margin: 0 !important;
+            padding: 0 0 0 0px !important;
+            list-style-position: inside !important;
+        }
+
+        .rich-text figure img {
+            width: 400px !important;
+            height: auto !important;
+            display: block !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            object-fit: cover;
+            overflow: hidden;
+        }
+
+        .rich-text li {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .rich-text ul {
+            list-style-type: disc;
+        }
+
+        .rich-text ol {
+            list-style-type: decimal;
+        }
+
+        .rich-text a {
+            color: blue;
+            text-decoration: underline;
+        }
+
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse; width:98%;margin:auto;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.TrainingIssues.Count() > 0)
+    {
+        <tr>
+            <td style="border:none;padding-top:0;" class="strip-container" colspan="12">
+                @{
+                    int j = 1;
+                }
+                @foreach (var trainingIssue in Model.TrainingIssues.OrderBy(m => m.IssueID))
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            @if (Model.DisplayColumns.Where(r => r == "Issue ID").Count() > 0)
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">Training Issue ID:</span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;">@trainingIssue.IssueID</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Training Issue Title").Count() > 0)
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">Training Issue Title:</span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;">@trainingIssue.IssueTitle</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Created Date").Count() > 0)
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">Created Date:</span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;">@trainingIssue.TrainingIssueCreatedDate.ToShortDateString()</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Due Date").Count() > 0)
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">Due Date:</span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;">@trainingIssue.DueDate.ToShortDateString()</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Severity").Count() > 0)
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">Severity:</span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;">@(trainingIssue.Severity?.Severity ?? "")</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Issue Status").Count() > 0)
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">Issue Status:</span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;">@trainingIssue.Status?.Status</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Driver").Count() > 0)
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">Driver: </span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;">
+                                                        @(trainingIssue.DriverType?.Type
+                                                            + (trainingIssue.DriverType?.Type != null && trainingIssue?.DriverSubType?.SubType != null ? " - " : "")
+                                                            + trainingIssue?.DriverSubType?.SubType)
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Data Element").Count() > 0)
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">Data Element:</span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;">@(trainingIssue?.DataElement?.DataElementDisplay ?? "")</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Description").Count() > 0)
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">Description:</span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;">@trainingIssue?.Description</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Planned Response").Count() > 0)
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0;white-space: nowrap;">
+                                                    <span style="padding: 0px 5px;">Planned Response: </span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;" class="rich-text">@(new RawString(trainingIssue?.PlannedResponse))</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+
+                            <tr>
+                                <td style="border:none !important;padding: 3px 6px;" colspan="12">
+                                    <b style="font-weight:600;" class="excel-not-include">Action Items:</b>
+                                </td>
+                            </tr>
+
+                            <tr class="excel-not-include">
+                                <td style="border:none !important;padding: 7px 6px;" colspan="12">
+                                    <table style="table-layout: auto;width:100%;border-collapse:collapse">
+                                        <tr style="border-bottom: 0;">
+                                            <th style="border: 1px solid #000;width:14%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">Action Step</th>
+                                            <th style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">Assigned To</th>
+                                            <th style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">Priority</th>
+                                            <th style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">Date Assigned</th>
+                                            <th style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">Due Date</th>
+                                            <th style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">Date Completed</th>
+                                            <th style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">Status</th>
+                                            <th style="border: 1px solid #000;width:14%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">Notes</th>
+                                        </tr>
+
+                                        @foreach (var actionItem in trainingIssue.ActionItems)
+                                        {
+                                            <tr class="@(!actionItem.Active ? "expired-row" : "")">
+                                                <td style="border: 1px solid #000;width:14%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">@actionItem.ActionItemName</td>
+                                                <td style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">@actionItem.AssigneeName</td>
+                                                <td style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">@actionItem.Priority?.Priority</td>
+                                                <td style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">@actionItem?.DateAssigned?.ToShortDateString()</td>
+                                                <td style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">@actionItem?.DueDate?.ToShortDateString()</td>
+                                                <td style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">@actionItem?.DateCompleted?.ToShortDateString()</td>
+                                                @{
+                                                    var statusText = actionItem?.Status?.Status ?? "";
+                                                    var statusClass = statusText switch
+                                                    {
+                                                        "Not Started" => "status-not-started",
+                                                        "In Progress" => "status-in-progress",
+                                                        "Completed" => "status-completed",
+                                                        _ => ""
+                                                    };
+                                                }
+                                                <td class="@statusClass" style="border: 1px solid #000;width:12%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">@statusText</td>
+                                                <td style="border: 1px solid #000;width:14%;padding:5px;vertical-align: top; word-break: break-word; white-space: normal;" align="left">@actionItem?.Notes</td>
+                                            </tr>
+                                        }
+                                        <tr></tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                        </table>
+                    </div>
+                    @if (!trainingIssue.Equals(Model.TrainingIssues.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.TrainingIssues.Count(); i++)
+    {
+        <a href=@("#page" + i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

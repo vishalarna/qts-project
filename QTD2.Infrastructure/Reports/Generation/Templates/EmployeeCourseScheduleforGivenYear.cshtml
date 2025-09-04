@@ -1,0 +1,303 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+        table-layout:fixed;
+    }
+
+    td {
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .row-inactive{
+        color:darkgray;
+        font-style:italic;
+    }
+
+    @@media print {
+
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+@{ 
+    var idpSchedules = Model.IDPSchedules.GroupBy(p => p.IDP.EmployeeId).Select(group => new
+    {
+        EmployeeId = group.Key,
+        idpScheduleData = group.OrderByDescending(m=>m.startDate).ToList()
+    }).ToList();
+
+}
+
+<table id="content-table" class="table" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !    important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center;word-break:break-word;width:60%;">
+                    <b style="display: block; color: #020378; font-weight: bold; font-size: 16px; text-align: center; margin-top: 8px;">@Model.Title </b>
+                </div>
+                <div><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+
+    @if (idpSchedules.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{ int j = 1;}
+                @foreach (var idpSchedule in idpSchedules)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                            {
+                                <tr>
+                                    <td style="border: none !important; color: #b22727; font-size: 1rem; padding: 10px">
+                                        <b>@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@idpSchedule.idpScheduleData.First().IDP?.Employee?.Person?.LastName , @idpSchedule.idpScheduleData.First().IDP?.Employee?.Person?.FirstName</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                            {
+                                var posList = idpSchedule.idpScheduleData.First().IDP?.Employee?.EmployeePositions?
+                                            .Select(empPos => $"{empPos.Position?.PositionTitle} ({empPos.Position?.PositionAbbreviation})").ToList();
+
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px">
+                                        <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@(new RawString(string.Join(" , ", posList)))</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                            {
+                                var orgList = idpSchedule.idpScheduleData.First().IDP?.Employee?.EmployeeOrganizations?
+                                            .Select(empPos => empPos.Organization?.Name).ToList();
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px">
+                                        <b>Organizations:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@(new RawString(string.Join(" , ", orgList)))</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "IDP Specific Information").Count() > 0)
+                            {
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px">
+                                        <b>IDP Specific Info:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@idpSchedule.idpScheduleData.First().IDP?.Employee?.IDPReviewInformation</span>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td style="border: 0; padding: 0" class="strip-container">
+                                    <table class="table">
+                                        <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                            @if (Model.DisplayColumns.Where(r => r == "ILA Number").Count() > 0)
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;width:15%">
+                                                    ILA Number
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 15%">
+                                                    ILA Title
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Self-Paced").Count() > 0)
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 5%">
+                                                    Self-Paced ?
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Delivery Method").Count() > 0)
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 9%">
+                                                    Delivery Method
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Planned Date").Count() > 0)
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 9%">
+                                                    Planned Date
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Scheduled Date").Count() > 0)
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 9%">
+                                                    Scheduled Date
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Completed Date").Count() > 0)
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 9%">
+                                                    Completed Date
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Score").Count() > 0)
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 7%">
+                                                    Score
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Grade").Count() > 0)
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 7%">
+                                                    Grade
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Grade Notes").Count() > 0)
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 15%">
+                                                    Grade Notes
+                                                </th>
+                                            }
+                                        </tr>
+                                        @foreach(var idpSch in idpSchedule.idpScheduleData)
+                                        {
+                                            var inactive = idpSch?.IDP?.ILA?.Active == false;
+                                            var classScheduleEmp = idpSch.ClassSchedule.ClassSchedule_Employee.FirstOrDefault(x => x.EmployeeId == idpSchedule.EmployeeId);
+                                            <tr style="border-bottom: 1px solid #000;padding:10px;page-break-inside:avoid !important" class="@(inactive==true ? "row-inactive":"")">
+                                                @if (Model.DisplayColumns.Where(r => r == "ILA Number").Count() > 0)
+                                                {
+                                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center; page-break-inside: avoid !important">
+                                                        @idpSch?.IDP?.ILA?.Number
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                                {
+                                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center; page-break-inside: avoid !important">
+                                                        @idpSch?.IDP?.ILA?.Name
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Self-Paced").Count() > 0)
+                                                {
+                                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center; page-break-inside: avoid !important">
+                                                        @(idpSch?.IDP?.ILA?.IsSelfPaced == true ? "Yes" : "No")
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Delivery Method").Count() > 0)
+                                                {
+                                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center; page-break-inside: avoid !important">
+                                                        @idpSch?.IDP?.ILA?.DeliveryMethod?.Name
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Planned Date").Count() > 0)
+                                                {
+                                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center; page-break-inside: avoid !important">
+                                                        @idpSch?.plannedDate?.ToShortDateString()
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Scheduled Date").Count() > 0)
+                                                {
+                                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center; page-break-inside: avoid !important">
+                                                        @idpSch?.startDate?.ToShortDateString()
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Completed Date").Count() > 0)
+                                                {
+                                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center; page-break-inside: avoid !important">
+                                                        @classScheduleEmp?.CompletionDate?.ToShortDateString()
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Score").Count() > 0)
+                                                {
+                                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center; page-break-inside: avoid !important">
+                                                        @classScheduleEmp?.FinalScore
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Grade").Count() > 0)
+                                                {
+                                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center;page-break-inside:avoid !important">
+                                                        @classScheduleEmp?.FinalGrade
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Grade Notes").Count() > 0)
+                                                {
+                                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center; page-break-inside: avoid !important">
+                                                        @classScheduleEmp?.GradeNotes
+                                                    </td>
+                                                }
+                                            </tr>
+                                          }
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr></tr>
+                        </table>
+                    </div>
+                    @if (!idpSchedule.Equals(idpSchedules.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{j++;}
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= idpSchedules.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

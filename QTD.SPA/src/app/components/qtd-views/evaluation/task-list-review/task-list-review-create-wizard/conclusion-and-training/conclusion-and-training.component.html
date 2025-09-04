@@ -1,0 +1,25 @@
+<div class="step-controls-section" [formGroup]="publishTaskListReviewForm">
+  <div class="d-flex justify-center flex-column mb-10">
+    <div class="mb-4">
+      <label class="conclusion-label">Conclusion</label>
+    </div>
+    <div class="m-2">
+      <ckeditor formControlName="conclusion" (change)="conclusionChange()" [editor]="Editor"  name="conclusion"></ckeditor>
+    </div>
+  </div>
+  <div class="d-flex justify-center flex-column training-container">
+    <div class="mb-4">
+      <label class="conclusion-label">Training Dept Sign Off </label>
+    </div>
+    <div class="m-2 d-flex justify-between">
+      <div class="approval-date">
+        <label class="label">Date of Approval</label>
+        <app-date formControlName="approvalDate" (input)="approvalDateChange()"></app-date>
+      </div>
+      <div class="signature-container ml-5">
+        <label class="label">Training Department Sign-Off</label>
+        <app-textbox type="text" formControlName="signature" (input)="signatureChange()"></app-textbox>
+      </div>
+    </div>
+  </div>
+</div>

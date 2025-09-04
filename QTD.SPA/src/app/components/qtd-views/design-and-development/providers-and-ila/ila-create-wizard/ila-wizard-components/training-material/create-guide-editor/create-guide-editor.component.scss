@@ -1,0 +1,29 @@
+tr {
+  border: 1px solid #dddddd;
+  text-align: left;
+  padding: 8px;
+}
+
+td{
+  padding:1.25rem;
+}
+
+:host ::ng-deep .ck-editor__editable {
+  min-height: 250px !important;
+  background-color: rgb(249 250 251) !important;
+  // border: none !important;
+  // outline: none !important;
+  max-height: 300px !important;
+  border-top:1px solid lightgray !important;
+}
+
+// ::ng-deep .ck-editor__top{
+//   //display: none !important;
+//   border: 1px solid black;
+// }
+
+th{
+  padding: 1.25rem;
+  font-weight:normal;
+  color: rgb(156 163 175);
+}

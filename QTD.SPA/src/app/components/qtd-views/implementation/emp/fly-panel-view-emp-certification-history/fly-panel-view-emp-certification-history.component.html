@@ -1,0 +1,48 @@
+<div>
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-bold text-gray-900">
+      {{("Certification" | labelReplacement)| async}} History
+    </p>
+    <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+  </div>
+  <div class="certificate-details px-12 mt-6">
+    <div class="certificate-detail">
+      <span class="detail-head">{{("Certification" | labelReplacement)| async}} Name</span>
+      <span class="detail-value">{{empCertification?.certificateName}}</span>
+    </div>
+    <div class="certificate-detail">
+      <span class="detail-head">{{("Certification" | labelReplacement)| async}} Number</span>
+      <span class="detail-value">{{empCertification?.certificationNumber}}</span>
+    </div>
+    <div class="certificate-detail">
+      <span class="detail-head">Issue Date</span>
+      <span class="detail-value">{{empCertification.issueDate}}</span>
+    </div>
+  </div>
+  <div class="certification-history-table px-12 pb-4 mt-6" [ngClass]="{'loader':spinner}">
+    <h2>{{("Certification" | labelReplacement)| async}} Histories</h2>
+    <div class="justify-content-center table-spinner" >
+      <app-spinner></app-spinner>
+    </div>
+    <div class="certification-history-list" >
+      <mat-table [dataSource]="empCertHistoryData" matSort #certificationSort="matSort">
+        <ng-container matColumnDef="issueDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Renewal Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.issueDate | dateFormat | async}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="expirationDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Expiration Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.expirationDate | dateFormat | async}} </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+        <tr class="mat-row flex text-center " *matNoDataRow>
+            <td class="mat-cell w-full m-2" style="border:0">No data to display</td>
+        </tr>
+      </mat-table>
+    </div>
+  </div>
+</div>
+

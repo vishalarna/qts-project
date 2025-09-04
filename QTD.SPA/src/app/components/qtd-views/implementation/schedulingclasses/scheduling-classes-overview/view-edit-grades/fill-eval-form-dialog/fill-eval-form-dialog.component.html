@@ -1,0 +1,30 @@
+<div class="flex flex-col">
+  <div class="flex flex-row justify-between pb-3" style="align-items: center">
+    <span class="text-xl font-bold">Fill in the evaluation form by: </span>
+    <app-icon
+      (click)="canceled.emit()"
+      class="text-gray-500 cursor-pointer"
+      icon="close"
+    ></app-icon>
+  </div>
+
+  <mat-dialog-content class="py-5 border-b-2">
+    <form [formGroup]="evalForm">
+      <mat-radio-group class="flex flex-col" formControlName="type">
+        <mat-radio-button [value]="'individual'">Individual Data</mat-radio-button>
+        <mat-radio-button class="mt-3" [value]="'aggregate'">Aggregate Data</mat-radio-button>
+      </mat-radio-group>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <app-button
+      [disabled]="evalForm.invalid"
+      ButtonType="button"
+      color="secondary"
+      text="Continue to Evaluation"
+      size="sm"
+      (clicked)="emitSelection();"
+    ></app-button>
+  </mat-dialog-actions>
+</div>

@@ -1,0 +1,744 @@
+<app-header [toggleMenuIcon]="false" [canGoBack]="false" [breadcrumbs]="url"></app-header>
+<div class="flex flex-row flex-wrap ml-4 mt-3 justify-between p-3">
+
+  <div class="flex flex-col">
+    <p class="font-bold text-lg">{{("Task" | labelReplacement)| async}} & Skill Qualifications </p>
+  </div>
+  <div class="flex flex-row  items-center  btn-group">
+    <p style="margin: 10px;color: #7A807ECC;">View As</p>
+    <div class="cursor-pointer bg-gray-200 p-2 rounded"
+         style="color: #456FA5; background-color: white;border: 1px solid #E4E6E5;">
+      <label mat-button [matMenuTriggerFor]="menu" class="mb-0 secondary">
+                <span class="font-bold">
+                    {{currentView}}
+                </span>
+      </label>
+      <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+      <mat-menu #menu="matMenu">
+        <button mat-menu-item (click)="changeView('Trainee')">
+          Trainee
+        </button>
+        <button *ngIf="isEvaluatorViewVisible" mat-menu-item (click)="changeView('Evaluator')">
+          Evaluator
+        </button>
+      </mat-menu>
+    </div>
+
+
+  </div>
+
+
+  <section class="mat-elevation-z8 w-full mt-4 bg-white" *ngIf="isLoading===false && currentView==='Trainee'">
+
+    <mat-tab-group #tabGroup [selectedIndex]="selectedTabIndex">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Completed {{("Task" | labelReplacement)| async}} & Skill Qualifications</span>
+          <div class="icon" *ngIf="CompleteCount > 0">
+            <span class="icon__value">{{CompleteCount}}</span>
+          </div>
+        </ng-template>
+        <app-spinner *ngIf="isLoading" class="spinner internal-spinner"></app-spinner>
+        <div *ngIf="completedDataSourceTrainee && !isLoading">
+          <!-- search and buttons starts -->
+          <div
+            class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+            <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input class="text-sm flex-grow focus:outline-none"
+                   placeholder="Search by date, keyword, or  {{('Location' | labelReplacement)| async}}. " type="text"
+                   (keyup)="filterCompletedTaskTrainee($event)">
+
+          </div>
+          <!-- search and button ends -->
+          <!-- table starts -->
+          <div class="flex-row bg-white-one rounded-b-md m-2 ">
+            <mat-table #traineeCompletedSort="matSort" [dataSource]="completedDataSourceTrainee" matSort
+              (matSortChange)="sortTraineeCompletedQualifiactions($event)">
+              <ng-container matColumnDef="number">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Task" | labelReplacement)| async}} #
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row; let i = index">{{row.number}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="taskDescription">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Task" | labelReplacement)| async}} Statement</mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.taskDescription}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="posNames">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Position" | labelReplacement)| async}}</mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.posNames}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="empReleaseDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Release Date
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{ (row.empReleaseDate | dateFormat | async) }} </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="dueDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Due Date
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ (row.dueDate | dateFormat | async) }}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="completedDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Completed Date
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ (row.taskQualificationDate | dateFormat | async) }}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="criteriaMet">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Criteria Met
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [ngClass] = "row.criteriaMet ? 'green' :'red'">
+                  {{row.criteriaMet ? "Y" : "N"}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalRequiredSignOffs">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Total Required Sign-Offs
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.totalRequiredSignOffs}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="evaluatorName">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Evaluator Names/Sign-Off Date
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <ng-container *ngIf="row.tqEvalSignOffModels?.length > 0; else showComment">
+                    <ng-container *ngFor="let item of row.tqEvalSignOffModels">
+                      {{ item.evaluatorName }} - {{ "Z " + (item.signOffDate | dateFormat | async) }}<br />
+                    </ng-container>
+                  </ng-container>
+                  <ng-template #showComment>
+                    {{ row.comment }}
+                  </ng-template>
+                </mat-cell>                
+              </ng-container>
+              <ng-container matColumnDef="feedbackAndComments">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Feedback and Comments
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <app-button color="blueBorder" text="View Feedback" (click)="goToTaskFeedback(row)" size="sm"
+                              iconPosition="left">
+                  </app-button>
+                </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedCompletedColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedCompletedColumns;"></mat-row>
+
+              <!-- Row shown when there is no matching data.-->
+              <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full m-2">No data matching the filter</td>
+              </tr>
+
+            </mat-table>
+            <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #compTraineePage
+                           aria-label="Select page of periodic elements">
+            </mat-paginator>
+          </div>
+          <!-- table ends -->
+        </div>
+
+      </mat-tab>
+      <mat-tab label="Pending {{('Procedure' | labelReplacement)| async}} Reviews">
+        <ng-template mat-tab-label>
+          <span>Pending {{("Task" | labelReplacement)| async}} & Skill Qualifications </span>
+          <div class="icon" *ngIf="PendingCount > 0">
+            <span class="icon__value">{{PendingCount}}</span>
+          </div>
+        </ng-template>
+        <app-spinner *ngIf="isLoading" class="spinner internal-spinner"></app-spinner>
+        <div *ngIf="pendingDataSource && !isLoading">
+          <!-- search and buttons starts -->
+          <div
+            class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+            <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                 xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input class="text-sm flex-grow focus:outline-none"
+                   placeholder="Search by date, keyword, or  {{('Location' | labelReplacement)| async}}. " type="text"
+                   (keyup)="filterPendingTest($event)">
+
+          </div>
+          <!-- search and button ends -->
+          <!-- table starts -->
+          <div class="flex-row bg-white-one rounded-b-md m-2 ">
+            <mat-table #traineePendingSort="matSort" [dataSource]="pendingDataSourceTrainee" matSort>
+              <ng-container matColumnDef="number">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Task" | labelReplacement)| async}} #
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row; let i = index">{{row.number}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="taskDescription">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Task" | labelReplacement)| async}} Statement</mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.taskDescription}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="posNames">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Position" | labelReplacement)| async}}</mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.posNames}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="empReleaseDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Release Date
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">  {{ (row.empReleaseDate | dateFormat | async) }}</mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="dueDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Due Date
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ (row.dueDate | dateFormat | async) }}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="totalRequiredSignOffs">
+                <mat-header-cell *matHeaderCellDef mat-sort-header style="justify-content: center;"> Total Required Sign-Offs
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" style="justify-content: center;">{{row.totalCompletedSignOffs}}/{{row.totalRequiredSignOffs}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="evaluatorName">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Evaluator Names/Sign-Off Date
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" class="flex-col" style="justify-content: center;">
+                  <ng-container *ngFor="let item of row.tqEvalSignOffModels">
+                    <span *ngIf="item.signOffDate" class="mb-1">{{item.evaluatorName}}
+                      / {{ (item.signOffDate | dateFormat | async) }}</span>
+                    <span *ngIf="!item.signOffDate" class="mb-1">{{item.evaluatorName}}</span>
+                    <br />
+                  </ng-container>
+                  <ng-container *ngIf="row.tqEvalSignOffModels.length === 0">
+                    <span >N/A</span>
+                  </ng-container>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="previewTask">
+                <mat-header-cell *matHeaderCellDef mat-sort-header style="justify-content: center;"> Preview {{("Task" | labelReplacement)| async}}</mat-header-cell>
+                <mat-cell *matCellDef="let row" style="justify-content: center;">
+                  <app-button color="blueBorder" text="Preview {{('Task' | labelReplacement)| async}}" size="sm" (clicked)="goToTaskDetail(row)"
+                    iconPosition="left">
+                  </app-button>
+                </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedPendingColumns"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedPendingColumns;"></mat-row>
+
+              <!-- Row shown when there is no matching data.-->
+              <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full m-2">No data matching the filter</td>
+              </tr>
+
+            </mat-table>
+            <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #pendPage
+              aria-label="Select page of periodic elements">
+            </mat-paginator>
+          </div>
+          <!-- table ends -->
+        </div>
+
+
+      </mat-tab>
+    </mat-tab-group>
+
+  </section>
+
+  <section class="mat-elevation-z8 w-full mt-4 bg-white" *ngIf="isLoading===false && currentView==='Evaluator'">
+
+    <mat-tab-group #tabGroup [selectedIndex]="selectedTabIndex">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span (click)="setActiveTab(0)">Completed {{("Task" | labelReplacement)| async}} & Skill Qualifications
+
+          </span>
+          <div class="icon" *ngIf="CompleteCount > 0">
+            <span class="icon__value">{{CompleteCount}}</span>
+          </div>
+        </ng-template>
+        <app-spinner *ngIf="isLoading" class="spinner internal-spinner"></app-spinner>
+        <div *ngIf="completedDataSource && !isLoading">
+          <!-- search and buttons starts -->
+          <div
+            class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+            <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input class="text-sm flex-grow focus:outline-none" placeholder="Search by date, keyword, or  {{('Location' | labelReplacement)| async}}. "
+              type="text" (keyup)="filterCompletedTaskTrainee($event)">
+
+          </div>
+          <!-- search and button ends -->
+          <!-- table starts -->
+          <div class="flex-row bg-white-one rounded-b-md m-2 ">
+            <mat-table #evalCompletedSort="matSort" [dataSource]="completedDataSourceEval" matSort
+              (matSortChange)="sortEvaluatorCompletedQualifications($event)">
+              <ng-container matColumnDef="employeeName">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Employee" | labelReplacement)| async}} Name
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row; let i = index">{{row.employeeName}} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="number">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Task" | labelReplacement)| async}} #
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row; let i = index"> {{row.number}}</mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="taskDescription">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Task" | labelReplacement)| async}} Statement</mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.taskDescription}} </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="empReleaseDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Release Date
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{ (row.empReleaseDate | dateFormat | async) }} </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="dueDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Due Date
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ (row.dueDate | dateFormat | async) }}
+                </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="completedDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Completed Date
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{ (row.taskQualificationDate | dateFormat | async) }}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="criteriaMet">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>Criteria Met
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [ngClass] = "row.criteriaMet ? 'green' :'red'">
+                  {{(row.criteriaMet) ? "Y" : "N"}}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="feedbackAndComments">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Feedback and Comments
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <app-button color="blueBorder" text="View Feedback" (click)="goToTaskFeedback(row)" size="sm"
+                    iconPosition="left">
+                  </app-button>
+                </mat-cell>
+              </ng-container>
+              <mat-header-row *matHeaderRowDef="displayedCompletedColumnsEval"></mat-header-row>
+              <mat-row *matRowDef="let row; columns: displayedCompletedColumnsEval;"></mat-row>
+
+              <!-- Row shown when there is no matching data.-->
+              <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full m-2">No data matching the filter</td>
+              </tr>
+
+            </mat-table>
+            <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #compPage
+              aria-label="Select page of periodic elements">
+            </mat-paginator>
+          </div>
+          <!-- table ends -->
+        </div>
+
+      </mat-tab>
+      <mat-tab label="Pending {{('Procedure' | labelReplacement)| async}} Reviews">
+        <ng-template mat-tab-label >
+          <span (click)="setActiveTab(1)">Pending {{("Task" | labelReplacement)| async}} & Skill Qualifications
+
+          </span>
+          <div class="icon" *ngIf="PendingCount > 0">
+            <span class="icon__value">{{PendingCount}}</span>
+          </div>
+        </ng-template>
+        <app-spinner *ngIf="isLoading" class="spinner internal-spinner"></app-spinner>
+        <div *ngIf="pendingDataSource && !isLoading">
+          <!-- search and buttons starts -->
+          <div
+            class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+            <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input class="text-sm flex-grow focus:outline-none" placeholder="Search by date, keyword, or  {{('Location' | labelReplacement)| async}}. "
+              type="text" (keyup)="filterPendingEvalTasks($event)">
+            <div class="flex flex-row space-x-4 text-sm">
+              <mat-button-toggle-group [(ngModel)]="fontStyle" aria-label="Font Style"
+                (change)="changePendingView($event.value)">
+                <mat-button-toggle value="taskView"
+                  style="color: #456FA5; background-color: white; border: 1px solid #E4E6E5;">{{("Task" | labelReplacement)| async}} View
+                </mat-button-toggle>
+                <mat-button-toggle value="empView"
+                  style="color: #456FA5; background-color: white; border: 1px solid #E4E6E5;">{{("Employee" | labelReplacement)| async}}
+                  View
+                </mat-button-toggle>
+              </mat-button-toggle-group>
+            </div>
+          </div>
+          <!-- search and button ends -->
+          <!-- table starts -->
+          <div class="flex-row bg-white-one rounded-b-md m-2 " *ngIf="!isEmpView">
+            <mat-table mat-table #evalTaskSort="matSort" [dataSource]="pendingDataSourceEval"
+              multiTemplateDataRows class="w-full display-table" matSort (matSortChange)="sortEvaluatorPendingTaskQualifications($event)">          
+              <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplayEval">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <div *ngIf="column==='expand'">
+                    #
+                  </div>
+                  <div *ngIf="column==='taskNumber'">
+                    {{("Task" | labelReplacement)| async}} #
+                  </div>
+                  <div *ngIf="column==='taskDescription'">
+                    {{("Task" | labelReplacement)| async}} Statement
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let element; let i = dataIndex">
+                  <app-button variant="text" icon="{{
+                                        element === expandedElement
+                                          ? 'keyboard_arrow_up'
+                                          : 'keyboard_arrow_down'
+                                      }}"
+                              *ngIf="column === 'expand'"
+                              (clicked)="getexpandedDetails(element,i)"
+                  ></app-button>
+                  <div *ngIf="column==='taskNumber'">
+                    <!-- {{ element.letter}}{{element.daNumber}}.{{element.sdaNumber}}.{{element.task.number}} -->
+                    {{element.taskNumber}}
+                  </div>
+                  <div *ngIf="column==='taskDescription'">
+                    {{ element.taskDescription}}
+                  </div>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="expandedDetail">
+                <td mat-cell *matCellDef="let elementParent" [attr.colspan]="columnsToDisplayEval.length">
+                  <div class="example-element-detail" 
+                    [@detailExpand]="elementParent == expandedElement ? 'expanded' : 'collapsed'">
+                    <div class="inner-table mat-elevation-z8" *ngIf="expandedElement && elementParent == expandedElement">
+                      <table  mat-table #evalTaskInnerTables #evalTaskSortExpand="matSort" [dataSource]="elementParent.taskQualsByTaskVMs" matSort
+                        class="w-full">
+                        <ng-container matColumnDef="{{innerColumn}}"
+                          *ngFor="let innerColumn of innerDisplayedColumnsEval">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                            <div *ngIf="innerColumn === 'empName'">
+                              {{("Employee" | labelReplacement)| async}} Name
+                            </div>
+                            <div *ngIf="innerColumn === 'positions'">
+                              {{("Position" | labelReplacement)| async}}
+                            </div>
+                            <div *ngIf="innerColumn === 'releaseDate'">
+                              EMP Release Date
+                            </div>
+                            <div *ngIf="innerColumn === 'dueDate'">
+                              Due Date
+                            </div>
+                            <div *ngIf="innerColumn === 'requiredRequals'">
+                              Total Required Sign-Offs
+                            </div>
+                            <div *ngIf="innerColumn === 'evaluatorName'">
+                              Evaluator Names/Sign-Off Date
+                            </div>
+                            <div *ngIf="innerColumn === 'tqStatus'">
+                              TQ Status
+                            </div>
+                            <div *ngIf="innerColumn === 'action'">
+                              Action
+                            </div>
+                          </th>
+                          <td mat-cell *matCellDef="let element">
+                            <div *ngIf="innerColumn==='empName'">
+                              {{element.empName}}
+                            </div>
+                            <div *ngIf="innerColumn==='positions'">
+                              {{element.positions}}
+                            </div>
+                            <div *ngIf="innerColumn==='releaseDate'">
+                              {{ (element.releaseDate | dateFormat | async) }}
+                            </div>
+                            <div *ngIf="innerColumn==='dueDate'">
+                              {{ (element.dueDate | dateFormat | async) }}
+                            </div>
+                            <div *ngIf="innerColumn==='requiredRequals'">
+                              <span class="mt-4 mb-3">{{element.requiredRequals}}</span>
+                              <div *ngIf="!element.releaseToAllSingleSignOff">
+                                <br />
+                                <div class="tr-container" *ngIf="element.signOffOrderEnabled">
+                                  <span class="text">(Sign Off Order Enabled)</span>
+
+                                  <span
+                                    matTooltip="The Task will release to the first Evaluator listed in the Evaluate Names/Sign-Off Date column on the designated Release Date and to subsequent Evaluators when the previous Evaluator has submitted results. The Task (Re)Qualification will be remained in Lock Status until the previous Evaluator submits results">
+                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                      xmlns="http://www.w3.org/2000/svg">
+                                      <path
+                                        d="M9 16.502C13.1421 16.502 16.5 13.1441 16.5 9.00195C16.5 4.85982 13.1421 1.50195 9 1.50195C4.85786 1.50195 1.5 4.85982 1.5 9.00195C1.5 13.1441 4.85786 16.502 9 16.502Z"
+                                        stroke="#7A807E" stroke-opacity="0.7" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                      <path
+                                        d="M6.81836 6.7514C6.99469 6.25015 7.34272 5.82748 7.80083 5.55825C8.25893 5.28902 8.79753 5.19061 9.32124 5.28044C9.84495 5.37027 10.32 5.64255 10.6622 6.04905C11.0044 6.45555 11.1917 6.97005 11.1909 7.5014C11.1909 9.0014 8.94086 9.7514 8.94086 9.7514"
+                                        stroke="#7A807E" stroke-opacity="0.7" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                      <path d="M9 12.752H9.0075" stroke="#7A807E" stroke-opacity="0.7"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                  </span>
+                                </div>
+                                <div class="tr-container" *ngIf="element.signOffOrderEnabled != true">
+                                  <span class="text-gray-500">(Sign Off Order Disabled)</span>
+                                  <span
+                                    matTooltip="Tasks have been released to all assigned Evaluators on the listed Release Date. The Task is unlocked for all Evaluators and available for completion">
+                                    <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                      xmlns="http://www.w3.org/2000/svg">
+                                      <path
+                                        d="M9 16.502C13.1421 16.502 16.5 13.1441 16.5 9.00195C16.5 4.85982 13.1421 1.50195 9 1.50195C4.85786 1.50195 1.5 4.85982 1.5 9.00195C1.5 13.1441 4.85786 16.502 9 16.502Z"
+                                        stroke="#7A807E" stroke-opacity="0.7" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                      <path
+                                        d="M6.81836 6.7514C6.99469 6.25015 7.34272 5.82748 7.80083 5.55825C8.25893 5.28902 8.79753 5.19061 9.32124 5.28044C9.84495 5.37027 10.32 5.64255 10.6622 6.04905C11.0044 6.45555 11.1917 6.97005 11.1909 7.5014C11.1909 9.0014 8.94086 9.7514 8.94086 9.7514"
+                                        stroke="#7A807E" stroke-opacity="0.7" stroke-width="1.5" stroke-linecap="round"
+                                        stroke-linejoin="round" />
+                                      <path d="M9 12.752H9.0075" stroke="#7A807E" stroke-opacity="0.7"
+                                        stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                                    </svg>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div *ngIf="innerColumn==='evaluatorName'">
+                              <div class="tr-container" *ngFor="let item of element.evaluatorListWithStatus">
+                                <ng-container *ngIf="item.status==='Not Started'">
+                                  <mat-icon style="color:   #FFCF5C">pause_circle_filled</mat-icon>
+                                  <span class="text-pause">{{item.evaluatorName}} </span>
+                                </ng-container>
+                                <ng-container *ngIf="item.status==='Pending'">
+                                  <app-icon style="color:#0084FA" icon="more_vert"></app-icon>
+                                  <span style="color:#0084FA">{{item.evaluatorName}} </span>
+                                </ng-container>
+                                <ng-container *ngIf="item.status==='Locked'">
+                                  <mat-icon style="color:#FF647C">lock</mat-icon>
+                                  <span style="color:#FF647C">{{item.evaluatorName}} </span>
+                                </ng-container>
+                                <ng-container *ngIf="item.status==='Completed'">
+                                  <mat-icon style="color: #00C48C;">check_circle
+                                  </mat-icon>
+                                  <span style="color: #00C48C;">{{item.evaluatorName}} </span>
+                                </ng-container>
+                              </div>
+                            </div>
+                            <div *ngIf="innerColumn==='tqStatus'">
+                              <div class="tr-container" *ngFor="let item of element.evaluatorListWithStatus">
+                                <mat-chip-list class="text mb-2">
+                                  <mat-chip style="background-color: #eef7ff;color: #80b264;border-radius: 2px;"
+                                    *ngIf="item.status==='Completed'">
+                                    Completed
+                                  </mat-chip>
+                                  <mat-chip style="background-color: #fff9e8;color: #ffcf5c;border-radius: 2px;"
+                                    *ngIf="item.status==='Not Started'">
+                                    Not Started
+                                  </mat-chip>
+                                  <mat-chip style="background-color: #eef7ff;color: #4284c0;border-radius: 2px;"
+                                    *ngIf="item.status==='Pending'">
+                                    In Progress
+                                  </mat-chip>
+                                  <mat-chip style="background-color: #f9f9f9;color: #fb7664;border-radius: 2px;"
+                                    *ngIf="item.status==='Locked'">
+                                    Locked
+                                  </mat-chip>
+                                </mat-chip-list>
+                                <svg width="18" height="18" viewBox="0 0 18 18" fill="none"
+                                  xmlns="http://www.w3.org/2000/svg">
+                                  <path
+                                    d="M9 16.502C13.1421 16.502 16.5 13.1441 16.5 9.00195C16.5 4.85982 13.1421 1.50195 9 1.50195C4.85786 1.50195 1.5 4.85982 1.5 9.00195C1.5 13.1441 4.85786 16.502 9 16.502Z"
+                                    stroke="#7A807E" stroke-opacity="0.7" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                  <path
+                                    d="M6.81836 6.7514C6.99469 6.25015 7.34272 5.82748 7.80083 5.55825C8.25893 5.28902 8.79753 5.19061 9.32124 5.28044C9.84495 5.37027 10.32 5.64255 10.6622 6.04905C11.0044 6.45555 11.1917 6.97005 11.1909 7.5014C11.1909 9.0014 8.94086 9.7514 8.94086 9.7514"
+                                    stroke="#7A807E" stroke-opacity="0.7" stroke-width="1.5" stroke-linecap="round"
+                                    stroke-linejoin="round" />
+                                  <path d="M9 12.752H9.0075" stroke="#7A807E" stroke-opacity="0.7" stroke-width="1.5"
+                                    stroke-linecap="round" stroke-linejoin="round" />
+                                </svg>
+                              </div>
+                            </div>
+                            <div *ngIf="innerColumn==='action'">
+                              <div class="flex flex-row space-x-4 text-sm">
+                                <app-button color="blueBorder"
+                                            text="Start {{('Task' | labelReplacement)| async}} Qualification" [disabled]="!element.canStart"
+                                            (clicked)="startTaskEvalPending(element,elementParent)" size="sm">
+                                </app-button>
+                              </div>
+                            </div>
+                          </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="innerDisplayedColumnsEval"></tr>
+                        <tr mat-row *matRowDef="let row; columns: innerDisplayedColumnsEval;">
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="columnsToDisplayEval"></tr>
+              <tr mat-row *matRowDef="let element; columns: columnsToDisplayEval;"
+                [class.example-element-row]="element.addresses?.data.length"
+                [class.example-expanded-row]="element == expandedElement">
+              </tr>
+
+              <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row">
+              </tr>
+              <tr class="mat-row" *matNoDataRow>
+
+              </tr>
+            </mat-table>
+            <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #pendEvalPage
+              aria-label="Select page of periodic elements">
+            </mat-paginator>
+          </div>
+
+
+          <!-- table ends -->
+          <!-- table starts -->
+          <div class="flex-row bg-white-one rounded-b-md m-2 " *ngIf="isEmpView">
+            <table mat-table #evalEmpSort="matSort" [dataSource]="pendingDataEmpView" multiTemplateDataRows class="w-full"
+              matSort (matSortChange)="sortEvaluatorPendingEmpQualifications($event)">
+              <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplayEMP">
+                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                  <div *ngIf="column==='expand'">
+                  </div>
+                  <div *ngIf="column==='empFName'">
+                    {{("Employee" | labelReplacement)| async}} Name
+                  </div>
+                  <div *ngIf="column==='positions'">
+                    {{("Position" | labelReplacement)| async}}
+                  </div>
+                </th>
+                <td mat-cell *matCellDef="let element; let i = dataIndex">
+                  <app-button variant="text" icon="{{
+                                                element === expandedElement
+                                                  ? 'keyboard_arrow_up'
+                                                  : 'keyboard_arrow_down'
+                                              }}" *ngIf="column === 'expand'"
+                                              (click)="toggleRowEMP(element,i, element.empId)"></app-button>
+
+                  <div *ngIf="column==='empFName'" class="flex flex-row" style="align-items:center;">
+                    <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 ml-2 mb-2"
+                      [src]="element.empImage" onerror="this.src='assets/img/ImageNotFound.jpg'" />
+                    <div class="flex flex-col">
+                      <span>{{ element.empFName }} {{element.empLName}}</span>
+                      <span>{{ element.empEmail }}</span>
+                    </div>
+                  </div>
+                  <div *ngIf="column==='positions'" class="flex flex-row" style="align-items:center;">
+                    <span>{{ element.positions }}</span>
+                  </div>
+                </td>
+              </ng-container>
+
+              <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+              <ng-container matColumnDef="expandedDetail">
+                <td mat-cell *matCellDef="let elementParent,let i = dataIndex"
+                  [attr.colspan]="columnsToDisplayEMP.length">
+                  <div class="example-element-detail"
+                    [@detailExpand]="elementParent == expandedElement ? 'expanded' : 'collapsed'">
+                    <div class="inner-table mat-elevation-z8" *ngIf="expandedElement && elementParent == expandedElement">
+                      <table  mat-table
+                             [dataSource]="elementParent.taskQualsByEmpVMs" matSort (matSortChange)="sortEvaluatorPendingEmpTaskQualifications($event,elementParent)"
+                             class="w-full">
+                        <ng-container matColumnDef="{{innerColumn}}"
+                          *ngFor="let innerColumn of innerDisplayedColumnsEMP">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header
+                            [ngClass]="{'taskStatementWidth' : innerColumn === 'taskStatement'}">
+
+                            <div *ngIf="innerColumn === 'taskNumber'">
+                              {{("Task" | labelReplacement)| async}} #
+
+                            </div>
+                            <div *ngIf="innerColumn === 'taskDescription'">
+                              {{("Task" | labelReplacement)| async}} Statement
+
+                            </div>
+                            <div *ngIf="innerColumn === 'releaseDate'">
+                              EMP Release Date
+
+                            </div>
+                            <div *ngIf="innerColumn === 'dueDate'">
+                              Due Date
+
+                            </div>
+                            <div *ngIf="innerColumn === 'requiredRequals'">
+                              Total Required Sign-Offs
+
+                            </div>
+                            <div *ngIf="innerColumn === 'action'">
+                              Action
+
+                            </div>
+                          </th>
+
+                          <td mat-cell *matCellDef="let element">
+                            <div *ngIf="innerColumn==='taskNumber'">
+                              {{element.taskNumber}}
+                            </div>
+                            <div *ngIf="innerColumn==='taskDescription'">
+                              {{element.taskDescription}}
+                            </div>
+                            <div *ngIf="innerColumn==='releaseDate'">
+                              {{ (element.releaseDate | dateFormat | async) }}
+                            </div>
+                            <div *ngIf="innerColumn==='dueDate'">
+                              {{ (element.dueDate | dateFormat | async) }}
+                            </div>
+                            <div *ngIf="innerColumn==='requiredRequals'">
+                              <span class="mt-4 mb-3">{{element.requiredRequals}}</span>
+                            </div>
+                            <div *ngIf="innerColumn==='action'">
+                              <div class="flex flex-row space-x-4 text-sm">
+                                <app-button color="blueBorder" text="Start {{('Task' | labelReplacement)| async}} Qualification"
+                                  [disabled]="!element.canStart" (clicked)="startTask(element,elementParent)" size="sm">
+                                </app-button>
+
+                              </div>
+                            </div>
+                          </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="innerDisplayedColumnsEMP"></tr>
+                        <tr mat-row *matRowDef="let row; columns: innerDisplayedColumnsEMP;">
+                        </tr>
+                        <!-- Row shown when there is no matching data.-->
+                        <tr class="mat-row flex text-center" *matNoDataRow>
+                          <td class="mat-cell w-full m-2">No {{("ILA" | labelReplacement)| async}}s linked</td>
+                        </tr>
+                      </table>
+                    </div>
+                  </div>
+                </td>
+              </ng-container>
+
+              <tr mat-header-row *matHeaderRowDef="columnsToDisplayEMP"></tr>
+              <tr mat-row *matRowDef="let element; columns: columnsToDisplayEMP;"
+                [class.example-element-row]="element.taskQualsByEmpVMs?.length"
+                [class.example-expanded-row]="element == expandedElement">
+              </tr>
+              <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row">
+              </tr>
+              <tr class="mat-row" *matNoDataRow>
+                <td class="mat-cell w-full m-2">No {{("ILA" | labelReplacement)| async}}s linked</td>
+              </tr>
+            </table>
+          </div>
+          <!-- table ends -->
+        </div>
+
+
+      </mat-tab>
+    </mat-tab-group>
+
+  </section>
+</div>
+
+<app-data-loader *ngIf="isLoading"></app-data-loader>

@@ -1,0 +1,42 @@
+.navbar-heading {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 160%;
+
+  letter-spacing: 0.15px;
+
+  color: #000d09;
+  padding: 0 0 20px 0;
+}
+.date-block-wrapper {
+  max-width: 185px;
+  width: 100%;
+  input {
+    width: 100%;
+  }
+}
+.dash-span {
+  padding: 28px 10px 0;
+  font-size: 30px;
+  font-weight: 100;
+}
+
+.date-error-msg {
+  position: absolute;
+  bottom: -46px;
+  color: #e31c1c;
+}
+
+.save-btn-div {
+  display: flex;
+  justify-content: flex-end;
+  .save-filter-button {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 143%;
+    letter-spacing: 0.00938rem;
+    color: #fff;
+    padding: 0.75rem 1.87rem;
+  }
+}

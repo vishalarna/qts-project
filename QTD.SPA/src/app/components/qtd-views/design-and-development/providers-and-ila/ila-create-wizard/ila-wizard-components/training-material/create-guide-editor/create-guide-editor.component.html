@@ -1,0 +1,58 @@
+<!--Title bar with icons-->
+<!-- <div class="flex flex-row items-stretch" style="margin-top: -1.5rem;background-color: rgb(245 245 244);">
+  <h3 class="text-xs font-bold pl-5 mt-4 mb-4 self-center" style="height: fit-content;">Title 3</h3>
+  <button style="height: fit-content;" class="ml-4 self-center"><app-icon icon="keyboard_arrow_down"></app-icon></button>
+  <span style="height: fit-content;" class="ml-8 text-2xl font-normal text-gray-one self-center">|</span>
+  <button class="ml-4 self-center" style="height: fit-content;"><app-icon style="color:black;" icon="format_bold"></app-icon></button>
+  <button class="ml-2 self-center" style="height: fit-content;"><app-icon style="color:black;" icon="format_italic"></app-icon></button>
+  <button class="ml-2 self-center" style="height: fit-content;"><app-icon style="color:black;" icon=" strikethrough_s"></app-icon></button>
+  <span style="height: fit-content;" class="ml-8 text-2xl font-normal text-gray-one self-center">|</span>
+  <button class="ml-4 self-center" style="height: fit-content;"><app-icon style="color:black;" icon=" link"></app-icon></button>
+  <span style="height: fit-content;" class="ml-8 text-2xl font-normal text-gray-one self-center">|</span>
+  <button class="ml-4 self-center" style="height: fit-content;"><app-icon style="color:black;" icon=" format_list_numbered"></app-icon></button>
+  <button class="ml-2 self-center" style="height: fit-content;"><app-icon style="color:black;" icon="  format_list_bulleted"></app-icon></button>
+  <span style="height: fit-content;" class="ml-8 text-2xl font-normal text-gray-one self-center">|</span>
+  <button class="ml-2 self-center" style="height: fit-content;"><app-icon style="color:black;" icon="image"></app-icon></button>
+  <button class="ml-2 self-center" style="height: fit-content;"><app-icon style="color:black;" icon="videocam"></app-icon></button>
+  <button class="ml-2 self-center" style="height: fit-content;"><app-icon style="color:black;" icon="folder_open"></app-icon></button>
+</div> -->
+
+<div class="flex flex-col ml-16 mt-12 mr-16">
+  <span class="text-3xl font-semibold" style="color: rgb(113 113 122);">Intro to QTD-QTS_001_01</span>
+  <span class="text-lg mt-2" style="color: rgb(113 113 122);">Self-Study Guide</span>
+  <span class="text-lg mb-2 mt-8 font-medium" style="color: rgb(113 113 122);">{{("Enabling Objective" | labelReplacement)| async}} Linkage</span>
+  <table style="background-color: white;">
+    <thead>
+      <tr>
+        <th>#</th>
+        <th>Type</th>
+        <th>Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1.1.1.3</td>
+        <td>EO</td>
+        <td>Explain Difference between actual and post-contingency rating violations on transmission lines and equipment</td>
+      </tr>
+      <tr>
+        <td>1.1.1.3</td>
+        <td>EO</td>
+        <td>Describe automated systems used for controlling substation equipment</td>
+      </tr>
+      <tr>
+        <td>1.1.1.3</td>
+        <td>EO</td>
+        <td>List posssible solutions for mitigating actual and post-contingency violations,
+          including notification requirements based on solutions
+        </td>
+      </tr>
+      <tr>
+        <td>1.1.1.3</td>
+        <td>EO</td>
+        <td>Describe automated systems used for controlling substation equipment</td>
+      </tr>
+    </tbody>
+  </table>
+  <ckeditor [config]="{ placeholder:'Start typing here....'}" [editor]="Editor" class="mt-4" ></ckeditor>
+</div>

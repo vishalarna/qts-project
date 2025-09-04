@@ -1,0 +1,192 @@
+<div class="pt-4 pb-4">
+    <div>META INDIVIDUAL DEVELOPMENT PLAN (IDP)</div>
+    <div class="flex flex-row flex-wrap mt-3 justify-between mb-3" style="align-items: center; justify-content: flex-end">
+      <div class="border-1 rounded-sm bg-white flex flex-row pt-2 pb-1 pl-4 pr-3" style="height: fit-content">
+        <div class="mr-4">
+          <app-icon icon="account_tree" class="mr-2 text-gray-400"></app-icon>
+          <app-label class="text-gray-400" text="Map"></app-label>
+        </div>
+        <div class="pr-2">
+          <app-icon class="mr-2" icon="format_list_bulleted" style="color: rgb(92, 155, 49); outline: 2px rgb(92, 155, 49)"></app-icon>
+          <app-label style="color: rgb(92, 155, 49); outline: 2px rgb(92, 155, 49)" text="List"></app-label>
+        </div>
+      </div>
+    </div>
+  <section class="flex flex-col bg-white border-2 p-3">
+    <div class="flex flex-row justify-between border-b-2 pb-2">
+      <div class="flex flex-row" style="align-items:center; width: 40%;">
+        <span style="width:45%">
+          Showing {{metaILADataSource === undefined || metaILADataSource === null || metaILADataSource.data === undefined || metaILADataSource.data === null ? "0" : metaILADataSource.data.length}} Meta {{('ILA' | labelReplacement)| async}}(s)
+        </span>
+      </div>
+      <div class="flex flex-row">
+        <app-button text="Add Meta {{('ILA' | labelReplacement)| async}}s " (clicked) = "openFlyInPanel(addMetaILA)" size="sm" icon="add" iconPosition="left">
+        </app-button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<app-data-loader *ngIf="mainLoader"></app-data-loader>
+<mat-table class="table-auto w-full" [dataSource]="metaILADataSource" matSort [multiTemplateDataRows]="true" *ngIf = "!mainLoader">
+
+    <ng-container matColumnDef="expand">
+      <mat-header-cell *matHeaderCellDef></mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <button mat-icon-button (click)="toggleRow(row, $event)">
+          <mat-icon>{{ expandedData === row ? 'arrow_drop_up' : 'arrow_drop_down' }}</mat-icon>
+        </button>
+      </mat-cell>
+    </ng-container>
+  
+    <ng-container matColumnDef="metaILATitle">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Meta {{('ILA' | labelReplacement)| async}} Title</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="main-row">{{ row.metaILATitle }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="completedLinkedCourses">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Completed/Linked Courses</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="main-row">{{row.completedLinkedCourses}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="metaStatus">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Meta Status</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="main-row">{{row.metaStatus}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="metaTestCompletedDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Meta Test Completed Date</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="main-row">{{(row.metaTestCompletedDate| dateFormat)| async }}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="metaTestGrade">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Meta Test Grade</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="main-row">{{row.metaTestGrade}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="metaTestScore">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Meta Test Score</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="main-row">{{row.metaTestScore}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="metaStudentEvaluationStatus">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Meta Student Evaluation Status</mat-header-cell>
+      <mat-cell *matCellDef="let row" class="main-row">{{row.metaStudentEvaluationStatus}}</mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="action">
+        <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <div class="flex flex-row items-center text-gray-four btn-group">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <app-icon icon="more_vert"></app-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <label mat-menu-item translate (click)="openEnrollEmployeeModal(enrollEmployee,row)" [disabled] = "getEnrollDisabled(row)">
+                Enroll
+              </label>
+            </mat-menu>
+          </div>
+        </mat-cell>
+      </ng-container>
+  
+    <!-- Expanded Detail -->
+    <ng-container matColumnDef="expandedDetail">
+        <mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns" [class.sub-table-cell]="true"
+            class="py-0">
+            <div style="width: 100%">
+                <div class="pl-3">
+                    <ng-container class="mt-4" *ngTemplateOutlet="expandedTable"></ng-container>
+                </div>
+            </div>
+        </mat-cell>
+    </ng-container>
+
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    <mat-row [ngStyle]="{ display: expandedData === row ? 'block' : 'none' }"
+        *matRowDef="let row; columns: ['expandedDetail']" [@detailExpand]="expandedData === row ? 'expanded' : 'collapsed'"></mat-row>
+
+        <tr class="mat-row flex text-center " *matNoDataRow>
+            <td class="mat-cell w-full m-2">No data found</td>
+        </tr>
+  
+  </mat-table>
+
+<ng-template #expandedTable>
+    <app-data-loader *ngIf="innerLoader"></app-data-loader>
+    <mat-table #nestedSort="matSort" matSort  *ngIf="!innerLoader" [dataSource]="getExpandedDataSource(expandedData?.metaILAId)" matSort class="w-full">
+        <ng-container matColumnDef="ilaNumber">
+            <mat-header-cell mat-sort-header *matHeaderCellDef>
+                {{('ILA' | labelReplacement)| async}} Number
+            </mat-header-cell>
+            <mat-cell class="pt-3 pb-3" *matCellDef="let row" [class.enrolledRow]="row.isILACompleted">
+                <span>{{row.ilaNumber}}</span>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="ilaName">
+            <mat-header-cell mat-sort-header *matHeaderCellDef>
+                {{('ILA' | labelReplacement)| async}} Name
+            </mat-header-cell>
+            <mat-cell class="pt-3 pb-3" *matCellDef="let row" [class.enrolledRow]="row.isILACompleted">
+                <span>{{row.ilaName}}</span>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="startDate">
+          <mat-header-cell mat-sort-header *matHeaderCellDef>
+              Start Date
+          </mat-header-cell>
+          <mat-cell class="pt-3 pb-3" *matCellDef="let row" [class.enrolledRow]="row.isILACompleted">
+              <span>{{(row.startDate| dateFormat)|async}}</span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="completedDate">
+          <mat-header-cell mat-sort-header *matHeaderCellDef>
+              Completed Date
+          </mat-header-cell>
+          <mat-cell class="pt-3 pb-3" *matCellDef="let row" [class.enrolledRow]="row.isILACompleted">
+              <span>{{(row.completedDate| dateFormat)|async}}</span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="grade">
+          <mat-header-cell mat-sort-header *matHeaderCellDef>
+              Grade
+          </mat-header-cell>
+          <mat-cell class="pt-3 pb-3" *matCellDef="let row" [class.enrolledRow]="row.isILACompleted">
+              <span>{{row.grade}}</span>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="score">
+          <mat-header-cell mat-sort-header *matHeaderCellDef>
+              Score
+          </mat-header-cell>
+          <mat-cell class="pt-3 pb-3" *matCellDef="let row" [class.enrolledRow]="row.isILACompleted">
+              <span>{{row.score}}</span>
+          </mat-cell>
+        </ng-container>
+ 
+        <mat-header-row *matHeaderRowDef="displayedExpandedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedExpandedColumns;"></mat-row>
+        <tr class="mat-row flex text-center " *matNoDataRow>
+            <td class="mat-cell w-full m-2">No data found</td>
+        </tr>
+    </mat-table>
+</ng-template>
+ 
+<ng-template #addMetaILA>
+    <app-fly-panel-add-meta-ila (closed) = "flyPanelSrvc.close()" [alreadyLinkedMetaILAsIds] = "metaILAIds" (linkMetaILAIds) = "getLinkMetaILAToEmployeeAsync($event)"></app-fly-panel-add-meta-ila>
+</ng-template>
+
+<ng-template #enrollEmployee>
+    <app-qtd-dialogue
+      [header]="header" [isHTML]="true"
+      [isQuestion]="false" [description]="enrollMetaILADescription" cancelText="No"
+      confirmText="Yes" (canceled)="dialog.closeAll()" (confirmed)="enrollMetaILAAsync()">
+    </app-qtd-dialogue>
+  </ng-template>

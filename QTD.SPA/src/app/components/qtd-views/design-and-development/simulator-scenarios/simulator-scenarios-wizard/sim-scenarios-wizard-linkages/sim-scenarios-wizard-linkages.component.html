@@ -1,0 +1,275 @@
+<section class="bg-white section p-4 mt-4">
+    <div class="flex flex-row justify-between w-full space-x-4 text-sm mb-3">
+        <div>
+            <p class="font-bold text-lg">{{("Position" | labelReplacement)| async}}s</p>
+        </div>
+        <div class="add-position-button" (click)="openFlypanel(linkagesPositions)"  *ngIf="mode !== 'view'">
+            <img src="./assets/icons/icon-link-item.svg" alt="icon_link_svg" style="margin-right: 10px" />
+            <span style="cursor: pointer">Link {{("Position" | labelReplacement)| async}}s</span>
+        </div>
+    </div>
+    <div class="step-control">
+        <div class="d-flex flex-row bubbles-div">
+            <div class="bubble" *ngFor="let position of linkedPositionsList">
+                {{position.positionTitle}}
+                <button class="remove-btn" *ngIf="mode !== 'view'" (click)="unlinkPositionModal(unlinkPosition, position)">
+                    &times;
+                </button>
+            </div>
+        </div>
+    </div>
+</section>
+<section class="bg-white section p-4 mt-10">
+    
+    <div class="flex flex-row justify-between w-full space-x-4 text-sm mb-3">
+        <div>
+            <p class="font-bold text-lg">Objectives</p>
+        </div>
+        <div *ngIf="mode !== 'view'">
+            <div class="add-position-button" (click)="openFlypanel(linkagesObjectives)">
+                <img src="./assets/icons/icon-link-item.svg" alt="icon_link_svg" style="margin-right: 10px" />
+                <p [class.disabled]="mode === 'view'" class="mb-0 cursor-pointer">Link Objectives</p>
+            </div>
+         </div>
+    </div>
+    <div class="rounded-t-md py-2 space-x-2" *ngIf="objectiveSelection.hasValue() && !isObjectiveUnlink">
+        <mat-toolbar class="h-28 app-toolbar-sticky w-full h-100-important d-block px-3 py-1 ">
+          <div class="flex flex-row items-center space-x-4 w-full justify-between">
+            <span class="text-sm" >
+              {{getUnlinkSelectedText() | dynamicLabelReplacement | async}}
+            </span>
+            <div class="flex flex-row space-x-4 m-3 text-sm float-right">
+              <app-button color="secondary" text="Unlink Objectives" (clicked)="unlinkObjectivesModal(unlinkObjectives)" size="sm" icon="link_off"
+                iconPosition="left">
+              </app-button>
+            </div>
+          </div>
+        </mat-toolbar>
+    </div>
+    <div *ngIf="isObjectiveLinkUnlink" class="d-flex justify-content-center align-items-center">
+        <app-spinner ></app-spinner>
+    </div>
+    <ng-container *ngIf="!isObjectiveLinkUnlink">
+        <div class="table-list">
+            <mat-table [dataSource]="objAndTasksDataSource" matSort>
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox
+                          (change)="$event ? masterToggleObjectives() : null"
+                          [checked]="objectiveSelection.hasValue() && isAllObjectivesSelected()"
+                          [indeterminate]="objectiveSelection.hasValue() && !isAllObjectivesSelected()"
+                          [disabled]="mode === 'view'"
+                        >
+                        </mat-checkbox>
+                      </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? objectiveSelection.toggle(row) : null"
+                            [checked]="objectiveSelection.isSelected(row)"
+                            [disabled]="mode === 'view'">
+                        </mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="number">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> # </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.number}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="type">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Type </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.type}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="description">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <button mat-icon-button  *ngIf="mode !== 'view'" (click)="unlinkTaskModal(unlinkTask, row)">
+                            <mat-icon>link_off</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row mat-header-row *matHeaderRowDef="displayObjectivesColumns"></mat-header-row>
+                <mat-row mat-row *matRowDef="let row; columns: displayObjectivesColumns;"></mat-row>
+                <tr class="mat-row flex text-center" *matNoDataRow>
+                    <td class="mat-cell w-full mt-2">No Data</td>
+                </tr>
+            </mat-table>
+            <mat-paginator #metaPaginator="matPaginator" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons  aria-label="Select page of periodic elements"></mat-paginator>
+        </div>
+    </ng-container>
+
+</section>
+<section class="bg-white section p-4 mt-10">
+
+    <div class="flex flex-row justify-between w-full space-x-4 text-sm mb-3">
+        <div>
+            <p class="font-bold text-lg">{{("Procedure" | labelReplacement)| async}}s</p>
+        </div>
+        <div *ngIf="mode !== 'view'">
+            <div  class="add-position-button" (click)="openFlypanel(linkagesProcedures)" [ngClass]="{'disabled-pointer': mode === 'view'}">
+                <img src="./assets/icons/icon-link-item.svg" alt="icon_link_svg" style="margin-right: 10px" />
+                <span style="cursor: pointer">Link {{("Procedure" | labelReplacement)| async}}s</span>
+            </div>
+        </div>
+    </div>
+    <div class="rounded-t-md py-2 space-x-2" *ngIf="procedureSelection.hasValue() && !isProcedureUnlink">
+        <mat-toolbar class="h-28 app-toolbar-sticky w-full h-100-important d-block px-3 py-1 ">
+          <div class="flex flex-row items-center space-x-4 w-full justify-between">
+            <span class="text-sm">
+              {{ procedureSelection.selected.length }} {{("Procedure" | labelReplacement)| async}}{{ procedureSelection.selected.length > 1 ? 's' : '' }} selected
+            </span>
+            <div class="flex flex-row space-x-4 m-3 text-sm float-right">
+              <app-button color="secondary" text="Unlink {{('Procedure' | labelReplacement)| async}}s" (clicked)="unlinkProceduresModalAsync(unlinkProcedures)" size="sm" icon="link_off"
+                iconPosition="left">
+              </app-button>
+            </div>
+          </div>
+        </mat-toolbar>
+    </div>
+    <div *ngIf="isProcedureLinkUnlink" class="d-flex justify-content-center align-items-center">
+        <app-spinner ></app-spinner>
+    </div>
+    <ng-container *ngIf="!isProcedureLinkUnlink">
+        <div class="table-list">
+            <mat-table [dataSource]="proceduresDataSource" matSort  #procedureSort="matSort">
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox
+                          (change)="$event ? masterToggleProcedures() : null"
+                          [checked]="procedureSelection.hasValue() && isAllProceduresSelected()"
+                          [indeterminate]="procedureSelection.hasValue() && !isAllProceduresSelected()"
+                          [disabled]="mode === 'view'"
+                        >
+                        </mat-checkbox>
+                      </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? procedureSelection.toggle(row) : null"
+                            [checked]="procedureSelection.isSelected(row)"
+                            [disabled]="mode === 'view'">
+                        </mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="number">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> # </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"> {{row.number}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="description">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="action">
+                    <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row">
+                        <button mat-icon-button *ngIf="mode !== 'view'"
+                        (click)="unlinkProcedureModal(unlinkProcedure, row)">
+                            <mat-icon>link_off</mat-icon>
+                        </button>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row mat-header-row *matHeaderRowDef="displayProceduresColumns"></mat-header-row>
+                <mat-row mat-row *matRowDef="let row; columns: displayProceduresColumns;"></mat-row>
+                <tr class="mat-row flex text-center" *matNoDataRow>
+                    <td class="mat-cell w-full mt-2">No Data</td>
+                </tr>
+            </mat-table>
+            <mat-paginator #procedurePaginator="matPaginator" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons  aria-label="Select page of periodic elements"></mat-paginator>
+        </div>
+    </ng-container>
+
+</section>
+
+<ng-template #linkagesPositions>
+    <app-fly-panel-add-positions-linkages (closed)="flyPanelService.close()"
+        (newPositionLinked)="handleNewPositionsLinked($event)" [inputSimScenariosId]="inputSimScenariosId"
+        [linkedPositionIds]="linkedPositionIds">
+    </app-fly-panel-add-positions-linkages>
+</ng-template>
+<ng-template #linkagesObjectives>
+    <app-fly-panel-add-objectives-linkages (closed)="flyPanelService.close()"
+        [inputSimScenariosId]="inputSimScenariosId" (newObjectivesLinked)="handleObjectivesLinked($event)"
+        (newTasksLinked)="handleTasksLinked($event)" [linkedObjectiveIds]="linkedObjectiveIds" [linkedTaskIds]="linkedTaskIds">
+    </app-fly-panel-add-objectives-linkages>
+</ng-template>
+<ng-template #linkagesProcedures>
+    <app-fly-panel-add-procedures-linkages
+        (closed)="flyPanelService.close()" (newProceduresLinked)="handleProceduresLinked($event)"
+        [linkedProceduresIds]="linkedProceduresIds">
+    </app-fly-panel-add-procedures-linkages>
+</ng-template>
+
+<ng-template #unlinkTask>
+    <app-qtd-dialogue
+      header="Unlink {{('Task' | labelReplacement)| async}}/Objective"
+      [isHTML]="true"
+      [isQuestion]="true"
+      [description]="unlinkTaskandEODesc"
+      cancelText="No"
+      confirmText="Yes"
+      (canceled)="dialog.closeAll()"
+      (confirmed)="unlinkObjectiveAsync()"
+    >
+    </app-qtd-dialogue>
+  </ng-template>
+<ng-template #unlinkObjectives>
+    <app-dialogue-unlink-objectives
+      header="Unlink Objectives"
+      [description]="unlinkObjectivesDesc"
+      cancelText="No"
+      confirmText="Yes"
+      (canceled)="isObjectiveUnlink=false;dialog.closeAll()"
+      (confirmed)="isObjectiveUnlink = true;removeTasksandObjAsync();dialog.closeAll()"
+      [objectivesToUnlink] = "objectiveSelection.selected"
+    >
+    </app-dialogue-unlink-objectives>
+</ng-template>
+<ng-template #unlinkProcedures>
+    <app-dialogue-unlink-multiple-records
+      header="Unlink {{('Procedure' | labelReplacement)| async}}s"
+      [description]="unlinkProcedureDesc"
+      cancelText="No"
+      confirmText="Yes"
+      (canceled)="isProcedureUnlink=false;dialog.closeAll()"
+      (confirmed)="isProcedureUnlink = true; removeProcedureAsync();dialog.closeAll()"
+      [recordsToUnlink] = "procedureSelection.selected"
+    >
+    </app-dialogue-unlink-multiple-records>
+</ng-template>
+
+<ng-template #unlinkProcedure>
+    <app-qtd-dialogue
+      header="Unlink {{('Procedure' | labelReplacement)| async}}"
+      [isHTML]="true"
+      [isQuestion]="true"
+      [description]="unlinkProcedureDesc"
+      cancelText="No"
+      confirmText="Yes"
+      (canceled)="dialog.closeAll()"
+      (confirmed)="unlinkProcedureAsync()"
+    >
+    </app-qtd-dialogue>
+</ng-template>
+
+  <ng-template #unlinkPosition>
+    <app-qtd-dialogue
+      header="Unlink {{('Position' | labelReplacement)| async}}"
+      [isHTML]="true"
+      [isQuestion]="true"
+      [description]="unlinkPositionDesc"
+      cancelText="No"
+      confirmText="Yes"
+      (canceled)="dialog.closeAll()"
+      (confirmed)="removePositionAsync()"
+    >
+    </app-qtd-dialogue>
+  </ng-template>

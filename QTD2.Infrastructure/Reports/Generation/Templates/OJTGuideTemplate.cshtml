@@ -1,0 +1,413 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        border-collapse:collapse;
+    }
+
+    .questionAnswer > p {
+        margin: 0;
+    }
+
+    .questionAnswer > p {
+        margin: 0;
+    }
+
+    .fix-image img {
+        width: 100% !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="width:98%;margin:auto;border-collapse:collapse">
+    <!-- Header -->
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.Tasks != null && Model.Tasks.Any())
+    {
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+
+                <table style="width:100%;border-collapse:collapse">
+                    <tbody>
+                        @if (Model.ReportBy == "Position" && Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                        {
+                            <tr>
+                                <td style="border: none !important; font-size:18px; padding-top:22px;padding-bottom:15px" colspan="12">
+                                    <div style="display:flex">
+                                        <span style="flex:1 1 20%;"><b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b></span>
+                                        <span style="flex:1 1 80%"><b>@Model.ReportByName</b></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                        @if (Model.ReportBy == "ILA" && Model.DisplayColumns.Where(r => r == "ILA").Count() > 0)
+                        {
+                            <tr>
+                                <td style="border: none !important; font-size:18px; padding-top:22px;padding-bottom:15px" colspan="12">
+                                    <div style="display:flex">
+                                        <span style="flex:1 1 20%;"><b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b></span>
+                                        <span style="flex:1 1 80%"><b>@Model.ReportByName</b></span>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+
+                        <tr>
+                            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+                                @{int k = 1;}
+
+                                @{
+                                    bool isPsuedoTaskVisible = Model.DisplayColumns.Where(r => r == "Include Pseudo Tasks").Count() > 0;
+                                }
+                                @foreach (var task in Model.Tasks)
+                                {
+                                    @if (isPsuedoTaskVisible || task.SubdutyArea.DutyArea.Letter != "P")
+                                    {
+                                        <div class="@(k%2==0?"strip-dark":"")"></div>
+                                        <div style="padding:5px;" id="@("page" + k)" class="@(k%2==0?"strip":"")">
+                                            <table style="width:100%;border-collapse:collapse;margin-top:15px">
+                                                <tbody>
+                                                    <tr>
+                                                        <td style="border: none !important; font-size: 18px; padding-bottom: 15px" colspan="12">
+                                                            <div style="display: flex; align-items: flex-start">
+                                                                <span style="flex:1 1 20%"><b>@(task.IsReliability ? "*" : "")@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)): @task.SubdutyArea.DutyArea.Letter @task.SubdutyArea.DutyArea.Number.@task.SubdutyArea.SubNumber.@task.Number - </b></span>
+                                                                <span style="flex:1 1 80%"><b>@task.Description</b></span>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="width: 20%;border: none !important;"><b>R-R* @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b></td>
+                                                        <td style="width: 80%;border: none !important;">
+                                                            <input type="checkbox" checked="@task.IsReliability" disabled />
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border: none !important;text-align: left;font-size:14px;padding-bottom:15px">*R-R is Reliability Related</td>
+                                                    </tr>
+                                                    @if (Model.DisplayColumns.Contains("Show Task Specific Suggestions"))
+                                                     {
+                                                         <tr>
+                                                             <td style="border: none;" colspan="12">
+                                                                 <table class="table" style="margin:0; width: 100%;">
+                                                                     <tr>
+                                                                         <td style="border: none; border-bottom: 2px solid #000; padding: 0.5rem 0;" colspan="12">
+                                                                             <b>@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Specific Suggestions</b>
+                                                                         </td>
+                                                                     </tr>
+                                                                     @if (task.Task_Suggestions.Any())
+                                                                     {
+                                                                         int suggestionCounter = 1;
+                                                                         foreach (var taskSuggestion in task.Task_Suggestions)
+                                                                         {
+                                                                             <tr>
+                                                                                 <td style="border: none; padding: 0.5rem;border-bottom: 2px solid #000; width: 8%;">
+                                                                                     @suggestionCounter
+                                                                                 </td>
+                                                                                <td style="border: none; padding: 0.5rem;border-bottom: 2px solid #000; width: 92%;">
+                                                                                     @(new RawString(taskSuggestion.Description))
+                                                                                 </td>
+                                                                             </tr>
+                                                                             @{
+                                                                                 suggestionCounter++;
+                                                                             }
+                                                                         }
+                                                                     }
+                                                                 </table>
+                                                             </td>
+                                                         </tr>
+                                                     }
+                                                     
+                                                     @if (Model.DisplayColumns.Contains("Show Task Details"))
+                                                     {
+                                                         <tr>
+                                                             <td style="border: none !important; text-align: left; padding: 0.4rem; padding-left: 40px;" colspan="12">
+                                                                 <table style="width: 100%; border-collapse: collapse;">
+                                                                     <tr>
+                                                                         <td style="border: none; padding: 0.4rem;vertical-align:top"><b>Conditions:</b></td>
+                                                                         <td style="border: none; padding: 0.4rem;">@(new RawString(task.Conditions))</td>
+                                                                     </tr>
+                                                                    <tr>
+                                                                        <td style="border: none; padding: 0.4rem; vertical-align: top;">
+                                                                            <b>@("Tool".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b>
+                                                                        </td>
+                                                                        <td style="border: none; padding: 0.4rem;">
+                                                                            @(new RawString(String.Join("", task.Task_Tools.Select(t => $"<p>{t.Tool.Name}</p>"))))
+                                                                        </td>
+                                                                    </tr>
+                                                                     <tr>
+                                                                         <td style="border: none; padding: 0.4rem;vertical-align:top"><b>References:</b></td>
+                                                                         <td style="border: none; padding: 0.4rem;">@(new RawString(task.References))</td>
+                                                                     </tr>
+                                                                     <tr>
+                                                                         <td style="border: none; padding: 0.4rem;vertical-align:top"><b>Criteria:</b></td>
+                                                                         <td style="border: none; padding: 0.4rem;">@(new RawString(task.Criteria))</td>
+                                                                     </tr>
+                                                                 </table>
+                                                             </td>
+                                                         </tr>
+                                                     }
+                                                    <tr></tr>
+                                                    @if (Model.DisplayColumns.Contains("Show Procedures linked to the Tasks"))
+                                                    {
+                                                        <tr>
+                                                            <td style="border: none !important; padding-top: 15px; text-align: left; padding-left: 40px;" colspan="12">
+                                                                <span style="padding: 0.4rem;"><b>@("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b></span>
+                                                            </td>
+                                                        </tr>
+
+                                                        @if (task?.Procedure_Task_Links != null && task.Procedure_Task_Links.Any())
+                                                        {
+                                                            @foreach (var procedure in task.Procedure_Task_Links.Where(x => x.Procedure != null && x.Procedure.Active))
+                                                            {
+                                                                <tr>
+                                                                    <td style="border: none; width: 25%;padding-left: 40px;"><span style="padding: 0.4rem;">@procedure.Procedure.Number</span></td>
+                                                                    <td style="border: none; padding: 0.4rem; width: 75%;">@procedure.Procedure.Title</td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                    <tr></tr>
+                                                    @if (Model.DisplayColumns.Where(r => r == "Include Safety Hazards").Count() > 0)
+                                                    {
+                                                        <tr>
+                                                            <td style="border: none !important; padding-top: 15px; text-align: left; padding-left: 40px;" colspan="12">
+                                                                <span style="padding: 0.4rem;"><b>@("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b></span>
+                                                            </td>
+                                                        </tr>
+                                                        @if (task?.SafetyHazard_Task_Links != null && task.SafetyHazard_Task_Links.Any())
+                                                        {
+                                                            @foreach (var safetyHazard in task.SafetyHazard_Task_Links.Where(x => x.SaftyHazard != null && x.SaftyHazard.Active).OrderBy(e => e.SaftyHazard.Number))
+                                                            {
+                                                                <tr>
+                                                                    <td style="border: none; width: 25%;padding-left: 40px;"><span style="padding: 0.4rem;">@safetyHazard.SaftyHazard.Number</span></td>
+                                                                    <td style="border: none; padding: 0.4rem; width: 75%;">@safetyHazard.SaftyHazard.Title</td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                    <tr></tr>
+                                                    @if (Model.DisplayColumns.Any(r => r == "Show EO linked to the Tasks"))
+                                                    {
+                                                        <tr>
+                                                            <td style="border: none !important; padding-top: 15px; text-align: left; font-weight: 600; padding-left: 40px;" colspan="12">
+                                                                <span style="padding: 0.4rem;"><b>@("Enabling Objective".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b></span>
+                                                            </td>
+                                                        </tr>
+
+                                                        @if (task?.Task_EnablingObjective_Links != null && task.Task_EnablingObjective_Links.Any())
+                                                        {
+                                                            @foreach (var eo in task.Task_EnablingObjective_Links.Where(x => x.EnablingObjective != null && x.EnablingObjective.Active))
+                                                            {
+                                                                <tr>
+                                                                    <td style="border: none; width: 25%;padding-left: 40px;"><span style="padding: 0.4rem;">@eo.EnablingObjective.FullNumber</span></td>
+                                                                    <td style="border: none; padding: 0.4rem; width: 75%;">@eo.EnablingObjective.Description</td>
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                    <tr>
+                                                        <td style="border: none !important;" colspan="12">
+                                                            <table style="width: 100%; border-collapse: collapse;">
+                                                                <thead>
+                                                                    <tr>
+                                                                        <td style="border: none !important; padding-top: 15px" colspan="12"><b>Performance Checksheet:</b></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <th style="border: 1px solid; border-left: 0; padding: 0.5rem 0.3rem; vertical-align: top; width: 5%;">Trainer Initial/Date</th>
+                                                                        <th style="border: 1px solid; padding: 0.5rem 0.3rem; vertical-align: top; width: 2%;">Check</th>
+                                                                        <th style="border: 1px solid; padding: 0.5rem 0.3rem; vertical-align: top; width: 12%;">Step #</th>
+                                                                        <th style="border: 1px solid; padding: 0.5rem 0.3rem; vertical-align: top;width: 53%;">Step Description</th>
+                                                                        <th style="border: 1px solid; padding: 0.5rem 0.3rem; vertical-align: top;width: 15%;">Training Method</th>
+                                                                        <th style="border: 1px solid; border-right: 0; padding: 0.5rem 0.3rem; vertical-align: top;width: 13%;">Comments</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody>
+                                                                    @foreach (var taskStep in task.Task_Steps.OrderBy(x => x.Number))
+                                                                    {
+                                                                        <tr>
+                                                                            <td style="padding: 0.5rem 0.3rem; border-bottom: 1px solid;width: 5%;"></td>
+                                                                            <td style="padding: 0.5rem 0.3rem; border-bottom: 1px solid; text-align: center;width: 2%;"><input type="checkbox" disabled /></td>
+                                                                            <td style="padding: 0.5rem 0.3rem; border-bottom: 1px solid;width: 12%;">@taskStep.Task.SubdutyArea.DutyArea.Letter @taskStep.Task.SubdutyArea.DutyArea.Number.@taskStep.Task.SubdutyArea.SubNumber.@taskStep.Task.Number.@taskStep.Number</td>
+                                                                            <td class="fix-image" style="padding: 0.5rem 0.3rem; border-bottom: 1px solid;width: 53%;">@(new RawString(taskStep.Description))</td>
+                                                                            <td style="padding: 0.5rem 0.3rem; border-bottom: 1px solid;width: 15%;">
+                                                                                <div style="display:flex;align-items:center;gap:10px"><input type="checkbox" disabled /> <span>Perform</span></div>
+                                                                                <div style="display:flex;align-items:center;gap:10px"><input type="checkbox" disabled /> <span>Simulate</span></div>
+                                                                                <div style="display:flex;align-items:center;gap:10px"><input type="checkbox" disabled /> <span>Discuss</span></div>
+                                                                            </td>
+                                                                            <td style="padding: 0.5rem 0.3rem; border-bottom: 1px solid;width: 13%;"></td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    @{
+                                                        bool showOnlyQuestion = Model.DisplayColumns.Where(r => r == "Show Task Questions Only").Count() > 0;
+                                                        bool showQuestionAnswer = Model.DisplayColumns.Where(r => r == "Show Task Questions and Answers").Count() > 0;
+                                                    }
+                                                    @if (showOnlyQuestion || showQuestionAnswer)
+                                                    {
+                                                        <tr>
+                                                            <td style="border: none;" colspan="12">
+                                                                <table class="table" style="margin:0; width:100%">
+                                                                    <tr>
+                                                                        <td style="border: none !important; padding: 0; padding-bottom: 20px" colspan="12">
+                                                                            <table style="width: 100%; border-collapse: collapse;">
+                                                                                <tr>
+                                                                                    <td style="border: none; border-bottom: 2px solid #000; padding: 0.75rem 0;" colspan="12">
+                                                                                        <b>
+                                                                                            @((showQuestionAnswer) ? "Questions & Answers" : "Questions")
+                                                                                        </b>
+                                                                                    </td>
+                                                                                </tr>
+                                                                                @{
+                                                                                    int counter = 1;
+                                                                                }
+                                                                                @foreach (var taskQuestions in task.Task_Questions)
+                                                                                {
+                                                                                    <tr >
+                                                                                        <td style="width: 7%; padding: 0.5rem 0.3rem;border: none;">
+                                                                                            @counter
+                                                                                        </td>
+                                                                                        <td style="width: 93%; padding: 0.5rem 0.3rem;border: none;" class="questionAnswer">
+                                                                                            @(new RawString(taskQuestions.Question))
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                    @if (showQuestionAnswer)
+                                                                                    {
+                                                                                        <tr style="border-bottom: 2px solid #000;">
+                                                                                            <td style="width: 7%; padding: 0.5rem 0.3rem;border: none;">
+                                                                                                Answer:
+                                                                                            </td>
+                                                                                            <td style="width: 93%; padding: 0.5rem 0.3rem;border: none;" class="questionAnswer">
+                                                                                                @(new RawString(taskQuestions.Answer))
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                    }
+                                                                                    @{
+                                                                                        counter++;
+                                                                                    }
+                                                                                }
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    }
+
+                                                    <tr>
+                                                        <td style="padding-top:15px;text-align:left;border:0" colspan="12">
+                                                            <table style="width:100%">
+                                                                <tr>
+                                                                    <th style="border:0; text-align:left;padding:0;padding-bottom:25px;border-bottom:1px solid #000"> Trainee Signature and Date</th>
+                                                                    <th style="border: 0; width: 30%"></th>
+                                                                    <th style="border: 0; text-align: left; padding: 0; padding-bottom: 25px; border-bottom: 1px solid #000 "> Trainer Signature and Date</th>
+                                                                    <th style="border: 0;  width:10%"></th>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="border: 0; text-align: left; padding: 0; padding-top: 10px; padding-bottom: 25px; border-bottom: 1px solid #000"> Trainee Signature</td>
+                                                                    <td style="border: 0; width: 30%"></td>
+                                                                    <td style="border: 0; text-align: left; padding: 0; padding-top: 10px; padding-bottom: 25px; border-bottom: 1px solid #000"> Trainer Signature</td>
+                                                                    <td style="border: 0;width:10%"></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="border: 0; text-align: left; padding: 0; padding-top: 10px; padding-bottom: 25px;"> Date</td>
+                                                                    <td style="border: 0; width: 30%"></td>
+                                                                    <td style="border: 0; text-align: left; padding: 0; padding-top: 10px; padding-bottom: 25px;"> Date</td>
+                                                                    <td style="border: 0;width:10%"></td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr></tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        @if (!task.Equals(Model.Tasks.Last()))
+                                        {
+                                            <div style="page-break-after:always"></div>
+                                            <div class="@(k%2==0?"strip-dark":"")"></div>
+                                        }
+                                        @{k++;
+                                        }
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Tasks.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

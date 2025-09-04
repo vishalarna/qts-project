@@ -1,0 +1,170 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .header-row th:first-child {
+        border-left: 0 !important;
+    }
+
+    .header-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table" style="width:100%;border-collapse:collapse!important;margin-bottom:0px">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="display: -webkit-box; -webkit-box-pack: justify;display: flex; align-items: center; justify-content: space-between;  margin: 0 0 10px 0;border-bottom: 3px solid #020378;" ">
+
+            @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+            {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+            }
+            else
+            {
+                    <div></div>
+            }
+                <div style="text-align: center; ">
+                    <b style="font-size: 1.8rem; color: #0000a6;">@Model.Title </b>
+                    <h6><b style="text-align:center; font-family: sans-serif !important; margin-top: 5px; font-size: 18px;  color: #0000a6; padding-bottom: 7px;">@($"{Model.DateRange[0].ToShortDateString()} - {Model.DateRange[1].ToShortDateString()}")</b> </h6>
+                </div>
+                <div><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="12" style="border: none; padding-top: 0px;" class="strip-container">
+            @{
+                int j = 1;
+            }
+            @foreach (var ila in Model.ClassSchedules.Select(r => r.ILA).Distinct())
+            {
+                <div class="@(j%2==0?"strip-dark":"")"></div>
+                <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                    <table style="width:100%;border-collapse:collapse;margin-bottom:10px">
+                        <tbody style="border-top: none !important; border-bottom: 1px solid #020378;">
+                            @if (Model.DisplayColumns.Where(r => r == "Prov. ID").Count() > 0)
+                            {
+                                <tr style="font-size: 1.2rem; font-weight: 600;">
+                                    <td style="border: none !important;" colspan="5"><b><div style="display:inline-block;">Prov.ID:</div> @ila.Provider?.Number</b></td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "ILA").Count() > 0)
+                            {
+                                <tr style="font-size: 1rem; font-weight: 600;">
+                                    <td style="border: none !important;padding-bottom:10px" colspan="5"><b><div style="display:inline-block;">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</div> @ila.Number / @ila.Name</b></td>
+                                </tr>
+                            }
+
+                            <tr class="header-row">
+                                @if (Model.DisplayColumns.Where(r => r == "Year").Count() > 0)
+                                {
+                                    <th style=" border: none; border: 1px solid #000; text-align: left; width:100px;">Year</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Class Start Date").Count() > 0)
+                                {
+                                    <th style=" border: none; border: 1px solid #000; text-align: left; width: 140px;">Class Start Date</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Class End Date").Count() > 0)
+                                {
+                                    <th style=" border: none; border: 1px solid #000; text-align: left; width: 140px;">Class End Date</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Instructor").Count() > 0)
+                                {
+                                    <th style=" border: none; border: 1px solid #000; text-align: left;">@("Instructor".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Location").Count() > 0)
+                                {
+                                    <th style=" border: none; border: 1px solid #000; text-align: left;">@("Location".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                }
+                            </tr>
+
+                            @foreach (var classes in Model.ClassSchedules.Where(r => r.ILA == ila).OrderBy(c => c.StartDateTime.Year).ThenBy(c => c.StartDateTime))
+                            {
+                                <tr>
+                                    @if (Model.DisplayColumns.Where(r => r == "Year").Count() > 0)
+                                    {
+                                        <td style=" border: none !important;">@classes.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).Year</td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Class Start Date").Count() > 0)
+                                    {
+                                        <td style=" border: none !important;">@classes.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Class End Date").Count() > 0)
+                                    {
+                                        <td style=" border: none !important;">@classes.EndDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Instructor").Count() > 0)
+                                    {
+                                        <td style=" border: none !important;">@(classes.Instructor == null ? "" : classes.Instructor.InstructorName)</td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Location").Count() > 0)
+                                    {
+                                        <td style=" border: none !important;">@(classes.Location == null ? "" : classes.Location.LocName)</td>
+                                    }
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+                @if (!ila.Equals(Model.ClassSchedules.Select(r => r.ILA).Distinct().Last()))
+                {
+                    <div style="page-break-after:always"></div>
+                    <div class="@(j%2==0?"strip-dark":"")"></div>
+                }
+                @{
+                    j++;
+                }
+            }
+        </td>
+    </tr>
+            @if (Model.ClassSchedules.Select(r => r.ILA).Distinct().Count() <= 0)
+            {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+            }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+            @for (int i = 1; i <= Model.ClassSchedules.Select(r => r.ILA).Distinct().Count(); i++)
+            {
+                  <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+            }
+</div>

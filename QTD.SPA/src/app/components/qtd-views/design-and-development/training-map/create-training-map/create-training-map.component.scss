@@ -1,0 +1,59 @@
+.card_box_one {
+  background-color: white;
+  height: 91px;
+  font-weight: 500;
+  font-family: Roboto;
+  font-size: 22px;
+  padding-left: 85px;
+  padding-top: 39px;
+}
+
+.card_box_two {
+  height: 86vh;
+  background-color: rgb(246, 246, 246);
+}
+
+.heading {
+  font-size: 141%;
+  margin-top: 13px;
+  margin-bottom: 13px;
+  margin-left: 36px;
+  font-weight: 400;
+}
+
+.subheading {
+  margin-left: 40px;
+  font-weight: 400;
+  font-size: 80%;
+  color: rgb(133, 133, 133);
+}
+
+.new_position {
+  margin-top: 0px;
+  font-weight: 450;
+  font-size: 15px;
+}
+
+.dropdown {
+  width: 100%;
+}
+
+.new_training {
+  margin-top: 0px;
+  font-weight: 450;
+  font-size: 15px;
+}
+
+.training_program {
+  margin-left: 58px;
+  margin-right: 385px;
+}
+
+.training_map_dropdown {
+  margin-left: 56px;
+  margin-top: 12px;
+}
+
+mat-drawer-container {
+  height: 100%;
+}

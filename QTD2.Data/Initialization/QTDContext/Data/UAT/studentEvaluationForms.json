@@ -1,0 +1,35 @@
+[
+  {
+    "Id": 1,
+    "Name": "Student Evaluation Form1",
+    "RatingScaleId": 1,
+    "IsShared": false,
+    "IsAvailableForAllILAs": true,
+    "IsNAOption": false,
+    "IncludeComments": false,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 2,
+    "Name": "Student Evaluation Form2",
+    "RatingScaleId": 2,
+    "IsShared": false,
+    "IsAvailableForAllILAs": false,
+    "IsNAOption": false,
+    "IncludeComments": false,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 3,
+    "Name": "Student Evaluation Form3",
+    "RatingScaleId": 3,
+    "IsShared": false,
+    "IsAvailableForAllILAs": true,
+    "IsNAOption": false,
+    "IncludeComments": false,
+    "Deleted": false,
+    "Active": true
+  }
+]

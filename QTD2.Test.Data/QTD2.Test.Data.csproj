@@ -1,0 +1,13 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QTD2.API.Authentication\QTD2.API.Authentication.csproj" />
+    <ProjectReference Include="..\QTD2.API.QTD\QTD2.API.QTD.csproj" />
+    <ProjectReference Include="..\QTD2.Application\QTD2.Application.csproj" />
+    <ProjectReference Include="..\QTD2.Data\QTD2.Data.csproj" />
+    <ProjectReference Include="..\QTD2.Domain\QTD2.Domain.csproj" />
+    <ProjectReference Include="..\QTD2.Infrastructure\QTD2.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

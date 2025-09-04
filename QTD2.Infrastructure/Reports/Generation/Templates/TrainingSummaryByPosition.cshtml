@@ -1,0 +1,292 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        table-layout: fixed;
+        width: 100%;
+    }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" style="width: 100%; border-collapse: collapse" class="table">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div class="header-combined-line" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img class="header-logo" src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.Positions.Count() > 0)
+    {
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+                @{
+                    int j = 1;
+                }
+                @foreach (var position in Model.Positions)
+                {
+                    <div class="@(j%2==0?"strip-dark":"")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j%2==0?"strip":"")">
+                        <table style="width:100% ;border-collapse:separate;border-spacing:0">
+                            <tbody>
+                                <tr>
+                                    <td colspan="15" style="border: none;font-size: 1.4rem; font-weight: 600;padding:0.3rem ">
+                                        <b style="font-size:24px">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b> <b> @position.PositionTitle</b>
+                                        @if(Model.UseOrganizations)
+                                        {
+                                            <p>
+                                                <b style="font-size:24px">@("Organization".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b> <b>@string.Join(", ", Model.Organizations)</b>
+                                            </p>
+                                        }
+                                    </td>
+                                </tr>
+
+                                <tr style="border-bottom: 2px solid #000; border-top:none" class="table-header-row">
+                                    @if (Model.DisplayColumns.Where(r => r == "Employee Name / Number").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border:1px solid #000; border-left:0; border-right:0;vertical-align:bottom;width:18%;  padding: 8px;" rowspan="2">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name / #</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Cert Area").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid #000; border-right: 0; vertical-align: bottom;width:8%;  padding: 8px;" rowspan="2">Cert Area</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Cert Date").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid #000; border-right: 0; vertical-align: bottom;width:10%;  padding: 8px;" rowspan="2">Cert Date</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Cert Number").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid #000; border-right: 0; vertical-align: bottom;width:12%; padding: 8px;" rowspan="2">Cert  #</th>
+                                    }
+                                    <th style="border: 1px solid #000; vertical-align: bottom; border: 1px solid #000; border-right: 0; padding: 0px 0px 0px 1px !important; text-align: center;width:18%;" colspan="3">  CEHs Toward @("Certification".ReplaceLabel(Model.ClientSettings_LabelReplacements)) </th>
+                                    <th style="border: 1px solid #000; vertical-align: bottom; border: 1px solid #000; border-right: 0; padding: 0px 0px 0px 1px !important; text-align: center;width:10%" colspan="2">  PER-005 Reqd. </th>
+                                    <th style="border: 1px solid #000; vertical-align: bottom; border: 1px solid #000; padding: 0px 0px 0px 1px !important; text-align: center;border-right:0;width:30%" colspan="6">Regional Reqd.</th>
+                                </tr>
+                                <tr>
+                                    @if (Model.DisplayColumns.Where(r => r == "Total CEHs").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border:1px solid #000; border-top:0; border-right:0; width:6%; padding: 8px;">Total CEHs</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "NERC Standards").Count() > 0)
+                                    {
+                                        <th style="text-align: center;border:1px solid; border-top:0; border-right:0; width:6%; padding: 8px;">NERC std</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Simulation Hours").Count() > 0)
+                                    {
+                                        <th style="text-align: left; border: 1px solid; border-top: 0; border-right: 0; width:6%; padding: 8px; ">Sim Hrs</th>
+                                    }
+
+                                    <th style="text-align: center; border: 1px solid; border-top: 0; border-right: 0; width:5%;padding: 8px; ">EOP</th>
+
+                                    @if (Model.DisplayColumns.Where(r => r == "Met Annual Requirement").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid; border-top: 0; border-right: 0 ; width:5%; padding: 8px;">Met Annual Reqt?</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Regional").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid; border-top: 0; border-right: 0 ; width:5%;padding: 8px;">Reg</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Regional - Met Annual Requirement").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid; border-top: 0; border-right: 0; width:3%;padding: 8px; ">Met Annual Reqt?</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Regional 2").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid; border-top: 0; border-right: 0; width:5%;padding: 8px; ">Reg2</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Prof").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid; border-top: 0; border-right: 0 ; width:5%;padding: 8px;">Prof</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Other").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid; border-top: 0; border-right: 0; width:5%;padding: 8px; ">Other</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Total Training Hours").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid; border-top: 0; border-right: 0; width:5%;padding: 8px; ">Total Training Hours</th>
+                                    }
+                                </tr>
+                                @foreach (var employeePosition in position.EmployeePositions)
+                                {
+                                    @{
+                                        var certStatus = Model.CertificationFulfillmentStatuses.Where(r => r.EmployeeId == employeePosition.EmployeeId).FirstOrDefault();
+                                        var renewalDate = certStatus?.RenewalDate == null ? (certStatus?.IssueDate)?.ToShortDateString() : certStatus?.RenewalDate?.ToShortDateString();
+                                    }
+
+                                    <tr class="table-data-row">
+                                        @if (Model.DisplayColumns.Where(r => r == "Employee Name / Number").Count() > 0)
+                                        {
+                                            <td style="border: none ; text-align: center; border-bottom: 1px solid #000; width:18%; white-space: nowrap;padding: 8px;">@employeePosition.Employee?.Person.LastName ,@employeePosition.Employee?.Person.FirstName /@employeePosition.Employee?.EmployeeNumber</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Cert Area").Count() > 0)
+                                        {
+                                            <td style="border: none; text-align: center; border-bottom: 1px solid #000;width:8%;padding: 8px;">  @certStatus?.CertificationAcronym</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Cert Date").Count() > 0)
+                                        {
+                                            <td style="border: none; text-align: center ;  border-bottom: 1px solid #000;width:10%;padding: 8px;"> @renewalDate </td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Cert Number").Count() > 0)
+                                        {
+                                            <td style="border: none ;text-align: center; border-bottom: 1px solid #000;width:12%;padding: 8px; ">@certStatus?.CertificationNumber</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Total CEHs").Count() > 0)
+                                        {
+                                            <td style="border: none ; text-align:center;  border-bottom:1px solid #000; width:6;padding: 8px;%">@certStatus?.FulfillmentRecords?.Sum(x => x.CEHAwarded)</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "NERC Standards").Count() > 0)
+                                        {
+                                            @{
+                                                var nercStd = certStatus?.FulfillmentRecords?.SelectMany(record => record.CertificationFulfillmentSubRequirements).Where(subReq => subReq.CertificationSubRequirementName == "Standards").Sum(subReq => subReq.AwardedHours);
+                                            }
+                                            <td style="border-bottom:1px solid #000; text-align:center; width:6%;padding: 8px;">@nercStd</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Simulation Hours").Count() > 0)
+                                        {
+                                            @{
+                                                var simHrs = certStatus?.FulfillmentRecords?.SelectMany(record => record.CertificationFulfillmentSubRequirements).Where(subReq => subReq.CertificationSubRequirementName == "Simulations").Sum(subReq => subReq.AwardedHours);
+                                            }
+                                            <td style="border-bottom:1px solid #000; text-align:center;width:6% ;padding: 8px;">@simHrs</td>
+                                        }
+
+                                        @{
+                                            var eopHrs = Model.EmergencyResponseCertificationFulfillmentStatuses
+                                            .Where(cfs =>
+                                                (cfs.EmployeeCertificationId != null && cfs.EmployeeCertificationId == certStatus?.EmployeeCertificationId)
+                                                || (cfs.EmployeeCertificationHistoryId != null && cfs.EmployeeCertificationHistoryId == certStatus?.EmployeeCertificationHistoryId))
+                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                            .Sum(fr => fr.CEHAwarded);
+                                        }
+                                        <td style="border-bottom:1px solid #000; text-align:center; width:5%;;padding: 8px;">@eopHrs</td>
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Met Annual Requirement").Count() > 0)
+                                        {
+                                            @{
+                                                var totalCEHAwarded = certStatus?.FulfillmentRecords?.Sum(record => record?.CEHAwarded ?? 0) ?? 0;
+                                                bool metRequirement = totalCEHAwarded >= certStatus?.RequiredHours;
+
+                                                <td style="border-bottom:1px solid #000; width:5%; text-align:center;padding: 8px;"> @(metRequirement ? "Yes" : "No") </td>
+                                            }
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Regional").Count() > 0)
+                                        {
+                                            @{
+                                                var regCEHAwarded = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus?.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords).Sum(fr => fr.CEHAwarded);
+                                            }
+                                            <td style="border-bottom:1px solid #000; width:5%; text-align:center;padding: 8px;"> @regCEHAwarded </td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Regional - Met Annual Requirement").Count() > 0)
+                                        {
+                                            @{
+                                                var totalCEHAwarded = certStatus?.FulfillmentRecords?.Sum(record => record?.CEHAwarded ?? 0) ?? 0;
+                                                bool metRequirement = totalCEHAwarded >= certStatus?.RequiredHours;
+
+                                                <td style="border-bottom:1px solid #000; width:5%; text-align:center;padding: 8px;"> @(metRequirement ? "Yes" : "No") </td>
+                                            }
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Regional 2").Count() > 0)
+                                        {
+                                            @{
+                                                var reg2CEHAwarded = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus?.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords).Sum(fr => fr.CEHAwarded);
+                                            }
+                                            <td style="border-bottom:1px solid #000; width:5%; text-align:center;padding: 8px;">@reg2CEHAwarded</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Prof").Count() > 0)
+                                        {
+                                            @{
+                                                var profHours = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.ProfHoursCertificationId && cfs.EmployeeId == certStatus?.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords).Sum(fr => fr.CEHAwarded);
+                                            }
+                                            <td style="border-bottom:1px solid #000; width:5%; text-align:center;padding: 8px;">@profHours </td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Other").Count() > 0)
+                                        {
+                                            @{
+                                                var otherCEHAwarded = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.OtherCertificationId && cfs.EmployeeId == certStatus?.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords).Sum(fr => fr.CEHAwarded);
+                                            }
+                                            <td style="border-bottom:1px solid #000; width:5%; text-align:center;padding: 8px;">@otherCEHAwarded</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Total Training Hours").Count() > 0)
+                                        {
+                                            @{
+                                                var totalTrainingHoursAwarded = certStatus?.FulfillmentRecords?.Sum(record => record?.TotalTrainingHoursAwarded);
+                                            }
+                                            <td style="border-bottom:1px solid #000; width:5%; text-align:center;padding: 8px;">@totalTrainingHoursAwarded</td>
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (!position.Equals(Model.Positions.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j%2==0?"strip-dark":"")"></div>
+                    }
+                    @{ j++; }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Positions.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>
+

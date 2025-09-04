@@ -1,0 +1,42 @@
+:host ::ng-deep .task-list-action-items > .mat-table > .mat-header-row > .mat-header-cell,
+:host ::ng-deep .task-list-action-items > .mat-table > .mat-row > .mat-cell {
+    padding: 0.5rem 0.8rem;
+    flex: 1 1 10%;
+}
+
+:host ::ng-deep .task-list-action-items > .mat-table > .mat-header-row > .mat-header-cell:nth-child(3),
+:host ::ng-deep .task-list-action-items > .mat-table > .mat-row > .mat-cell:nth-child(3){
+    flex: 1 1 40%;
+}
+
+
+:host ::ng-deep .task-list-action-items .expanded-mat-table .mat-row,
+:host ::ng-deep .task-list-action-items .expanded-mat-table .mat-header-row{
+    border: none;
+}
+:host ::ng-deep .task-list-action-items .mat-row.example-detail-row{
+    min-height: unset;
+}
+
+:host ::ng-deep .task-list-action-items .mat-row.example-expanded-row, 
+:host ::ng-deep .task-list-action-items .mat-row.example-detail-row,
+.expanded-mat-table {
+    background-color: #F5FFED ;
+}
+:host ::ng-deep .task-list-action-items .mat-row.example-expanded-row{
+    border-bottom: 1px solid #5C9B31;
+}
+
+
+:host ::ng-deep .task-list-action-items .mat-row.example-expanded-row .mat-cell {
+  color: #5C9B31 ;
+}
+
+.step-controls-section {
+  padding: 1.5rem 2rem;
+  flex: 1 1 70%;
+  border-radius: 0.25rem;
+  border: 0.5px solid #e1e5e4;
+  background: #fff;
+  box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+}

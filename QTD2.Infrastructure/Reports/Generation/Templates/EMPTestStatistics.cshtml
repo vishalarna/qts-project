@@ -1,0 +1,832 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Entities.Core
+@using System.Text.Json
+@using System.Text.RegularExpressions;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+        table-layout: fixed;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .testitem-desc div{
+        max-width:500px;
+    }
+
+    .test-type-container{
+        padding-top:5px;
+    }
+
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    .bar-chart {
+        width: 100%;
+        margin-bottom: 20px;
+    }
+
+    .bar {
+        height: 30px;
+        display: flex;
+        align-items: center;
+        background-color: #EFA252;
+        border-radius: 5px;
+        position: relative;
+    }
+
+    .bar-fill {
+        height: 100%;
+        border-radius: 5px;
+        position: absolute;
+    }
+
+    .correct {
+        background-color: #3A6598;
+    }
+    .incorrect{
+        background-color: transparent;
+    }
+
+    .label {
+        text-align: center;
+        font-size: 14px;
+        font-weight: bold;
+        margin-top: 5px;
+    }
+
+    .percentage-text {
+        position: absolute;
+        color: #fff;
+        font-weight: bold;
+        font-size: 14px;
+        width: 100%; 
+        text-align: center; 
+    } 
+
+    .legend {
+        display: flex;
+        flex-direction: row;
+        justify-content: flex-start;
+        margin-top: 10px;
+    }
+
+    .legend-item {
+        display: flex;
+        align-items: center;
+        margin-right: 15px;
+    }
+
+    .legend-text {
+        font-size: 12px;
+    }
+
+    .bar-container .legend {
+        margin-left: 20px;
+    }
+</style>
+<table id="content-table" class="table" style="border-collapse:collapse;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.ClassSchedules.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{
+                    int j = 1;
+                }
+                @foreach (var cls in Model.ClassSchedules)
+                {
+                    @foreach (var ilaTraineeEval in cls.ILA.ILATraineeEvaluations)
+                    {
+                        var test = Model.Tests.Where(x => x.Id == ilaTraineeEval.TestId).FirstOrDefault();
+
+                        if (test == null) continue;
+
+                        <div class="@(j != 1 ? "strip-dark" : "")"></div>
+                        <div style="padding:5px;" id="@("page" + j)" class="@(j != 1 ? "strip" : "")">
+                            <table style="width:100% ;border-collapse:collapse;">
+                                @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                {
+                                    <tr>
+                                        <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                            <b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title:</b>
+                                            <span style="font-size:0.8rem;margin-left:5px">@cls?.ILA?.Name</span>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "ILA Number").Count() > 0)
+                                {
+                                    <tr>
+                                        <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                            <b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Number:</b>
+                                            <span style="font-size:0.8rem;margin-left:5px">@cls?.ILA?.Number</span>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Class Start DateTime").Count() > 0)
+                                {
+                                    <tr>
+                                        <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                            <b>Class Start Date:</b>
+                                            <span style="font-size:0.8rem;margin-left:5px">@cls?.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat) @cls?.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToLongTimeString()</span>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Class End DateTime").Count() > 0)
+                                {
+                                    <tr>
+                                        <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                            <b>Class End Date:</b>
+                                            <span style="font-size:0.8rem;margin-left:5px">@cls?.EndDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat) @cls?.EndDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToLongTimeString()</span>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Test Title").Count() > 0)
+                                {
+                                    <tr>
+                                        <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                            <b>Test Title:</b>
+                                            <span style="font-size:0.8rem;margin-left:5px">@ilaTraineeEval?.Test?.TestTitle</span>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Test Type").Count() > 0)
+                                {
+                                    <tr>
+                                        <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                            <b>Test Type:</b>
+                                            <span style="font-size:0.8rem;margin-left:5px">@ilaTraineeEval.TestType?.Description</span>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Cut Score").Count() > 0)
+                                {
+                                    var testTypeDesc = ilaTraineeEval?.TestType?.Description;
+                                    var cutScore = "";
+
+                                    if (testTypeDesc == "Pretest")
+                                    {
+                                        cutScore = cls?.ClassSchedule_TestReleaseEMPSettings?.PreTestScore.ToString();
+                                    }
+                                    if (testTypeDesc == "Final Test" || testTypeDesc == "Retake")
+                                    {
+                                        cutScore = cls?.ClassSchedule_TestReleaseEMPSettings?.FinalTestPassingScore.ToString();
+                                    }
+
+                                    <tr>
+                                        <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                            <b>Cut Score :</b>
+                                            <span style="font-size:0.8rem;margin-left:5px">@cutScore</span>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Test Response Bar Chart").Count() > 0)
+                                {
+                                    <tr>
+                                        <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                            <b>Test Response Statistics :</b>
+                                            @foreach (var testItemLink in test.Test_Item_Links.OrderBy(t => t.Sequence))
+                                            {
+                                                var responses = cls.ClassSchedule_Rosters.Where(x => testItemLink.TestId == x.TestId).SelectMany(cr => cr.Responses).Where(r => r.TestItemId == testItemLink.TestItemId).ToList();
+                                                int totalResponses = responses.Count;
+                                                int correctResponses = responses.Count(r => r.IsCorrect == true);
+                                                int incorrectResponses = responses.Count(r => r.IsCorrect == false);
+
+                                                double correctPercentage = totalResponses > 0 ? (double)correctResponses / totalResponses * 100 : 0;
+                                                double incorrectPercentage = 100 - correctPercentage;
+                                               
+                                                <div class="bar-chart">
+                                                    @testItemLink?.TestItem?.Number -  @(new RawString(testItemLink?.TestItem?.Description))
+                                                   <div class="bar">
+                                                        <div class="bar-fill correct percentage-text" style="width: @correctPercentage%;">
+                                                            @(correctPercentage > 0 ? correctPercentage.ToString("0.0") + "%" : "")
+                                                        </div>
+                                                        <div class="bar-fill incorrect percentage-text" style="width: @incorrectPercentage%; right: 0;">
+                                                            @(incorrectPercentage > 0 ? incorrectPercentage.ToString("0.0") + "%" : "")
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            }
+                                            <div class="legend" style="display:-webkit-box; display: flex;">
+                                                <div class="legend-item" style="display:-webkit-box; display: flex;align-items: center;">
+                                                    <div style="width: 15px; height: 15px; background-color: #3A6598; margin-right: 5px;"></div>
+                                                    <div class="legend-text">Correct</div>
+                                                </div>
+                                                <div class="legend-item" style="display:-webkit-box; display: flex;align-items: center;">
+                                                    <div style="width: 15px; height: 15px; background-color: #EFA252; margin-right: 5px;"></div>
+                                                    <div class="legend-text">Incorrect</div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+
+                                <tr>
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <b>Test Response Details :</b>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border: 0; padding: 0" class="strip-container">
+                                        <div style="page-break-before:always"></div>
+                                        <table class="table">
+                                            <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 40%;">
+                                                    Test Question & Distractors
+                                                </th>
+                                                @if (Model.DisplayColumns.Where(r => r == "Test Item #").Count() > 0)
+                                                {
+                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 15%;">
+                                                        Test Item #
+                                                    </th>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Enabling Objective #").Count() > 0)
+                                                {
+                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 15%;">
+                                                        Enabling Objective #
+                                                    </th>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Taxonomy Level").Count() > 0)
+                                                {
+                                                    <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 30%; ">
+                                                        Taxonomy Level
+                                                    </th>
+                                                }
+                                            </tr>
+
+                                            @foreach (var testItemLink in test.Test_Item_Links.OrderBy(t => t.Sequence))
+                                            {
+                                                var fillUpDescription = "";
+                                                 @if (testItemLink.TestItem.TestItemTypeId == 2)
+                                                 {
+                                                   fillUpDescription = Regex.Replace(testItemLink.TestItem.Description, @"<u>(.*?)<\/u>", "_______");
+                                                }
+                                                else
+                                                {
+                                                    fillUpDescription = testItemLink.TestItem.Description;
+                                                }
+                                                <tr>
+                                                    <td  style="border: none;padding-top:40px" colspan="11">
+                                                        <table class="table">
+                                                            <tr style="border-bottom: 1px solid #000; padding: 10px; border-top: 1px solid #000">
+                                                                <td class="testitem-desc" style="border: none; padding: 5px; border-right: 1px solid #000; vertical-align: top; text-align: center;width: 40%;">
+                                                                    @(new RawString(fillUpDescription))
+                                                                </td>
+                                                                @if (Model.DisplayColumns.Where(r => r == "Test Item #").Count() > 0)
+                                                                {
+                                                                    <td style="border: none; padding: 5px; border-right: 1px solid #000; vertical-align: top; text-align: center;width: 15%;">@testItemLink?.TestItem?.Number</td>
+                                                                }
+                                                                @if (Model.DisplayColumns.Where(r => r == "Enabling Objective #").Count() > 0)
+                                                                {
+                                                                    <td style="border: none; padding: 5px; border-right: 1px solid #000; vertical-align: top; text-align: center;width: 15%;">@testItemLink?.TestItem?.EnablingObjective?.FullNumber</td>
+                                                                }
+                                                                @if (Model.DisplayColumns.Where(r => r == "Taxonomy Level").Count() > 0)
+                                                                {
+                                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;width: 30%;">@testItemLink?.TestItem?.TaxonomyLevel?.Description</td>
+                                                                }
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+
+                                                @{
+                                                    var rosterResponses = cls?.ClassSchedule_Rosters?.Where(x => testItemLink.TestId == x.TestId).SelectMany(m => m.Responses).Where(x => testItemLink.TestItem.Id == x.TestItemId);
+                                                }
+                                                @if (testItemLink?.TestItem?.TestItemTypeId == 1)
+                                                {
+                                                    <tr>
+                                                        <td style="border: 0; padding: 0; padding-top:20px" class="test-type-container" colspan="11">
+                                                            <div style="display: block; margin: auto; width:90%;">
+                                                                <table class="table">
+                                                                    <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 45%">
+                                                                            Responses
+                                                                        </th>
+                                                                        @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                        {
+                                                                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 10%">
+                                                                                # Selected
+                                                                            </th>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                        {
+                                                                            <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 35%">
+                                                                                @("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name
+                                                                            </th>
+                                                                        }
+                                                                    </tr>
+
+                                                                    @foreach (var testItemMCQ in testItemLink.TestItem.TestItemMCQs.OrderBy(m => m.Number))
+                                                                    {
+                                                                        var subgroup = rosterResponses.SelectMany(m => m.Selections).Where(selection => selection.UserAnswer == testItemMCQ.ChoiceDescription).ToList();
+
+                                                                        <tr style="padding: 10px">
+                                                                            <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                @(new RawString(@testItemMCQ.ChoiceDescription))
+                                                                                @if (testItemMCQ.IsCorrect)
+                                                                                {
+                                                                                    <span style="color: green;">(CORRECT ANSWER)</span>
+                                                                                }
+                                                                            </td>
+
+                                                                            @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                            {
+                                                                                <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                    @subgroup.Count()
+                                                                                </td>
+                                                                            }
+
+                                                                            @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                            {
+                                                                                <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                    @foreach (var emp in cls.ClassSchedule_Rosters.Where(m => subgroup.Any(x => x.Response.ClassScheduleRosterId == m.Id)).OrderBy(res => res?.Employee?.Person?.LastName))
+                                                                                    {
+                                                                                        <div>
+                                                                                            @emp?.Employee?.Person?.FirstName @emp?.Employee?.Person?.LastName
+                                                                                        </div>
+                                                                                    }
+                                                                                </td>
+                                                                            }
+                                                                        </tr>
+                                                                    }
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                @if (testItemLink?.TestItem?.TestItemTypeId == 2)
+                                                {
+                                                    <tr>
+                                                        <td style="border: 0; padding: 0; padding-top:20px" class="test-type-container" colspan="11">
+                                                            <div style="display: block; margin: auto; width:90%;">
+                                                                <table class="table">
+                                                                    <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 20%">
+                                                                            Entry
+                                                                        </th>
+                                                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 30%">
+                                                                            Responses
+                                                                        </th>
+                                                                        @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                        {
+                                                                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 10%">
+                                                                                # Selected
+                                                                            </th>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                        {
+                                                                            <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 30%">
+                                                                                @("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name
+                                                                            </th>
+                                                                        }
+                                                                    </tr>
+
+                                                                    @if (testItemLink.TestItem.TestItemFillBlanks?.Any() ?? false)
+                                                                    {
+                                                                        var entryCount = 1;
+
+                                                                        foreach (var fillBlank in testItemLink.TestItem.TestItemFillBlanks.OrderBy(m => m.CorrectIndex))
+                                                                        {
+                                                                            var answerStrings = new List<string> { fillBlank.Correct };
+                                                                            answerStrings.AddRange(rosterResponses.SelectMany(m => m.Selections).Where(selection => selection.CorrectIndex == fillBlank.CorrectIndex && !selection.Deleted).Select(selection => selection.UserAnswer));
+                                                                            answerStrings = answerStrings.Distinct().ToList();
+
+                                                                            foreach (var answerString in answerStrings)
+                                                                            {
+                                                                                var isCorrect = answerString == fillBlank.Correct;
+                                                                                var subgroup = rosterResponses.SelectMany(m => m.Selections).Where(selection => selection.CorrectIndex == fillBlank.CorrectIndex && selection.UserAnswer == answerString && !selection.Deleted).ToList();
+
+                                                                                <tr style="padding: 10px">
+                                                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                        Entry @entryCount
+                                                                                    </td>
+
+                                                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                        @answerString
+                                                                                        @if (isCorrect)
+                                                                                        {
+                                                                                            <span style="color: green;">(CORRECT ANSWER)</span>
+                                                                                        }
+                                                                                    </td>
+                                                                                    @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                                    {
+                                                                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                            @subgroup.Count()
+                                                                                        </td>
+                                                                                    }
+                                                                                    @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                                    {
+                                                                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                            @foreach (var emp in cls.ClassSchedule_Rosters.Where(m => subgroup.Any(x => x.Response.ClassScheduleRosterId == m.Id)).OrderBy(res => res?.Employee?.Person?.LastName))
+                                                                                            {
+                                                                                                <div>
+                                                                                                    @emp?.Employee?.Person?.FirstName @emp?.Employee?.Person?.LastName
+                                                                                                </div>
+                                                                                            }
+                                                                                        </td>
+                                                                                    }
+                                                                                </tr>
+                                                                                entryCount++;
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                @if (testItemLink?.TestItem?.TestItemTypeId == 3)
+                                                {
+                                                    var trueFalseGroups = testItemLink.TestItem.TestItemTrueFalses.OrderByDescending(tf => tf.Choices == "True").ThenBy(tf => tf.Choices == "False");
+
+                                                    <tr>
+                                                        <td style="border: 0; padding: 0; padding-top:20px" class="test-type-container" colspan="11">
+                                                            <div style="display: block; margin: auto; width:90%;">
+                                                                <table class="table">
+                                                                    <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 45%">
+                                                                            Responses
+                                                                        </th>
+                                                                        @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                        {
+                                                                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 10%">
+                                                                                # Selected
+                                                                            </th>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                        {
+                                                                            <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 35%">
+                                                                                @("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name
+                                                                            </th>
+                                                                        }
+                                                                    </tr>
+
+                                                                    @foreach (var tf in trueFalseGroups)
+                                                                    {
+                                                                        var subgroup = rosterResponses.SelectMany(m => m.Selections).Where(selection => selection.UserAnswer == tf.Choices);
+
+                                                                        <tr style="padding: 10px">
+                                                                            <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                @tf.Choices @if (tf.IsCorrect)
+                                                                                {
+                                                                                    <span style="color: green;">(CORRECT ANSWER)</span>
+                                                                                }
+                                                                            </td>
+                                                                            @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                            {
+                                                                                <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                    @subgroup.Count()
+                                                                                </td>
+                                                                            }
+                                                                            @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                            {
+                                                                                <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                    @{
+                                                                                        var employees = cls.ClassSchedule_Rosters.Where(m => subgroup.Any(x => x.Response.ClassScheduleRosterId == m.Id));
+                                                                                    }
+                                                                                    @foreach (var emp in employees.OrderBy(res => res?.Employee?.Person?.LastName))
+                                                                                    {
+                                                                                        <div>
+                                                                                            @emp?.Employee?.Person?.FirstName @emp?.Employee?.Person?.LastName
+                                                                                        </div>
+                                                                                    }
+                                                                                </td>
+                                                                            }
+                                                                        </tr>
+                                                                    }
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                @if (testItemLink?.TestItem?.TestItemTypeId == 4)
+                                                {
+                                                    <tr>
+                                                        <td style="border: 0; padding: 0; padding-top:20px" class="test-type-container" colspan="11">
+                                                            <div style="display: block; margin: auto; width:90%;">
+                                                                <table class="table">
+                                                                    <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 1px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 35%;">
+                                                                            Responses
+                                                                        </th>
+                                                                        @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                        {
+                                                                            <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 1px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 15%;">
+                                                                                # Selected
+                                                                            </th>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                        {
+                                                                            <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 50%;">
+                                                                                @("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name
+                                                                            </th>
+                                                                        }
+                                                                    </tr>
+
+                                                                    @if (testItemLink?.TestItem?.TestItemShortAnswers?.Any() ?? false)
+                                                                    {
+                                                                        var answerStrings = new List<string>();
+
+                                                                        foreach (var shortAnswer in testItemLink.TestItem.TestItemShortAnswers)
+                                                                        {
+                                                                            if (!string.IsNullOrEmpty(shortAnswer.Responses))
+                                                                            {
+                                                                                answerStrings.Add(shortAnswer.Responses);
+                                                                            }
+                                                                        }
+
+                                                                        foreach (var selection in rosterResponses.SelectMany(m => m.Selections).Where(s => !s.Deleted))
+                                                                        {
+                                                                            var userAnswer = selection.UserAnswer;
+                                                                            if (!answerStrings.Any(answer =>
+                                                                            string.Equals(answer, userAnswer, StringComparison.OrdinalIgnoreCase)))
+                                                                            {
+                                                                                answerStrings.Add(userAnswer);
+                                                                            }
+                                                                        }
+
+                                                                        answerStrings = answerStrings.Distinct().OrderBy(answer => testItemLink.TestItem.TestItemShortAnswers.Any(shortAnswer => string.Equals(shortAnswer.Responses, answer,
+                                                                        shortAnswer.IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase)) ? 0 : 1).ToList();
+
+                                                                        foreach (var answerString in answerStrings)
+                                                                        {
+                                                                            var isCorrect = testItemLink.TestItem.TestItemShortAnswers.Any(shortAnswer => string.Equals(shortAnswer.Responses, answerString, shortAnswer.IsCaseSensitive ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase));
+
+                                                                            var subgroup = rosterResponses.SelectMany(m => m.Selections).Where(selection => string.Equals(selection.UserAnswer, answerString, StringComparison.OrdinalIgnoreCase) &&
+                                                                            !selection.Deleted).ToList();
+
+                                                                            <tr style="padding: 10px">
+                                                                                <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                    @answerString
+                                                                                    @if (isCorrect)
+                                                                                    {
+                                                                                        <span style="color: green;">(CORRECT ANSWER)</span>
+                                                                                    }
+                                                                                </td>
+
+                                                                                @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                                {
+                                                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                        @subgroup.Count()
+                                                                                    </td>
+                                                                                }
+                                                                                @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                                {
+                                                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                        @foreach (var emp in cls.ClassSchedule_Rosters.Where(m => subgroup.Any(x => x.Response.ClassScheduleRosterId == m.Id)).OrderBy(res => res?.Employee?.Person?.LastName))
+                                                                                        {
+                                                                                            <div>
+                                                                                                @emp?.Employee?.Person?.FirstName @emp?.Employee?.Person?.LastName
+                                                                                            </div>
+                                                                                        }
+                                                                                    </td>
+                                                                                }
+                                                                            </tr>
+                                                                        }
+                                                                    }
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                @if (testItemLink?.TestItem?.TestItemTypeId == 5)
+                                                {
+                                                    <tr>
+                                                        <td style="border: 0; padding: 0; padding-top:20px" class="test-type-container" colspan="11">
+                                                            <div style="display: block; margin: auto; width:90%;">
+                                                                <table class="table">
+                                                                    <thead>
+                                                                        <tr>
+                                                                            <th style="border-bottom: 2px solid #000;border-right: 1px solid #000;border-top: 2px solid #000;text-align: left; vertical-align: bottom; padding: 5px;">
+                                                                                Question
+                                                                            </th>
+                                                                            <th style="border-bottom: 2px solid #000;border-top: 2px solid #000;text-align: left; vertical-align: bottom; padding: 5px;" colspan="3">Results Per Question</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody>
+                                                                        @foreach (var testItemMatch in testItemLink.TestItem.TestItemMatches.OrderBy(m => m.Number))
+                                                                        {
+                                                                            @if (testItemMatch.CorrectValue != null)
+                                                                            {
+                                                                                <tr style="border-bottom: 2px solid #000;">
+
+                                                                                    <td style="border: none; border-right: 1px solid #000; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                        @(new RawString(@testItemMatch.ChoiceDescription))
+                                                                                    </td>
+                                                                                    <td style="border: none; padding: 0; vertical-align: top; text-align: left;" class="strip-container" colspan="3">
+                                                                                        <table style="border-collapse: collapse; width: 100%;">
+                                                                                           
+                                                                                                <tr>
+                                                                                                    <td style="border-bottom: 2px solid #000; border-right: 1px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 28%">
+                                                                                                        Responses
+                                                                                                    </td>
+                                                                                                    @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                                                    {
+                                                                                                        <td style="border-bottom: 2px solid #000; border-right: 1px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 10%">
+                                                                                                            # Selected
+                                                                                                        </td>
+                                                                                                    }
+                                                                                                    @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                                                    {
+                                                                                                        <td style="border-bottom: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 22%%">
+                                                                                                            @("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name
+                                                                                                        </td>
+                                                                                                    }
+                                                                                                </tr>
+                                                                                            @foreach (var iteratedMatch in testItemLink.TestItem.TestItemMatches.OrderBy(m => m.Number))
+                                                                                            {
+                                                                                                var selected_rosters = cls.ClassSchedule_Rosters
+                                                                                                .Where(roster =>rosterResponses.SelectMany(response => response.Selections)
+                                                                                                .Any(selection =>selection.Response.ClassScheduleRosterId == roster.Id &&selection.CorrectIndex == testItemMatch.Number && 
+                                                                                                selection.UserAnswer == iteratedMatch.MatchValue.ToString())).OrderBy(roster => roster?.Employee?.Person?.LastName);
+
+                                                                                                <tr style="border:none">
+                                                                                                    <td style="border:none">
+                                                                                                        @iteratedMatch.MatchValue - @iteratedMatch.MatchDescription
+                                                                                                        @if (iteratedMatch.MatchValue.ToString() == testItemMatch.CorrectValue.ToString())
+                                                                                                        {
+                                                                                                            <span style="color: green;">(CORRECT ANSWER)</span>
+                                                                                                        }
+                                                                                                    </td>
+                                                                                                    @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                                                    {
+                                                                                                        <td style="border:none">@selected_rosters.Count()</td>
+                                                                                                    }
+                                                                                                    @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                                                    {
+                                                                                                        <td style="border:none">
+                                                                                                            @foreach (var emp in selected_rosters)
+                                                                                                            {
+                                                                                                                <div>
+                                                                                                                    @emp?.Employee?.Person?.FirstName @emp?.Employee?.Person?.LastName
+                                                                                                                </div>
+                                                                                                                }
+                                                                                                            </td>
+                                                                                                        }
+
+                                                                                                    </tr>
+                                                                                                }
+                                                                                        </table>
+                                                                                    </td>
+                                                                                </tr>
+                                                                            }
+                                                                        }
+                                                                    </tbody>
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+
+                                                }
+                                                @if (testItemLink?.TestItem?.TestItemTypeId == 6)
+                                                {
+                                                    <tr>
+                                                        <td style="border: 0; padding: 0; padding-top:20px" class="test-type-container" colspan="11">
+                                                            <div style="display: block; margin: auto; width:90%;">
+                                                                <table class="table">
+                                                                    <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 45%">
+                                                                            Responses
+                                                                        </th>
+                                                                        @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                        {
+                                                                            <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 10%">
+                                                                                # Selected
+                                                                            </th>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                        {
+                                                                            <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 35%">
+                                                                                @("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name
+                                                                            </th>
+                                                                        }
+                                                                    </tr>
+
+                                                                    @foreach (var testItemMCQ in testItemLink.TestItem.TestItemMCQs.OrderBy(m => m.Number))
+                                                                    {
+                                                                        var subgroup = rosterResponses.SelectMany(m => m.Selections).Where(selection => selection.UserAnswer == testItemMCQ.ChoiceDescription)
+                                                                        .ToList();
+
+                                                                        <tr style="padding: 10px">
+                                                                            <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                @(new RawString(@testItemMCQ.ChoiceDescription))
+                                                                                @if (testItemMCQ.IsCorrect)
+                                                                                {
+                                                                                    <span style="color: green;">(CORRECT ANSWER)</span>
+                                                                                }
+                                                                            </td>
+
+                                                                            @if (Model.DisplayColumns.Contains("# Selected Answer"))
+                                                                            {
+                                                                                <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                    @subgroup.Count()
+                                                                                </td>
+                                                                            }
+
+                                                                            @if (Model.DisplayColumns.Contains("Employee Name"))
+                                                                            {
+                                                                                <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                                                    @foreach (var emp in cls.ClassSchedule_Rosters.Where(m => subgroup.Any(x => x.Response.ClassScheduleRosterId == m.Id)).OrderBy(res => res?.Employee?.Person?.LastName))
+                                                                                    {
+                                                                                        <div>
+                                                                                            @emp?.Employee?.Person?.FirstName @emp?.Employee?.Person?.LastName
+                                                                                        </div>
+                                                                                    }
+                                                                                </td>
+                                                                            }
+                                                                        </tr>
+                                                                    }
+                                                                </table>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                                <tr></tr>
+                            </table>
+                        </div>
+                        
+                            <div style="page-break-after:always"></div>
+                            <div class="@(j!=1?"strip-dark":"")"></div>
+                        @{
+                            j++;
+                        }
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.ClassSchedules.SelectMany(x => x.ILA.ILATraineeEvaluations).Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

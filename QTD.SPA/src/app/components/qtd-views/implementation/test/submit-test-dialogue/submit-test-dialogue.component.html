@@ -1,0 +1,38 @@
+<div class="flex flex-col w-full">
+    <div class="flex flex-row justify-between items-center mt-2 border-b-2" style="align-items:center;">
+      <p class="font-bold text-lg">Submit Test</p>
+      <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+      <app-icon
+        class="cursor-pointer"
+        icon="close"
+        (click)="close.emit()"
+      ></app-icon>
+    </div>
+  <div class="flex flex-col w-full mt-3">
+    <p>
+        <p>You are choosing to submit the {{testType}}. This finalizes the {{testType}} and you will not be able to return to this {{testType}}. Are you sure you want to submit this {{testType}} ?</p>
+
+        <p>
+
+    </p>
+
+    <p>
+
+      Click "OK" to submit and "Cancel" to return to the {{testType}} Review Screen.
+    </p>
+  </div>
+
+  </div>
+
+  <mat-dialog-actions align="end">
+    <div class="justify-between">
+        <!-- <app-button type="button" text="Cancel" variant="text" size="sm" class="mr-2"  (click)="close.emit()">
+        </app-button> -->
+        <span style="margin-right: 1rem; cursor:pointer;"  (click)="close.emit()">Cancel</span>
+        <!-- (clicked)="startNewTest()" -->
+        <app-button type="button"   text="OK"  color="blueBorder" size="sm" class="mr-2" (click)="save.emit();close.emit()">
+        </app-button>
+    </div>
+
+
+</mat-dialog-actions>

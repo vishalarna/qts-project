@@ -1,0 +1,1489 @@
+<!-- header starts -->
+<app-header title="{{'L.taskDetails' | translate  | dynamicLabelReplacement| async }}"></app-header>
+
+<ng-container *ngIf="taskDetail!=undefined">
+    <!-- main-header starts -->
+    <div class="flex flex-col px-12 py-8">
+        <div class="flex flex-row text-sm text-gray-four">
+            <p class="flex-grow mb-12">Job and {{("Task" | labelReplacement)| async}} Analysis / {{daNumber + ". " +
+                this.taskDetail.subdutyArea.dutyArea.description}} /
+                {{daNumber
+                + "." + sdaNumber + " " + taskDetail.subdutyArea.description }} / {{("Task" | labelReplacement)| async}} {{tNumber}}</p>
+
+        </div>
+
+        <div class="flex flex-row items-center space-x-6 mb-6">
+            <p class="text-sm text-gray-four font-medium"> {{("Task" | labelReplacement)| async}} {{tNumber}}</p>
+            <div class="d-inline-block">
+                <p class="py-2 px-4 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+                    [ngClass]="{'bg-green-three':taskDetail.active,'bg-gray-100':!taskDetail.active}">
+                    {{(taskDetail.active ? "active" :"in-active" )| uppercase}}
+                </p>
+            </div>
+            <div class="d-inline-block">
+                <app-button ButtonType="icon" size="sm" icon="more_vert" [matMenuTriggerFor]="menu"></app-button>
+                <mat-menu #menu="matMenu">
+                    <label mat-menu-item *ngIf="taskDetail.active" (click)="changeTaskStatus('inactive')" translate>Make
+                        In-Active</label>
+                    <label mat-menu-item *ngIf="!taskDetail.active" (click)="changeTaskStatus('active')" translate>Make
+                        Active</label>
+                </mat-menu>
+            </div>
+
+        </div>
+
+        <p class="w-21/24 font-bold text-2xl text-gray-five mb-6">{{taskDetail.description}}</p>
+
+        <div class="flex space-x-6">
+            <p class="text-sm text-gray-four">{{("Task" | labelReplacement)| async}} linked to {{taskDetail.task_Positions.length}} {{("Position" | labelReplacement)| async}}s</p>
+            <div class="flex flex-row space-x-2">
+                <app-icon icon="link"></app-icon>
+                <app-link text="Link to more {{('Position' | labelReplacement)| async}}" routerLink='/analysis/jta/task-pos-link'
+                    [queryParams]="{taskId:taskId}" class="text-sm text-gray-four"></app-link>
+
+            </div>
+        </div>
+    </div>
+    <!-- main-header ends -->
+
+    <!-- history container starts here -->
+    <div class="px-12">
+        <div class="flex flex-row items-center py-3 px-4 border-gray-one shadow-xs border-0.5 bg-white-one rounded">
+
+            <div class="flex flex-grow flex-row items-center space-x-4">
+                <img class="w-10 h-10" src="./assets/img/image_one.png">
+                <div class="space-y-1">
+                    <p class="text-sm font-normal text-gray-five">{{("Task" | labelReplacement)| async}} {{("Position" | labelReplacement)| async}}s History</p>
+                    <p class="text-xs text-gray-five">Sarah <span class="text-gray-four"> modified 5 hours ago
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            <div class="flex flex-row items-center text-gray-four space-x-2">
+                <p class="text-xs ">VIEW ALL HISTORY</p>
+                <app-icon icon="history"></app-icon>
+            </div>
+
+        </div>
+    </div>
+    <!-- history container ends here -->
+    <div class="px-12 py-8 mt-16">
+        <mat-tab-group (selectedIndexChange)="toggleTab($event)" [dynamicHeight]="true">
+            <mat-tab label="{{('Task' | labelReplacement)| async}} DETAILS">
+                <div class="flex flex-row px-12 space-x-12 pb-24" id="taskTab">
+                    <!-- Steps starts here -->
+                    <div class="w-15/24">
+
+                        <!-- Steps Header starts here -->
+                        <div class="flex flex-row mb-8 items-center">
+                            <div class="flex flex-col flex-grow space-y-2">
+                                <h1 class="flex-auto font-medium text-xl">Steps</h1>
+                                <p class="text-xs mr-2 text-gray-four">Showing {{taskDetail.task_Steps.length}} Steps
+                                </p>
+                            </div>
+                            <app-button class="text-green-one items-center" text="Add new" variant="text"
+                                (clicked)="addStep=true" size="sm" icon="add" iconPosition="left"></app-button>
+
+                        </div>
+                        <!-- Steps Header ends here-->
+
+                        <!-- Steps Content starts here -->
+                        <div class="space-y-6 text-sm">
+                            <!-- Step 1 starts here -->
+                            <div class="py-6 px-6 space-y-6 border-gray-one shadow-xs border-0.5 bg-white-one rounded"
+                                *ngFor="let step of taskDetail.task_Steps">
+                                <div class="flex flex-row items-center">
+                                    <p class="flex-grow font-medium">Step {{taskDetail.task_Steps.indexOf(step) + 1}}
+                                        <span class="text-xs font-normal ml-1 text-gray-four">Created May 05, 2021 by
+                                            Lucy</span>
+                                    </p>
+                                    <span>
+                                        <app-button ButtonType="icon" size="sm" icon="more_vert"
+                                            [matMenuTriggerFor]="menu"></app-button>
+                                        <mat-menu #menu="matMenu">
+                                            <label mat-menu-item (click)="editTask_Step(step)">Edit</label>
+                                            <label mat-menu-item *ngIf="step.active"
+                                                (click)="changeTask_StepStatus(step,'inactive')">Make
+                                                Inactive</label>
+                                            <label mat-menu-item *ngIf="!step.active"
+                                                (click)="changeTask_StepStatus(step,'active')">Make
+                                                Active</label>
+                                            <label mat-menu-item>Copy as link</label>
+                                            <label mat-menu-item (click)="removeTask_Step(step.id)">Delete</label>
+
+                                        </mat-menu>
+                                    </span>
+                                </div>
+                                <p>{{step.description}}</p>
+
+                            </div>
+                            <!-- Step 1 ends here -->
+
+                            <!-- Step 2 starts here -->
+                            <div class="py-6 px-6 space-y-4 border-gray-one shadow-xs border-0.5 bg-white-one rounded"
+                                *ngIf="addStep || editStep">
+                                <div class="flex flex-row items-center">
+                                    <p class="flex-grow font-medium">Step </p>
+                                </div>
+
+                                <!-- text field starts here -->
+                                <div class="border-gray-one space-y-3">
+                                    <div class=" items-center border w-full px-4 p-4 hover:border-black rounded">
+                                        <input type="text" placeholder="Enter your text here"
+                                            [(ngModel)]="stepDescription" class="w-full text-sm focus:outline-none">
+                                    </div>
+                                </div>
+                                <!-- text field ends here -->
+
+
+                                <!-- button starts here -->
+                                <div class="flex flex-row justify-between text-sm space-x-4" *ngIf="addStep">
+                                    <button class="flex px-12 py-3 items-center btn-icon-secondary"
+                                        (click)="addStep=false">Cancel</button>
+                                    <button class="flex px-12 py-3 items-center btn-icon-primary"
+                                        (click)="addTask_Step()">Save</button>
+                                </div>
+                                <div class="flex flex-row justify-between text-sm space-x-4" *ngIf="editStep">
+                                    <button class="flex px-12 py-3 items-center btn-icon-secondary"
+                                        (click)="editStep=false">Cancel</button>
+                                    <button class="flex px-12 py-3 items-center btn-icon-primary"
+                                        (click)="updateTask_step()">Update</button>
+                                </div>
+                                <!-- button ends here -->
+                            </div>
+                            <!-- Step 2 ends here -->
+
+                        </div>
+                        <!-- Steps Content ends here -->
+
+                        <!-- Steps Closing starts here -->
+                        <app-button *ngIf="!addStep" variant="text" icon="add" iconPosition="left" text="Add next step"
+                            (clicked)="addStep = true" size="sm"
+                            class="flex pt-6 flex-row text-sm font-normal text-gray-five items-center"></app-button>
+
+                        <!-- Steps Closing ends here -->
+
+                    </div>
+                    <!-- Steps ends here -->
+
+                    <div class="border-r"></div>
+
+                    <!-- Containers and others starts here -->
+                    <div class="w-9/24 space-y-8">
+
+                        <!-- Conditions starts here -->
+                        <div class="flex flex-col">
+                            <!-- Conditions Header starts here-->
+                            <div class="flex flex-row items-center">
+                                <div class="flex flex-col flex-grow space-y-2">
+                                    <h1 class="flex-auto font-medium text-xl">Conditions</h1>
+                                </div>
+                                <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left"
+                                    (clicked)="editConditions=true"
+                                    class="flex flex-row text-sm font-medium text-gray-four items-center">
+                                </app-button>
+                            </div>
+                            <!-- Conditions Header ends here -->
+
+                            <!-- Conditions Content starts  here -->
+                            <div class="flex flex-col pt-6 pb-8 space-y-12 border-b text-sm" *ngIf="!editConditions">
+                                <p>{{taskDetail.conditions}}</p>
+                            </div>
+                            <ng-container *ngIf="editConditions">
+                                <!-- text field starts here -->
+                                <div class="border-gray-one space-y-3">
+                                    <div
+                                        class=" items-center border w-full px-4 p-4 hover:border-black rounded text-sm">
+                                        <input type="text" class="w-full text-sm focus:outline-none"
+                                            [(ngModel)]="taskDetail.conditions">
+
+                                    </div>
+
+                                </div>
+                                <!-- text field ends here -->
+                                <!-- button starts here -->
+                                <div class="flex flex-row justify-between text-sm space-x-4">
+                                    <button class="flex px-12 py-3 items-center btn-icon-secondary"
+                                        (click)="editConditions=false">Cancel</button>
+                                    <button class="flex px-12 py-3 items-center btn-icon-primary"
+                                        (click)="SaveTaskDetails()">Save</button>
+                                </div>
+                                <!-- button ends here -->
+                            </ng-container>
+                            <!-- Conditions Content ends  here -->
+                        </div>
+                        <!-- Conditions ends here -->
+
+                        <!-- Criteria starts here -->
+                        <div class="flex flex-col">
+                            <!-- Criteria Header starts here-->
+                            <div class="flex flex-row items-center">
+                                <div class="flex flex-col flex-grow space-y-2">
+                                    <h1 class="flex-auto font-medium text-xl">Criteria</h1>
+                                </div>
+                                <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left"
+                                    class="flex flex-row text-sm font-medium text-gray-four items-center"
+                                    (clicked)="editCriteria=true">
+                                </app-button>
+                            </div>
+                            <!-- Criteria Header ends here -->
+
+                            <!-- Criteria Content starts  here -->
+                            <div class="flex flex-col pt-6 pb-8 space-y-12 border-b text-sm" *ngIf="!editCriteria">
+                                <p>{{taskDetail.standards}}</p>
+                            </div>
+                            <!-- Criteria Content ends  here -->
+
+                            <ng-container *ngIf="editCriteria">
+                                <!-- text field starts here -->
+                                <div class="border-gray-one space-y-3">
+                                    <div
+                                        class=" items-center border w-full px-4 p-4 hover:border-black rounded text-sm">
+                                        <input type="text" class="w-full text-sm focus:outline-none" name="standard"
+                                            [(ngModel)]="taskDetail.standards">
+
+                                    </div>
+                                </div>
+                                <!-- text field ends here -->
+                                <!-- button starts here -->
+                                <div class="flex flex-row justify-between text-sm space-x-4">
+                                    <button class="flex px-12 py-3 items-center btn-icon-secondary"
+                                        (click)="editCriteria=false">Cancel</button>
+                                    <button class="flex px-12 py-3 items-center btn-icon-primary"
+                                        (click)="SaveTaskDetails()">Save</button>
+                                </div>
+                                <!-- button ends here -->
+                            </ng-container>
+                        </div>
+                        <!-- Criteria ends here -->
+
+                        <!-- Tools starts here -->
+                        <div class="flex flex-col">
+                            <!-- Tools Header starts here-->
+                            <div class="flex flex-row items-center">
+                                <div class="flex flex-col flex-grow space-y-2">
+                                    <h1 class="flex-auto font-medium text-xl">{{("Tool" | labelReplacement)| async}}s</h1>
+                                </div>
+                                <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left"
+                                    class="flex flex-row text-sm font-medium text-gray-four items-center"
+                                    *ngIf="!editTools" (clicked)="EditTools()">
+                                </app-button>
+                                <app-button variant="text" size="sm" text="Cancel" icon="cancel" iconPosition="left"
+                                    *ngIf="editTools" (clicked)="editTools=false"
+                                    class="flex flex-row text-sm font-medium text-gray-four items-center">
+                                </app-button>
+                            </div>
+                            <!-- Tools Header ends here -->
+
+                            <!-- Tools Content starts  here -->
+                            <div class="flex flex-wrap pt-6 pb-8 border-b text-sm gap-3" *ngIf="!editTools">
+                                <p class="border border-gray-five py-2 px-3 rounded-full"
+                                    *ngFor="let item of taskDetail.task_Tools">{{item.tool.description}}</p>
+                            </div>
+                            <!-- Tools Content ends  here -->
+                        </div>
+                        <!-- Tools ends here -->
+
+                        <ng-container *ngIf="editTools">
+                            <!-- Editable Tools starts here -->
+
+                            <div
+                                class="flex text-xs font-normal flex-wrap px-1 pt-2 pb-4 bg-white-three rounded mt-4 mb-3">
+                                <div class="flex items-center mr-3 border border-gray-five py-1.5 px-3 mb-3 rounded-full"
+                                    *ngFor="let item of taskDetail.task_Tools">
+                                    <span class="truncate">{{item.tool.description}}</span>
+                                    <app-button ButtonType="icon" icon="clear" size="sm"
+                                        (clicked)="UnlinkToolFromTask(item.tool.id)"></app-button>
+
+                                </div>
+
+                            </div>
+                            <!-- Editable Tools ends here -->
+
+                            <!-- Tools dropdown starts here -->
+                            <div class="flex flex-col border-gray-one shadow-xs border-0.5 bg-white-one rounded"
+                                *ngIf="showToolTabs">
+
+                                <!-- Search field starts here-->
+                                <div class="flex flex-row items-center border-b py-4 px-4">
+                                    <app-icon icon="search"></app-icon>
+                                    <input type="text" id="name" placeholder="Search" value=""
+                                        class="w-full transition duration-200 focus:shadow-xs focus:outline-none ring-offset-2 ml-2 text-sm font-normal">
+
+                                </div>
+                                <!-- Search field ends here -->
+
+                                <!-- tab starts here -->
+                                <mat-tab-group (selectedIndexChange)="changeToolTab($event)">
+                                    <mat-tab label="All {{('Tool' | labelReplacement)| async}}s">
+                                        <!-- pre-content starts here -->
+                                        <div class="flex flex-row px-4 py-6 justify-between"
+                                            *ngIf="toolsList.length==0">
+                                            <div class="flex flex-row items-center">
+                                                <p class="text-gray-four text-xs font-normal mr-2">Showing
+                                                    {{tools.length}} {{("Tool" | labelReplacement)| async}}s</p>
+                                            </div>
+                                            <app-button color="secondary" text="New {{('Tool' | labelReplacement)| async}}s" size="sm" variant="text"
+                                                class="text-green-one" (clicked)="AddTool()" icon="add"
+                                                iconPosition="left"></app-button>
+                                        </div>
+
+                                        <div class="flex text-sm w-full justify-between px-4 mt-3"
+                                            *ngIf="toolsList.length>0">
+                                            <div class="flex flex-row items-center">
+                                                <p class="text-gray-four text-xs font-normal mr-2">
+                                                    {{toolsList.length}} {{("Tool" | labelReplacement)| async}}s
+                                                    selected</p>
+
+                                            </div>
+                                            <app-button size="sm" text="Link to {{('Task' | labelReplacement)| async}}" (clicked)="LinkToolsToTask(false)"
+                                                class="flex flex-row text-sm font-medium text-green-one items-center border-2 border-green-one rounded px-4 py-2"
+                                                icon="link" iconPosition="left"></app-button>
+
+                                        </div>
+                                        <!-- pre-content ends here -->
+
+                                        <!-- Dropdown Content starts  here -->
+                                        <div class="flex flex-col text-sm pb-4">
+                                            <app-data-loader *ngIf="tools.length == 0"></app-data-loader>
+                                            <label *ngFor="let item of tools"
+                                                class="flex flex-row radio justify-between items-center cursor-pointer border-b py-3 px-4">
+                                                <div class="flex flex-row">
+                                                    <input class="my-auto transform scale-125" type="checkbox"
+                                                        (change)="addToToolsList(item.id)" />
+                                                    <div class="my-auto ml-3">{{item.description}}</div>
+                                                </div>
+                                                <app-button icon="add" text="Add to group" size="sm" variant="text"
+                                                    class="flex text-xs self-start items-center text-gray-four"
+                                                    (clicked)="ViewGroups(item.description)"></app-button>
+
+                                            </label>
+                                        </div>
+                                    </mat-tab>
+                                    <mat-tab label="Grouped {{('Tool' | labelReplacement)| async}}s">
+
+                                        <!-- pre-content starts here -->
+                                        <div class="flex w-full justify-between px-4 mt-3">
+                                            <ng-container *ngIf="toolsGroup.length == 0">
+                                                <div class="flex flex-row space-x-2 items-center">
+                                                    <p class="text-gray-four text-xs font-normal"
+                                                        *ngIf="toolToAddInGroup!=''">
+                                                        You can add to
+                                                        {{toolGroups.length}} groups</p>
+                                                </div>
+                                                <app-button text="New Group" size="sm" color="secondary" variant="text"
+                                                    class="text-green-one" (clicked)="AddToolGroup"></app-button>
+
+                                            </ng-container>
+                                            <ng-container *ngIf="toolsGroup.length > 0">
+                                                <div class="flex flex-row space-x-2 items-center">
+                                                    <p class="text-gray-four text-xs font-normal">
+                                                        {{toolsGroup.length}}
+                                                        groups
+                                                        selected</p>
+                                                </div>
+                                                <app-button text="Link to {{('Task' | labelReplacement)| async}}" size="sm" color="secondary" icon="link"
+                                                    iconPosition="left" (clicked)="LinkToolsToTask(true)"></app-button>
+
+                                            </ng-container>
+                                        </div>
+
+                                        <div class="flex flex-col text-sm py-1">
+                                            <app-data-loader *ngIf="toolGroups.length == 0"></app-data-loader>
+                                            <div class="flex justify-between w-full border-b py-3 px-4"
+                                                *ngFor="let item of toolGroups">
+                                                <div class="flex flex-col flex-wrap radio py-0.5 justify-between">
+                                                    <label class="flex radio cursor-pointer font--normal text-base">
+                                                        <input class="my-auto transform scale-125" type="checkbox"
+                                                            (change)="addToolsToGroupList(item.id)" />
+                                                        <p class="title font-normal text-base m-2">
+                                                            {{item.description}}
+                                                        </p>
+                                                    </label>
+                                                    <span
+                                                        class="title text-sm text-gray-four ml-7">{{item.toolGroup_Tools.length}}
+                                                        {{("Tool" | labelReplacement)| async}}s</span>
+                                                </div>
+                                                <div class="flex text-xs self-start items-center text-gray-four"
+                                                    style="cursor: pointer;"
+                                                    (click)="ViewToolGroup_Tools(item.description)">
+                                                    View
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <!-- pre-content ends here -->
+
+
+                                    </mat-tab>
+                                </mat-tab-group>
+                                <!-- tab ends here -->
+                            </div>
+                            <!-- Tools dropdown ends here -->
+
+
+                            <!-- All tools and grouped tools starts here -->
+                            <div class="flex flex-col space-y-6 border-gray-one shadow-xs border-0.5 bg-white-one rounded"
+                                *ngIf="addNewTool">
+                                <!-- Search field starts here-->
+                                <div class="flex flex-row items-center border-b py-4 px-4">
+                                    <div class="flex flex-row text-gray-four items-center">
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="feather feather-x cursor-pointer hover:text-teal-400 rounded-full w-4 h-6">
+                                            <path
+                                                d="M4.58227 9.16118C3.676 9.16134 2.79004 8.89272 2.03646 8.38928C1.28288 7.88585 0.695533 7.17023 0.348726 6.33294C0.00191926 5.49565 -0.0887712 4.57431 0.088127 3.68547C0.265025 2.79663 0.701564 1.98023 1.34252 1.33952C3.12832 -0.446508 6.03411 -0.446508 7.82014 1.33952C9.60617 3.12556 9.60594 6.03111 7.82014 7.81714C7.39529 8.24302 6.89063 8.58095 6.33504 8.81158C5.77945 9.0422 5.18383 9.161 4.58227 9.16118ZM4.58227 1.17196C3.8507 1.17266 3.13877 1.40867 2.55165 1.84512C1.96454 2.28156 1.53339 2.89529 1.32191 3.59562C1.11043 4.29596 1.12984 5.04574 1.37727 5.7342C1.6247 6.42265 2.08702 7.01325 2.69593 7.41873C2.88682 7.54592 3.09021 7.65326 3.30292 7.7391C3.92339 7.99064 4.60426 8.05365 5.26037 7.92026C5.91647 7.78687 6.51868 7.463 6.99169 6.98916C8.32073 5.66012 8.32073 3.49725 6.99169 2.16868C6.67542 1.85185 6.29967 1.60064 5.88603 1.42947C5.47238 1.2583 5.02899 1.17055 4.58133 1.17126L4.58227 1.17196Z"
+                                                fill="#7A807E" />
+                                            <path
+                                                d="M11.4138 11.9958C11.3368 11.9959 11.2606 11.9808 11.1895 11.9513C11.1184 11.9219 11.0538 11.8787 10.9994 11.8242L6.99194 7.81672C6.88205 7.70683 6.82031 7.55778 6.82031 7.40237C6.82031 7.24697 6.88205 7.09792 6.99194 6.98803C7.10183 6.87814 7.25087 6.81641 7.40628 6.81641C7.56169 6.81641 7.71073 6.87814 7.82062 6.98803L11.8281 10.9955C11.9101 11.0775 11.9659 11.1819 11.9885 11.2955C12.0111 11.4092 11.9995 11.527 11.9552 11.6341C11.9108 11.7412 11.8357 11.8327 11.7393 11.8971C11.643 11.9614 11.5297 11.9958 11.4138 11.9958Z"
+                                                fill="#7A807E" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="name" placeholder="{{('Tool' | labelReplacement)| async}}s name" value="" [(ngModel)]="newTool"
+                                        class="w-full transition duration-200 focus:shadow-xs focus:outline-none ring-offset-2 text-gray-four ml-2 text-sm font-normal">
+                                    <button class="flex flex-row text-gray-four items-center" (click)="EditTools()">
+                                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <!-- Search field ends here -->
+
+                                <!-- auto suggest starts here -->
+                                <div class="flex text-sm bg-white-three w-full" *ngIf="newTool!==''">
+                                    <p class="text-gray-five py-3 px-4" style="cursor:pointer;" title="Add new {{('Tool' | labelReplacement)| async}}s"
+                                        (click)="addTool()">
+                                        {{newTool}} (New {{("Tool" | labelReplacement)| async}})</p>
+                                </div>
+                                <!-- auto suggest ends here -->
+
+                                <!-- <div class="flex flex-col text-sm py-1">
+                                        <div class="flex font-normal text-base border-b items-center px-4 pb-3 pt-3">
+                                            <svg width="14" height="14" viewBox="0 0 14 14" fill="none"
+                                                xmlns="http://www.w3.org/2000/svg" class="w-4 h-4">
+                                                <path
+                                                    d="M6.99935 1.16536C10.221 1.16536 12.8327 3.77704 12.8327 6.9987C12.8327 10.2204 10.221 12.832 6.99935 12.832C3.77769 12.832 1.16602 10.2204 1.16602 6.9987C1.16602 3.77704 3.77769 1.16536 6.99935 1.16536Z"
+                                                    stroke="#7A807E" stroke-width="1.5" stroke-linecap="round"
+                                                    stroke-linejoin="round" />
+                                                <path d="M7 4.66667V7" stroke="#7A807E" stroke-width="1.5"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                                <path d="M7 9.33203H7.00583" stroke="#7A807E" stroke-width="1.5"
+                                                    stroke-linecap="round" stroke-linejoin="round" />
+                                            </svg>
+                                            <div class="title px-2 my-auto text-xs text-gray-four">Found 2 matches</div>
+                                        </div>
+                                        <div class="flex px-4 justify-between w-full border-b py-1.5" (click)="ViewTool()">
+                                            <div class="flex flex-wrap radio py-4">
+                                                <p class="title font-normal text-sm">Communication Control Room</p>
+                                                <span class="title text-xs text-gray-four">Added on March 6, 2021 by Kate</span>
+                                            </div>
+                                            <span class="flex text-xs align-text-bottom items-center text-gray-four">
+                                                View
+                                            </span>
+                                        </div>
+                                        <div class="flex px-4 justify-between w-full py-1.5" (click)="ViewTool()">
+                                            <div class="flex flex-wrap radio py-4">
+                                                <p class="title font-normal text-sm">Control Communication Room</p>
+                                                <span class="title text-xs text-gray-four">Added on March 6, 2021 by Kate</span>
+                                            </div>
+                                            <span class="flex text-xs align-text-bottom items-center text-gray-four">
+                                                View
+                                            </span>
+                                        </div>
+                                    </div>
+                                   -->
+                            </div>
+                            <!-- All tools and grouped tools starts here -->
+                            <div class="flex flex-col space-y-6 border-gray-one shadow-xs border-0.5 bg-white-one rounded"
+                                *ngIf="addNewToolGroup">
+                                <!-- Search field starts here-->
+                                <div class="flex flex-row items-center border-b py-4 px-4">
+                                    <div class="flex flex-row text-gray-four items-center">
+                                        <svg width="12" height="12" viewBox="0 0 12 12" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            class="feather feather-x cursor-pointer hover:text-teal-400 rounded-full w-4 h-6">
+                                            <path
+                                                d="M4.58227 9.16118C3.676 9.16134 2.79004 8.89272 2.03646 8.38928C1.28288 7.88585 0.695533 7.17023 0.348726 6.33294C0.00191926 5.49565 -0.0887712 4.57431 0.088127 3.68547C0.265025 2.79663 0.701564 1.98023 1.34252 1.33952C3.12832 -0.446508 6.03411 -0.446508 7.82014 1.33952C9.60617 3.12556 9.60594 6.03111 7.82014 7.81714C7.39529 8.24302 6.89063 8.58095 6.33504 8.81158C5.77945 9.0422 5.18383 9.161 4.58227 9.16118ZM4.58227 1.17196C3.8507 1.17266 3.13877 1.40867 2.55165 1.84512C1.96454 2.28156 1.53339 2.89529 1.32191 3.59562C1.11043 4.29596 1.12984 5.04574 1.37727 5.7342C1.6247 6.42265 2.08702 7.01325 2.69593 7.41873C2.88682 7.54592 3.09021 7.65326 3.30292 7.7391C3.92339 7.99064 4.60426 8.05365 5.26037 7.92026C5.91647 7.78687 6.51868 7.463 6.99169 6.98916C8.32073 5.66012 8.32073 3.49725 6.99169 2.16868C6.67542 1.85185 6.29967 1.60064 5.88603 1.42947C5.47238 1.2583 5.02899 1.17055 4.58133 1.17126L4.58227 1.17196Z"
+                                                fill="#7A807E" />
+                                            <path
+                                                d="M11.4138 11.9958C11.3368 11.9959 11.2606 11.9808 11.1895 11.9513C11.1184 11.9219 11.0538 11.8787 10.9994 11.8242L6.99194 7.81672C6.88205 7.70683 6.82031 7.55778 6.82031 7.40237C6.82031 7.24697 6.88205 7.09792 6.99194 6.98803C7.10183 6.87814 7.25087 6.81641 7.40628 6.81641C7.56169 6.81641 7.71073 6.87814 7.82062 6.98803L11.8281 10.9955C11.9101 11.0775 11.9659 11.1819 11.9885 11.2955C12.0111 11.4092 11.9995 11.527 11.9552 11.6341C11.9108 11.7412 11.8357 11.8327 11.7393 11.8971C11.643 11.9614 11.5297 11.9958 11.4138 11.9958Z"
+                                                fill="#7A807E" />
+                                        </svg>
+                                    </div>
+                                    <input type="text" id="toolgroupname" name="tool group name"
+                                        placeholder="{{('Tool' | labelReplacement)| async}}s group name" value="" [(ngModel)]="newToolGroup"
+                                        class="w-full transition duration-200 focus:shadow-xs focus:outline-none ring-offset-2 text-gray-four ml-2 text-sm font-normal">
+                                    <button class="flex flex-row text-gray-four items-center" (click)="EditTools()">
+                                        <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M6 18L18 6M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </div>
+                                <!-- Search field ends here -->
+
+                                <!-- auto suggest starts here -->
+                                <div class="flex text-sm bg-white-three w-full" *ngIf="newToolGroup!==''">
+                                    <p class="text-gray-five py-3 px-4" style="cursor:pointer;"
+                                        title="Add new {{('Tool' | labelReplacement)| async}}s Group" (click)="addToolGroup()">
+                                        {{newToolGroup}} (New Tool Group)</p>
+                                </div>
+                                <!-- auto suggest ends here -->
+                            </div>
+                            <div class="flex flex-col py-4 space-y-6 border-gray-one shadow-xs border-0.5 bg-white-one rounded"
+                                *ngIf="showToolGroups">
+                                <!-- View tools header starts here-->
+                                <div class="flex flex-row items-center border-b px-4 pb-4">
+                                    <button class="flex flex-row text-sm font-medium text-gray-four items-center"
+                                        (click)="ViewTool()">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="feather feather-x cursor-pointer hover:text-teal-400 rounded-full h-6 w-6"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <p class="text-gray-five px-1">{{toolToAddInGroup}}</p>
+                                </div>
+                                <!-- View tools header ends here -->
+
+                                <div class="flex w-full justify-between px-4">
+                                    <ng-container *ngIf="toolsGroup.length == 0">
+                                        <div class="flex flex-row space-x-2 items-center">
+                                            <p class="text-gray-four text-xs font-normal">You can add to
+                                                {{toolGroups.length}} groups</p>
+                                        </div>
+                                    </ng-container>
+                                    <ng-container *ngIf="toolsGroup.length > 0">
+                                        <div class="flex flex-row space-x-2 items-center">
+                                            <p class="text-gray-four text-xs font-normal">{{toolsGroup.length}} groups
+                                                selected</p>
+                                        </div>
+                                        <button (click)="addSingleToolToMultipleGroups()"
+                                            class="flex flex-row text-sm font-medium text-green-one items-center border-2 border-green-one rounded px-6 py-2">
+                                            Add to group
+                                        </button>
+                                    </ng-container>
+                                </div>
+
+
+                                <div class="flex flex-col text-sm py-1">
+                                    <div class="flex justify-between w-full border-b py-3 px-4"
+                                        *ngFor="let item of toolGroups">
+                                        <div class="flex flex-col flex-wrap radio py-0.5 justify-between">
+                                            <label class="flex radio cursor-pointer font--normal text-base">
+                                                <input class="my-auto transform scale-125" type="checkbox"
+                                                    (change)="addToolsToGroupList(item.id)" />
+                                                <p class="title font-normal text-base m-2">
+                                                    {{item.description}}
+                                                </p>
+                                            </label>
+                                            <span
+                                                class="title text-sm text-gray-four ml-7">{{item.toolGroup_Tools.length}}
+                                                {{("Tool" | labelReplacement)| async}}s</span>
+                                        </div>
+                                        <div class="flex text-xs self-start items-center text-gray-four"
+                                            (click)="ViewToolGroup_Tools(item.id)">
+                                            View
+                                            <svg class="w-6 h-6 stroke-current text-gray-four ml-1" fill="none"
+                                                stroke="currentColor" viewBox="0 0 24 24"
+                                                xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                                </path>
+                                            </svg>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <!-- References Content ends  here -->
+                            </div>
+
+                            <div class="flex flex-col py-4 space-y-6 border-gray-one shadow-xs border-0.5 bg-white-one rounded"
+                                *ngIf="viewToolGroup">
+                                <!-- View tools header starts here-->
+                                <div class="flex flex-row items-center border-b px-4 pb-4">
+                                    <button class="flex flex-row text-sm font-medium text-gray-four items-center"
+                                        (click)="ViewTool()">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="feather feather-x cursor-pointer hover:text-teal-400 rounded-full h-6 w-6"
+                                            fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <p class="text-gray-five px-1">{{selectedToolGroup?.description}}</p>
+                                </div>
+                                <!-- View tools header ends here -->
+
+                                <div class="flex flex-row px-4 py-6 justify-between" *ngIf="toolsList.length==0">
+                                    <div class="flex flex-row items-center">
+                                        <p class="text-gray-four text-xs font-normal mr-2">Showing
+                                            {{selectedToolGroup?.toolGroup_Tools?.length}} {{("Tool" | labelReplacement)| async}}s</p>
+                                    </div>
+                                    <button class="flex flex-row text-sm font-medium text-green-one items-center"
+                                        (click)="AddTool()">
+                                        <svg class="w-6 h-6 mr-2 " fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                        </svg>
+                                        New {{("Tool" | labelReplacement)| async}}s
+                                    </button>
+                                </div>
+
+                                <div class="flex text-sm w-full justify-between px-4" *ngIf="toolsList.length>0">
+                                    <div class="flex flex-row items-center">
+                                        <p class="text-gray-four text-xs font-normal mr-2">{{toolsList.length}} {{("Tool" | labelReplacement)| async}}s
+                                            selected</p>
+                                    </div>
+
+                                    <button (click)="LinkToolsToTask(false)"
+                                        class="flex flex-row text-sm font-medium text-green-one items-center border-2 border-green-one rounded px-4 py-2">
+                                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                            xmlns="http://www.w3.org/2000/svg" class="mr-3 w-5 h-5">
+                                            <path
+                                                d="M6.66602 8.66795C6.95232 9.0507 7.31759 9.3674 7.73705 9.59657C8.15651 9.82574 8.62035 9.96202 9.09712 9.99617C9.57388 10.0303 10.0524 9.96152 10.5002 9.79447C10.9481 9.62741 11.3548 9.36599 11.6927 9.02795L13.6927 7.02795C14.2999 6.39927 14.6359 5.55726 14.6283 4.68327C14.6207 3.80929 14.2701 2.97324 13.6521 2.35522C13.0341 1.73719 12.198 1.38663 11.324 1.37903C10.45 1.37144 9.60802 1.70742 8.97935 2.31461L7.83268 3.45461"
+                                                stroke="#278F6C" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                            <path
+                                                d="M9.33347 7.33283C9.04716 6.95008 8.68189 6.63338 8.26243 6.40421C7.84297 6.17503 7.37913 6.03875 6.90237 6.00461C6.4256 5.97047 5.94707 6.03925 5.49924 6.20631C5.0514 6.37337 4.64472 6.63479 4.3068 6.97283L2.3068 8.97283C1.69961 9.60151 1.36363 10.4435 1.37122 11.3175C1.37881 12.1915 1.72938 13.0275 2.3474 13.6456C2.96543 14.2636 3.80147 14.6142 4.67546 14.6217C5.54945 14.6293 6.39146 14.2934 7.02013 13.6862L8.16013 12.5462"
+                                                stroke="#278F6C" stroke-width="1.5" stroke-linecap="round"
+                                                stroke-linejoin="round" />
+                                        </svg>
+                                        Link to {{("Task" | labelReplacement)| async}}
+                                    </button>
+                                </div>
+
+                                <!-- References Content starts  here -->
+                                <div class="flex flex-col text-sm py-1 pb-4">
+                                    <label class="flex radio cursor-pointer font--sm border-b py-3 px-4"
+                                        *ngFor="let item of selectedToolGroup?.toolGroup_Tools">
+                                        <input class="my-auto transform scale-125" type="checkbox"
+                                            (change)="addToToolsList(item.tool.id)" />
+                                        <div class="flex my-auto ml-3 justify-between w-full">
+                                            <div class="title self-center">{{item.tool.description}}</div>
+                                            <button class="flex text-xs self-start items-center text-gray-four"
+                                                (click)="RemoveToolFromToolGroup(item.tool.id,selectedToolGroup?.id)">
+                                                Remove
+                                                <svg class="w-6 h-6 stroke-current text-gray-four ml-1" fill="none"
+                                                    stroke="currentColor" viewBox="0 0 24 24"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                                    </path>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </label>
+                                </div>
+                                <!-- References Content ends  here -->
+                            </div>
+                            <!-- All tools and grouped tools ends here -->
+                        </ng-container>
+
+                        <!-- References starts here -->
+                        <div class="flex flex-col">
+                            <!-- References Header starts here-->
+                            <div class="flex flex-row items-center">
+                                <div class="flex flex-col flex-grow space-y-2">
+                                    <h1 class="flex-auto font-medium text-xl">References</h1>
+                                </div>
+                                <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left"
+                                    (clicked)="editReferences=true">
+                                </app-button>
+
+                            </div>
+                            <!-- References Header ends here -->
+
+                            <!-- References Content starts  here -->
+                            <div class="flex flex-col pt-6 pb-8 space-y-12 border-b text-sm"
+                                *ngIf="editReferences==false">
+                                <p>{{taskDetail.references}}</p>
+                            </div>
+                            <!-- References Content ends  here -->
+
+                            <ng-container *ngIf="editReferences">
+                                <!-- text field starts here -->
+                                <div class="border-gray-one space-y-3">
+                                    <div
+                                        class=" items-center border w-full px-4 p-4 hover:border-black rounded text-sm">
+                                        <input type="text" class="w-full text-sm focus:outline-none"
+                                            [(ngModel)]="taskDetail.references">
+
+                                    </div>
+                                </div>
+                                <!-- text field ends here -->
+                                <!-- button starts here -->
+                                <div class="flex flex-row justify-between text-sm space-x-4">
+                                    <button class="flex px-12 py-3 items-center btn-icon-secondary"
+                                        (click)="editReferences=false">Cancel</button>
+                                    <button class="flex px-12 py-3 items-center btn-icon-primary"
+                                        (click)="SaveTaskDetails()">Save</button>
+                                </div>
+                                <!-- button ends here -->
+                            </ng-container>
+                        </div>
+                        <!-- References ends here -->
+
+                    </div>
+                    <!-- Containers and others ends here -->
+
+                </div>
+            </mat-tab>
+            <mat-tab label="{{('Enabling Objective' | labelReplacement)| async}}" routerLinkActive="text-green-one border-green-one border-b-2">
+                <!-- Enabling Objectives starts here -->
+                <div class="px-12" id="eoTab">
+                    <!-- Content starts here -->
+                    <div class="flex flex-col pb-24">
+
+                        <!-- Header starts here -->
+                        <div class="flex flex-row mb-8 items-center">
+                            <div class="flex flex-col flex-grow space-y-2">
+                                <h1 class="flex-auto font-medium text-xl">{{("Enabling Objective" | labelReplacement)| async}} Linkage</h1>
+
+                            </div>
+                            <app-textbox placeholder="Search here" (keyup)="filterEO($event)"></app-textbox>
+                            <app-icon icon="add"></app-icon>
+                            <app-link text="Add new" [routerLink]="'/analysis/jta/task-eo-link'"
+                                [queryParams]="{taskId:taskId}"></app-link>
+                        </div>
+                        <!-- Steps Header ends here-->
+
+                        <mat-table [dataSource]="eoDataSource" matSort #eoSort="matSort">
+                            <ng-container matColumnDef="number">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> #
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.number}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="description">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> Description
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="usage">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> Usage
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.usage}} </mat-cell>
+                            </ng-container>
+
+
+                            <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+
+                            <!-- Row shown when there is no matching data.-->
+                            <tr class="mat-row flex text-center " *matNoDataRow>
+                                <td class="mat-cell w-full m-2">No data to display</td>
+                            </tr>
+
+                        </mat-table>
+                        <app-data-loader *ngIf="!eoDataSource"></app-data-loader>
+                        <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #eoPaging
+                            aria-label="Select page of periodic elements">
+                        </mat-paginator>
+                        <!-- table cells ends -->
+
+                    </div>
+                    <!-- Content ends here -->
+
+                </div>
+            </mat-tab>
+            <mat-tab label="{{('Procedure' | labelReplacement)| async}}s" routerLinkActive="text-green-one border-green-one border-b-2">
+                <div class="px-12" id="procTab">
+                    <!-- Content starts here -->
+                    <div class="flex flex-col pb-24">
+
+                        <!-- Header starts here -->
+                        <div class="flex flex-row mb-8 items-center">
+                            <div class="flex flex-col flex-grow space-y-2">
+                                <h1 class="flex-auto font-medium text-xl">{{("Procedure" | labelReplacement)| async}}s Linkage</h1>
+
+                            </div>
+                            <app-textbox placeholder="Search here" (keyup)="filterProc($event)"></app-textbox>
+                            <app-icon icon="add"></app-icon>
+                            <app-link text="Add new" [routerLink]="'/analysis/jta/task-proc-link'"
+                                [queryParams]="{taskId:taskId}"></app-link>
+                        </div>
+                        <!-- Steps Header ends here-->
+
+                        <mat-table [dataSource]="procDataSource" matSort #procSort="matSort">
+                            <ng-container matColumnDef="number">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> #
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.number}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="description">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> Description
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="usage">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> Usage
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.usage}} </mat-cell>
+                            </ng-container>
+
+
+                            <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+
+                            <!-- Row shown when there is no matching data.-->
+                            <tr class="mat-row flex text-center " *matNoDataRow>
+                                <td class="mat-cell w-full m-2">No data to display</td>
+                            </tr>
+
+                        </mat-table>
+                        <app-data-loader *ngIf="!procDataSource"></app-data-loader>
+                        <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #procPaging
+                            aria-label="Select page of periodic elements">
+                        </mat-paginator>
+                        <!-- table cells ends -->
+
+                    </div>
+                    <!-- Content ends here -->
+
+                    <!-- <div class="border-r"></div> -->
+                </div>
+            </mat-tab>
+            <mat-tab label="{{('Safety Hazard' | labelReplacement)| async}}s" routerLinkActive="text-green-one border-green-one border-b-2">
+                <div class="px-12" id="shTab">
+                    <!-- Content starts here -->
+                    <div class="flex flex-col pb-24">
+
+                        <!-- Header starts here -->
+                        <div class="flex flex-row mb-8 items-center">
+                            <div class="flex flex-col flex-grow space-y-2">
+                                <h1 class="flex-auto font-medium text-xl">{{("Safety Hazard" | labelReplacement)| async}}s Linkage</h1>
+
+                            </div>
+                            <app-textbox placeholder="Search here" (keyup)="filterSh($event)"></app-textbox>
+                            <app-icon icon="add"></app-icon>
+                            <app-link text="Add new" [routerLink]="'/analysis/jta/task-sh-link'"
+                                [queryParams]="{taskId:taskId}"></app-link>
+                        </div>
+                        <!-- Steps Header ends here-->
+
+                        <mat-table [dataSource]="shDataSource" matSort #shSort="matSort">
+                            <ng-container matColumnDef="number">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> #
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.number}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="description">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> Description
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="usage">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> Usage
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.usage}} </mat-cell>
+                            </ng-container>
+
+
+                            <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+
+                            <!-- Row shown when there is no matching data.-->
+                            <tr class="mat-row flex text-center " *matNoDataRow>
+                                <td class="mat-cell w-full m-2">No data to display</td>
+                            </tr>
+
+                        </mat-table>
+                        <app-data-loader *ngIf="!shDataSource"></app-data-loader>
+                        <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #shPaging
+                            aria-label="Select page of periodic elements">
+                        </mat-paginator>
+                        <!-- table cells ends -->
+
+                    </div>
+                    <!-- Content ends here -->
+
+                    <!-- <div class="border-r"></div> -->
+                </div>
+            </mat-tab>
+            <mat-tab label="OJT/{{('Task' | labelReplacement)| async}} QUALIFICATION" routerLinkActive="text-green-one border-green-one border-b-2">
+                <div class="flex flex-row px-12 pb-24" id="ojtTab">
+                    <!-- Table section starts here -->
+                    <div [ngClass]="{'w-23/24 mr-5':OJTFullWidth,'w-15/24 mr-12':!OJTFullWidth}">
+
+                        <!-- Steps Header starts here -->
+                        <div class="flex flex-row mb-8 items-center">
+                            <div class="flex flex-col flex-grow space-y-2">
+                                <h1 class="flex-auto font-medium text-xl">OJT / {{("Task" | labelReplacement)| async}} Qualification</h1>
+                                <p class="text-xs mr-2 text-gray-four">Showing 6 items</p>
+                            </div>
+                        </div>
+                        <!-- Steps Header ends here-->
+
+                        <!-- Configur section starts here -->
+                        <div class="flex mb-8" *ngIf="!editOjtTime">
+                            <div class="bg-green-five flex flex-nowrap rounded w-full relative">
+                                <div class="absolute left-0 top-0">
+                                    <svg width="53" height="45" viewBox="0 0 53 45" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path opacity="0.1" fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M52.7039 0C49.9633 25.3032 28.5319 45 2.5 45C1.66174 45 0.828249 44.9796 0 44.9392V4C0 1.79086 1.79086 0 4 0H52.7039Z"
+                                            fill="#FCFCFC" />
+                                    </svg>
+                                </div>
+                                <div class="flex justify-between py-6 px-6 w-full">
+                                    <div class="flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-8 w-8 stroke-current text-white-one mr-2" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <div class="flex flex-col text-white-one">
+                                            <p class="text-xs">Require Time</p>
+                                            <h6 class="text-sm font-medium">16 HRS</h6>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center">
+                                        <button
+                                            class="text-sm font-medium focus:outline-none text-white-one items-center border-0.8 border-white-one rounded px-6 py-2"
+                                            (click)="editOjtTime=true">
+                                            Edit
+                                        </button>
+                                        <button
+                                            class="flex text-sm font-medium focus:outline-none text-gray-one items-center ml-4">
+                                            <svg xmlns="http://www.w3.org/2000/svg"
+                                                class="h-6 w-6 stroke-current text-gray-one mr-2" fill="none"
+                                                viewBox="0 0 24 24" stroke="currentColor">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            Configure
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="absolute right-0 bottom-0 z-10">
+                                    <svg width="20" height="69" viewBox="0 0 20 69" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path opacity="0.1" fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M1.62115 68.5369C0.558305 63.3698 0 58.0186 0 52.5369C0 32.3661 7.55953 13.961 20 0V64.5369C20 66.7461 18.2091 68.5369 16 68.5369H1.62115Z"
+                                            fill="#FCFCFC" />
+                                    </svg>
+                                </div>
+                                <div class="absolute right-0 bottom-0">
+                                    <svg width="65" height="27" viewBox="0 0 65 27" fill="none"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path opacity="0.1" fill-rule="evenodd" clip-rule="evenodd"
+                                            d="M64.9999 3.0727V23C64.9999 25.2091 63.209 27 60.9999 27H0.224121C9.56098 10.8594 27.0123 0 46.9999 0C53.3113 0 59.3699 1.08278 64.9999 3.0727Z"
+                                            fill="#FCFCFC" />
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex mb-8" *ngIf="editOjtTime">
+                            <div class="bg-white-one flex flex-nowrap rounded w-full shadow">
+                                <div class="flex justify-between py-6 px-6 w-full">
+                                    <div
+                                        class="flex items-center border-0.8 border-green-five w-8/12 rounded p-2 mr-1.5">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-8 w-8 stroke-current text-gray-three mr-2" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <div class="flex flex-col">
+                                            <p class="text-xs text-gray-three">Require Time</p>
+                                            <h6 class="text-sm font-medium">16 HRS</h6>
+                                        </div>
+                                    </div>
+                                    <div class="flex items-center w-4/12 ml-1.5">
+                                        <button
+                                            class="text-sm font-medium focus:outline-none text-white-one items-center bg-green-five rounded px-16 py-5"
+                                            (click)="editOjtTime=false">
+                                            Save
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Configure section ends here-->
+
+                        <!-- Table starts here -->
+                        <div class="space-y-6 text-sm">
+                            <!-- Table Content starts here -->
+                            <div class="border-gray-one shadow-md border-0.5 bg-white-one rounded">
+                                <!-- table header starts -->
+                                <!-- <div class="flex flex-row items-center bg-white-one rounded-t-md py-6 px-6 space-x-2 border-b-0.8 border-gray-one">
+                                    <p class="text-xs text-gray-four flex-grow">Name</p>
+                                    <p class="text-xs text-gray-four flex-grow">Time Entries</p>
+                                    <p class="text-xs text-gray-four flex-grow">Progress</p>
+                                </div> -->
+                                <!-- table header ends -->
+                                <!-- table cells starts -->
+                                <div class="flex flex-row bg-white-one rounded-b-md">
+                                    <div class="table w-full text-left">
+                                        <div class="table-row-group">
+                                            <!-- Table header starts here -->
+                                            <div class="table-row text-xs text-gray-four font-normal">
+                                                <div class="table-cell py-6 px-5 border-b-0.8 border-gray-one">
+                                                    <div class="flex items-center">
+                                                        <div class="mr-2">
+                                                            <p class="text-xs text-gray-four inline-block">Name</p>
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <button class="focus:outline-none">
+                                                                <svg class="w-2 h-2" width="6" height="4"
+                                                                    viewBox="0 0 6 4" fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg">
+                                                                    <path
+                                                                        d="M5.92118 2.80019L3.19553 0.0805518C3.08786 -0.0268508 2.91368 -0.0268508 2.806 0.0805517L0.0825342 2.79829C-0.0973765 2.97111 0.0383719 3.27478 0.282611 3.26796L5.71892 3.26796C5.96235 3.27451 6.09427 2.97303 5.92118 2.80019ZM3.00091 0.663358L5.06334 2.72143L0.938197 2.72143L3.00091 0.663358Z"
+                                                                        fill="#E5E5E5" />
+                                                                </svg>
+                                                            </button>
+                                                            <button class="focus:outline-none">
+                                                                <svg class="w-2 h-2" width="6" height="4"
+                                                                    viewBox="0 0 6 4" fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg">
+                                                                    <path
+                                                                        d="M0.0788247 1.19981L2.80447 3.91945C2.91214 4.02685 3.08632 4.02685 3.194 3.91945L5.91747 1.20171C6.09738 1.02889 5.96163 0.72522 5.71739 0.73204L0.281077 0.73204C0.0376537 0.725492 -0.0942656 1.02697 0.0788247 1.19981ZM2.99909 3.33664L0.936663 1.27857L5.0618 1.27857L2.99909 3.33664Z"
+                                                                        fill="#E5E5E5" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="table-cell py-6 px-5 border-b-0.8 border-gray-one">
+                                                    <div class="flex items-center">
+                                                        <div class="mr-2">
+                                                            <p class="text-xs text-gray-four inline-block">Time Entries
+                                                            </p>
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <button class="focus:outline-none">
+                                                                <svg class="w-2 h-2" width="6" height="4"
+                                                                    viewBox="0 0 6 4" fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg">
+                                                                    <path
+                                                                        d="M5.92118 2.80019L3.19553 0.0805518C3.08786 -0.0268508 2.91368 -0.0268508 2.806 0.0805517L0.0825342 2.79829C-0.0973765 2.97111 0.0383719 3.27478 0.282611 3.26796L5.71892 3.26796C5.96235 3.27451 6.09427 2.97303 5.92118 2.80019ZM3.00091 0.663358L5.06334 2.72143L0.938197 2.72143L3.00091 0.663358Z"
+                                                                        fill="#E5E5E5" />
+                                                                </svg>
+                                                            </button>
+                                                            <button class="focus:outline-none">
+                                                                <svg class="w-2 h-2" width="6" height="4"
+                                                                    viewBox="0 0 6 4" fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg">
+                                                                    <path
+                                                                        d="M0.0788247 1.19981L2.80447 3.91945C2.91214 4.02685 3.08632 4.02685 3.194 3.91945L5.91747 1.20171C6.09738 1.02889 5.96163 0.72522 5.71739 0.73204L0.281077 0.73204C0.0376537 0.725492 -0.0942656 1.02697 0.0788247 1.19981ZM2.99909 3.33664L0.936663 1.27857L5.0618 1.27857L2.99909 3.33664Z"
+                                                                        fill="#E5E5E5" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="table-cell py-6 px-5 border-b-0.8 border-gray-one">
+                                                    <div class="flex items-center">
+                                                        <div class="mr-2">
+                                                            <p class="text-xs text-gray-four inline-block">Progress</p>
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <button class="focus:outline-none">
+                                                                <svg class="w-2 h-2" width="6" height="4"
+                                                                    viewBox="0 0 6 4" fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg">
+                                                                    <path
+                                                                        d="M5.92118 2.80019L3.19553 0.0805518C3.08786 -0.0268508 2.91368 -0.0268508 2.806 0.0805517L0.0825342 2.79829C-0.0973765 2.97111 0.0383719 3.27478 0.282611 3.26796L5.71892 3.26796C5.96235 3.27451 6.09427 2.97303 5.92118 2.80019ZM3.00091 0.663358L5.06334 2.72143L0.938197 2.72143L3.00091 0.663358Z"
+                                                                        fill="#E5E5E5" />
+                                                                </svg>
+                                                            </button>
+                                                            <button class="focus:outline-none">
+                                                                <svg class="w-2 h-2" width="6" height="4"
+                                                                    viewBox="0 0 6 4" fill="none"
+                                                                    xmlns="http://www.w3.org/2000/svg">
+                                                                    <path
+                                                                        d="M0.0788247 1.19981L2.80447 3.91945C2.91214 4.02685 3.08632 4.02685 3.194 3.91945L5.91747 1.20171C6.09738 1.02889 5.96163 0.72522 5.71739 0.73204L0.281077 0.73204C0.0376537 0.725492 -0.0942656 1.02697 0.0788247 1.19981ZM2.99909 3.33664L0.936663 1.27857L5.0618 1.27857L2.99909 3.33664Z"
+                                                                        fill="#E5E5E5" />
+                                                                </svg>
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- Table header ends here -->
+
+                                            <!-- Table cell starts here -->
+                                            <div href="" class="table-row border-b-8 text-sm hover:bg-gray-50 relative">
+                                                <div
+                                                    class="px-5 py-6 table-cell align-middle text-sm border-b-0.8 border-gray-one">
+                                                    <div class="flex items-center">
+                                                        <div class="rounded-full w-8 h-8 overflow-hidden mr-4">
+                                                            <img class="object-cover object-center w-8 h-8"
+                                                                src="./assets/img/image_two.png" alt="avatar">
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <p class="inline-block pr-9 text-sm">Cody Fisher</p>
+                                                            <p
+                                                                class="inline-block align-middle text-gray-three text-xs">
+                                                                cody.fisher@qts.com</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    2h
+                                                    30m</div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    16%
+                                                </div>
+                                                <button (click)="ViewOjtLink()"
+                                                    class="items-center justify-center text-gray-four focus:outline-none absolute bottom-0 top-0 right-4">
+                                                    <svg class="w-6 h-6 stroke-current text-gray-four" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div href="" class="table-row border-b-8 text-sm hover:bg-gray-50 relative">
+                                                <div
+                                                    class="px-5 py-6 table-cell align-middle text-sm border-b-0.8 border-gray-one">
+                                                    <div class="flex items-center">
+                                                        <div class="rounded-full w-8 h-8 overflow-hidden mr-4">
+                                                            <img class="object-cover object-center w-8 h-8"
+                                                                src="./assets/img/image_two.png" alt="avatar">
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <p class="inline-block pr-9 text-sm">Lauren Broox</p>
+                                                            <p
+                                                                class="inline-block align-middle text-gray-three text-xs">
+                                                                lauren.broox@qts.com</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    15h
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    94%
+                                                </div>
+                                                <button (click)="ViewOjtLink()"
+                                                    class="items-center justify-center text-gray-four focus:outline-none absolute bottom-0 top-0 right-4">
+                                                    <svg class="w-6 h-6 stroke-current text-gray-four" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div href="" class="table-row border-b-8 text-sm hover:bg-gray-50 relative">
+                                                <div
+                                                    class="px-5 py-6 table-cell align-middle text-sm border-b-0.8 border-gray-one">
+                                                    <div class="flex items-center">
+                                                        <div class="rounded-full w-8 h-8 overflow-hidden mr-4">
+                                                            <img class="object-cover object-center w-8 h-8"
+                                                                src="./assets/img/image_two.png" alt="avatar">
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <p class="inline-block pr-9 text-sm">Cody Fisher</p>
+                                                            <p
+                                                                class="inline-block align-middle text-gray-three text-xs">
+                                                                cody.fisher@qts.com</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    11h
+                                                    45m</div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    73%
+                                                </div>
+                                                <button (click)="ViewOjtLink()"
+                                                    class="items-center justify-center text-gray-four focus:outline-none absolute bottom-0 top-0 right-4">
+                                                    <svg class="w-6 h-6 stroke-current text-gray-four" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div href="" class="table-row border-b-8 text-sm hover:bg-gray-50 relative">
+                                                <div
+                                                    class="px-5 py-6 table-cell align-middle text-sm border-b-0.8 border-gray-one">
+                                                    <div class="flex items-center">
+                                                        <div class="rounded-full w-8 h-8 overflow-hidden mr-4">
+                                                            <img class="object-cover object-center w-8 h-8"
+                                                                src="./assets/img/image_two.png" alt="avatar">
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <p class="inline-block pr-9 text-sm">Lauren Broox</p>
+                                                            <p
+                                                                class="inline-block align-middle text-gray-three text-xs">
+                                                                lauren.broox@qts.com</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    3h
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    19%
+                                                </div>
+                                                <button (click)="ViewOjtLink()"
+                                                    class="items-center justify-center text-gray-four focus:outline-none absolute bottom-0 top-0 right-4">
+                                                    <svg class="w-6 h-6 stroke-current text-gray-four" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div href="" class="table-row border-b-8 text-sm hover:bg-gray-50 relative">
+                                                <div
+                                                    class="px-5 py-6 table-cell align-middle text-sm border-b-0.8 border-gray-one">
+                                                    <div class="flex items-center">
+                                                        <div class="rounded-full w-8 h-8 overflow-hidden mr-4">
+                                                            <img class="object-cover object-center w-8 h-8"
+                                                                src="./assets/img/image_two.png" alt="avatar">
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <p class="inline-block pr-9 text-sm">Cody Fisher</p>
+                                                            <p
+                                                                class="inline-block align-middle text-gray-three text-xs">
+                                                                cody.fisher@qts.com</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    4h
+                                                    15m</div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    27%
+                                                </div>
+                                                <button (click)="ViewOjtLink()"
+                                                    class="items-center justify-center text-gray-four focus:outline-none absolute bottom-0 top-0 right-4">
+                                                    <svg class="w-6 h-6 stroke-current text-gray-four" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <div href="" class="table-row border-b-8 text-sm hover:bg-gray-50 relative">
+                                                <div
+                                                    class="px-5 py-6 table-cell align-middle text-sm border-b-0.8 border-gray-one">
+                                                    <div class="flex items-center">
+                                                        <div class="rounded-full w-8 h-8 overflow-hidden mr-4">
+                                                            <img class="object-cover object-center w-8 h-8"
+                                                                src="./assets/img/image_two.png" alt="avatar">
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <p class="inline-block pr-9 text-sm">Lauren Broox</p>
+                                                            <p
+                                                                class="inline-block align-middle text-gray-three text-xs">
+                                                                lauren.broox@qts.com</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    <p>4h 15m</p>
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 pr-6">
+                                                    <span
+                                                        class="text-green-one bg-green-three py-1.5 px-2.5 rounded text-xs">OJT
+                                                        COMPLETED</span>
+                                                </div>
+                                            </div>
+                                            <div href="" class="table-row border-b-8 text-sm hover:bg-gray-50 relative">
+                                                <div
+                                                    class="px-5 py-6 table-cell align-middle text-sm border-b-0.8 border-gray-one">
+                                                    <div class="flex items-center">
+                                                        <div class="rounded-full w-8 h-8 overflow-hidden mr-4">
+                                                            <img class="object-cover object-center w-8 h-8"
+                                                                src="./assets/img/image_two.png" alt="avatar">
+                                                        </div>
+                                                        <div class="flex flex-col">
+                                                            <p class="inline-block pr-9 text-sm">Cody Fisher</p>
+                                                            <p
+                                                                class="inline-block align-middle text-gray-three text-xs">
+                                                                cody.fisher@qts.com</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    0h
+                                                </div>
+                                                <div
+                                                    class="table-cell align-middle border-b-0.8 border-gray-one py-6 px-6">
+                                                    0%
+                                                </div>
+                                                <button (click)="ViewOjtLink()"
+                                                    class="items-center justify-center text-gray-four focus:outline-none absolute bottom-0 top-0 right-4">
+                                                    <svg class="w-6 h-6 stroke-current text-gray-four" fill="none"
+                                                        stroke="currentColor" viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg">
+                                                        <path stroke-linecap="round" stroke-linejoin="round"
+                                                            stroke-width="2"
+                                                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                                        </path>
+                                                    </svg>
+                                                </button>
+                                            </div>
+                                            <!-- Table cell starts here -->
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- table cells ends -->
+                            </div>
+                            <!-- Table Content ends here -->
+                        </div>
+                        <!-- Table ends here -->
+
+                    </div>
+                    <!-- Table Section ends here -->
+
+                    <div class="border-r"></div>
+
+                    <!-- Containers and others starts here -->
+                    <div [ngClass]="{'w-8/24 ml-8':!OJTFullWidth,'w-2/24 space-y-8 ml-4':OJTFullWidth}">
+                        <!-- Question and answers starts here -->
+                        <div class="flex flex-col" [ngClass]="{'items-center':OJTFullWidth}">
+                            <!-- Question header starts here -->
+                            <div class="flex flex-row py-6 justify-start">
+                                <button class="focus:outline-none" (click)="OJTFullWidth=!OJTFullWidth"
+                                    *ngIf="!OJTFullWidth">
+                                    <svg xmlns="http://www.w3.org/2000/svg"
+                                        class="h-6 w-6 stroke-current text-gray-four mr-3" fill="none"
+                                        viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M9 5l7 7-7 7" />
+                                    </svg>
+                                </button>
+                                <div class="flex flex-row items-center" *ngIf="!OJTFullWidth">
+                                    <p class="text-base font-normal mr-2">Questions and Answers</p>
+                                </div>
+                                <div class="flex flex-col items-center" *ngIf="OJTFullWidth">
+                                    <button class="focus:outline-none" (click)="OJTFullWidth=!OJTFullWidth">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-6 w-6 stroke-current text-gray-four" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <p class="text-base font-normal">Q & A</p>
+                                </div>
+                                <button class="flex flex-row text-sm font-medium text-green-one items-center"
+                                    (click)="addQuestion=true" *ngIf="!addQuestion" [ngClass]="{'hidden':OJTFullWidth}">
+                                    <svg class="w-6 h-6 mr-2 " fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Add
+                                </button>
+                            </div>
+                            <!-- Question header ends here -->
+                            <form (ngSubmit)="addTaskQuestion()" #form="ngForm" *ngIf="addQuestion">
+                                <div class="flex flex-col">
+                                    <p class="text-sm font-medium text-gray-four">Question</p>
+                                    <input name="EoDesc" [(ngModel)]="questonCreateOpt.question" required
+                                        class="text-sm flex-grow focus:outline-none text-gray-900 border-gray-one border-0.8 mt-2 px-4 pt-3 pb-7 rounded"
+                                        placeholder="{{('Task' | labelReplacement)| async}} Question here" type="text">
+                                </div>
+                                <div class="flex flex-col">
+                                    <p class="text-sm font-medium text-gray-four">Answer</p>
+                                    <input name="EoDesc" [(ngModel)]="questonCreateOpt.answer" required
+                                        class="text-sm flex-grow focus:outline-none text-gray-900 border-gray-one border-0.8 mt-2 px-4 pt-3 pb-7 rounded"
+                                        placeholder="Answer here" type="text">
+                                </div>
+                                <div class="flex flex-row justify-between text-sm space-x-4 mt-3 mb-5">
+                                    <button class="flex px-12 py-3 items-center btn-icon-secondary"
+                                        (click)="addQuestion=false">Cancel</button>
+                                    <button class="flex px-12 py-3 items-center btn-icon-primary"
+                                        [disabled]="form.invalid" type="submit">Save</button>
+                                </div>
+                            </form>
+                            <!-- Question starts here -->
+                            <div [ngClass]="{'flex flex-col':!OJTFullWidth,'hidden':OJTFullWidth}">
+                                <div class="border-b-0.8 border-gray-one pb-9 mb-6" *ngFor="let q of taskQuestions">
+                                    <div class="flex py-1.5 justify-between">
+                                        <h5 class="text-sm text-gray-two">
+                                            Question {{taskQuestions.indexOf(q)+1}} : {{q.question}}
+                                        </h5>
+
+                                        <button class="flex text-xs self-start items-center text-gray-four"
+                                            (click)="removeTaskQuestion(q.id)">
+                                            Remove
+                                        </button>
+                                    </div>
+                                    <div class="flex flex-row items-center py-1.5" (click)="showQuestionAns(q.answer)">
+                                        <button class="text-green-one text-xs font-normal mr-2">Show answer</button>
+                                        <svg *ngIf="showAnswer !=q.answer" class="w-4 h-4 stroke-current text-gray-four"
+                                            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 9l-7 7-7-7">
+                                            </path>
+                                        </svg>
+                                        <svg *ngIf="showAnswer ==q.answer"
+                                            class="w-4 h-4 stroke-current text-gray-four " fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.5 11.25L9 6.75L13.5 11.25" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round"></path>
+                                        </svg>
+                                    </div>
+                                    <div class="flex py-1.5" *ngIf="showAnswer ==q.answer">
+                                        <h5 class="text-sm text-gray-two">
+                                            Answer : {{q.answer}}
+                                        </h5>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Question ends here -->
+
+                        </div>
+                        <!-- Question and answers ends here -->
+
+                    </div>
+                    <!-- Containers and others ends here -->
+
+                </div>
+            </mat-tab>
+        </mat-tab-group>
+    </div>
+    <!-- sub-header starts here -->
+ 
+</ng-container>
+<ng-container *ngIf="taskDetail==undefined">
+    <h2 id="notaskMsg">Please Select {{("Task" | labelReplacement)| async}} to Edit/View Detail</h2>
+</ng-container>

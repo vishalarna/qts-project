@@ -1,0 +1,120 @@
+<div>
+  <div class="flex flex-row flex-wrap ml-4 px-8 mt-3">
+    <p class="font-bold text-lg">{{("Enabling Objective" | labelReplacement)| async}} Overview</p>
+  </div>
+  <div style="height: fit-content;" class="px-10 pb-12 flex flex-row">
+    <app-data-loader *ngIf="eoStats === undefined"></app-data-loader>
+    <ng-container  *ngIf="eoStats !== undefined">
+        <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4">
+
+            <div class="mb-4">{{("Enabling Objective" | labelReplacement)| async}}</div>
+            <div class="flex flex-row ">
+                <div class="flex flex-col ">
+                    <span (click)="eoStats.activeEO>0 && openFlyPanel(notLinkedPanel,'Active');" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':eoStats.activeEO>0 ,'text-lg text-black':eoStats.activeEO==0}">
+                        {{eoStats.activeEO | number : '2.'}}
+                    </span>
+                    <p>Active</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span (click)="eoStats.inActiveEO>0 && openFlyPanel(notLinkedPanel,'Inactive');" [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':eoStats.inActiveEO>0 ,'text-lg text-black':eoStats.inActiveEO==0}">
+                        {{eoStats.inActiveEO | number : '2.'}}
+                    </span>
+                    <p>Inactive</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm mb-4 w-fit">
+
+            <div class="mb-4">{{("Enabling Objective" | labelReplacement)| async}} Not Linked to</div>
+            <div class="flex flex-row">
+                <div (click)="eoStats.tasks>0 && openFlyPanel(notLinkedPanel,'Tasks');" class="flex flex-col">
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':eoStats.tasks>0 ,'text-lg text-black':eoStats.tasks==0}">
+                        {{eoStats.tasks | number : '2.'}}
+                    </span>
+                    <p>{{("Task" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div (click)="eoStats.procedures>0 && openFlyPanel(notLinkedPanel,'Procedures');" class="flex flex-col">
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':eoStats.procedures>0 ,'text-lg text-black':eoStats.procedures==0}">
+                        {{eoStats.procedures | number : '2.'}}
+                    </span>
+                    <p>{{("Procedure" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div (click)="eoStats.safetyHazards>0 && openFlyPanel(notLinkedPanel,'Safety Hazards');" class="flex flex-col">
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':eoStats.safetyHazards>0 ,'text-lg text-black':eoStats.safetyHazards==0}">
+                        {{eoStats.safetyHazards | number : '2.'}}
+                    </span>
+                    <p>{{("Safety Hazard" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div (click)="eoStats.ilAs>0 && openFlyPanel(notLinkedPanel,'ILAs');" class="flex flex-col">
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':eoStats.ilAs>0 ,'text-lg text-black':eoStats.ilAs==0}">
+                        {{eoStats.ilAs | number : '2.'}}
+                    </span>
+                    <p>{{("ILA" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div (click)="eoStats.rRs>0 &&openFlyPanel(notLinkedPanel,'Regulations');" class="flex flex-col">
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':eoStats.rRs>0 ,'text-lg text-black':eoStats.rRs==0}">
+                        {{eoStats.rRs | number : '2.'}}
+                    </span>
+                    <p>{{("Regulatory Requirement" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+            </div>
+
+
+        </div>
+    </ng-container>
+  </div>
+  <div class="flex flex-row flex-wrap ml-4 px-8 mr-4 justify-between">
+    <p class="font-bold text-lg">Latest Activity</p>
+    <app-button (clicked)="openFlyPanelHistory(history)" variant="text" text="View all history"></app-button>
+  </div>
+  <app-data-loader *ngIf="!dataSource || isLoading"></app-data-loader>
+  <div class="px-12 pb-12 mt-2" *ngIf="dataSource">
+    <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8">
+
+        <mat-table [dataSource]="dataSource" matSort>
+            <ng-container matColumnDef="title">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Enabling Objective" | labelReplacement)| async}} Number/Name </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.title}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="activityDesc">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Description of Change </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.activityDesc}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="createdDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Modified By </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <div class="flex flex-col">
+                        <span class="text-qtd">{{row.createdBy}}</span>
+                        <span class="mt-2">{{row.createdDate | date:'medium' }}</span>
+                    </div>
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full m-2">No data matching the filter</td>
+            </tr>
+
+        </mat-table>
+
+    </div>
+  </div>
+</div>
+
+<ng-template #history>
+  <app-flypanel-eo-history></app-flypanel-eo-history>
+</ng-template>
+
+<ng-template #notLinkedPanel>
+  <app-flypanel-eo-not-linked [activeInactiveCheck]="activeInactiveCheck" (refreshOverview)="refreshData()" (closed)="flyPanelService.close()" [NotLinkedToName]="notLinkedName"></app-flypanel-eo-not-linked>
+</ng-template>

@@ -1,0 +1,154 @@
+<!--Heading starts-->
+<ng-container *ngIf="editOragnizationCheck === false">
+    <div class="flex flex-col px-12 py-12">
+
+    <ng-container *ngIf="linkPos">
+        <div class="flex flex-row justify-between">
+            <h2>Link Organization to {{("Employee" | labelReplacement)| async}}</h2>
+            <app-button ButtonType="icon" icon="close" (clicked)="flyPanelService.close()"></app-button>
+
+        </div>
+        <!--Heading ends-->
+        <app-textbox placeholder="Search here" (keyup)="searchFilter($event)"></app-textbox>
+
+        <app-button variant="text" iconPosition="left" icon="add" text="Add New Organization" class="mb-4"
+        (click)="openFlyInPanelOrganiiztion(addNewOrg)"></app-button>
+
+        <div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+        </div>
+
+        <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="linkedIds.length > 0">
+            <div class="flex flex-row w-full justify-between mb-3">
+                <p class="text-xs text-gray-four pt-2">{{linkedIds.length}} Organization(s) selected</p>
+                <app-button [spinner]="isLoading" class="mb-2" type="button" color="secondary" size="sm"
+                    (clicked)="linkToEmployee()" text="Link to {{('Employee' | labelReplacement)| async}}">
+                </app-button>
+            </div>
+
+        </div>
+        <!-- *ngIf="active_tasks" -->
+
+        <!-- <app-spinner *ngIf="positions === undefined"></app-spinner> -->
+        <!-- <ng-container *ngIf="positions && positions.length < 1">
+            <div>No Data Found</div>
+        </ng-container> -->
+        <ng-container>
+            <div class="flex flex-col ">
+                <!-- <div class="flex flex-row mb-3"> -->
+                <!-- <mat-checkbox *ngIf="!alreadyLinkedIds.includes(p.id)"
+                        (change)="positionChecked($event.checked, p.id)">
+                        {{p.name}}
+                    </mat-checkbox>
+                    <ng-container *ngIf="alreadyLinkedIds.includes(p.id)">
+                        <app-icon class="mr-1" style="color: rgb(92, 155, 49);" icon="link"></app-icon>
+                        <p>{{p.name}}</p>
+                    </ng-container> -->
+                <diV class="flex flex-row justify-between" *ngFor="let o of filteredList; let i = index">
+                    <mat-accordion class="flex flex-row" multi >
+                        <!-- #enddocregion multi -->
+                        <mat-expansion-panel >
+                            <mat-expansion-panel-header  >
+
+                                <div class="flex flex-row justify-between" (click)="$event.stopPropagation();" style="width:40vw;">
+                                    <div class="flex flex-row">
+                                        <mat-checkbox *ngIf="!alreadyLinkedIds.includes(o.id)"
+                                        (change)="orgChecked($event.checked, o.id)">
+                                          {{o.name}}
+                                        </mat-checkbox>
+                                        <ng-container *ngIf="alreadyLinkedIds.includes(o.id)">
+                                            <app-icon class="mr-1" style="color: rgb(92, 155, 49);" icon="link"></app-icon>
+                                            <p>{{o.name}}</p>
+                                        </ng-container>
+                                    </div>
+
+                                    <!-- <mat-checkbox *ngIf="!alreadyLinkedIds.includes(p.id)"
+                                    (change)="positionChecked($event.checked, p.id)">
+                                    {{p.person.lastName}} - {{p.person.firstName}}
+                                </mat-checkbox>
+                                <ng-container *ngIf="alreadyLinkedIds.includes(p.id)">
+                                    <app-icon class="mr-1" style="color: rgb(92, 155, 49);" icon="link"></app-icon>
+                                    <p> {{p.person.lastName}} - {{p.person.firstName}}</p>
+                                </ng-container> -->
+
+                                    <div class="ml-4 mr-2 pt-2 cursor-pointer ">
+                                        <app-icon icon="more_horiz" [matMenuTriggerFor]="options"></app-icon>
+
+                                        <mat-menu #options="matMenu" backdropClass="qtd__menu">
+                                            <label mat-menu-item (click)="openFlyInPanel(o.id)"> Edit </label>
+                                            <label mat-menu-item (click)="deleteProcedure(deleteEmp,o.id)"> Delete</label>
+                                        </mat-menu>
+                                    </div>
+                                </div>
+                            </mat-expansion-panel-header>
+                            <!-- <div *ngFor="let e of linkedEmps">
+                                <div>
+                                    {{e}}
+                                </div>
+                            </div> -->
+                            <div class="flex flex-row justify-between">
+                            <p class="mt-3" *ngIf="o.employeeOrganizations.length > 0"> Organizational Manager(s)</p>
+                            <div class="flex">
+                                <div *ngFor="let empOrg of o.employeeOrganizations,index as i">
+                                    <div class="mt-3 flex" *ngIf="empOrg.isManager === true">
+                                        <p>{{empOrg?.empLastName === null || empOrg?.empLastName === undefined ? "":(empOrg?.empLastName + " - ")}}{{empOrg?.empFirstName === null || empOrg?.empFirstName === undefined ? "":empOrg?.empFirstName}}</p>
+                                        <p class="mr-1" *ngIf="i<o.employeeOrganizations.length-1">
+                                            ,
+                                        </p>
+                                    </div>
+
+                                  <!-- <p>{{emp.employee.person.lastName}} - {{emp.employee.person.firstName}}</p> -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row" >
+                            <p class="mt-3" *ngIf="o.employeeOrganizations.length > 0"> Total {{("Employee" | labelReplacement)| async}} linked to Organization : </p>
+                        <p class="mt-3 ml-2"><b>{{o.employeeOrganizations.length}}</b></p>
+                        </div >
+                            <div *ngIf="o.employeeOrganizations.length < 1" >
+
+                                <p class="mt-3">No {{("Employee" | labelReplacement)| async}}s Linked to the Organization</p>
+                            </div>
+                            <mat-chip-list  style="max-width:40vw;">
+                                <div *ngFor="let emp of o.employeeOrganizations">
+                                    <mat-chip>{{emp?.empFirstName}} {{emp?.empLastName}}</mat-chip>
+                                </div>
+                            </mat-chip-list>
+
+                        </mat-expansion-panel>
+                    </mat-accordion>
+                </diV>
+
+
+                <!-- <mat-checkbox (change)="positionChecked($event.checked, 2)">
+                    Org 2
+                </mat-checkbox>
+                <mat-checkbox (change)="positionChecked($event.checked, 3)">
+                </mat-checkbox> -->
+
+                <!-- </div> -->
+
+            </div>
+        </ng-container>
+    </ng-container>
+
+    <!-- Here goes the add position flypanel once it is ready -->
+</div>
+</ng-container>
+
+
+
+<ng-template #deleteEmp >
+    <app-delete-emp-dialogue header="Delete Organization" [description]="deleteDescription" cancelText="No"
+    [oldOrg]="org" confirmText="Yes" (canceled)="dialog.closeAll()" [filteredList]="filteredList" (confirmed)="confirmed.emit();getOrganizations()">
+    </app-delete-emp-dialogue>
+</ng-template>
+
+<ng-container #editOrg *ngIf="editOragnizationCheck">
+<app-fly-panel-add-organization [mode]="modalType" [oldOrg]="org" (closed)="editOragnizationCheck = false;getOrganizations()"></app-fly-panel-add-organization>
+</ng-container>
+
+<ng-template #addNewOrg>
+    <app-fly-panel-add-organization (closed)="flyPanelService.close()"
+                                    (refresh)="getOrganizations()"></app-fly-panel-add-organization>
+  </ng-template>

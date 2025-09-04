@@ -1,0 +1,227 @@
+<app-header [toggleMenuIcon]="true" breadcrumbs="Training Issues"></app-header>
+<div *ngIf="isOverviewLoading" class="overview-spinner">
+  <app-spinner></app-spinner>
+</div>
+<div *ngIf="!isOverviewLoading">
+  <div class="px-10">
+    <div class="card-wrap d-flex">
+      <div class="container-card">
+        <span>Training Issues</span>
+        <div class="d-flex align-items-center card-gap">
+          <div class="status-section" style="cursor: pointer" (click)="filterByTilesClick('Open')">
+            <p class="status green">{{this.trainingIssueOverviewstats?.trainingIssuesOpen}}</p>
+            <p class="m0">Open</p>
+          </div>
+          <div class="status-section" style="cursor: pointer" (click)="filterByTilesClick('Closed')">
+            <p class="status red">{{this.trainingIssueOverviewstats?.trainingIssuesClosed}}</p>
+            <p class="m0">Closed</p>
+          </div>
+        </div>
+      </div>
+      <div class="lg-container-card">
+        <span>Training Issues With</span>
+        <div class="d-flex align-items-center card-gap" style="cursor: pointer">
+          <div class="status-section" (click)="openPendingActionItemFlyPanel(pendingActionItems, true)">
+            <p class="status">{{this.trainingIssueOverviewstats?.trainingIssuesWithPendingActionItems}}</p>
+            <p class="m0">Pending Action Items</p>
+          </div>
+          <div class="status-section" (click)="openPendingActionItemFlyPanel(pendingActionItems, false)"> 
+            <p class="status">{{this.trainingIssueOverviewstats?.trainingIssuesWithNoActionItems}}</p>
+            <p class="m0">No Action Items</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-row space-x-4 text-sm flex-end my-3">
+      <div class="dropdown">
+        <app-button
+          color="secondary"
+          text="Filter"
+          size="sm"
+          icon="filter_alt"
+          iconPosition="left"
+          (click)="openFlyInPanel(filterTrainingIssue)"
+        >
+        </app-button>
+      </div>
+      <app-button
+        text="Add New"
+        icon="add"
+        iconPosition="left"
+        size="sm"
+        (click)="openTrainingIssuesWizard()"
+      >
+      </app-button>
+    </div>
+
+    <div class="card-wrap d-flex" *ngIf="appliedFilters.length > 0">
+      <div class="container-card w-1/5">
+        <div class="flex flex-col justify-between px-2 py-2 bg-white-one pt-2">
+          <span class="font-bold mb-4">Filter(s) Applied</span>
+          <div class="flex flex-col space-y-1">
+            <ng-container *ngFor="let filter of appliedFilters">
+              <ng-container *ngFor="let line of formatFilter(filter)">
+                <span>{{ line }}</span>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>    
+    <app-button variant="text" *ngIf="appliedFilters.length > 0" class="mt-2 ml-2" (clicked)="clearAllFilters()" text="Clear Filter" icon="clear" iconPosition="right"></app-button>
+
+  <div class="bg-white rounded py-3 pl-3 shadow-sm">
+    <div class="flex flex-grow keyword-input border-b-0.8 border-gray-one">
+      <svg
+        class="flex-none w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        ></path>
+      </svg>
+      <input
+        class="text-sm flex-grow focus:outline-none"
+        placeholder="Enter Keywords to search"
+        type="text"
+        (keyup)="searchUpdate($event)"
+        [value]="searchText"
+      />
+    </div>
+
+    <mat-table [dataSource]="dataSource"  matSort>
+      <ng-container matColumnDef="CheckBox">
+        <mat-header-cell *matHeaderCellDef style="max-width: 100px">
+          <mat-checkbox></mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" style="max-width: 100px">
+          <mat-checkbox></mat-checkbox>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="issueCode">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="text-gray-400 text-sm font-weight-normal">Issue ID</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.issueCode}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="dueDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="text-gray-400 text-sm font-weight-normal">Due Date</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{(row.dueDate| dateFormat)| async}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="issueTitle">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="text-gray-400 text-sm font-weight-normal">
+            Issue Title
+          </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.issueTitle}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="severity">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="text-gray-400 text-sm font-weight-normal">Severity</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.severity}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="driverType">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="text-gray-400 text-sm font-weight-normal">Driver Type</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.driverType}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="driverSubType">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="text-gray-400 text-sm font-weight-normal">Driver Sub Type</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.driverSubType}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="pendingActionItem">
+        <mat-header-cell *matHeaderCellDef>
+          <div class="text-gray-400 text-sm font-weight-normal">
+            Pending Action Items
+          </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.pendingActionItems}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="text-gray-400 text-sm font-weight-normal">Status</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <p class="py-2 px-4 m-0 rounded flex flex-row text-center text-xs font-medium"
+            [ngClass]="{
+              customcolorgreen: row.status === 'Open',
+              'bg-gray-100 text-gray-600': row.status === 'Closed'
+            }"
+          >
+            {{ row.status }}
+          </p>
+        </mat-cell>
+       </ng-container>
+       <ng-container matColumnDef="action">
+        <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <div class="flex flex-row items-center text-gray-four btn-group">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <app-icon icon="more_vert"></app-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <label mat-menu-item translate (click)="editTrainingIssue(row)">Edit</label>
+              <label mat-menu-item translate (click)="viewActionItem(row)"> View Action Items</label>
+              <label mat-menu-item translate mat-menu-item translate (click)="copyTrainingIssue(row.id)"> Copy</label>
+              <label mat-menu-item translate mat-menu-item translate *ngIf="!row.active" (click)="activateTrainingIssue(row)">Make Active</label>
+              <label mat-menu-item translate mat-menu-item translate *ngIf="row.active" (click)="openDialog(inactiveTrainingIssue,row)">Make Inactive</label>
+              <label mat-menu-itemtranslate mat-menu-item translate *ngIf="!row.taskReviewId"  (click)="openDialog(deleteTrainingIssue,row)">Delete</label>
+            </mat-menu>
+          </div>
+        </mat-cell>
+       </ng-container>
+
+        <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: tableColumns"  [ngClass]="{'inactive-row': !row.active}"></mat-row>
+        <tr class="mat-row flex text-center" *matNoDataRow>
+          <td class="mat-cell w-full">No Data</td>
+        </tr>
+      </mat-table>
+      <mat-paginator
+        #metaPaginator="matPaginator"
+        [pageSizeOptions]="[20, 40, 60]"
+        showFirstLastButtons
+        aria-label="Select page of periodic elements"
+      ></mat-paginator>
+    </div>
+  </div>
+</div>
+<ng-template #filterTrainingIssue>
+  <app-fly-panel-filter-training-issues [filterTrainingIssuesValue]="filterValues"  (trainingIssueFilterChange)="getTrainingIssuesFilterValues($event)"></app-fly-panel-filter-training-issues>
+</ng-template> 
+
+<ng-template #pendingActionItems>
+<app-fly-panel-training-issues-pending-action-item [trainingIssue_Vm]= "trainingIssue_Vms" [hasPendingActionItems]="pendingActionItem"></app-fly-panel-training-issues-pending-action-item>
+</ng-template>
+
+<ng-template #deleteTrainingIssue>
+  <app-qtd-dialogue [header]="'Delete Training Issue'" [description]="'Deleting this Training Issue will delete all data, including all Actions Items. Are you sure you want to continue.'" cancelText="No" confirmText="Yes"
+    (confirmed)="deleteTrainingIssueById()">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #deleteTrainingIssue>
+  <app-qtd-dialogue [header]="'Delete Training Issue'" [description]="'Deleting this Training Issue will delete all data, including all Actions Items. Are you sure you want to continue.'" cancelText="No" confirmText="Yes"
+    (confirmed)="deleteTrainingIssueById()">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #inactiveTrainingIssue>
+  <app-qtd-dialogue [header]="'Make Training Issue Inactive'" [description]="'Making this Training Issue Inactive will not change the Open/Closed Status. Any pending Action Items will also remain in their assigned status. Are you sure you want to make this Training Issue Inactive?'" cancelText="No" confirmText="Yes"
+    (confirmed)="inctivateTrainingIssue($event)">
+  </app-qtd-dialogue>
+</ng-template>

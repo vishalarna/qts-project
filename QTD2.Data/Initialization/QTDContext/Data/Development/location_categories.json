@@ -1,0 +1,32 @@
+[
+  {
+    "LocCategoryTitle": "Category 1",
+    "EffectiveDate": "2023-06-21T00:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "LocCategoryTitle": "Category 2",
+    "EffectiveDate": "2023-06-22T00:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "LocCategoryTitle": "Category 3",
+    "EffectiveDate": "2023-06-23T00:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "LocCategoryTitle": "Category 4",
+    "EffectiveDate": "2023-06-24T00:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "LocCategoryTitle": "Category 5",
+    "EffectiveDate": "2023-06-25T00:00:00",
+    "Deleted": false,
+    "Active": true
+  }
+]

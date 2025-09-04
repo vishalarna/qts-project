@@ -1,0 +1,226 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="width:98%;border-collapse:collapse;margin-bottom:0px;margin-left:auto;padding:0 20px;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @{
+        var totalTaskQualificationCount = Model.Positions.SelectMany(p => p.Position_Tasks).Where(pt => pt.Task != null && pt.Task.TaskQualifications != null).SelectMany(pt => pt.Task.TaskQualifications).Distinct().Count();
+    }
+
+    @if (totalTaskQualificationCount > 0)
+    {
+        <tr>
+            <td colspan="12" style="border:none;padding-top:0px;">
+                <table style="width:100%;border-collapse:collapse;">
+                    @foreach (var position in Model.Positions)
+                    {
+                        <tr>
+                            <td colspan="12" style=" border: none !important; padding-top: 0; font-size: 20px; padding-bottom: 2px; padding-left: 0; padding-top: 18px;">
+                                <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s: <b>@position.PositionTitle</b></b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="12" style=" border: none !important;padding:0 5px 0 0;">
+                                Include required qualifications for @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))s which are newly added to the @("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s or newly made Reliability Related
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td colspan="12" style="border:none;padding:0px; ">
+                                @{
+                                    int j = 1;
+                                    var qualifiedTasks = position.Position_Tasks.Where(pt => pt.Task != null && pt.Task.TaskQualifications != null && pt.Task.TaskQualifications.Any() && pt.Task.Version_Tasks.Any(vt => vt.RequalificationDueDate != null)).Select(pt => pt.Task).Distinct().ToList();
+                                }
+                                @foreach (var task in qualifiedTasks.OrderBy(t => t.SubdutyArea.DutyArea.Letter).ThenBy(t => t.SubdutyArea.DutyArea.Number).ThenBy(t => t.SubdutyArea.SubNumber).ThenBy(t => t.Number))
+                                {
+                                    if (j > 1)
+                                    {
+                                        <div style="page-break-before: always;"></div>
+                                    }
+                                    <div id="@("page" + j)">
+                                        <table style="width:100%;border-collapse:collapse">
+                                            <tr>
+                                                <td colspan="12" style="border: none !important; padding: 5px 5px 0px 0px; vertical-align: top;">
+                                                    <b>
+                                                        @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) :
+                                                        @task.SubdutyArea.DutyArea.Letter.@task.SubdutyArea.DutyArea.Number.@task.SubdutyArea.SubNumber.@task.Number @task.Description
+                                                    </b>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="12" style="border: none !important;padding-bottom:5px;padding-left:0;padding-top:5px;">
+                                                    <b>@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Revision Date :  @(task.EffectiveDate == DateOnly.MinValue ? "" : task.EffectiveDate.ToShortDateString())</b>
+                                                </td>
+                                            </tr>
+
+                                            <tr style=" border-bottom: 2px solid #000;">
+                                                @if (Model.DisplayColumns.Where(r => r == "Employee").Count() > 0)
+                                                {
+                                                    <th style=" border: 2px solid #000; border-left: none; text-align: left;padding:5px 5px 5px 0">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Positions Qualification Date").Count() > 0)
+                                                {
+                                                    <th style=" border: 2px solid #000 !important; text-align: center;padding:5px;">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s Qualification Date</th>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Requalification Date").Count() > 0)
+                                                {
+                                                    <th style="border: 2px solid #000 !important; text-align: center; padding: 5px;">Requalification Date</th>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "ILA Name/ID").Count() > 0)
+                                                {
+                                                    <th style=" border: 2px solid #000 !important; text-align: center; padding: 5px;">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name / ID</th>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Requalification Status").Count() > 0)
+                                                {
+                                                    <th style="border: 2px solid #000; border-right: none; text-align: center; padding: 5px; ">Requalification Status</th>
+                                                }
+                                            </tr>
+                                            <tbody style="border-bottom:2px solid #000">
+                                                @foreach (var empPosition in position.EmployeePositions.Where(r => r.Active && r.Employee.Active))
+                                                {
+                                                    @{
+                                                        var revisionDate = task.EffectiveDate;
+                                                        var taskQualifications = task?.TaskQualifications?.Where(r => r.EmpId == empPosition.EmployeeId && r.TaskQualificationDate.HasValue && r.CriteriaMet == true && DateOnly.FromDateTime(r.TaskQualificationDate.Value) > revisionDate).OrderBy(r => r.TaskQualificationDate).FirstOrDefault(); // <-- ensures the result is a List
+                                                    }
+                                                    <tr>
+                                                        @if (Model.DisplayColumns.Where(r => r == "Employee").Count() > 0)
+                                                        {
+                                                            <td style=" border: none !important; text-align: left; padding: 1px 5px 1px 0;">@empPosition?.Employee?.Person?.LastName, @empPosition?.Employee?.Person?.FirstName</td>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "Positions Qualification Date").Count() > 0)
+                                                        {
+                                                            <td style=" border: none !important; text-align: center; padding: 1px 5px;">@empPosition?.QualificationDate?.ToShortDateString()</td>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "Requalification Date").Count() > 0)
+                                                        {
+                                                            <td style=" border: none !important; text-align: center; padding:1px 5px;">@taskQualifications?.TaskQualificationDate?.ToShortDateString()</td>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "ILA Name/ID").Count() > 0)
+                                                        {
+                                                            <td style="border: none !important; text-align: center; padding: 1px 5px;">
+                                                                @string.Join(", ", task?.ILA_TaskObjective_Links?.Where(link => link?.ILA != null).Select(link => link?.ILA?.Name) ?? Enumerable.Empty<string>())
+                                                            </td>
+                                                        }
+                                                        @if (Model.DisplayColumns.Contains("Requalification Status"))
+                                                        {
+                                                            string status = "";
+                                                            var emp = empPosition?.Employee;
+                                                            var posQualDate = empPosition?.QualificationDate;
+                                                            var today = DateOnly.FromDateTime(DateTime.Now);
+
+                                                            var taskQualificationsList = task?.TaskQualifications?.Where(r => r.EmpId == empPosition.EmployeeId && r.TaskQualificationDate.HasValue).ToList();
+                                                            bool hasInitialQualification = taskQualificationsList?.Any(q => q.CriteriaMet == true) == true;
+                                                            var requalVersion = task?.Version_Tasks?.Where(vt => vt.RequalificationRequired == true && vt.EffectiveDate.HasValue && vt.RequalificationDueDate.HasValue).OrderByDescending(vt => vt.EffectiveDate.Value).FirstOrDefault();
+                                                            var requalEffectiveDate = requalVersion?.EffectiveDate;
+                                                            var requalDueDate = requalVersion?.RequalificationDueDate;
+                                                            var hasRequalificationAfterRevision = taskQualificationsList?.Any(q => q.CriteriaMet == true && DateOnly.FromDateTime(q.TaskQualificationDate.Value) > requalEffectiveDate) == true;
+
+                                                            if (!hasInitialQualification)
+                                                            {
+                                                                if (posQualDate.HasValue || (empPosition?.Trainee ?? false))
+                                                                    status = "Initial Qualification Pending";
+                                                                else
+                                                                    status = "No Position Qualification Date";
+                                                            }
+                                                            else if (hasInitialQualification && !hasRequalificationAfterRevision && requalDueDate.HasValue)
+                                                            {
+                                                                if (today > requalDueDate.Value)
+                                                                    status = "Requalification Overdue";
+                                                                else
+                                                                    status = "Requalification Pending";
+                                                            }
+                                                            else if (hasRequalificationAfterRevision && requalDueDate.HasValue)
+                                                            {
+                                                                var requalDate = taskQualificationsList?.Where(q => q.CriteriaMet == true && q.TaskQualificationDate.HasValue).Select(q => DateOnly.FromDateTime(q.TaskQualificationDate.Value)).OrderByDescending(d => d).FirstOrDefault();
+                                                                if (requalDate <= requalDueDate)
+                                                                    status = "Requalification On Time";
+                                                                else
+                                                                    status = "Requalification Delayed";
+                                                            }
+                                                            else
+                                                            {
+                                                                status = "Requalification Pending";
+                                                            }
+
+                                                            <td style="padding: 0px 5px; text-align: center; font-weight: 500; border:none">@status</td>
+                                                        }
+
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    @{
+                                        j++;
+                                    }
+                                }
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </td>
+        </tr>
+    }
+
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+    @{
+        var distinctTasks = Model.Positions.SelectMany(p => p.Position_Tasks).Where(pt => pt.Task != null && pt.Task.TaskQualifications.Any()).Select(pt => pt.Task).Distinct().ToList();
+    }
+    @for (int i = 1; i <= distinctTasks.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

@@ -1,0 +1,17 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using QTD2.Domain.Interfaces.Specification;
+
+namespace QTD2.Domain.Entities.Core.Specifications.TestItem_HistorySpecs
+{
+    public class TestItem_HistoryTestItemIdRequiredSpec : ISpecification<TestItem_History>
+    {
+        public bool IsSatisfiedBy(TestItem_History entity, params object[] args)
+        {
+            return entity.TestItemId > 0;
+        }
+    }
+}

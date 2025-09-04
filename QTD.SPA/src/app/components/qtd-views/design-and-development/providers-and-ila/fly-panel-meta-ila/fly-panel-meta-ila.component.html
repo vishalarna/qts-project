@@ -1,0 +1,344 @@
+<div
+  *ngIf="!isFlyPanelMetaOpenRequirements && !isFlyPanelMetaOpenStudEval && !isFlyPanelMetaOpenSummary && !isFlyPanelMetaOpenStudEvalEdit && !isAddEmpFlyPanelOpen && !isFlyPanelLinkILAsToMetaILA">
+  <div class="flex flex-row justify-between items-center px-12 mt-5 mb-12">
+    <h1 *ngIf="currentStepIndex==0 && isCreateMode" class="text-xl font-bold text-gray-900">{{metaILA.id===undefined ?
+      'Create Meta '+ (('ILA' | labelReplacement)| async) : metaILA.name}}</h1>
+    <h1 *ngIf="currentStepIndex==0 && !isCreateMode" class="text-xl font-bold text-gray-900">Edit Meta {{("ILA" | labelReplacement)| async}}</h1>
+    <h1 *ngIf="currentStepIndex!=0" class="text-xl font-bold text-gray-900">
+      {{firstFormGroup.get('metaTitle')?.value}}</h1>
+
+    <app-button type="button" ButtonType="icon" icon="close"
+      (clicked)="flyPanelSrvc.close();flyPanelCloseCheck.emit(true)"></app-button>
+  </div>
+  <div class="flex flex-col px-12">
+    <mat-stepper labelPosition="bottom" [linear]="true" [selectedIndex]="currentStepIndex" #stepper
+      (selectionChange)="onSelectionChange($event)">
+      <ng-template matStepperIcon="edit">
+        <app-icon icon="done"></app-icon>
+      </ng-template>
+      <mat-step label="Title and Description" [stepControl]="firstFormGroup" [completed]="firstFormGroup.valid">
+        <div [formGroup]="firstFormGroup">
+          <div class="mb-3 mt-5">
+            <app-label text="Meta {{('ILA' | labelReplacement)| async}} Title " required [for]="'MetaILATitle'" class="label required"></app-label>
+            <app-textbox placeholder="Enter Title " formControlName="metaTitle"></app-textbox>
+            <app-input-error *ngIf="firstFormGroup.get('metaTitle')?.invalid" text="Meta {{('ILA' | labelReplacement)| async}} Title is Required">
+            </app-input-error>
+          </div>
+          <div class="mb-3 mt-5">
+            <app-label text="Meta {{('ILA' | labelReplacement)| async}} Description " [for]="'MetaILADescription'" class="label"></app-label>
+            <ckeditor [editor]="Editor" formControlName="metaDescription">
+            </ckeditor>
+          </div>
+          <div class="mb-3 mt-5">
+            <app-label text="Provider" class="label required"></app-label>
+            <mat-select placeholder="Select Provider" (selectionChange)="onProviderChange()" class="appearance-none rounded border w-full px-4 py-2.5 mt-2" formControlName="provider">
+                <mat-option *ngFor="let provider of providers" [value]="provider.id" >
+                {{provider.name}}
+                </mat-option>
+            </mat-select>
+          </div>
+          <div class="flex flex-row-reverse pt-12">
+            <app-button color="secondary" text="Continue" size="sm" [disabled]="firstFormGroup.invalid"
+              (clicked)="selectedChanged()"></app-button>
+          </div>
+        </div>
+      </mat-step>
+      <mat-step label="Meta {{('ILA' | labelReplacement)| async}} Configuration" [completed]="checkSecondStepInteraction()">
+        <div class="mb-6 mt-5">
+          <div class="d-flex justify-between align-items-center p-2">
+            <h3 class="m-0">Meta {{("ILA" | labelReplacement)| async}} Configuration</h3>
+            <app-button text="Add {{('ILA' | labelReplacement)| async}}s" (click)="openLinkILAFlyPanel()" icon="add" iconPosition="left" size="sm"></app-button>
+          </div>
+          <hr>
+          <p class="mt-3 text-gray-400">Drag and drop the {{("ILA" | labelReplacement)| async}}s into the correct sequence for Trainee
+            completion and indicate the criteria for
+            releasing each {{("ILA" | labelReplacement)| async}} to EMP.</p>
+        </div>
+        <div class="mb-3">
+          <div class="flex flex-col" cdkDropList (cdkDropListDropped)="drop($event)">
+            <div cdkDrag class="flex flex-row justify-between bg-gray-two p-4 mb-2 list rounded-md  position-r"
+              *ngFor="let item of clonedIla; let i = index">
+              <div class="flex flex-row">
+                <app-icon cdkDragHandle class="pt-3 mr-2" icon="drag_indicator"
+                  style="color: darkgrey!important;cursor:move">
+                </app-icon>
+                <div class="flex flex-col">
+                  <h2 class="m-0">{{item.num===null || item.num===undefined ? "N/A" : item.num}} -
+                    {{item.title }}
+                  </h2>
+                  <p class="flex-grow text-gray-400 flex m-0">
+                    <span class="pr-2">{{item.deliveryMethode }}</span> |
+                    <span class="flex flex-row justify-between pl-2 ">
+                      <p class="font-medium m-0"
+                        [ngClass]="{'text-green': item.release_method, 'text-black': !item.release_method }">
+                        {{ item.release_method || "Select " + (('ILA' | labelReplacement) | async) + " Release Criteria" }}
+                      </p>
+                      <app-icon icon="expand_more" style="color: darkgrey!important;cursor:pointer"
+                        [matMenuTriggerFor]="menu"></app-icon>
+                      <mat-menu #menu="matMenu">
+                        <div *ngFor="let config of getFilteredMetaILAConfigArray(i)">
+                          <button mat-menu-item (click)="
+                                              setReleaseMethod($event, config.id, item.id)
+                                            ">
+                            {{ config.description }}
+                          </button>
+                        </div>
+                      </mat-menu>
+                    </span>
+                  </p>
+                  <div class="d-flex" *ngIf="clonedIla[i]?.release_method === 'On Demand'">
+                    <div class="flex flex-col float-left mt-0 ml-3">
+                      <app-label text="Date"></app-label>
+                      <mat-form-field appearance="outline">
+                        <input 
+                          [value]="clonedIla[i]?.startDate ? (clonedIla[i]?.startDate | date:'yyyy-MM-dd') : ''"  
+                          class="time-input" 
+                          matInput 
+                          type="date" 
+                          (change)="onDemandDateChange($event, clonedIla[i]?.id)"/>
+                      </mat-form-field>
+                    </div>
+                  
+                    <div class="flex flex-col float-left mt-0 ml-3">
+                      <app-label text="Time"></app-label>
+                      <mat-form-field appearance="outline">
+                        <input 
+                          [value]="clonedIla[i]?.startDate ? (clonedIla[i]?.startDate | date:'HH:mm') : ''" 
+                          class="time-input" 
+                          matInput 
+                          type="time" 
+                          (change)="onDemandTimeChange($event, clonedIla[i]?.id)"
+                          [disabled]="!clonedIla[i]?.startDate"/>
+                      </mat-form-field>
+                    </div>
+                  </div>
+                  
+                </div>
+              </div>
+              <app-button class="mr-2" color="secondary" text="{{('ILA' | labelReplacement)| async}} Requirements" size="sm"
+                (clicked)="openFlyPanelMetaILAILARequirements(item.id)"></app-button>
+
+                <button class="remove-icon" mat-icon-button (click)="removeILAMemberDialog(i,item, removeILAMember)">
+                  <mat-icon>delete</mat-icon>
+                </button>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-row-reverse pt-12">
+          <app-button color="primary" text="Continue" size="sm" [disabled]="!configCheck || !isOnDemandDatesValid"
+            (clicked)="selectedChanged()"></app-button>
+        </div>
+      </mat-step>
+
+      <mat-step [completed]="checkThirdStepInteraction()" label="Assess and Evaluate">
+        <div class="mb-2">
+          <div class="mb-3 mt-5">
+            <div class="flex justify-between align-items-center">
+              <div class="flex justify-between align-items-center">
+                <span>Meta {{("ILA" | labelReplacement)| async}} Summary Final Test</span>
+                <app-icon
+                  matTooltip="Select “Create New” if you would like to create a comprehensive/summary test which includes test items from all {{('ILA' | labelReplacement)| async}}s linked to this Meta {{('ILA' | labelReplacement)| async}}. The grade {{('Employee'| labelReplacement)| async}}s receive on this comprehensive test will be listed as an overall grade at the Meta {{('ILA' | labelReplacement)| async}} Level. The grade at the individual {{('ILA' | labelReplacement)| async}} level will be retained"
+                  class="ml-2 font-normal text-gray-400" icon="help"></app-icon>
+              </div>
+              <div class="flex align-items-center justify-between">
+                <div class="flex align-items-center mr-2">
+                  <app-button color="secondary" variant="text" icon="add" text="Create New" size="sm"
+                    (click)="openFlyPanelCreateMetaILATest('create','Final Test')" iconPosition="left">
+                  </app-button>
+                </div>
+                <span *ngIf="metaILA.metaILA_SummaryTest_FinalTestId && metaILASummaryFinalTestVM?.testType == 'Final Test'" class="custom-pipe">|</span>
+                <app-button *ngIf="metaILA.metaILA_SummaryTest_FinalTestId && metaILASummaryFinalTestVM?.testType == 'Final Test'" class="mr-2" color="primary" variant="text"
+                  text="Edit" icon="edit" iconPosition="left" size="sm" (click)="openFlyPanelCreateMetaILATest('edit','Final Test')">
+                </app-button>
+              </div>
+            </div>
+            <div class="position-relative">
+              <app-textbox type="text" [disabled]="true"
+              [defaultValue]="metaILASummaryFinalTestVM?.testType !== 'Retake' ? metaILASummaryFinalTestVM?.test?.testTitle : null">></app-textbox>
+              <button mat-icon-button matPrefix *ngIf="metaILASummaryFinalTestVM?.testType !== 'Retake' && metaILASummaryFinalTestVM?.test?.testTitle"  class="summary-dropdown-close" (click)="clearSelectedSummaryTest('Final Test')">
+                <mat-icon aria-label="Clear selection">clear</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="mb-3 mt-5">
+            <div class="flex justify-between align-items-center">
+              <div class="flex justify-between align-items-center">
+                <span>Meta {{("ILA" | labelReplacement)| async}} Summary Retake Test</span>
+                <app-icon
+                  matTooltip="Select “Create New” if you would like to create a comprehensive/summary test which includes test items from all {{('ILA' | labelReplacement)| async}}s linked to this Meta {{('ILA' | labelReplacement)| async}}. The grade {{('Employee'| labelReplacement)| async}}s receive on this comprehensive test will be listed as an overall grade at the Meta {{('ILA' | labelReplacement)| async}} Level. The grade at the individual {{('ILA' | labelReplacement)| async}} level will be retained"
+                  class="ml-2 font-normal text-gray-400" icon="help"></app-icon>
+              </div>
+              <div class="flex align-items-center justify-between">
+                <div class="flex align-items-center mr-2">
+                  <app-button color="secondary" variant="text" icon="add" text="Create New" size="sm"
+                    (click)="openFlyPanelCreateMetaILATest('create','Retake')" iconPosition="left">
+                  </app-button>
+                </div>
+                <span *ngIf="metaILA.metaILA_SummaryTest_RetakeTestId && metaILASummaryRetakeTestVM?.testType == 'Retake'" class="custom-pipe">|</span>
+                <app-button *ngIf="metaILA.metaILA_SummaryTest_RetakeTestId && metaILASummaryRetakeTestVM?.testType == 'Retake'" class="mr-2" color="primary" variant="text"
+                  text="Edit" icon="edit" iconPosition="left" size="sm" (click)="openFlyPanelCreateMetaILATest('edit','Retake')">
+                </app-button>
+              </div>
+            </div>
+            <div class="position-relative">
+              <app-textbox type="text" [disabled]="true"
+              [defaultValue]="metaILASummaryRetakeTestVM?.testType !== 'Final Test' ? metaILASummaryRetakeTestVM?.test?.testTitle : null"></app-textbox>
+              <button mat-icon-button matPrefix *ngIf="metaILASummaryRetakeTestVM?.testType !== 'Final Test' && metaILASummaryRetakeTestVM?.test?.testTitle"  class="summary-dropdown-close" (click)="clearSelectedSummaryTest('Retake')">
+                <mat-icon aria-label="Clear selection">clear</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="mb-3 mt-5">
+            <div class="flex justify-between align-items-center">
+              <app-label text="Meta {{('ILA' | labelReplacement)| async}} Student Evaluation"></app-label>
+              <div class="flex align-items-center justify-between">
+                <app-button class="mr-2" color="secondary" variant="text" icon="add" text="Create New"
+                  iconPosition="left" size="sm" (click)="openFlyPanelCreateMetaILAStudentEvaluation($event)">
+                </app-button>
+                <span *ngIf="metaILA.studentEvaluationId" class="custom-pipe">|</span>
+                <app-button *ngIf="metaILA.studentEvaluationId" color="primary" variant="text" icon="edit" text="Edit"
+                  size="sm" iconPosition="left" (click)="openFlyPanelEditMetaILAStudentEvaluation($event)">
+                </app-button>
+              </div>
+            </div>
+            <div class="position-r">
+              <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                <mat-select (selectionChange)="onSelectionChangeStudentEval($event)"
+                placeholder="Select Meta {{('ILA' | labelReplacement)| async}} Student Evaluation" [value]="selectedStudentEvaluationId">
+                <mat-option *ngFor="let item of studentEvaluations" [value]="item.id">
+                  {{ item.title }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <button mat-icon-button matPrefix *ngIf="selectedStudentEvaluationId" class="dropdown-remove-btn" (click)="clearSelectedStudentEvaluation()">
+              <mat-icon aria-label="Clear selection">clear</mat-icon>
+            </button>
+          </div>
+          </div>
+        </div>
+        <div class="flex flex-row-reverse pt-12">
+          <app-button color="primary" text="Continue" size="sm" (clicked)="selectedChanged()"></app-button>
+        </div>
+      </mat-step>
+
+      <mat-step label="Enroll Students">
+        <app-enroll-meta-ila-students (openAddEmpFlyPanel)="isAddEmpFlyPanelOpen=true" [metaILA]="metaILA" [mode]="mode"
+          [metaILAId]="selectedMetaILAID"></app-enroll-meta-ila-students>
+      </mat-step>
+
+      <mat-step [stepControl]="fourthFormGroup" label="Revision and Date">
+        <div class="mb-3 mt-5" [formGroup]="fourthFormGroup">
+          <div class="mt-3">
+            <app-label [for]="'EffectiveDate'" text="Effective Date " class="label required"></app-label>
+            <app-date formControlName="EffectiveDate"></app-date>
+            <app-input-error *ngIf="fourthFormGroup.get('EffectiveDate')?.invalid"
+              text="Effective Date is Required"></app-input-error>
+          </div>
+          <div class="mt-3">
+            <app-label [for]="'RevisionNumber'" text="Reason for Revision"></app-label>
+            <app-textarea [value]="this.fourthFormGroup.get('RevisionNumber')?.value || ''"
+              formControlName="RevisionNumber">
+            </app-textarea>
+          </div>
+        </div>
+        <div class="flex flex-row-reverse pt-12">
+          <app-button color="primary" [text]="!isNERCProvider ? 'Publish' : 'Continue'" size="sm" [disabled]="fourthFormGroup.invalid"
+            (clicked)="!isNERCProvider ? openDialog(publishMetaILA) : selectedChanged()"></app-button>
+        </div>
+      </mat-step>
+      <mat-step *ngIf = "isNERCProvider" label="{{('ILA' | labelReplacement)| async}} Application">
+        <div class="spinner-container" *ngIf = "isApplicationPageLoading">
+          <app-spinner></app-spinner>
+        </div>
+        <div *ngIf = "!isApplicationPageLoading" class="mb-3 mt-5">
+          <div class="font-semibold credit-hr-heading">
+            <h2>Credit Hours</h2>
+          </div>
+          <table class="styled-table">
+            <thead>
+                <tr>
+                    <th>{{('ILA' | labelReplacement)| async}} Title</th>
+                    <th>CEH/Operating</th>
+                    <th>Standards</th>
+                    <th>Simulation</th>
+                    <th>Emergency Operations Related</th>
+                    <th>Total Training Hours</th>
+                </tr>
+            </thead>
+            <tbody>
+              <tr *ngIf="nercCertDetails?.length == 0">
+                <td class="no-data-found" colspan="5">No Data Found</td>
+              </tr>
+              <tr *ngFor = "let nc of nercCertDetails">
+                <td>{{nc.ilaName}}</td>
+                <td>{{nc?.totalCEHHours ?? 0}}</td>
+                <td>{{nc?.totalStandardReqHour ?? 0}}</td>
+                <td>{{nc?.totalSimulationReqHour ?? 0}}</td>
+                <td>{{nc.isEmergencyOpHours ? "✔" : "X"}}</td>
+                <td>{{nc?.totalTrainingHours ?? 0}}</td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="pt-10">
+          <table>
+            <thead>
+              <tr class="padding-class">
+                <th></th>
+                <th>CEH/Operating</th>
+                <th>Standards</th>
+                <th>Simulations</th>
+                <th>Emergency Operations Related</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="padding-class">
+                <td class="credit-hr-heading">Meta {{('ILA' | labelReplacement)| async}} Credit Hours</td>
+                <td><div class="w-20"><app-textbox [disabled] = "true" [defaultValue] = "getTotalValues('ceh')"></app-textbox></div></td>
+                <td><div class="w-20"><app-textbox [disabled] = "true" [defaultValue] = "getTotalValues('standard')"></app-textbox></div></td>
+                <td><div class="w-20"><app-textbox [disabled] = "true" [defaultValue] = "getTotalValues('simulation')"></app-textbox></div></td>
+                <td><div class="w-20"><input readonly type="checkbox" [checked]="getTotalValues('emOp')" disabled="true"/></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        </div>
+        <div class="flex flex-row-reverse pt-12">
+          <app-button color="primary" text="Publish" size="sm" [disabled]="fourthFormGroup.invalid"
+            (clicked)="openDialog(publishMetaILA)"></app-button>
+        </div>
+      </mat-step>
+    </mat-stepper>
+  </div>
+</div>
+
+<ng-template #publishMetaILA>
+  <app-qtd-dialogue [header]="header" [description]="description" [confirmText]="confirmText"
+    (confirmed)="PublishMetaILA()">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #removeILAMember>
+  <app-qtd-dialogue [header]="header" [description]="description" [isHTML] = "true" confirmText="Confirm" cancelText="Cancel"
+    (confirmed)="confirmRemoveILAMember()">
+  </app-qtd-dialogue>
+</ng-template>
+
+<app-fly-panel-create-meta-ila-test *ngIf="isFlyPanelMetaOpenSummary"
+  [metaILASummaryTestId]="testType=='Final Test' ? metaILA.metaILA_SummaryTest_FinalTestId : testType=='Retake' ? metaILA.metaILA_SummaryTest_RetakeTestId : ''" [mode]="testMode"
+  (closed)="closeSummaryFlyPanel($event)" [metaILADetails]="metaILA" [testType] = "testType"></app-fly-panel-create-meta-ila-test>
+
+<app-fly-panel-create-meta-ila-student-evaluation *ngIf="isFlyPanelMetaOpenStudEval"
+  (closed)="closeStudEvalFlyPanel($event)"></app-fly-panel-create-meta-ila-student-evaluation>
+
+<app-fly-panel-meta-ila-ila-requirements *ngIf="isFlyPanelMetaOpenRequirements" [ilaId]="ilaId"
+  (closed)="closeRequirementsFlyPanel($event)"></app-fly-panel-meta-ila-ila-requirements>
+
+<app-fly-panel-edit-evaluation *ngIf="isFlyPanelMetaOpenStudEvalEdit" (closed)="closeStudEvalFlyPanelEdit($event)"
+  [studentEvalId]="metaILA.studentEvaluationId" mode="Edit"></app-fly-panel-edit-evaluation>
+
+<app-fly-panel-add-meta-ila-employees *ngIf="isAddEmpFlyPanelOpen" [metaILA]="metaILA" [mode]="mode"
+  [metaILAId]="selectedMetaILAID"
+  (closed)="isAddEmpFlyPanelOpen=false;isThirdStepInteracted=true;isSecondStepInteracted=true;"></app-fly-panel-add-meta-ila-employees>
+
+  <app-fly-panel-link-ilas-to-meta-ila  *ngIf="isFlyPanelLinkILAsToMetaILA" [metaILA]="metaILA" [mode]="mode"
+  [metaILAId]="selectedMetaILAID" [ilaLinkedData] ="clonedIla" (closed)="closeMetaILAsLinkFlyPanelAsync()" (metaILALinkedMembers) = "getAddedMetaILALinkedMembers($event)"></app-fly-panel-link-ilas-to-meta-ila>

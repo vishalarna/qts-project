@@ -1,0 +1,127 @@
+.save-btn .btn-primary,
+.save-btn.btn-primary {
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 157%;
+    text-align: center;
+    letter-spacing: 0.1px;
+    color: #FFFFFF;
+}
+
+.panel-heading {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 143%;
+    color: #4D4D4D;
+}
+
+.input-length {
+    display: block;
+    position: relative;
+}
+
+.drag-caption {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 166%;
+    display: flex;
+    align-items: center;
+    color: #7A807E;
+    justify-content: center;
+}
+
+.drag-caption a {
+    color: #5C9B31;
+}
+
+.drag-area .mat-icon {
+    color: #5C9B31;
+    font-size: 2.7rem;
+}
+
+.supported-caption {
+    font-style: normal;
+    font-weight: 400;
+    font-size: 10px;
+    line-height: 18px;
+    text-align: center;
+    color: rgba(122, 128, 126, 0.8);
+}
+
+.error {
+    color: #f00;
+}
+
+.dragarea {
+    font-size: 1.5rem;
+    border: 1px dashed #E1E5E4;
+    border-radius: 4px;
+    padding: 1.5rem;
+    background-color: #fff;
+    color: #bbb;
+}
+
+.droparea {
+    font-size: 1.5rem;
+    border: 1px dashed #E1E5E4;
+    border-radius: 4px;
+    padding: 1.5rem;
+    background-color: #Fff;
+    color: #aaa;
+}
+
+.select-flexdata select {
+    width: 163px;
+    margin: 0 14px 0 0;
+}
+
+
+.tooltip-pro {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip-pro .tooltiptext {
+    visibility: hidden;
+    max-width: 23em;
+    width: 26em;
+    background: #000D09;
+    color: #fff;
+    text-align: left;
+    border-radius: 6px;
+    padding: 5px 0;
+    position: absolute;
+    z-index: 1;
+    top: -5px;
+    left: 6em;
+    padding: 0.5em;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.tooltip-pro .tooltiptext::after {
+    content: "";
+    position: absolute;
+    top: 27%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent #000D09 transparent transparent;
+}
+
+.tooltip-pro:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+.genral-setting-img-upload {
+    margin: 0 auto;
+}
+
+.public-label {
+    padding-top: 10px;
+    font-size: 1rem;
+}

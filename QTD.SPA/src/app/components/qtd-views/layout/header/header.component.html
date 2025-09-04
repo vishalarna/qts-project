@@ -1,0 +1,74 @@
+<!-- header starts -->
+<!-- <div>
+
+
+    <app-button type="button" *ngIf="canGoBack" ButtonType='icon' icon='arrow_back' (clicked)="goBack()">
+    </app-button>
+
+    <h1 class="flex-auto font-medium text-xl" id="title" translate>{{title }}</h1>
+    <div class="flex flex-row items-center space-x-4">
+
+        <app-button type="button" ButtonType='icon' icon='notifications'></app-button>
+
+        <img class="w-10 h-10" src="./assets/img/image_one.png">
+        <div>
+            <p class="text-sm font-medium text-gray-five">{{!username ? 'No user logged in' : username}}</p>
+            <p class="text-xs text-gray-four" id="lblInstance">
+                {{'Instance : ' +
+                (!selectedInstance ? 'No Instance Selected' : selectedInstance)}} </p>
+        </div>
+        <div>
+            <app-button icon="logout" size="sm" type="button" color="primary" (clicked)="signOut()"
+                [text]="'L.SignOut' | translate"></app-button>
+        </div>
+    </div>
+</div> -->
+<!-- header ends -->
+
+<mat-toolbar class="mat-toolbar mb-8 h-28 app-toolbar-sticky mat-toolbar-single-row justify-between">
+    <div class="flex flex-row" style="align-items: center;max-width:40%;">
+        <app-button type="button" *ngIf="toggleMenuIcon" ButtonType='icon' icon='menu' (clicked)="toggleMainMenu()">
+        </app-button>
+        <app-button type="button" *ngIf="canGoBack" ButtonType='icon' icon='arrow_back' (clicked)="goBack()">
+        </app-button>
+
+        <h1 *ngIf="title" class="flex-auto font-medium text-xl pl-2" id="title" translate>{{ title }}</h1>
+        <p *ngIf="breadcrumbs" style="overflow:hidden;text-overflow:ellipsis;" class="text-xs text-gray-four pl-9 pt-3">
+            {{breadcrumbs}}</p>
+        <p *ngIf="crumbOnly" class="text-base text-gray-four pt-3 pl-5">{{crumbOnly}}</p>
+    </div>
+
+    <div class="flex justify-end items-center space-x-4">
+
+        <!-- <app-button type="button" ButtonType='icon' icon='notifications'></app-button> -->
+
+        <!-- <div class="rounded-full bg-gray-200 w-10 h-10"></div> -->
+        <img class="w-10 h-10 rounded-full" [src]="empImage" onerror="this.src = './assets/img/image_one.png'">
+        <div>
+            <p class="text-sm font-medium text-gray-five">{{!username ? 'No user logged in' : username}}</p>
+            <p class="text-xs text-gray-four" id="lblInstance">
+                {{'Instance : ' +
+                (!selectedInstance ? 'No Instance Selected' : selectedInstance)}} </p>
+
+          <p class="text-sm font-medium text-gray-five" *ngIf = "isBetaInstance">{{isBetaInstance ? 'BETA' : ''}}</p>
+          <p class="text-sm font-medium text-gray-five">{{authSettingString}}</p>
+            <!-- <p class="text-xs text-gray-four">Admin</p> -->
+        </div>
+        <div *ngIf="showUpdateButton">
+            <app-button customClasses="font-bold" icon="" size="sm" type="button" [color]="isEmpSideBar === 'true' ? 'blue':'primary'" (clicked)="redirectToEmp()"
+                [text]="defaultText"></app-button> 
+        </div>
+        <div *ngIf="showSignOut">
+            <div ngbDropdown *ngIf="showLeaveInstance && selectedInstance">
+                <button [ngClass]="isEmpSideBar === 'true' ? 'drp-down-emp':'drp-down-header'" class="btn" id="signout" ngbDropdownToggle>Sign Out <span class="signout-arrow-down"><i class="fa-solid fa-chevron-down"></i></span></button>
+                <div ngbDropdownMenu="signout">
+                    <button  ngbDropdownItem (click)="leaveInstanceAsync()" [ngClass]="isEmpSideBar === 'true' ? 'drp-down-option-blue':'drp-down-option'">Leave Instance</button>
+                    <button ngbDropdownItem (click)="signOut()" [ngClass]="isEmpSideBar === 'true' ? 'drp-down-option-blue':'drp-down-option'">Sign Out</button>
+                </div>
+            </div>
+            <div *ngIf="!showLeaveInstance || !selectedInstance">
+                <app-button [customClasses]="'font-bold'" [color]="isEmpSideBar === 'true' || isEmpStateReady ? 'blue':'primary'" icon="logout" size="sm" type="button" (clicked)="signOut()"  text="Sign Out"></app-button>
+            </div>
+        </div>
+    </div>
+</mat-toolbar>

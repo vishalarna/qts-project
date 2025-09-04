@@ -1,0 +1,180 @@
+<mat-toolbar class="mb-8 shadow-sm h-28 border-b-0.5 border-gray-two  app-toolbar-sticky ">
+  <app-button type="button" ButtonType='icon' icon='menu' (clicked)="toggleMainMenu()">
+  </app-button>
+  <app-button type="button" ButtonType='icon' icon='arrow_back' (clicked)="goBack()">
+  </app-button>
+
+  <h1 class="flex-auto font-medium text-xl" id="title" translate>Transmission Power Dispatcher - Initial Training</h1>
+  <div class="flex flex-row items-center space-x-4">
+    <button id="publish_button">
+      <app-icon id="publish" inline="true" icon="publish"></app-icon>Publish
+    </button>
+    <button id="save">
+      Save <app-icon id="expand_more" icon="expand_more"></app-icon>
+    </button>
+    <button id="preview">
+      <app-icon id="visibility" icon="visibility"></app-icon> Preview
+    </button>
+  </div>
+</mat-toolbar>
+<div cdkScrollable #boundry id="div_boundary" class="bg-white-one h-auto transform-up ml-4 mr-3 mt-15 mb-bottom h-full">
+  <mat-card class="card-box mb-16" cdkDrag (cdkDragMoved)="dragStarted($event)" [id]="item.id" [cdkDragBoundary]="boundry"
+    *ngFor="let item of nodes; let i = index">
+    <!-- POSITION BOX -->
+    <ng-container *ngIf="item.nodeType == 'position'">
+      <mat-card-header>
+        <mat-card-title>
+          <app-icon [icon]="item.iconName"> </app-icon>
+          {{ item.title }}
+          <app-icon icon="expand_more"> </app-icon>
+          <app-icon icon="more_vert" class="ml-16 align-item-end"></app-icon>
+        </mat-card-title>
+
+      </mat-card-header>
+
+      <div class="initial_training_div px-2 w-auto h-auto bg-gray-two rounded-card
+          ml-3 float-left mt-16 fw-100 fs-2 p-1 ">
+        {{ item.trainingProgramType }}
+        <app-icon icon="expand_more"> </app-icon>
+      </div>
+    </ng-container>
+
+    <!-- ASSESSMENT BOX -->
+    <ng-container *ngIf="item.nodeType == 'assessment'">
+      <mat-card-header>
+        <mat-card-title>
+          <app-icon [icon]="item.iconName"> </app-icon>
+          {{ item.title }}
+          <app-icon icon="expand_more"></app-icon>
+          <app-icon icon="more_vert" class="ml-9 float-right"></app-icon>
+        </mat-card-title>
+      </mat-card-header>
+      <app-textarea placeholder="Enter Assessment" customClasses="p-1 w-78 h-26"></app-textarea>
+    </ng-container>
+
+    <!-- Individual Development Plan(IDP) BOX-->
+    <ng-container *ngIf="item.nodeType == 'IDP'">
+      <mat-card-header>
+        <mat-card-title>
+          <app-icon [icon]="item.iconName"> </app-icon>
+          {{ item.title }}
+          <app-icon icon="expand_more"> </app-icon>
+          <app-icon icon="more_vert" class="ml-16 float-right"></app-icon>
+        </mat-card-title>
+      </mat-card-header>
+      <app-textarea placeholder="Enter Individual Development Plan" customClasses="p-1 w-78 h-26"></app-textarea>
+    </ng-container>
+
+    <!-- CERTIFICATION BOX-->
+    <ng-container *ngIf="item.nodeType == 'Certification'">
+      <mat-card-header>
+        <mat-card-title>
+          <app-icon [icon]="item.iconName"> </app-icon>
+          {{ item.title }}
+          <app-icon icon="expand_more"> </app-icon>
+          <app-icon icon="more_vert" class="ml-12 float-right"></app-icon>
+        </mat-card-title>
+      </mat-card-header>
+      <mat-form-field class="w-77">
+        <mat-select>
+          <mat-option *ngFor="let d of certifications" [value]="d.name">
+            {{ d.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <app-textarea placeholder="Enter {{('Certification' | labelReplacement)| async}}s" customClasses="p-1 h-10 w-78"></app-textarea>
+      <section class="flex align-content-center align-item-center h-15 w-32 rounded-sm">
+        <mat-progress-bar class="rounded-card" color="blue" mode="determinate" value="40">
+        </mat-progress-bar>
+        <div class="absolute p-3 clr-white">40% Completion</div>
+      </section>
+    </ng-container>
+
+    <!--Add Training Group/Module Starts-->
+    <ng-container *ngIf="item.nodeType == 'Add Training Group/Module'">
+      <div class="h-15 mb-3 transform-up py-3 bg-white-one">
+        <mat-card-header>
+          <mat-card-title>
+            <app-icon icon="library_books" class="mr-2"></app-icon>
+            Phase 1: Fundamentals
+            <app-icon icon="expand_more"></app-icon>
+            <app-icon icon="more_vert" class="ml-4 bg-gray-one rounded-sm"></app-icon>
+          </mat-card-title>
+        </mat-card-header>
+      </div>
+
+      <div class="w-77 mr-12" [id]="node.id" *ngFor="let node of ila; let j = index" class="inline-flex flex-row-wrap">
+        <mat-card class="mb-4 w-77 h-44">
+          <mat-card-title>
+            <app-icon [icon]="node.iconName"> </app-icon>
+            {{ node.title }}
+            <app-icon icon="expand_more"></app-icon>
+            <app-icon icon="more_vert" class="ml-8"></app-icon>
+          </mat-card-title>
+
+          <span class="flex mt-4 text-xs">{{ node.description }}</span>
+          <section class=" flex align-content-center align-item-center h-9 w-20 rounded-sm transform_section ">
+            <mat-progress-bar class="rounded-card" color="blue" mode="determinate" value="40">
+            </mat-progress-bar>
+            <div class="absolute clr-white text-xs">40% Completion</div>
+          </section>
+          <div class="translate_span">
+            <span>In progress</span>
+            <app-icon icon="expand_more"></app-icon>
+          </div>
+        </mat-card>
+      </div>
+    </ng-container>
+    <!--Add Training Group/Module Ends-->
+
+    <!--Assessment 1.0 Starts-->
+    <ng-container *ngIf="item.nodeType == 'Assessment 1.0'" id="assessment1">
+      <mat-card-header>
+        <mat-card-title>
+          <app-icon [icon]="item.iconName"> </app-icon>
+          {{ item.title }}
+          <app-icon icon="expand_more"> </app-icon>
+        </mat-card-title>
+      </mat-card-header>
+      <app-textarea placeholder="Enter Assessment" customClasses="p-1 w-78 h-11"></app-textarea>
+      <mat-card-footer class="ml-1 mt-4">
+        <span>Grade: 60%</span>
+        <span style="margin-left: 12rem;">Failed</span>
+        <app-icon icon="expand_more"></app-icon>
+      </mat-card-footer>
+    </ng-container>
+    <!--Assessment 1.0 Ends-->
+
+
+
+    <!-- CATEGORY BOX-->
+    <ng-container *ngIf="item.nodeType == 'dropdown'">
+      <mat-form-field appearance="fill" class="w-77">
+        <mat-label>Categories</mat-label>
+        <mat-select>
+          <mat-select-trigger>{{ selectedCategory.title }}</mat-select-trigger>
+          <mat-option *ngFor="let d of category" [value]="d.title"
+            (onSelectionChange)="createNodeWithTitle(item.id, d.title)">
+            <app-icon icon="{{ d.iconName }}"></app-icon> {{ d.title }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+    
+    <ng-container *ngIf="item.remove == false">
+      <mat-card-actions>
+        <app-button ButtonType="btn-icon"
+          customClasses="w-10 h-10 t-4 r-20 absolute bg-green-one rounded-full transform-cardButtons"
+          (clicked)="createNode('', item.id)" icon="add" iconClass="text-white-one transform-y40"
+          [disabled]="item.disabled"></app-button>
+
+        <app-button ButtonType="btn-icon"
+          customClasses="w-10 h-10 t-5 r-18 absolute bg-gray-one rounded-full transform-commitButton"
+          (clicked)="connectNode(item.id, $event)" icon="commit" iconClass="text-white-one transform-y40"
+          [disabled]="item.disabled"></app-button>
+      </mat-card-actions>
+    </ng-container>
+  </mat-card>
+
+  <div id="sticky-point"></div>
+</div>

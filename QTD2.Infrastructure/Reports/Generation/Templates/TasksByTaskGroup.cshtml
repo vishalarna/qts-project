@@ -1,0 +1,262 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .expired-row {
+        color: gray;
+        font-style: italic;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" width="100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @{
+        var groupedIndependentTaskGroupTasks = Model.Tasks.Where(t => !t.Task_TrainingGroups.Any()).OrderBy(t => t.SubdutyArea.DutyArea.Letter).ThenBy(t => t.SubdutyArea.DutyArea.Number).ThenBy(t => t.SubdutyArea.SubNumber).ThenBy(t => t.Number)
+        .GroupBy(t => t.SubdutyArea.DutyArea)
+        .Select(g => new
+        {
+            DutyArea = g.Key,
+            DutyAreaList = g.ToList()
+        }).ToList();
+
+        var trainingGroupTasks = Model.Tasks.Where(t => t.Task_TrainingGroups.Any()).SelectMany(t => t.Task_TrainingGroups, (t, ttg) => new { Task = t, Group = ttg.TrainingGroup }).GroupBy(x => x.Group).OrderBy(g => g.Key.Id)
+        .Select(g => new
+        {
+            TrainingGroup = g.Key,
+            TrainingGroupList = g.Select(x => x.Task).Distinct().ToList()
+        }).ToList();
+    }
+    @if (Model.Tasks.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: none; padding-top: 0;" class="strip-container">
+                @{
+                    int j = 1;
+                    int m = 0;
+                }
+                @if (Model.TaskWithoutTaskGroup == true)
+                {
+                    @{m=1;}
+                    <div style="padding:5px;" id="@("page" + m)" class="@(m != 1 ? "strip" : "")">
+                    <table class="table" style="margin:0;padding:0;">
+                        <tr>
+                            <td style="border: none !important;padding: 10px;vertical-align:top">
+                                <div style="color:#2fa32f;font-size:16px;font-weight:600;">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))s Not Assigned to a @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Group</div>
+                            </td>
+                        </tr>
+                        @foreach (var orderDA in groupedIndependentTaskGroupTasks)
+                        {
+                            @{
+                                var dutyArea = orderDA.DutyAreaList.First().SubdutyArea?.DutyArea;
+                            }
+                            @if (Model.DisplayColumns.Contains("Duty Area") && dutyArea != null)
+                            {
+                                <tr>
+                                    <td style="border: none !important;padding: 10px;vertical-align:top">
+                                        <div style="font-weight:700">@dutyArea.Letter@dutyArea?.Number - @dutyArea.Title</div>
+                                    </td>
+                                </tr>
+                            }
+                            @{
+                                var orderSubDutyArea = orderDA.DutyAreaList.GroupBy(x => x.SubdutyArea).Select(group => new
+                                {
+                                    SubDutyArea = group.Key,
+                                    SubDutyAreaList = group.ToList()
+                                }).ToList();
+                            }
+                            @foreach (var orderSDA in orderSubDutyArea)
+                            {
+                                @{
+                                    var subDutyArea = orderSDA.SubDutyAreaList.First().SubdutyArea;
+                                }
+                                @if (Model.DisplayColumns.Contains("Sub-Duty Area") && dutyArea != null && subDutyArea != null)
+                                {
+                                    <tr>
+                                        <td style="border: none !important;padding: 10px;vertical-align:top">
+                                            <div style="font-weight:700">@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber - @subDutyArea?.Title</div>
+                                        </td>
+                                    </tr>
+                                }
+                                @foreach (var orderTask in orderSDA.SubDutyAreaList)
+                                {
+                                    <tr class=" @(!orderTask.Active ? "expired-row" :"")">
+                                        <td style="border: none !important;padding: 10px;padding-left:40px;vertical-align:top">
+                                            <span style="font-weight:700">@(orderTask.IsReliability == true ? "*" : " ")@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber.@orderTask.Number @orderTask.Description</span>
+                                        </td>
+                                    </tr>
+
+                                    @if (Model.DisplayColumns.Contains("Linked Positions"))
+                                    {
+                                        <tr>
+                                            <td style="border: none !important;padding: 10px;padding-left:70px;vertical-align:top;color:#567DFF;font-weight:600">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))(s)</td>
+                                        </tr>
+                                        @foreach (var posTask in orderTask.Position_Tasks)
+                                        {
+                                            <tr>
+                                                <td style="border: none !important;padding: 10px;padding-left:70px;vertical-align:top;">@posTask.Position.PositionTitle (@posTask.Position.PositionAbbreviation)</td>
+                                            </tr>
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        <tr></tr>
+                    </table>
+                    </div>
+                    @if (trainingGroupTasks.Count() == 0)
+                    {
+                       <div class="customized-footer" style="margin:0;padding:0">*R-R is Reliability Related</div>
+                    }
+                    <div style="page-break-before:always;margin:5px 0;" class="strip-dark"></div>
+                }
+                @foreach (var tgTask in trainingGroupTasks)
+                {
+                    <div style="padding:5px;" id="@("page" + (m+j))" class="@((m+j) != 1 ? "strip" : "")">
+                        <table class="table">
+                            <tr>
+                                <td style="border: none !important;padding: 10px;vertical-align:top">
+                                    <div style="color:#2fa32f;font-size:16px;font-weight:600;">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Group - @tgTask.TrainingGroup.GroupName</div>
+                                </td>
+                            </tr>
+                            @{
+                                var byDutyArea = tgTask.TrainingGroupList.OrderBy(t => t.SubdutyArea.DutyArea.Letter).ThenBy(t => t.SubdutyArea.DutyArea.Number).ThenBy(t => t.SubdutyArea.SubNumber).ThenBy(t => t.Number)
+                                .GroupBy(t => t.SubdutyArea.DutyArea);
+                            }
+                            @foreach (var daGroup in byDutyArea)
+                            {
+                                var da = daGroup.Key;
+                                @if (Model.DisplayColumns.Contains("Duty Area"))
+                                {
+                                    <tr>
+                                        <td style="border:none; padding:10px;">
+                                            <span style="font-weight:600;">@da.Letter@da.Number – @da.Title</span>
+                                        </td>
+                                    </tr>
+                                }
+                                @{
+                                    var bySubDuty = daGroup.GroupBy(t => t.SubdutyArea).OrderBy(g => g.Key.SubNumber);
+                                }
+                                @foreach (var sdaGroup in bySubDuty)
+                                {
+                                    var sda = sdaGroup.Key;
+                                    @if (Model.DisplayColumns.Contains("Sub-Duty Area"))
+                                    {
+                                        <tr>
+                                            <td style="border:none; padding:10px;">
+                                                <span style="font-weight:600;">@da.Letter@da.Number.@sda.SubNumber – @sda.Title</span>
+                                            </td>
+                                        </tr>
+                                    }
+                                    @foreach (var task in sdaGroup)
+                                    {
+                                        <tr class="@(task.Active ? "" : "expired-row")">
+                                            <td style="border:none; padding:10px; padding-left:20px;">
+                                                @($"{(task.IsReliability ? "*" : " ")}{da.Letter}{da.Number}.{sda.SubNumber}.{task.Number} {task.Description}")
+                                            </td>
+                                        </tr>
+                                        @if (Model.DisplayColumns.Contains("Linked Positions"))
+                                        {
+                                            <tr>
+                                                <td style="border: none !important;padding: 10px;padding-left:70px;vertical-align:top;color:#567DFF;font-weight:600;">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))(s)</td>
+                                            </tr>
+                                            @foreach (var posTask in task.Position_Tasks)
+                                            {
+                                                <tr>
+                                                    <td style="border: none !important;padding: 10px;padding-left:70px;vertical-align:top;">@posTask.Position.PositionTitle (@posTask.Position.PositionAbbreviation)</td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            <tr></tr>
+                        </table>
+                    </div>
+                    <div class="customized-footer" style="margin:0;padding:0">*R-R is Reliability Related</div>
+                    @if (j != trainingGroupTasks.Count())
+                    {
+                        <div style="display:block; clear:both; page-break-after:always;"></div>
+                        <div class="strip-dark"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= (Model.TaskWithoutTaskGroup == true ? trainingGroupTasks.Count() + 1 : trainingGroupTasks.Count()); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

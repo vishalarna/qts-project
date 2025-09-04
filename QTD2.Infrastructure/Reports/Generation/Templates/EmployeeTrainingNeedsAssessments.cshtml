@@ -1,0 +1,231 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child, tr.open-border-table-row td:last-child {
+        border-right: 0 !important;
+    }
+
+    tr.open-border-table-row td, tr.open-border-table-row th {
+        padding: 5px;
+    }
+
+    .expired-row {
+        color: gray;
+        font-style: italic;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table landscape-report" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="7" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat)</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.Employees.Count() > 0)
+    {
+        <tr style="border-bottom: 2px solid #000; border-collapse: collapse" class="open-border-table-row">
+            <td style="border: none; padding: 0px;" class="strip-container" colspan="7">
+                @{
+                    int j = 1;
+                }
+
+                @foreach (var employee in Model.Employees)
+                {
+                    var activePositions = employee.EmployeePositions?.Where(ep => ep.Active).Select(t => t.Position).Where(p => p != null).Select(p => $"{p.PositionTitle} ({p.PositionAbbreviation})").Distinct().ToList();
+                    <div style="padding:5px;">
+                        <table style="width:100%; border-collapse:separate; border-spacing:0">
+                            <thead>
+                                <tr>
+                                    <td style="border: none !important; padding:5px; font-size: 18px;" colspan="7">
+                                        <div style="display:-webkit-box;display: flex; justify-content: space-between;">
+                                            <div style="color: #800000;width:50%;">
+                                                <b>@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b>
+                                                <b>@employee.Person.FirstName , @employee.Person.LastName</b>
+                                            </div>
+                                            <div style="padding-right:20px; width:50%;text-align:right;">
+                                                <b>#:</b> <b>@employee.EmployeeNumber</b>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="7" style="border: none !important; padding:5px; font-size:18px; font-weight:600;">
+                                        <span>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</span>
+                                        <span style="padding-left:5px;">@string.Join(", ", activePositions)</span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border:0;" align="left">Initial Training Requirements</td>
+                                </tr>
+                                <tr>
+                                    @{
+                                        var trainingProgramVersion = employee.EmployeePositions?.SelectMany(ep => ep.Position.TrainingPrograms).Select(tp => tp?.Version).FirstOrDefault();
+                                    }
+                                    <td style="border:0;color:#567DFF;" align="left">
+                                        @trainingProgramVersion
+                                    </td>
+                                </tr>
+
+                                <tr class="open-border-table-row">
+                                    @if (Model.DisplayColumns.Contains("ILA#"))
+                                    {
+                                        <th style="border: 1px solid #000; width:23%;" align="left">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #</th>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Individual Learning Activity Title"))
+                                    {
+                                        <th style="border: 1px solid #000; width:28%;" align="left">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title</th>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Completed"))
+                                    {
+                                        <th style="border: 1px solid #000; width:11%;" align="left">Completed</th>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Score"))
+                                    {
+                                        <th style="border: 1px solid #000; width:9%;" align="left">Score</th>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Grade"))
+                                    {
+                                        <th style="border: 1px solid #000; width:9%;" align="left">Grade</th>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Planned"))
+                                    {
+                                        <th style="border: 1px solid #000; width:10%;" align="left">Planned</th>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Scheduled"))
+                                    {
+                                        <th style="border: 1px solid #000; width:10%;" align="left">Scheduled</th>
+                                    }
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                @foreach (var trainingProgram in employee.EmployeePositions.SelectMany(ep => ep.Position.TrainingPrograms))
+                                {
+                                    @foreach (var ilaLink in trainingProgram.TrainingProgram_ILA_Links.Select(t => t.ILA).OrderBy(m => m.Number))
+                                    {
+                                        <tr class="open-border-table-row @(ilaLink.Active ? "" : "expired-row")">
+                                            @if (Model.DisplayColumns.Contains("ILA#"))
+                                            {
+                                                <td style="border: 1px solid #000"> @ilaLink.Number</td>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Individual Learning Activity Title"))
+                                            {
+                                                <td style="border: 1px solid #000">@ilaLink.Name</td>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Completed"))
+                                            {
+                                                var completedDates = employee.ClassSchedule_Employee.Where(x => x.ClassSchedule.ILAID == ilaLink.Id).Select(x => x.CompletionDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat) ?? "N/A").ToList();
+                                                <td style="border: 1px solid #000">@string.Join(", ", completedDates)</td>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Score"))
+                                            {
+                                                var scores = employee.ClassSchedule_Employee.Where(x => x.ClassSchedule.ILAID == ilaLink.Id).Select(x => x.FinalScore).ToList();
+                                                <td style="border: 1px solid #000">@string.Join(", ", scores)</td>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Grade"))
+                                            {
+                                                var grades = employee.ClassSchedule_Employee.Where(x => x.ClassSchedule.ILAID == ilaLink.Id).Select(x => x.FinalGrade).ToList();
+                                                <td style="border: 1px solid #000">@string.Join(", ", grades)</td>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Planned"))
+                                            {
+                                                var plannedDates = employee.ClassSchedule_Employee.Where(x => x.ClassSchedule.ILAID == ilaLink.Id).Select(x => x.ClassSchedule.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat)).ToList();
+                                                <td style="border: 1px solid #000">@string.Join(", ", plannedDates)</td>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Scheduled"))
+                                            {
+                                                var scheduledDates = employee.ClassSchedule_Employee.Where(x => x.ClassSchedule.ILAID == ilaLink.Id).Select(x => x.ClassSchedule.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat)).ToList();
+                                                <td style="border: 1px solid #000">@string.Join(", ", scheduledDates)</td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (!employee.Equals(Model.Employees.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Employees.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

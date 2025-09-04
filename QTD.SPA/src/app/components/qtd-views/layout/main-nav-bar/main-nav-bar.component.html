@@ -1,0 +1,18 @@
+<aside class="sidebar h-screen sticky top-0 flex flex-col bg-offWhite-two overflow-auto ">
+
+    <div class="flex flex-col items-center py-4 px-6 border-gray-two mb-8 h-28">
+        <img class="flex-auto w-1/2 h-auto" src="./assets/img/qtd.png">
+    </div>
+    <div class="flex flex-col space-y-6 px-6 text-sm text-black">
+        <h5 id="loading" *ngIf="navList.length==0">Loading ...</h5>
+        <ng-container *ngIf="navList.length>0">
+            <span *ngFor="let m of navList"  [ngStyle]="!m.isVisible ? {'margin': '0'} : null">
+                <app-menu-item [disabled]="m.disabled" [hasHover]="m.hasHover ?? false" [ngStyle]="{'color':m.Title?'black':'orange'}" [HasChildren]="m.Children!=undefined && m.Children.length>0" [Title]="m.Title"
+                    [IconName]="m.IconName ?? ''" [RoutePath]="m.RoutePath" [RouteParams]="m.RouteParams"
+                    [Children]="m.Children" [id]="m.id" [isVisible] = "m.isVisible"></app-menu-item>
+            </span>
+        </ng-container>
+    </div>
+
+
+</aside>

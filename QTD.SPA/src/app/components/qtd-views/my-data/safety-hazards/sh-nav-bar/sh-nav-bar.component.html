@@ -1,0 +1,159 @@
+<aside class="sidebar h-screen sticky top-0 flex flex-col overflow-auto px-4">
+
+    <div class="items-centers ml-12 mt-4 mb-4 ">
+        <div class="float-left mt-4">
+            <app-button type="button" ButtonType='icon' icon='menu' (clicked)="toggleMainMenu()"
+                class="float-left btn-text">
+            </app-button>
+        </div>
+        <div class="ml-4">
+            <img class="flex-auto w-1/2 h-auto" src="./assets/img/qtd.png">
+        </div>
+    </div>
+
+    <h3><b class="cursor-pointer" routerLink="/my-data/safety-hazards/overview">{{("Safety Hazard" | labelReplacement)| async}}s</b></h3>
+    <div class="mr-4 mb-2 flex flex-row">
+        <input [(ngModel)]="searchText" (ngModelChange)="searchFilter()" placeholder="Search {{('Safety Hazard' | labelReplacement)| async}}s" class="py-2 px-2 w-full" />
+        <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+
+    </div>
+    <div class="flex flex-row  items-center text-gray-four btn-group">
+        <div class="cursor-pointer bg-gray-200 p-2 rounded ">
+                <label mat-button [matMenuTriggerFor]="menu" class="pt-1">
+                    <span *ngIf="showActive" class="font-bold">
+                      <span style="color:green" class="mr-1">●</span>
+                      Active
+                    </span>
+                    <span *ngIf="!showActive" class="font-bold">
+                      <span style="color:red" class="mr-1">●</span>
+                      Inactive
+                    </span>
+
+                  </label>
+                  <app-icon class="pt-1" icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+
+                  <mat-menu #menu="matMenu">
+                    <label mat-menu-item *ngIf="!showActive" (click)="showActive=true ; createList()">
+                        Active</label>
+
+                    <label mat-menu-item *ngIf="showActive" (click)="showActive=false ; createList()">
+                        Inactive</label>
+                </mat-menu>
+
+
+
+              <!--   <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+                    <p *ngIf="showActive" class="font-bold">
+                        Active
+                    </p>
+                    <p *ngIf="!showActive" class="font-bold">
+                        Inactive
+                    </p>
+
+                </label> -->
+               <!--  <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon> -->
+
+      </div>
+
+    </div>
+    <div class="flex flex-row space-x-4 text-sm  mb-3 mt-3">
+      <app-button text="Add New" size="sm" leftIcon="add" rightIcon="expand_more" [matMenuTriggerFor]="addMenu">
+      </app-button>
+      <mat-menu #addMenu="matMenu">
+          <label mat-menu-item (click)="openFlyInPanel(addNewSH,'shCategory')">Category</label>
+          <label mat-menu-item (click)="openFlyInPanel(addNewSHCat,'sh')">{{("Safety Hazard" | labelReplacement)| async}}s</label>
+      </mat-menu>
+
+      <app-button variant="text" class="mt-2" text="Bulk Edit" icon="edit" iconPosition="left"
+          routerLink="/my-data/bulkedit/safety-hazard"></app-button>
+  </div>
+    <app-data-loader *ngIf="isLoading || dataSource.data === undefined"></app-data-loader>
+    <div class="flex flex-col  px-6 text-sm text-black">
+        <!-- <h5 id="loading" *ngIf="dataSource.data === undefined || isLoading">Loading ...</h5> -->
+        <h5 *ngIf="!isLoading && dataSource.data !== undefined && dataSource.data.length < 1">No Data Found</h5>
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="qtd-tree">
+            <!-- This is the tree node template for leaf nodes -->
+            <!-- There is inline padding applied to this node using styles.
+              This padding value depends on the mat-icon-button width. -->
+            <mat-tree-node [ngClass]="selectedItem && selectedItem.id === node.id && selectedItem.type === node.type ? 'active_menu':''" *matTreeNodeDef="let node" matTreeNodeToggle class="mb-3 mt-3 greenHover">
+                <ng-container *ngIf="!node.RoutePath">
+                    <app-label [text]="node.Title " customClasses="cursor-pointer">
+                    </app-label>
+                </ng-container>
+                <div *ngIf="node.RoutePath">
+                    <app-link (clicked)="selectedItem = node;" [routerLink]="node.RoutePath" [text]="node.Title " customClasses="cursor-pointer link">
+                    </app-link>
+                </div>
+
+
+
+            </mat-tree-node>
+            <!-- This is the tree node template for expandable nodes -->
+            <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+                <div class="mat-tree-node greenHover" [ngClass]="selectedItem && selectedItem.id === node.id && selectedItem.type === node.type ? 'active_menu':''">
+                    <button style="outline:none;" mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+                        <app-icon [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'expand_less'">
+                        </app-icon>
+                    </button>
+                    <ng-container *ngIf="!node.RoutePath">
+                        <app-label [text]="node.Title " customClasses="cursor-pointer">
+                        </app-label>
+                    </ng-container>
+                    <ng-container *ngIf="node.RoutePath">
+                        <app-link (clicked)="treeControl.expand(node);selectedItem = node;" [routerLink]="node.RoutePath" [text]="node.Title " customClasses="cursor-pointer">
+                        </app-link>
+                    </ng-container>
+                </div>
+                <!-- There is inline padding applied to this div using styles.
+                    This padding value depends on the mat-icon-button width.  -->
+                <div [class.qtd-tree-invisible]="!treeControl.isExpanded(node)" role="group">
+                    <ng-container matTreeNodeOutlet></ng-container>
+                </div>
+            </mat-nested-tree-node>
+        </mat-tree>
+   <!--      <ng-container *ngIf="navList !== undefined && navList.length>0">
+            <span *ngFor="let m of navList">
+                 <div class='greenHover'>
+                    <div class="flex flex-row pt-2 mb-2 pb-2 pl-4"
+                        [class.active_menu]="selectedId === undefined ? selectedItem === m.Title:selectedItem === m.Title && selectedId === m.id">
+                        <button   (click)="m.Collapsed = !m.Collapsed" style="outline:none;" mat-icon-button [attr.aria-label]="'Toggle ' + m.Title">
+                            <app-icon *ngIf="m.Children?.length" [icon]="m.Collapsed ? 'expand_more' : 'expand_less'">
+                            </app-icon>
+                        </button>
+                       <app-link (click)="selectedItem=m.Title;selectedId=m.id" [routerLink]="m.RoutePath"
+                            [text]="m.Title " customClasses="greenHover" style="cursor: pointer;">
+                        </app-link>
+                    </div>
+                </div>
+
+            <ng-container *ngIf="m.Children" >
+                <ng-container *ngIf="!m.Collapsed">
+                    <ng-container *ngFor="let ch of m.Children">
+                        <div class="flex flex-row items-center pl-16 mb-2 greenHover pt-2 pb-2 pr-4"
+                        [class.active_menu]="selectedId === undefined ? selectedItem === ch.Title:selectedItem === ch.Title && selectedId === ch.id">
+
+                            <app-link (click)="selectedItem=ch.Title;selectedId=ch.id" [routerLink]="ch.RoutePath" [queryParams]="ch.RouteParams"
+                                *ngIf="ch.RouteParams" [text]="ch.Title " customClasses="cursor-pointer">
+                            </app-link>
+                            <app-link (click)="selectedItem=ch.Title;selectedId=ch.id" [routerLink]="ch.RoutePath" *ngIf="!ch.RouteParams" [text]="ch.Title "
+                                customClasses="cursor-pointer">
+                            </app-link>
+
+                        </div>
+                    </ng-container>
+                </ng-container>
+            </ng-container>
+                  </span>
+        </ng-container> -->
+    </div>
+
+
+</aside>
+
+<ng-template #addNewSH>
+    <app-fly-panel-sh-category [shouldNavigate]="true"  [safetyHazardCategoryCheck]="safetyHazardCategoryCheck" (refreshCategories)="refresh()" (closed)="flyPanelService.close()"></app-fly-panel-sh-category>
+</ng-template>
+
+<ng-template #addNewSHCat>
+    <app-flypanel-add-safety-hazards [shouldNavigate]="true"  [safetyHazardCheck]="safetyHazardCheck" (refreshSHTreeData)="refresh()" (closed)="flyPanelService.close()"></app-flypanel-add-safety-hazards>
+</ng-template>

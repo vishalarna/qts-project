@@ -1,0 +1,54 @@
+.mat-column-select {
+  flex: 0 0 60px;
+}
+
+.mat-column-image {
+  flex: 0 0 75px;
+}
+
+.mat-column-employees {
+  flex: 0 0 111px;
+}
+.mat-table {
+  background: white;
+  width: fit-content;
+}
+
+.float-container {
+  border: 3px solid #fff;
+}
+
+.float-child {
+  width: 50%;
+  float: left;
+  //border: 2px solid red;
+}
+.blue {
+  margin-left: 50%;
+}
+.table-employee {
+  max-width: 50px;
+  width: 50px;
+}
+
+.employee-header {
+  font-size: 16px;
+}
+
+.employee-name {
+  font-size: 15px;
+}
+.mat-row, .mat-header-row {
+  border-bottom: 0px !important;
+}
+
+.employee-list-data{
+  .linked-row{
+    color: rgb(92, 155, 49)
+  }
+}
+:host ::ng-deep .clear-icon-btn app-icon {
+  position:relative;
+  top: 1px;
+  left: 4px;
+}

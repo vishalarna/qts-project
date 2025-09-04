@@ -1,0 +1,36 @@
+<div>
+  <div class="flex flex-row justify-between items-center px-3 mt-4">
+    <p *ngIf="editQuestion === undefined" class="text-xl font-bold text-gray-900">Add Question And Answer</p>
+    
+    <p *ngIf="editQuestion !== undefined" class="text-xl font-bold text-gray-900">Edit Question And Answer</p>
+    <!-- <p *ngIf="editQuestion" class="text-xl font-bold text-gray-900">Edit Question And Answer</p> -->
+    <app-button (clicked)="closed.emit('fp-add-QA')" ButtonType='icon' icon="close">
+    </app-button>
+  </div>
+  <form class="w-11/12 ml-4 mt-4 flex flex-col" [formGroup]="questionForm">
+    <!-- <div class="mt-3">
+      <app-label [for]="'number'" text="Q&A Number"></app-label>
+      <app-textbox formControlName="num" [disabled]="true"></app-textbox>
+    </div> -->
+    <div class="mt-3">
+      <app-label [for]="'description'" text="QUESTION {{questionNumber}}"></app-label>
+      <ckeditor formControlName="description" [editor]="editor">
+      </ckeditor>
+      <app-input-error *ngIf="questionForm.get('description')?.hasError('required')" text="Description is required"></app-input-error>
+    </div>
+    <div class="mt-3">
+      <app-label [for]="'answer'" text="ANSWER"></app-label>
+      <ckeditor formControlName="answer" [editor]="editor">
+      </ckeditor>
+      <app-input-error *ngIf="questionForm.get('answer')?.hasError('required')" text="Answer is required"></app-input-error>
+    </div>
+    <div class="flex flex-row-reverse">
+      <div class="self-end pt-12">
+        <app-button *ngIf="editQuestion === undefined" [spinner]="spinner" [disabled]="questionForm.invalid || spinner" (clicked)="saveQuestion()" text="Save" size="sm"></app-button>
+        <app-button *ngIf="editQuestion !== undefined" [spinner]="spinner" [disabled]="questionForm.invalid || spinner" (clicked)="updateQuestion()" text="Update" size="sm"></app-button>
+        
+        <!-- <app-button [spinner]="spinner" *ngIf="editQuestion" [disabled]="questionForm.invalid || spinner" (clicked)="updateQuestion()" text="Update" size="sm"></app-button> -->
+      </div>
+    </div>
+  </form>
+</div>

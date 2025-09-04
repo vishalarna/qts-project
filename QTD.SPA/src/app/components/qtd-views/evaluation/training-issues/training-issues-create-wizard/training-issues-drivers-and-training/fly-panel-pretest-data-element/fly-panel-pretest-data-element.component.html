@@ -1,0 +1,97 @@
+<ng-container>
+    <div class="flex flex-col px-12 py-12">
+        <ng-container>
+            <div class="flex flex-row justify-between">
+                <h2>Link Pretest</h2>
+                <app-button ButtonType="icon" icon="close" (click)="flyPanelService.close()"></app-button>
+            </div>
+            <app-data-loader *ngIf="loader"></app-data-loader>
+            <div *ngIf="!loader">
+                <div class="flex flex-row items-center border-b-0.8 border-gray-one">
+                    <div class="flex flex-grow">
+                        <app-icon icon="search"></app-icon>
+                        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+                            [value]="filterSearchString" (input)="searchFilter($event)" />
+                        <app-icon icon="close" class="cursor-pointer" *ngIf="filterSearchString"
+                            (click)="clearSearchString()"></app-icon>
+                    </div>
+                </div>
+    
+                <form [formGroup]="filterForm">
+                    <div class="flex flex-row justify-between mt-3 items-center gap-4">
+                     <div class="filter-class">
+                      <mat-form-field appearance="outline" class="w-100 px-2">
+                        <mat-label>Provider</mat-label>
+                        <mat-select formControlName="providerId" (selectionChange)="onProviderChange($event.value)">
+                          <mat-option *ngFor="let provider of providerList" [value]="provider.id">
+                            {{ provider.name }}
+                          </mat-option>
+                        </mat-select>
+                        <button mat-icon-button *ngIf="filterForm.get('providerId')?.value" matSuffix (click)="clearProvider()" aria-label="Clear">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </mat-form-field>
+                    </div>
+                  
+                    <div class="filter-class">
+                      <mat-form-field appearance="outline" class="w-100 px-2">
+                        <mat-label>{{ "ILA" | labelReplacement | async }} </mat-label>
+                        <mat-select formControlName="ilaId" [disabled]="!filterForm.get('providerId')?.value">
+                          <mat-option *ngFor="let ila of ilaList" [value]="ila.id">
+                            {{ ila.name }}
+                          </mat-option>
+                        </mat-select>
+                        <button mat-icon-button *ngIf="filterForm.get('ilaId')?.value" matSuffix (click)="clearIla()" aria-label="Clear">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </mat-form-field>
+                    </div>
+                  
+                    <div class="filter-class">
+                      <mat-form-field appearance="outline" class="w-100 px-2">
+                        <mat-label>Status</mat-label>
+                        <mat-select formControlName="status">
+                          <mat-option [value]="true">Active</mat-option>
+                          <mat-option [value]="false">Inactive</mat-option>
+                        </mat-select>
+                        <button mat-icon-button *ngIf="filterForm.get('status')?.value !== null" matSuffix (click)="clearStatus()" aria-label="Clear">
+                          <mat-icon>close</mat-icon>
+                        </button>
+                      </mat-form-field>
+                    </div>
+                  
+                    </div>
+                  </form>
+    
+                <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3 px-3 py-3 rounded"
+                    *ngIf="checkListSelection.selected.length > 0">
+                    <div class="flex flex-row w-full justify-between mb-3">
+                        <p class="text-xs text-gray-four pt-2">
+                            {{checkListSelection.selected.length}} Pretest selected
+                        </p>
+                        <app-button class="mb-2" type="button" color="secondary" size="sm" text="Link to Training Issue"
+                            (click)="linkPretest()">
+                        </app-button>
+                    </div>
+                </div>
+    
+                <app-spinner *ngIf="pretestList=== undefined"></app-spinner>
+                <ng-container *ngIf="pretestList !== undefined">
+                    <div *ngIf="pretestList.length < 1" class="flex flex-col">
+                        <span>No Data Found</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <div *ngFor="let test of pretestList">
+                            <ng-container>
+                                <mat-radio-button [checked]="test.id == linkedId" name="radioMetaILA"
+                                    (change)="onChangepretest($event.source.checked, test)">
+                                    <span class="mb-2">{{test.testTitle}}</span>
+                                </mat-radio-button>
+                            </ng-container>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+    </div>
+</ng-container>

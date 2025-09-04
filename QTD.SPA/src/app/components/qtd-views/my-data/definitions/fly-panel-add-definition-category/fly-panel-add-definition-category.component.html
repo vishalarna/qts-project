@@ -1,0 +1,81 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <!-- {{oldIssuingAuthority ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+        <ng-container *ngIf="mode==='Add'">
+          Add New Category
+         </ng-container>
+       <ng-container *ngIf="mode==='Edit'" > 
+                Edit Category
+               </ng-container>
+       <ng-container *ngIf="mode==='Copy'">
+             Copy Category
+     </ng-container>
+      </p>
+      <app-button (click)="closeInstructorCategory()" ButtonType='icon' icon="close"></app-button>
+    </div>
+  
+    <form [formGroup]="instructorCategoryForm">
+      <div class="flex flex-row px-12 ">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label class="label required" [for]="'insCategoryTitle'" [text]="'Category Title '">
+          </app-label>
+          <app-textbox type="text" formControlName="insCategoryTitle" [placeholder]="'Title'">
+          </app-textbox>
+          <app-input-error text="Issuing Category Title is required"
+            *ngIf="instructorCategoryForm.get('insCategoryTitle')?.invalid">
+          </app-input-error>
+        </div>
+      </div>
+  
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'insCategoryDescription'" [text]="'Category Description'"></app-label>
+          <app-textarea type="text" formControlName="insCategoryDescription"
+            placeholder="Enter {{('Instructor' | labelReplacement)| async}} Category Description"
+            [value]="instructorCategoryForm.get('insCategoryDescription')?.value || ''"
+            [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+          </app-textarea>
+        </div>
+      </div>
+  
+  
+      <div class="flex flex-row px-12" *ngIf="mode==='Add'">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'EffectiveDate'" [text]="'Effective Date '"></app-label>
+          <app-date (ngModelChange)="dateChanged($event)" formControlName="EffectiveDate" placeholder="Select Date">
+          </app-date>
+          <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+          </app-input-error>
+        </div>
+      </div>
+  
+      <div class="flex flex-row px-12" *ngIf="mode==='Add'">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'Note'" [text]="'Note'"></app-label>
+          <app-textarea [value]="instructorCategoryForm.get('Note')?.value || ''" type="text" formControlName="Note" [placeholder]="'Enter Note'"
+            [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+          </app-textarea>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <mat-checkbox>
+          Trainee
+        </mat-checkbox>
+      </div>
+      <!-- *ngIf="!isCopy && !isEdit" -->
+      <div class="px-12 mt-8 float-left py-3">
+        <mat-checkbox formControlName="AddAnother" name="AddAnotherposition">
+          Add Another {{("Position" | labelReplacement)| async}}s
+        </mat-checkbox>
+      </div>
+      <div class="px-12 mt-8 float-right py-3">
+        <app-button [spinner]="showSpinner" [disabled]="instructorCategoryForm.invalid || showSpinner || dateError"
+          type="button" size="sm"  text="Save">
+        </app-button>
+      </div>
+  
+  
+    </form>
+  </ng-container>
+  

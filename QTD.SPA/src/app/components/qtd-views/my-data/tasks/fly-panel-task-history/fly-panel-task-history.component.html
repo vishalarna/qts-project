@@ -1,0 +1,299 @@
+<div *ngIf="!TaskId" class="flex flex-col px-12 py-12">
+  <div class="flex flex-row justify-between">
+    <h2 class="mb-5">{{("Task" | labelReplacement)| async}} History</h2>
+    <app-button ButtonType="icon" icon="close" class="cursor-pointer" (click)="flyPanelSrvc.close()"></app-button>
+  </div>
+  <div class="flex flex-row items-center border-b-0.8 border-gray-one mb-3">
+
+    <div class="flex flex-grow">
+      <app-icon icon="search"></app-icon>
+      <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text" (input)="filterData($event)" [(ngModel)]="clearSearch">
+      <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+
+    </div>
+
+  </div>
+  <app-spinner *ngIf="spinner"></app-spinner>
+  <div *ngIf="!spinner" class="border-gray-one shadow-xs border-0.5 rounded w-full">
+    <div class="filter-task-history-data">
+      <table mat-table [dataSource]="dataSource" #sort="matSort" matSort *ngIf="dataSource">
+        <ng-container matColumnDef="name">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> {{("Task" | labelReplacement)| async}} </th>
+          <td mat-cell *matCellDef="let row"> {{row.name}} </td>
+        </ng-container>
+        <ng-container matColumnDef="desc">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Revision Summary </th>
+          <td mat-cell *matCellDef="let row" class="pr-2"> {{row.desc}} </td>
+        </ng-container>
+        <ng-container matColumnDef="modifyDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Modified By </th>
+          <td mat-cell *matCellDef="let row" class="pr-2">
+            <div class="flex flex-col">
+              <span class="text-qtd">{{row.modifyBy}}</span>
+              <span class="mt-2">{{ (row.modifyDate | dateFormat | async) }} </span>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="effectiveDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header> Effective Date </th>
+          <td mat-cell *matCellDef="let row">
+            <div class="flex flex-col">
+              <span class="mt-2">{{ (row.effectiveDate | dateFormat | async) }}</span>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns:displayedColumns"></tr>
+  
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row text-center" *matNoDataRow>
+          <td class="mat-cell w-full m-2" [colSpan]="displayedColumns.length">No data found</td>
+        </tr>
+  
+      </table>
+    </div>   
+
+    <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons aria-label="Select page of periodic elements">
+    </mat-paginator>
+  </div>
+</div>
+
+
+<div *ngIf="TaskId && (!viewVersion && !compareVersion)" class="flex flex-col px-12 py-12">
+  <div class="flex flex-row justify-between">
+    <p class="mb-5 text-lg"><b>{{number}}</b> {{task.description}} - <b>History</b></p>
+    <app-button ButtonType="icon" icon="close" class="cursor-pointer" (click)="flyPanelSrvc.close()"></app-button>
+  </div>
+  <div class="flex flex-row items-center border-b-0.8 border-gray-one mb-3">
+
+    <div class="flex flex-grow">
+      <app-icon icon="search"></app-icon>
+      <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text" (input)="filterData($event)">
+
+    </div>
+
+  </div>
+  <div *ngIf="selection.selected.length > 1"
+    class="p-3 mt-3 mb-3 bg-gray-one rounded w-full flex flex-row justify-between">
+    <span class="mt-3">Version {{selection.selected[0].versionNumber}} and {{selection.selected[1].versionNumber}}
+      selected for comparison</span>
+    <app-button (clicked)="compareLogic()" type="button" color="secondary" size="sm" text="Compare"></app-button>
+  </div>
+  <div *ngIf="TaskId" class="border-gray-one shadow-xs border-0.5 rounded w-full">
+    <table mat-table [dataSource]="dataSource" #sort1="matSort" matSort *ngIf="dataSource">
+      <ng-container matColumnDef="versionNumber">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Version </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="flex items-center">
+            <mat-checkbox [checked]="selection.selected.includes(row)" (change)="selectionChanged($event, row)" class="m-2"></mat-checkbox>
+            <span class="ml-2">{{row.versionNumber}}</span>
+            <span *ngIf="row.isInUse" class="ml-2 text-qtd">Current</span>
+          </div>          
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="effectiveDate">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Effective Date </th>
+        <td mat-cell *matCellDef="let row"> {{ (row.effectiveDate | dateFormat | async) }} </td>
+      </ng-container>
+      <ng-container matColumnDef="modifiedBy">
+        <th style="width:20%;" mat-header-cell *matHeaderCellDef mat-sort-header> Change/By </th>
+        <td style="margin-right: 0.5rem;" mat-cell *matCellDef="let row">
+          <span style="line-break:anywhere;">{{row.modifyBy ?? row.modifiedBy}}</span>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef> Actions </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="flex flex-row">
+            <app-button [disabled]="row.isInUse || restoreSpinner || !task.active" (clicked)="restoreHistory(row.id)" class="mb-2 mr-2" size="sm"
+              color="primary" text="Restore"></app-button>
+            <app-button (clicked)="changeView(row);" size="sm"
+              color="secondary" text="View"></app-button>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="requalificationRequired">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>{{("Task" | labelReplacement)| async}} Requalification </th>
+        <td mat-cell *matCellDef="let row">
+          <span>{{row.requalificationRequired==true?"Yes":"No"}} </span>
+              <div *ngIf="row.requalificationRequired==true" class="text-qtd">
+                 {{ (row.requalificationDueDate | dateFormat | async) }}
+              </div>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumnsHistory"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumnsHistory;"></tr>
+
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row text-center" *matNoDataRow>
+        <td class="mat-cell w-full m-2" [colSpan]="displayedColumnsHistory.length">No data found</td>
+      </tr>
+
+    </table>
+
+
+    <mat-paginator [pageSizeOptions]="[ 10, 20]" showFirstLastButtons aria-label="Select page of periodic elements">
+    </mat-paginator>
+  </div>
+</div>
+
+
+<!--  -->
+<div *ngIf="viewVersion" class="flex flex-col px-12 py-12">
+  <div class="flex flex-row justify-between">
+    <p class="mb-5 text-lg"><b>{{number}}</b> {{task.description}} - <b>History</b></p>
+    <app-button ButtonType="icon" icon="close" class="cursor-pointer" (click)="viewVersion = false"></app-button>
+  </div>
+  <div class="flex flex-row ml-3">
+    <div class="flex flex-col mr-5">
+      <span class="text-sm" style="color:gray;">Version</span>
+      <span class="mt-3 text-sm">{{toView.versionNumber}}</span>
+    </div>
+    <div class="flex flex-col mr-5">
+      <span class="text-sm" style="color:gray;">Effective Date</span>
+      <span class="mt-3 text-sm"> {{ (toView.effectiveDate | dateFormat | async) }}</span>
+    </div>
+    <div class="flex flex-col">
+      <span class="text-sm" style="color:gray;">Change/By</span>
+      <span class="mt-3 text-sm">{{toView.createdBy ?? toView.modifiedBy}}</span>
+    </div>
+  </div>
+  <span class="mb-3 ml-3 mt-5">
+    Revision Summary
+  </span>
+  <div class="p-3 ml-4 mt-3 mb-3 bg-gray-one rounded w-full flex flex-col">
+    <div class="flex flex-row" *ngFor="let item of toView.task_Histories">
+      <span class="text-sm" style="color:gray;">{{item.changeNotes}}</span>
+    </div>
+  </div>
+  <!-- Effective Date -->
+  <div class="Requalification-wrapper">
+  <form [formGroup]="RequalificationhistoryForm">
+    <div style="display: flex; justify-content: space-between;">
+     <mat-checkbox [disabled]="!isEditable || !task.active" formControlName="requalificationRequired"
+     style="color: rgba(122, 128, 126, 1);" class="mt-3">
+   Add (Re)Qualification
+   </mat-checkbox>
+   <app-button style="margin-top: 17px;" *ngIf="!isEditable" (clicked)="EditableClicked()"  variant="text" icon="edit" 
+           iconPosition="left" text="Edit"></app-button>
+    </div>
+ 
+   <br><br>
+   <div style="width: 35%;">
+     <app-label  class="font-bold text-sm mb-0" [for]="'effectiveDate'" text="(Re)Qualification Due Date"></app-label> <mat-icon style="vertical-align:middle;" matTooltip="'The (Re)Qualification default due date is set at 6 months from the {{('Task'|labelReplacement)|async}} history effective date. The default due date can be adjusted by the user as needed for training purposes. QTD and EMP will use this date for tracking {{('Employee'|labelReplacement)|async}}  completion of {{('Task'|labelReplacement)|async}} (re)qualification.'" >help_outline</mat-icon>
+     <app-date [disabled]="!isEditable || !task.active" formControlName="requalificationDueDate" ></app-date>
+   </div><br><br>
+   <div style="width: 35%;">
+     <app-label  class="font-bold text-sm mb-0" [for]="'linkedPossitions'" text="Linked {{('Position' | labelReplacement)| async}}(s)"></app-label>
+     <div class="flex flex-row" *ngFor="let item of linkedPossitions">
+     <span class="text-md" style="color:gray; margin-left: 10px;">{{item}}</span>
+     </div>
+     <div class="flex flex-row" *ngIf="linkedPossitions.length==0">
+       <span class="font-bold text-sm mb-0" style="color:gray;">No {{("Position" | labelReplacement)| async}}s is Linked.</span>
+       </div>
+   </div>
+ <br>
+   <app-label  class="font-bold text-md mb-0" [for]="'notes'" text="Add Notes"></app-label>
+  <br>
+  <div class="flex flex-col">
+     <div style="width:80%;">
+       <app-textarea  [isDisabled]="!isEditable"  [value]="RequalificationhistoryForm.get('requalificationFormNotes')?.value ?? ''"  formControlName="requalificationFormNotes" placeholder="Enter Requalification Notes">
+       </app-textarea>
+     </div>
+  </div>
+   </form>
+  <br>
+  <app-label  class="font-bold text-md mb-0" [for]="'effectiveDate'" text="Effective Date"></app-label>
+  <br>
+  <div class="flex flex-col" style="width:40%;">
+    <app-date class="mb-4" [disabled]="!isEditable" [(ngModel)]="effectiveDate"></app-date>
+    <app-button *ngIf="isEditable"
+      (clicked)="updateRequal()"
+      style="width:60%;" size="sm" text="Update" ButtonType="button"></app-button>
+  </div>
+</div>
+</div>
+
+<div *ngIf="compareVersion" class="flex flex-col px-12 py-12">
+  <div class="flex flex-row justify-between mb-4">
+    <div class="flex flex-row" style="align-items: center;">
+      <app-button ButtonType="icon" icon="keyboard_arrow_left" class="cursor-pointer mr-3 mb-4"
+        (clicked)="compareVersion = false"></app-button>
+      <p class="text-lg"><b>History Comparison</b></p>
+    </div>
+    <app-button ButtonType="icon" icon="close" class="cursor-pointer" (click)="flyPanelSrvc.close()"></app-button>
+  </div>
+  <div class="flex flex-col">
+    <p class="text-lg font-bold">Version {{selection.selected[0].versionNumber}} and
+      {{selection.selected[1].versionNumber}} comparison</p>
+    <p class="text-xs font-extralight text-gray-400">Following changes have been made in latest version
+      {{orderedVersions[0]}} as compared to {{orderedVersions[1]}}</p>
+  </div>
+  <div class="flex flex-col">
+    <div class="flex flex-row" style="align-items: center;">
+      <mat-icon class="mb-3 mr-2">add</mat-icon>
+      <p class="text-lg">Addition</p>
+    </div>
+    <div class="shadow-sm border rounded-md">
+      <div class="p-4" *ngIf="toView.task_Histories.length < 1 || toView.state !== 1">
+        No New Additions
+      </div>
+      <div *ngIf="toView.state === 1">
+        <div class="flex flex-col p-4" *ngFor="let item of toView.task_Histories">
+          <p>{{item.changeNotes}}</p>
+          <div class="flex flex-row">
+            <span class="ml-2 mr-4">{{ (item.changeEffectiveDate | dateFormat | async) }}</span>
+            <span class="mr-4">{{ (item.changeEffectiveDate | dateFormat | async) }}</span>
+            <span>{{item.createdBy ?? item.modifiedBy}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col mt-3">
+    <div class="flex flex-row" style="align-items: center;">
+      <mat-icon class="mb-3 mr-2">delete</mat-icon>
+      <p class="text-lg">Removal</p>
+    </div>
+    <div class="shadow-sm border rounded-md">
+      <div class="p-4" *ngIf="toView.task_Histories.length < 1 || toView.state !== 0">
+        No New Removals
+      </div>
+      <div *ngIf="toView.state === 0">
+        <div class="flex flex-col p-4" *ngFor="let item of toView.task_Histories">
+          <p>{{item.changeNotes}}</p>
+          <div class="flex flex-row">
+            <span class="ml-2 mr-4">{{ (item.changeEffectiveDate | dateFormat | async) }}</span>
+            <span class="mr-4">{{ (item.changeEffectiveDate | dateFormat | async) }}</span>
+            <span>{{item.createdBy ?? item.modifiedBy}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-col mt-3">
+    <div class="flex flex-row" style="align-items: center;">
+      <mat-icon class="mb-3 mr-2">update</mat-icon>
+      <p class="text-lg">Update</p>
+    </div>
+    <div class="shadow-sm border rounded-md">
+      <div class="p-4" *ngIf="toView.task_Histories.length < 1 || toView.state !== 2">
+        No New Updates
+      </div>
+      <div *ngIf="toView.state === 2">
+        <div class="flex flex-col p-4" *ngFor="let item of toView.task_Histories">
+          <p>{{item.changeNotes}}</p>
+          <div class="flex flex-row">
+            <span class="ml-2 mr-4">{{ (item.changeEffectiveDate | dateFormat | async) }}</span>
+            <span class="mr-4">{{ (item.changeEffectiveDate | dateFormat | async) }} </span>
+            <span>{{item.createdBy ?? item.modifiedBy}}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #reqRequiredDialog>
+  <app-qtd-dialogue [header]="'Remove Requalification'" description="'You are selecting to remove the (re)qualification requirement for this {{('Task'|labelReplacement)|async}} history version. QTD will no longer track {{('Employee'|labelReplacement)|async}} completion for this (re)qualification due date'" [cancelText]="'Cancel'" [confirmText]="'Confirm'" (canceled)="dialog.closeAll()" (confirmed)="updateRequal()"></app-qtd-dialogue>
+</ng-template>

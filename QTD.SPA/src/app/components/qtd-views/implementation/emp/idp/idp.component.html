@@ -1,0 +1,65 @@
+<div class="justify-between" style="display: flex;">
+  <mat-toolbar class="h-28 app-toolbar-sticky w-full">
+    <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBack()">
+    </app-button>
+    <div class="flex flex-row items-center space-x-4 w-full justify-between">
+      <h1>{{("Employee" | labelReplacement)| async}}s</h1>
+      </div>
+  </mat-toolbar>
+
+  <app-header [toggleMenuIcon]="false"></app-header>
+</div>
+
+<div style="height:100%;" class="flex flex-col w-full p-5">
+  <app-data-loader *ngIf="!empWithPos"></app-data-loader>
+  <section *ngIf="empWithPos" class="flex flex-col" style="align-items: center;padding-top: 5rem;height: 100%;">
+    <div class="flex flex-row" style="width: 100%;align-items: center;justify-content: center;height: 9rem;">
+      <img style="width:13%;border-radius:50%;height:100%;"
+        [src]="empWithPos.employee.person.image"  onerror="this.src='assets/img/ImageNotFound.jpg'">
+    </div>
+    <div>
+      <p class="text-xl font-bold">{{empWithPos?.employee.person.firstName + ' ' + empWithPos?.employee.person.lastName}}
+      </p>
+    </div>
+    <div>
+      <p class="text-gray-400 cursor-pointer">{{empWithPos?.position === null ? 'N/A':empWithPos?.position.positionTitle}}
+      </p>
+    </div>
+    <div class="flex flex-row justify-between" style="align-items: baseline;">
+      <div class="mr-2">
+        <!-- <app-button class="mr-2" color="secondary" [text]="empWithPos.employee.active ? 'ACTIVE' : 'In Active'"
+          size="sm" icon="expand_more" [matMenuTriggerFor]="statusChange"></app-button> -->
+          <app-button class="mr-2" color="secondary" [text]="empWithPos.employee.active ? 'ACTIVE' : 'In Active'"
+          size="sm"></app-button>
+        <!-- <mat-menu backdropClass="qtd__menu" #statusChange="matMenu">
+          <label *ngIf="empWithPos.employee.active" mat-menu-item>In Active</label>
+          <label *ngIf="!empWithPos.employee.active" mat-menu-item>ACTIVE</label>
+        </mat-menu> -->
+      </div>
+      <!-- <div class="text-gray-400 cursor-pointer">Delete Employee</div> -->
+
+    </div>
+  </section>
+  <section>
+    <mat-tab-group class="mt-5">
+
+      <mat-tab [label]="'Individual Development Plan (IDP)' | uppercase">
+        <ng-template matTabContent>
+          <app-idp-detail [idpInformation]="empWithPos?.employee?.idpReviewInformation" [employeeName]="employeeName">
+          </app-idp-detail>
+        </ng-template>
+      </mat-tab>
+      <mat-tab [label]="'Meta Individual Development Plan' | uppercase">
+        <ng-template matTabContent>
+          <app-meta-idp-detail [employeeName]="employeeName"></app-meta-idp-detail>
+        </ng-template>
+      </mat-tab>
+      <!-- <mat-tab [label]="'Emp Idp Review Progress' | uppercase" >
+        <ng-template matTabContent>
+          <app-idp-review></app-idp-review>
+        </ng-template>
+      </mat-tab> -->
+
+    </mat-tab-group>
+  </section>
+</div>

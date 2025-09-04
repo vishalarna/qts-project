@@ -1,0 +1,369 @@
+
+<!-- <app-header [toggleMenuIcon]="false" breadcrumbs="Design and Development / Training Programs"></app-header> -->
+<app-header
+  [toggleMenuIcon]="false"
+  [canGoBack]="false"
+  [breadcrumbs]="url"
+  [showSignOut]="true">
+</app-header>
+
+<div class="flex flex-col pt-5 pl-4">
+  <section *ngIf="empName !== ''">
+    <div class="flex flex-row pl-4 w-full" style="background-image: url('./assets/img/emp_portalBanner.png');background-repeat: no-repeat;min-height: 13rem;align-items: center;">
+      <span class="text-2xl">Welcome, <span class="font-bold">{{empName}}</span>!</span>
+    </div>
+  </section>
+  <!-- Title and View shift buttons -->
+  <div class="flex flex-row justify-between mb-4" style="align-items:baseline;">
+    <!-- <span class="font-bold text-lg">My Training Schedule</span> -->
+    <span class="font-bold text-lg"></span>
+    <div class="flex flex-row" style="width:30%;">
+      <span
+        (click)="selectedTab = 'dashboard'"
+        [ngClass]="selectedTab === 'dashboard' ? 'selectedTab':'pointerClass'"
+        class="border-2 p-2" style="border-radius: 4px 0px 0px 4px;text-align: center;">Dashboard View</span>
+      <!-- <span
+        (click)="selectedTab = 'map'"
+        [ngClass]="{'selectedTab':selectedTab === 'map','pointerClass':selectedTab !== 'map'}"
+        class="border-2 p-2" style="border-radius: 0px 4px 4px 0px;width:50%;text-align: center;">Map View</span> -->
+
+        <span
+          (click)="selectedTab = 'detail'"
+          [ngClass]="selectedTab === 'detail' ? 'selectedTab':'pointerClass'"
+         class="border-2 p-2" style="text-align: center;">Detail View</span>
+        <span class="border-2 p-2" style="border-radius: 0px 4px 4px 0px;text-align: center;cursor:not-allowed;">Training Map View</span>
+    </div>
+  </div>
+
+  <!-- Stepper And Announcements (Details Tab) -->
+  <div *ngIf="selectedTab === 'detail'" class="flex flex-row justify-between">
+    <div style="width:68%;">
+      <mat-tab-group>
+        <mat-tab label="FINAL REMAINDER">
+          <app-final-remainder></app-final-remainder>
+        </mat-tab>
+        <mat-tab label="IN PROGRESS">
+          <app-in-progress></app-in-progress>
+        </mat-tab>
+        <mat-tab label="TODAYS SCHEDULE">
+          <app-todays-schedule></app-todays-schedule>
+        </mat-tab>
+        <mat-tab label="REMAINDER OF THE WEEK">
+          <app-remainder-of-the-week></app-remainder-of-the-week>
+        </mat-tab>
+      </mat-tab-group>
+    </div>
+    <div class="flex flex-col mr-3" style="width:30%;align-items:flex-start;">
+      <div class="w-full border-b-2 mb-4">
+        <span class="font-bold text-lg">Announcement</span>
+      </div>
+      <div class="bg-white flex flex-col border-2 px-2 py-4 w-full" style="border-top-left-radius:4px;border-top-right-radius: 4px;">
+        <span class="font-bold mb-3">
+          Courses available for self-registration
+        </span>
+        <app-data-loader *ngIf="courseSpinner"></app-data-loader>
+        <div *ngIf="!courseSpinner && !isCourseAvailable" class="mb-3 flex w-full mt-3" style="align-items:center;justify-content:center;">
+          <span>No Courses available for Self-Registration</span>
+        </div>
+        <span *ngIf="!courseSpinner && isCourseAvailable" class="font-light text-gray-400 mb-3">
+          Courses are available for Self-Registrations.
+          Click here to review courses and register.
+        </span>
+
+        <div *ngIf="!courseSpinner && isCourseAvailable" class="flex">
+          <app-button (clicked)="navigateToSelfReg()" size="sm" text="View Courses" color="blueBorder"></app-button>
+        </div>
+      </div>
+      <!-- <div class="bg-white flex flex-col border-2 px-2 pt-2 py-4 w-full" style="border-bottom-left-radius:4px;border-bottom-right-radius: 4px;height:-webkit-fill-available;" >
+        <div class="flex flex-row justify-between w-full">
+          <span class="font-bold">Training Department Reminders</span>
+          <app-icon icon="more_horiz"></app-icon>
+        </div>
+        <span class="font-light text-gray-400 text-lg">
+          Section Coming Soon
+        </span>
+      </div> -->
+    </div>
+  </div>
+
+  <!-- Dashboard View -->
+  <div *ngIf="selectedTab === 'dashboard'" class="w-full flex flex-col justify-between">
+    <app-data-loader *ngIf="!stats"></app-data-loader>
+    <div *ngIf="stats" class="flex flex-row justify-between w-full my-4">
+      <div class="bg-white flex flex-col p-3 mat-elevation-z3" style="width:19%;border-radius: 2px;">
+        <span style="color:#15372C;" class="font-bold mb-3">Tests</span>
+        <div class="flex flex-row">
+          <div class="flex flex-col mr-2">
+            <span class="text-gray-400">
+              In Progress
+            </span>
+            <span>{{stats.testInProgressCount}}</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-400">
+              Not Started
+            </span>
+            <span>
+              {{stats.testNotStartedCount}}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white flex flex-col p-3 mat-elevation-z3" style="width:19%;border-radius: 2px;">
+        <span style="color:#15372C;" class="font-bold mb-3">Student Evaluations</span>
+        <div class="flex flex-row">
+          <div class="flex flex-col mr-2">
+            <span class="text-gray-400">
+              In Progress
+            </span>
+            <span>{{stats.studentEvaluationInProgressCount}}</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-400">
+              Not Started
+            </span>
+            <span>
+              {{stats.studentEvaluationNotStartedCount}}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white flex flex-col p-3 mat-elevation-z3" style="width:19%;border-radius: 2px;">
+        <span style="color:#15372C;" class="font-bold mb-3">Online Courses</span>
+        <div class="flex flex-row">
+          <div class="flex flex-col mr-2">
+            <span class="text-gray-400">
+              In Progress
+            </span>
+            <span>{{stats.onlineCourseInProgressCount}}</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-400">
+              Not Started
+            </span>
+            <span>
+              {{stats.onlineCourseNotStartedCount}}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white flex flex-col p-3 mat-elevation-z3" style="width:19%;border-radius: 2px;">
+        <span style="color:#15372C;" class="font-bold mb-1">{{("Task" | labelReplacement)| async}}   & Skill Qualifications</span>
+        <app-label  [text]="'Totals below include pending as Trainee & Evaluator'" class="float-left app-label"></app-label>
+        <div class="flex flex-row">
+          <div class="flex flex-col mr-2">
+            <span class="text-gray-400">
+              In Progress
+            </span>
+            <span>{{stats.taskQualificationInProgressCount}}</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-400">
+              Not Started
+            </span>
+            <span>
+              {{stats.taskQualificationNotStartedCount}}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div class="bg-white flex flex-col p-3 mat-elevation-z3 mr-3" style="width:19%;border-radius: 2px;">
+        <span style="color:#15372C;" class="font-bold mb-3">{{("Procedure" | labelReplacement)| async}} Reviews</span>
+        <div class="flex flex-row">
+          <div class="flex flex-col mr-2">
+            <span class="text-gray-400">
+              In Progress
+            </span>
+            <span>{{stats.procedureReviewsInProgressCount}}</span>
+          </div>
+          <div class="flex flex-col">
+            <span class="text-gray-400">
+              Not Started
+            </span>
+            <span>
+              {{stats.procedureReviewsNotStartedCount}}
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="flex flex-row w-full justify-between mb-3">
+      <!-- Calendar View -->
+      <div class="bg-white flex flex-col" style="width:68%;border-radius: 5px;">
+        <mwl-calendar-month-view 
+          [headerTemplate]="monthHeader"
+          [cellTemplate]="monthCell" 
+          [viewDate]="currentDate"
+          [refresh]="eventsSubject"
+          (beforeViewRender)="calendarBeforeViewRender($event)">
+        </mwl-calendar-month-view>
+
+        <!-- Events View -->
+        <app-data-loader *ngIf="!events"></app-data-loader>
+
+        <div *ngIf="events && events.length; else noEvents"
+          class="flex flex-col mt-5 p-3"
+          style="background-color: #456FA512;">
+          <div *ngFor="let event of events" class="my-2 flex flex-row w-full">
+
+              <!-- <div [ngClass]="{'greenEvent':event.status === 'In Progress' || event.status === 'Completed','pinkEvent':event.status === 'Not Started'}" class="flex flex-row w-full p-3"> -->
+              <div *ngIf="event.status !== 'Completed'" class="flex flex-row w-full p-3 bg-white">
+                <div class="flex flex-col" style="width:60%;">
+                  <span class="text-gray-400 font-light">{{event.type}}</span>
+                  <span class="text-lg"
+                    style="max-width: 24rem;overflow: hidden;text-overflow: ellipsis;white-space: nowrap;"
+                    [matTooltip]="event.title">
+                      {{event.title}}
+                  </span>
+                </div>
+                <div class="flex flex-row" style="width:40%;">
+                  <div style="width:50%;" class="flex flex-col">
+                    <span class="text-gray-400 font-light">Due On.</span>
+                    <span class="font-bold">{{event.dueDate}}</span>
+                  </div>
+                  <div *ngIf="event.status === 'In Progress' && event.type !== 'Test' && event.canStart"
+                    style="width:50%; align-items:center; justify-content:center;" 
+                    class="blueBox flex cursor-pointer" 
+                    (click)="selectedTemplateRef = event.type === 'Evaluation' ? disclaimer : null; start(event)">
+                    <span>In Progress</span>
+                  </div>
+                  <div *ngIf="event.status === 'In Progress' && event.type === 'Test' && event.canStart"
+                    class="grayBox flex" 
+                    style="width:50%; align-items:center; justify-content:center; cursor:not-allowed;"
+                    matTooltip="For security reasons this test has been disabled.  Contact your training manager to restart this test">
+                    <span>In Progress</span>
+                  </div>
+
+                  <div *ngIf="event.status === 'Not Started' && event.canStart"
+                    class="blueBox flex cursor-pointer"
+                    style="width:50%; align-items:center; justify-content:center;" 
+                    (click)="selectedTemplateRef = event.type === 'Evaluation' ? disclaimer : null; start(event)">
+                    <span>Start</span>
+                  </div>
+
+                  <div *ngIf="!event.canStart && event.status !== 'Completed'" 
+                    class="blueBox flex"
+                    style="width:50%; align-items:center; justify-content:center;">
+                    <span class="redText">Over Due</span>
+                  </div>
+                  <div *ngIf="event.status === 'Completed'"
+                    class="blueBox flex"
+                    style="width:50%; align-items:center; justify-content:center; cursor:default;" >
+                    <span>Completed</span>
+                  </div>
+                </div>
+              </div>
+          </div>
+        </div>
+
+        <ng-template #noEvents>
+          <div class="m-4 flex"
+            style="justify-content:center;align-items:center;" >
+            <span>No Events found for the Date</span>
+        </div>
+        </ng-template>
+      </div>
+
+      <!-- Announcement View -->
+      <div class="flex flex-col mr-3" style="width:30%;align-items:flex-start;">
+        <div class="w-full border-b-2 mb-4">
+          <span class="font-bold text-lg">Announcement</span>
+        </div>
+        <div class="bg-white flex flex-col border-2 px-2 py-4 w-full" style="border-top-left-radius:4px;border-top-right-radius: 4px;">
+          <span class="font-bold mb-3">
+            Courses available for self-registration
+          </span>
+          <app-data-loader *ngIf="courseSpinner"></app-data-loader>
+          <div *ngIf="!courseSpinner && !isCourseAvailable" class="mb-3 flex w-full mt-3" style="align-items:center;justify-content:center;">
+            <span>No Courses available for Self-Registration</span>
+          </div>
+          <span *ngIf="!courseSpinner && isCourseAvailable" class="font-light text-gray-400 mb-3">
+            Courses are available for Self-Registrations.
+            Click here to review courses and register.
+          </span>
+
+          <div *ngIf="!courseSpinner && isCourseAvailable" class="flex">
+            <app-button (clicked)="navigateToSelfReg()" size="sm" text="View Courses" color="blueBorder"></app-button>
+          </div>
+        </div>
+        <!-- <div class="bg-white flex flex-col border-2 px-2 pt-2 py-4 w-full" style="border-bottom-left-radius:4px;border-bottom-right-radius: 4px;height:-webkit-fill-available;" >
+          <div class="flex flex-row justify-between w-full">
+            <span class="font-bold">Training Department Reminders</span>
+            <app-icon icon="more_horiz"></app-icon>
+          </div>
+          <span class="font-light text-gray-400 text-lg">
+            Section Coming Soon
+          </span>
+        </div> -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #monthHeader>
+  <div class="flex flex-row justify-between w-full px-2 py-3">
+    <button (click)="previousAndNextClick('previous')">
+      <app-icon mwlCalendarPreviousView
+        class="cursor-pointer text-gray-500"
+        matTooltip="Go To Previous Month"
+        view="month"
+        [(viewDate)]="currentDate"
+        icon="arrow_back_ios">
+      </app-icon>
+    </button>
+    <div class="flex flex-row align-items-center">
+      <span mwlCalendarToday
+        class="mr-2 cursor-pointer"
+        matTooltip="Go To Current Date"
+        [(viewDate)]="currentDate"
+        (mwlClick)="testCellClick({date:currentDate})">
+        {{selectedDay | date:'MMMM yy'}}
+      </span>
+      <app-icon [matMenuTriggerFor]="months" style="color:#456FA5;" class="linkText" icon="expand_more"></app-icon>
+      <mat-menu #months="matMenu">
+        <div *ngFor="let month of monthInfo">
+          <button  mat-menu-item (click)="changeMonth(month.number)">
+            {{month.title}}
+          </button>
+        </div>
+      </mat-menu>
+    </div>
+    <button (click)="previousAndNextClick('next')">
+      <app-icon mwlCalendarNextView
+        class="cursor-pointer text-gray-500"
+        matTooltip="Go To Next Month"
+        view="month"
+        [(viewDate)]="currentDate"
+        icon="arrow_forward_ios">
+      </app-icon>
+    </button>
+  </div>
+  <div class="d-flex w-100">
+    <span *ngFor="let day of daysInfo" style="width: 15%; display: block;font-weight: 600; text-align: center;" >
+      {{day}}
+    </span>
+  </div>
+</ng-template>
+
+<ng-template #monthCell
+  let-highlightDay="highlightDay" 
+  let-unhighlightDay="unhighlightDay" 
+  let-eventClicked="eventClicked"
+  let-eventTimesChanged="eventTimesChanged" 
+  let-day="day">
+  <div class="flex p-2 cursor-pointer" 
+    style="border-top: 1px dashed lightgray; align-items: center;justify-content:center;" 
+    (mwlClick)="testCellClick(day)">
+    <span class="p-3" 
+      [ngClass]="isSameDay(selectedDay, day.date) ? 'blueBg' : isSameMonth(day.date) ? 'whiteBg' : 'disabled'">
+      {{day.date | date:'d'}}
+    </span>
+  </div>
+</ng-template>
+
+<ng-template #disclaimer>
+  <app-disclaimer-dialog [selectedRowData]="selectedRow" (closed)="dialog.closeAll();">
+  </app-disclaimer-dialog>
+</ng-template>

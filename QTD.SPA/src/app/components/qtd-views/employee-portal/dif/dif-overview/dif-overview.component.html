@@ -1,0 +1,207 @@
+<app-header
+        [toggleMenuIcon]="false"
+        [canGoBack]="false"
+        [breadcrumbs]="url"
+        [showSignOut]="true"
+      ></app-header>
+
+<div
+  class="flex flex-row justify-between"
+  style="align-items: baseline; width: 50%"
+>
+  <span class="font-bold text-lg pl-3" style="width: 50%">DIF Surveys</span>
+</div>
+
+<section class="px-3">
+  <div class="mat-elevation-z8 w-full mt-4 bg-whitev">
+    <mat-tab-group [selectedIndex]="1">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Completed Surveys</span>
+          <div class="icon" *ngIf="completedCount > 0">
+            <span class="icon__value">{{ completedCount }}</span>
+          </div>
+        </ng-template>
+
+        <!-- search and buttons starts -->
+        <div
+          class="
+            flex flex-row
+            items-center
+            bg-white-one
+            rounded-t-md
+            py-4
+            px-6
+            space-x-2
+            border-b-0.8 border-gray-one
+          "
+        >
+          <svg
+            class="flex-none w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            ></path>
+          </svg>
+          <input
+            class="text-sm flex-grow focus:outline-none"
+            placeholder="Search by Title"
+            type="text"
+            (input)="filterDifSurveys($event)"
+          />
+        </div>
+        <!-- search and button ends -->
+        <!-- table starts -->
+        <div class="flex-row bg-white-one rounded-b-md">
+          <mat-table [dataSource]="completedSurveysdataSource" matSort>
+            <ng-container matColumnDef="title">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="table-header">
+                Title
+                </div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.title }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="completionDate">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="table-header">
+                Completion Date
+                </div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.completionDate | dateFormat | async }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="action">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <button class="btn-view-response" (click)="viewResponseClick(row)">View Responses</button>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row
+              *matHeaderRowDef="displayedCompletedSurveys"
+            ></mat-header-row>
+            <mat-row
+              *matRowDef="let row; columns: displayedCompletedSurveys"
+            ></mat-row>
+
+            <tr class="mat-row flex text-center" *matNoDataRow>
+              <td class="mat-cell w-full m-2">No Data Available</td>
+            </tr>
+          </mat-table>
+        </div>
+        <!-- table ends -->
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Pending Surveys</span>
+          <div class="icon" *ngIf="pendingCount > 0">
+            <span class="icon__value">{{ pendingCount }}</span>
+          </div>
+        </ng-template>
+
+        <!-- search and buttons starts -->
+        <div
+          class="
+            flex flex-row
+            items-center
+            bg-white-one
+            rounded-t-md
+            py-4
+            px-6
+            space-x-2
+            border-b-0.8 border-gray-one
+          "
+        >
+          <svg
+            class="flex-none w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            ></path>
+          </svg>
+          <input
+            class="text-sm flex-grow focus:outline-none"
+            placeholder="Search by Title"
+            type="text"
+            (keyup)="filterPendingDifSurveys($event)"
+          />
+        </div>
+        <!-- search and button ends -->
+
+        <!-- table starts -->
+        <div class="flex-row bg-white-one rounded-b-md">
+          <mat-table mat-table [dataSource]="pendingSurveysdataSource" matSort (matSortChange)="sortDataPendingSurveys($event)">
+            <ng-container matColumnDef="title">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="table-header">
+                Title
+                </div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.title }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="dueDate">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="table-header">
+                Due Date
+                </div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{ row.dueDate | dateFormat | async }}
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="table-header">
+                Status
+                </div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <ng-container *ngIf="row.status === 'In Progress'; else notStarted">
+                  <button class="app-button" (click)="viewDifSurveyPage(row)">
+                   In Progress
+                  </button>
+                </ng-container>
+                <ng-template #notStarted>
+                  <button class="app-button" (click)="viewDifSurveyPage(row)">Start</button>
+                </ng-template>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row
+              *matHeaderRowDef="displayedPendingSurveys"
+            ></mat-header-row>
+            <mat-row
+              *matRowDef="let row; columns: displayedPendingSurveys"
+            ></mat-row>
+
+            <tr class="mat-row flex text-center" *matNoDataRow>
+              <td class="mat-cell w-full m-2">No Data Available</td>
+            </tr>
+          </mat-table>
+        </div>
+        <!-- table ends -->
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</section>

@@ -1,0 +1,83 @@
+<div class="flex flex-col px-12 py-12">
+  <div class="flex flex-row justify-between">
+    <p *ngIf="oldIssuingAuthority === undefined && !makeCopy" class="text-xl font-bold text-gray-900">Add New Issuing Authority</p>
+    <p *ngIf="oldIssuingAuthority !== undefined && !makeCopy" class="text-xl font-bold text-gray-900">Edit Issuing Authority</p>
+    <p *ngIf="makeCopy" class="text-xl font-bold text-gray-900">Copy Issuing Authority</p>
+    <app-button (click)="closeIssuingAuthority()" ButtonType='icon' icon="close"></app-button>
+  </div>
+
+  <form [formGroup]="issuingAuthorityForm">
+    <div class="mt-3">
+      <app-label required class="label required" [for]="'IssuingAuthorityTitle'" [text]="'Issuing Authority Title '">
+      </app-label>
+      <app-textbox type="text" formControlName="IssuingAuthorityTitle" [placeholder]="'Title'">
+      </app-textbox>
+      <app-input-error text="Issuing Authority Title is required"
+        *ngIf="issuingAuthorityForm.get('IssuingAuthorityTitle')?.invalid">
+      </app-input-error>
+
+    </div>
+
+    <div class="mt-3">
+      <app-label required [for]="'IssuingAuthorityDescription'" [text]="'Issuing Authority Description'"></app-label>
+      <app-textarea [value]="issuingAuthorityForm.get('IssuingAuthorityDescription')?.value || ''" type="text"
+        formControlName="IssuingAuthorityDescription" [placeholder]="'Enter Issuing Authority Description'"
+        [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+      </app-textarea>
+      <app-input-error *ngIf="issuingAuthorityForm.get('IssuingAuthorityDescription')?.invalid"
+        text="Description is required"></app-input-error>
+    </div>
+
+    <div class="mt-3">
+      <app-label [for]="'IssuingAuthorityWebsite'" [text]="'Issuing Authority Website'"></app-label>
+      <app-textbox type="text" formControlName="IssuingAuthorityWebsite"
+        [placeholder]="'Enter Issuing Authority Website'">
+      </app-textbox>
+
+    </div>
+
+    <div class="mt-3">
+      <app-label [for]="'EffectiveDate'" [text]="'Effective Date '"></app-label>
+      <app-date   formControlName="date" placeholder="Select Date"></app-date>
+      <!-- <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+      </app-input-error> -->
+    </div>
+
+    <div class="mt-3">
+      <app-label [for]="'Note'" [text]="'Note'" class="label required"></app-label>
+      <app-textarea [value]="issuingAuthorityForm.get('Note')?.value || ''" type="text" formControlName="Note"
+        [placeholder]="'Enter Note'"
+        [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+      </app-textarea>
+      <app-input-error *ngIf="issuingAuthorityForm.get('Note')?.invalid"
+      text="Note is required"></app-input-error>
+
+    </div>
+
+
+    <div class="flex flex-row mt-3 justify-between">
+      <mat-checkbox *ngIf="!(oldIssuingAuthority !== undefined || this.makeCopy)" formControlName="isAdd"
+        name="AddAnotherIssuingAuthority" [checked]="addAnotherIssuingAuthority">
+        Add Another Issuing Authority
+      </mat-checkbox>
+      <app-button *ngIf="!(oldIssuingAuthority !== undefined || this.makeCopy)" [spinner]="showSpinner"
+        [disabled]="issuingAuthorityForm.invalid || showSpinner" type="button" size="sm"
+        (clicked)="saveissuingAuthority()" text="Save">
+      </app-button>
+    </div>
+
+    <div class="float-right mt-5">
+        <app-button *ngIf="oldIssuingAuthority !== undefined && !this.makeCopy" [spinner]="showSpinner"
+        [disabled]="issuingAuthorityForm.invalid || showSpinner" type="button" size="sm"
+        (clicked)="updateIssuingAuthority()" text="Update">
+      </app-button>
+
+      <app-button *ngIf="oldIssuingAuthority !== undefined && this.makeCopy" [spinner]="showSpinner"
+      [disabled]="issuingAuthorityForm.invalid || showSpinner" type="button" size="sm"
+      (clicked)="copyIssuingAuthority()" text="Copy">
+    </app-button>
+    </div>
+
+
+  </form>
+</div>

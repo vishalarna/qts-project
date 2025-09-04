@@ -1,0 +1,325 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    .no-page-break {
+        page-break-after: avoid !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table landscape-report" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.TaskListReviews.Any())
+    {
+        <tr style="border-bottom: 2px solid #000; border-collapse: collapse;" class="open-border-table-row">
+            <td style="border: none; padding: 0px;" class="strip-container" colspan="7">
+                @{
+                    int j = 1;
+                }
+                @foreach (var taskListReview in Model.TaskListReviews)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-spacing:0;border-collapse:collapse">
+                            <tbody>
+                                <tr>
+                                    <td style="border-bottom: 2px solid #000; border-top: 0; border-collapse: collapse; font-size:18px;padding-left:0;" align="left" colspan="12"> <b>@taskListReview.Title</b></td>
+                                </tr>
+                                <tr style=" border-bottom: 2px solid #000; border-collapse: collapse" class="open-border-table-row">
+                                    @if (Model.DisplayColumns.Where(r => r == "Task #").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 0; padding: 5px; border-collapse: collapse; vertical-align: bottom; border-right: 2px solid #000; padding-left: 0; " align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))#</th>
+                                    }
+
+                                    @if (Model.DisplayColumns.Where(r => r == "Task Statement").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 0; padding: 5px; border-collapse: collapse; vertical-align: bottom; border-right: 2px solid #000; " align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Statement</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Recent History Date").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 0; padding: 5px; border-collapse: collapse; vertical-align: bottom; border-right: 2px solid #000; " align="left">Recent History Date</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Requal Reqd.").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-top: 0; padding: 5px; border-collapse: collapse; vertical-align: bottom; border-right: 2px solid #000; " align="left">Requal Reqd.</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Reviewed By").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; padding: 5px; border-top: 0; border-collapse: collapse; vertical-align: bottom; border-right: 2px solid #000; " align="left">Reviewed By</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Review Date").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; padding: 5px; border-top: 0; border-collapse: collapse; vertical-align: bottom; border-right: 2px solid #000; " align="left">Review Date</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Review Findings").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; padding: 5px; border-top: 0; border-collapse: collapse; vertical-align: bottom;border-right: 2px solid #000;" align="left">Review Findings</th>
+                                    }
+                                    <th style="border-bottom: 2px solid #000; padding: 5px; border-top: 0; border-collapse: collapse; vertical-align: bottom;" align="left">Notes</th>
+                                </tr>
+                                @foreach (var taskReview in taskListReview.TaskReviews)
+                                {
+                                    @{
+                                        var task = taskReview.Task;
+                                    }
+                                    <tr class="open-border-table-row">
+                                        @if (Model.DisplayColumns.Where(r => r == "Task #").Count() > 0)
+                                        {
+                                            <td style="border: none;padding:5px;padding-left: 0; vertical-align: top; ">@(task.IsReliability ? "*" : "")@task.SubdutyArea.DutyArea.Letter@task.SubdutyArea.DutyArea.Number.@task.SubdutyArea.SubNumber.@task.Number</td>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Task Statement").Count() > 0)
+                                        {
+                                            <td style="border: none; padding: 5px;vertical-align: top">  @task.Description  </td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Recent History Date").Any())
+                                        {
+                                            <td style="border: none; padding: 5px; vertical-align: top">
+                                                @{
+                                                    var isCompleted = taskReview.StatusId == 2;
+                                                    string recentHistoryDateText;
+
+                                                    if (isCompleted)
+                                                    {
+                                                        recentHistoryDateText = taskReview.ReviewDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat);
+                                                    }
+                                                    else
+                                                    {
+                                                        var recentTaskHistoryDate = task.Task_Histories?.OrderByDescending(h => h.ChangeEffectiveDate).FirstOrDefault()?.ChangeEffectiveDate;
+                                                        recentHistoryDateText = recentTaskHistoryDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat);
+                                                    }
+                                                }
+                                                @recentHistoryDateText
+                                            </td>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Requal Reqd.").Count() > 0)
+                                        {
+                                            <td style="border: none; padding: 5px; vertical-align: top "> @(taskReview.FindingId == 3 ? "Yes" : "No")</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Reviewed By").Count() > 0)
+                                        {
+                                            <td style="border: none; padding: 5px; vertical-align: top ">@String.Join(", ", taskReview.Reviewers.Select(r => $"{r.Reviewer.Person?.FirstName} {r.Reviewer.Person?.LastName}")) </td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Review Date").Count() > 0)
+                                        {
+                                            <td style="border: none; padding: 5px; vertical-align: top "> @taskReview.ReviewDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat)</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Review Findings").Count() > 0)
+                                        {
+                                            <td style="border: none; padding: 5px; vertical-align: top "> @taskReview.Finding?.Finding </td>
+                                        }
+                                        <td style="border: none; padding: 5px; vertical-align: top "> @taskReview?.Notes </td>
+                                    </tr>
+                                    <tr style="border-bottom: 2px solid #000">
+                                        <td colspan="12" style="padding:0 20px;padding-left:20px !important; border:0">
+                                            @if (Model.DisplayColumns.Where(r => r == "Action Items").Count() > 0)
+                                            {
+                                                <table style="width:100%;border-collapse:collapse;margin:10px 0px;font-size:12px">
+                                                    <thead>
+                                                        <tr class="open-border-table-row">
+                                                            <th style="border: 1px solid #000; border-left: 0; border-collapse: collapse;padding:5px 10px; vertical-align: bottom; padding-left: 0; " align="left">Action Item(s)</th>
+                                                            <th style="border: 1px solid #000; border-left: 0; border-collapse: collapse;padding:5px 10px; vertical-align: bottom; " align="left">Assignees</th>
+                                                            <th style="border: 1px solid #000; border-left: 0; border-collapse: collapse;padding:5px 10px; vertical-align: bottom; " align="left">Priority</th>
+                                                            <th style="border: 1px solid #000; border-left: 0; border-collapse: collapse;padding:5px 10px; vertical-align: bottom; " align="left">Date Assigned</th>
+                                                            <th style="border-bottom: 1px solid #000; border-top: 1px solid #000; padding:5px 10px; border-collapse: collapse; vertical-align: bottom;" align="left">Due Date</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @foreach (var actionItem in taskReview.ActionItems)
+                                                        {
+                                                            <tr style="border-bottom: 1px solid #000">
+                                                                <td style="border: none; padding: 5px; padding-left: 0; vertical-align: top; ">@actionItem.ActionItemTypeToDisplay</td>
+                                                                <td style="border: none; padding: 5px;">  @actionItem.Assignee?.Person?.FirstName @actionItem.Assignee?.Person?.LastName</td>
+                                                                <td style="border: none; padding: 5px;"> @actionItem.Priority?.Type</td>
+                                                                <td style="border: none; padding: 5px;"> @actionItem.AssignedDate.ToString(Model.DefaultDateFormat)</td>
+                                                                <td style="border: none; padding: 5px;"> @actionItem.DueDate.ToString(Model.DefaultDateFormat)</td>
+                                                            </tr>
+
+                                                        }
+                                                    </tbody>
+                                                </table>
+                                            }
+                                        </td>
+                                    </tr>
+                                    <tr style="border-bottom: 2px solid #000">
+                                        <td colspan="12" style="padding:0 20px;padding-left:20px !important; border:0">
+                                            @if (Model.DisplayColumns.Where(r => r == "Task History").Count() > 0)
+                                            {
+                                                <div>
+                                                    <div class="no-page-break">
+                                                        <table style="width:100%;border-collapse:collapse;margin:15px 0px 10px 0px;font-size:12px">
+                                                            <thead>
+                                                                <tr class="open-border-table-row">
+                                                                    <th style="width:15%; border: 1px solid #000; border-left: 0; border-collapse: collapse;padding:5px 10px; vertical-align: bottom; padding-left: 0; " align="left">Version Number</th>
+                                                                    <th style="width:15%; border: 1px solid #000; border-left: 0; border-collapse: collapse;padding:5px 10px; vertical-align: bottom; " align="left">Requalification Due Date</th>
+                                                                    <th style="width:40%; border: 1px solid #000; border-left: 0; border-collapse: collapse;padding:5px 10px; vertical-align: bottom; " align="left">Notes</th>
+                                                                    <th style="width:15%; border: 1px solid #000; border-left: 0; border-collapse: collapse;padding:5px 10px; vertical-align: bottom; " align="left">Effective Date</th>
+                                                                    <th style="width:15%; border-bottom: 1px solid #000; border-top: 1px solid #000; padding:5px 10px; border-collapse: collapse; vertical-align: bottom;" align="left">Changed By</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var versionTask in task.Version_Tasks)
+                                                                {
+                                                                    @{
+                                                                        var changedBy = versionTask.ModifiedDate == null ? versionTask.CreatedBy : versionTask.ModifiedBy;
+                                                                    }
+                                                                    <tr style="border-bottom: 1px solid #000">
+                                                                        <td style="border: none; padding: 5px; padding-left: 0; vertical-align: top; ">@versionTask.VersionNumber</td>
+                                                                        <td style="border: none; padding: 5px;">@(versionTask.RequalificationDueDate != null ? versionTask.RequalificationDueDate.GetValueOrDefault().ToString(Model.DefaultDateFormat) : "N/A")</td>
+                                                                        <td style="border: none; padding: 5px;">@versionTask.RequalificationNotes</td>
+                                                                        <td style="border: none; padding: 5px;">@(versionTask.EffectiveDate != null ? versionTask.EffectiveDate.GetValueOrDefault().ToString(Model.DefaultDateFormat) : "N/A")</td>
+                                                                        <td style="border: none; padding: 5px;">@changedBy</td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
+                                                </div>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Signature/Conclusion").Count() > 0)
+                                {
+                                    <tr>
+                                        <td style=" border: none !important;text-align: left;padding-left:0;padding-top:10px;" colspan="12"><b>Annual @("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) List Review:</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td style="text-align:left;border:0; padding:0;" colspan="12">
+                                            <table>
+                                                <tr>
+                                                    <td style="border: 0;padding-left:0;padding-top:0;vertical-align:top;width:110px;"><b>Reviewed By:</b></td>
+                                                    <td style="border: 0; padding-top: 0;">
+                                                        <span style="display: block; width: 100%; border-bottom: 1px solid #000; min-height: 16px">
+                                                            @String.Join(", ", taskListReview.GeneralReviewers.Select(r => $"{r.GeneralReviewer.Person?.FirstName} {r.GeneralReviewer.Person?.LastName}"))
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border: 0; padding-left: 0; padding-top: 0; vertical-align: top; width: 110px;"> <b>Date:</b> </td>
+                                                    <td style="border: 0; padding-top: 0;">
+                                                        <span style="display: block; width: 100%; border-bottom: 1px solid #000;min-height:16px">
+                                                            @taskListReview.ApprovalDate?.ToString(Model.DefaultDateFormat)
+                                                        </span>
+                                                    </td>
+                                                <tr>
+                                                    <td style="border: 0; padding-left: 0; padding-top: 0; vertical-align: top; width: 110px;"><b>Conclusion:</b></td>
+                                                    <td style=" border: 0; padding-top: 0;">
+                                                        <span style="display: block; width: 100%;">
+                                                                @(new RawString(taskListReview.Conclusion))
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border: 0; padding-left: 0; padding-top: 0; vertical-align: top; width: 110px;"><b>Signature:</b></td>
+                                                    <td style=" border: 0; padding-top: 0; ">
+                                                        <span style="display: block; width: 100%; border-bottom: 1px solid #000; min-height: 16px ">
+                                                                @taskListReview.Signature
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (!taskListReview.Equals(Model.TaskListReviews.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.TaskListReviews.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

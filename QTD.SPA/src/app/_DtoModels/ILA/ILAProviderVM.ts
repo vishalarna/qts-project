@@ -1,0 +1,20 @@
+export class ILAProviderVM{
+    id:string;
+    providerId:string;
+    number:string;
+    name:string;
+    nickName:string;
+    providerName:string;
+    topicIds:any[];
+    totalHours:any;
+    classScheduleEmpCount?:number;
+    deliveryMethodName:string;
+    isPublished:boolean;
+    active:boolean;
+    image:string;
+    isSelfPaced:boolean;
+    classSize?:number;
+    useForEMP:boolean;
+    isPubliclyAvailable:boolean;
+    isNerc?:boolean;
+}

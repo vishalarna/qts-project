@@ -1,0 +1,78 @@
+<div *ngIf="isLoading">
+    <app-data-loader></app-data-loader>
+</div>
+<div *ngIf="!isLoading" class="ml-4 mr-4 px-8">
+    <div class="flex flex-row flex-wrap mt-3 justify-between border-b pb-3">
+        <div class="flex flex-col">
+            <!-- <p class="text-xs text-gray-four">PowerCo Procedures</p> -->
+            <p class="font-bold text-lg">{{title}}</p>
+        </div>
+        <div class="flex flex-row  items-center text-gray-four btn-group">
+            <div class="cursor-pointer bg-gray-200 p-2 rounded">
+                <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+                    <span *ngIf="isActive" class="font-bold">
+                        <span style="color:green" class="mr-1 text-lg">●</span>
+                        Active
+                    </span>
+                    <span *ngIf="!isActive" class="font-bold">
+                        <span style="color:red" class="mr-1 text-lg">●</span>
+                        Inactive
+                    </span>
+
+                </label>
+                <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+            </div>
+            <mat-menu #menu="matMenu">
+                <label mat-menu-item *ngIf="!isActive" (click)="changeStatus(statusModal,true)">
+                    <span style="color:green" class="mr-1 text-lg">●</span>Make
+                    Active</label>
+
+                <label mat-menu-item *ngIf="isActive" [disabled]="iaInactiveCheck" (click)="changeStatus(statusModal,false)">
+                    <span style="color:red" class="mr-1 text-lg">●</span> Make
+                    Inactive</label>
+            </mat-menu>
+
+            <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" [matMenuTriggerFor]="dropmenu">
+            </app-button>
+            <mat-menu #dropmenu="matMenu">
+                <label [disabled]="!isActive" (click)="editIA(addNewIssuingAuthority)" mat-menu-item>Edit</label>
+                <label [disabled]="!isActive" (click)="copyIA(addNewIssuingAuthority)" mat-menu-item>Copy</label>
+                <label (click)="deleteIA(unlinkModal)" [disabled]="childernCountCheck || !isActive" mat-menu-item>Delete</label>
+            </mat-menu>
+        </div>
+    </div>
+
+    <div class="flex flex-row flex-wrap mt-3 justify-between border-b pb-3" style="color : rgba(0, 13, 9, 1);">
+        <p class="text-xm">
+            {{description}}
+        </p>
+    </div>
+
+    <div class="flex flex-row flex-wrap mt-3 justify-between">
+        <p class="text-xs" style="color : rgba(77, 77, 77, 1);">
+            Issuing Authority website:&nbsp;
+            <app-link class="text-qtd" style="color:rgba(92, 155, 49, 1);" [text]="website">
+            </app-link>
+        </p>
+    </div>
+
+</div>
+
+<ng-template #addNewIssuingAuthority>
+    <fly-panel-add-issuing-authority [isCopy]="isCopy" [oldIssuingAuthority]="currentIssuingAuthority"
+        (closed)="flyPanelService.close()">
+    </fly-panel-add-issuing-authority>
+</ng-template>
+
+<ng-template #unlinkModal>
+    <app-qtd-dialogue [header]="modalHeader" [description]="modalDescription" cancelText="No" confirmText="Yes"
+        [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="deleteProc_IA($event,'delete')">
+    </app-qtd-dialogue>
+</ng-template>
+
+
+<ng-template #statusModal>
+    <app-qtd-dialogue [header]="modalHeader" [reasonDescription]="modalReason" [description]="modalDescription" cancelText="No" confirmText="Yes"
+        [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="MakeActive($event,!isActive)">
+    </app-qtd-dialogue>
+</ng-template>

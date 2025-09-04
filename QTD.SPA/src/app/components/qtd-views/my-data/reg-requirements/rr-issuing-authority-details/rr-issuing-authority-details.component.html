@@ -1,0 +1,72 @@
+<div class="ml-4 mr-4 ">
+    <div class="flex flex-row flex-wrap mt-3 justify-between border-b pb-3">
+        <div class="flex flex-col">
+            <p class="font-bold text-lg">{{rrIA.title}}</p>
+        </div>
+        <div class="flex flex-row  items-center text-gray-four btn-group">
+            <div class="cursor-pointer bg-gray-200 p-2 rounded">
+                <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+                    <span *ngIf="isActive" class="font-bold">
+                        <span style="color:green" class="mr-1 text-lg">●</span>
+                        Active
+                    </span>
+                    <span *ngIf="!isActive" class="font-bold">
+                        <span style="color:red" class="mr-1 text-lg">●</span>
+                        Inactive
+                    </span>
+
+                </label>
+                <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+            </div>
+            <mat-menu #menu="matMenu">
+                <label mat-menu-item *ngIf="!isActive" (click)="toggleActive(activeInactiveModal,true)">
+                    <span style="color:green" class="mr-1 text-lg">●</span>Make
+                    Active</label>
+
+                <label mat-menu-item *ngIf="isActive" (click)="toggleActive(activeInactiveModal,false)">
+                    <span style="color:red" class="mr-1 text-lg">●</span> Make
+                    Inactive</label>
+            </mat-menu>
+
+            <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" [matMenuTriggerFor]="dropmenu">
+            </app-button>
+            <mat-menu #dropmenu="matMenu">
+                <label [disabled]="!isActive" (click)="editRRIA(CopyOrEditIssuingAuthority)" mat-menu-item>Edit</label>
+                <label [disabled]="!isActive" (click)="copyRRIA(CopyOrEditIssuingAuthority)" mat-menu-item>Copy</label>
+                <label (click)="deleteRRIA(deleteModal)" [disabled]="childernCountCheck || !isActive" mat-menu-item>Delete</label>
+            </mat-menu>
+        </div>
+    </div>
+
+    <div class="flex flex-row flex-wrap mt-3 justify-between border-b pb-3">
+        <p class="text-xm">
+          {{rrIA.description}}
+        </p>
+    </div>
+
+    <div class="flex flex-row flex-wrap mt-3 justify-between">
+        <p class="text-xs">
+            Issuing Authority website:&nbsp;
+            <app-link class="text-qtd" [text]="rrIA.website">
+            </app-link>
+        </p>
+    </div>
+
+</div>
+
+<ng-template #activeInactiveModal>
+  <app-qtd-dialogue [header]="dialogHeader" [description]="dialogDescription" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="getData($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #deleteModal>
+  <app-qtd-dialogue [header]="dialogHeader" [description]="dialogDescription" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="getDeleteHistory($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+
+<ng-template #CopyOrEditIssuingAuthority>
+  <app-fly-panel-add-rr-issuing-authority [makeCopy]="makeCopy" [oldIssuingAuthority]="rrIA" (closed)="flyPanelService.close()"></app-fly-panel-add-rr-issuing-authority>
+</ng-template>

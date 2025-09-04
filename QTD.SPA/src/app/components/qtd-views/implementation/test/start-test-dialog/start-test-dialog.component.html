@@ -1,0 +1,64 @@
+
+<mat-dialog-content>
+
+  <div class="flex flex-row justify-between items-center mt-2">
+    <p mat-dialog-title [textContent]="'Disclaimer'"></p>
+    <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+    <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+
+</div>
+    <div class="float-container">
+
+        <div class="float-child">
+          <h2 class="green">{{data.object.providerName===null ?'N/A':data.object.providerName}} </h2>
+          <p class="green">Provider Name</p>
+          <h2 class="green">{{data.object.ila ===null ?'N/A':data.object.ila}} </h2>
+          <p class="green">{{("ILA" | labelReplacement)| async}} Title</p>
+          <h2 class="green">{{data.object.location===null ?'N/A':data.object.location}} </h2>
+          <p class="green">{{("Location" | labelReplacement)| async}}s</p>
+
+        </div>
+
+        <div class="float-child">
+            <h2 class="green">{{data.object.ilaNumber}} </h2>
+            <p class="green">{{("ILA" | labelReplacement)| async}} No.</p>
+            <h2 class="green">{{data.object.instructpr}} </h2>
+            <p class="green">{{("Instructor" | labelReplacement)| async}}</p>
+            <h2 class="green"> {{ datePipe.transform(data.object.classDate, 'MMM') }} {{ datePipe.transform(data.object.classDate, 'dd') }}th, {{ datePipe.transform(data.object.classDate, 'yyyy') }} </h2>
+            <p class="green">Completion Date</p>
+
+        </div>
+
+      </div>
+   <div style="margin-top: 40%">
+    <h3>EMP {{("Instruction" | labelReplacement)| async}}s</h3>
+    <p>Once you are ready to take the {{data.object.testType===null ?'N/A':data.object.testType}} , click on the Begin {{data.object.testType===null ?'N/A':data.object.testType}}  button to start the {{data.object.testType===null ?'N/A':data.object.testType}}. If you are NOT ready, click on the Exit button to return to the homepage. Once you begin taking the {{data.object.testType===null ?'N/A':data.object.testType}} , you must finish the {{data.object.testType===null ?'N/A':data.object.testType}}; you cannot interrupt or save the {{data.object.testType===null ?'N/A':data.object.testType}}  to continue later.
+      <br>
+      <b>Note:</b> Should you lose internet connection or power, or have to interrupt the {{data.object.testType===null ?'N/A':data.object.testType}} for an emergency, the portion of the {{data.object.testType===null ?'N/A':data.object.testType}}  you completed up until that point will be saved. Please contact your Training Department as soon as possible to make arrangements to finish the {{data.object.testType===null ?'N/A':data.object.testType}}.
+      </p>
+
+    <h3>Confidentiality</h3>
+    <p>The purpose of this {{data.object.testType===null ?'N/A':data.object.testType}}  is to assess your knowledge in a specific skill/knowledge area. As such you agree to the following:
+     <br/>
+     <br/>
+      I understand that the {{data.object.testType===null ?'N/A':data.object.testType}} is a secure and confidential {{data.object.testType===null ?'N/A':data.object.testType}} instrument, and I agree that I will NOT do any of the following:
+      </p>
+      <ul style="list-style-type:disc;padding: 0px 0px 0px 30px;">
+        <li>Discuss, disseminate, describe, or otherwise reveal the contents of the {{data.object.testType===null ?'N/A':data.object.testType}} to any third party.</li>
+        <li>Publish, or cause to be published, the {{data.object.testType===null ?'N/A':data.object.testType}} or any of the items.</li>
+        <li> Make copies of the {{data.object.testType===null ?'N/A':data.object.testType}} or any {{data.object.testType===null ?'N/A':data.object.testType}} items, take notes, modify, or otherwise reproduce the {{data.object.testType===null ?'N/A':data.object.testType}} or {{data.object.testType===null ?'N/A':data.object.testType}} items.</li>
+        <li>Complete the {{data.object.testType===null ?'N/A':data.object.testType}} with assistance of another person, class materials, or other non-approved resources.</li>
+      </ul>
+    <ng-container *ngIf="data.object.instructions !== ''">
+      <h3 class="mt-3 mb-1">Test {{("Instruction" | labelReplacement)| async}}s</h3>
+      <p>{{data.object.instructions}}
+      </p>
+    </ng-container>
+   </div>
+
+  <mat-checkbox class="example-margin" [(ngModel)]="checked"><p>I agree that by checking this checkbox, I have read and accepted all above listed terms and conditions</p></mat-checkbox>
+    </mat-dialog-content>
+<mat-dialog-actions align="end">
+    <app-button class="blue" type="button"  [disabled]="!checked" text="Start Test" (clicked)="startNewTest()" color="blue" size="sm" class="mr-2">
+    </app-button>
+</mat-dialog-actions>

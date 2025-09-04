@@ -1,0 +1,327 @@
+<div class="flex justify-between items-center px-8 py-3 sticky-header">
+  <div>
+    <app-label class="font-weight-bold text-xl" [text]="selectedClass[0].ilaObject.ilaNickName"></app-label>
+  </div>
+  <div>
+    <app-button (click)="flyPanelSrvc.close()" ButtonType="icon" icon="close"></app-button>
+  </div>
+</div>
+
+<div class="spinner-class">
+  <app-spinner *ngIf="loader"></app-spinner>
+</div>
+<div class="mt-3 flex justify-center" style="align-items: center" *ngIf="!loader">
+  <div style="width: 95%">
+    <section class="flex flex-col p-2 rounded-sm">
+      <div class="float-container">
+        <div class="float-child">
+          <div class="space-y-4">
+            <div class="flex justify-content">
+              <span class="font-semibold px-1">Delivery Method:</span>
+              <span class="px-1">{{ selectedClass[0].ilaObject.deliveryMethodName }}</span>
+            </div>
+
+            <div class="d-flex align-items-center">
+              <button (click)="toggleDescriptionDetails()" class="btn btn-link p-0"
+                aria-label="Toggle details"><app-icon [icon]="!isDescriptionCollapse ? 'expand_more' :'expand_less'">
+                </app-icon></button>
+              <span class="hour-heading">
+                Description Details
+              </span>
+            </div>
+            <div [@slideToggle]="isDescriptionCollapse ? 'open' : 'closed'" *ngIf="isDescriptionCollapse"
+              class="toggle-details">
+              <app-textarea [value]="selectedClass[0].ilaObject?.description" type="text" [isDisabled]="true">
+                </app-textarea>
+            </div>
+
+            <div class="d-flex align-items-center">
+              <button (click)="toggleHoursDetails()" class="btn btn-link p-0" aria-label="Toggle details"><app-icon
+                  [icon]="!isHourDetailCollapsed ? 'expand_more' :'expand_less'">
+                </app-icon></button>
+              <span class="hour-heading">
+                Total Credit Hours & Other Details
+              </span>
+            </div>
+            <div [@slideToggle]="isHourDetailCollapsed ? 'open' : 'closed'" *ngIf="isHourDetailCollapsed"
+              class="toggle-details">
+              <table class="info-table">
+                <tr>
+                  <th>Total Training Hours :</th>
+                  <td>{{ selectedClass[0].ilaObject?.totalTrainingHours }}</td>
+                </tr>
+                <tr>
+                  <th>Credit Hours:</th>
+                  <td>{{ selectedClass[0].ilaObject?.creditHours }}</td>
+                </tr>
+                <tr>
+                  <th>Class Count:</th>
+                  <td>{{ selectedClass[0].ilaObject?.classesCount }}</td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="d-flex align-items-center">
+              <button (click)="toggleIlaRequirementDetails()" class="btn btn-link p-0"
+                aria-label="Toggle details"><app-icon
+                  [icon]="!isCourseRequirementCollapse ? 'expand_more' :'expand_less'">
+                </app-icon></button>
+              <span class="hour-heading">
+                Course Completion Requirement
+              </span>
+            </div>
+            <div [@slideToggle]="isCourseRequirementCollapse ? 'open' : 'closed'" *ngIf="isCourseRequirementCollapse"
+              class="toggle-details">
+              <app-label
+                text="In order to receive credit for this course, students are required to complete the following: "></app-label>
+              <div class="d-flex">
+                <mat-checkbox [checked]="ilaRequirements.isPreTestRequired" class="example-margin pt-3"
+                  [disabled]="true"></mat-checkbox>
+                <div class="font-bold pt-3 pr-3">Pre Test</div>
+              </div>
+              <div class="d-flex">
+                <mat-checkbox [checked]="ilaRequirements.isCBTRequired" class="example-margin pt-3"
+                  [disabled]="true"></mat-checkbox>
+                <div class="font-bold pt-3 pr-3">CBT</div>
+              </div>
+              <div class="d-flex flex-col">
+              <div class="d-flex">
+                <mat-checkbox [checked]="isFinalAssessmentRequired()" class="example-margin pt-3"
+                [disabled]="true"></mat-checkbox>
+                <div class="font-bold pt-3 pr-3">Final Assessment</div>
+              </div>
+              <div class="d-flex pl-3">
+                <mat-checkbox [checked]="ilaRequirements.isFinalTestRequired" class="example-margin pt-3"
+                  [disabled]="true"></mat-checkbox>
+                <div class="font-bold pt-3 pr-3">Written Test</div>
+              </div>
+              <div class="d-flex pl-3">
+                <mat-checkbox [checked]="ilaRequirements.isTaskQualificationRequired" class="example-margin pt-3"
+                  [disabled]="true"></mat-checkbox>
+                <div class="font-bold pt-3 pr-3">Task Qualification</div>
+              </div>
+              <div class="d-flex pl-3">
+                <mat-checkbox [checked]="ilaRequirements.isStudentEvaluationRequired" class="example-margin pt-3"
+                  [disabled]="true"></mat-checkbox>
+                <div class="font-bold pt-3 pr-3">Student Evaluation</div>
+              </div>
+              <div class="d-flex pl-3">
+                <mat-checkbox [checked]="ilaRequirements.isSimulatorScenarioRequired" class="example-margin pt-3"
+                  [disabled]="true"></mat-checkbox>
+                <div class="font-bold pt-3 pr-3">Simulator Scenario</div>
+              </div>
+              </div>
+            </div>
+
+            <div class="d-flex align-items-center">
+              <button (click)="toggleAvailbleClassDetails()" class="btn btn-link p-0"
+                aria-label="Toggle details"><app-icon
+                  [icon]="!isAvailbleClassDetailCollapse ? 'expand_more' :'expand_less'">
+                </app-icon></button>
+              <span class="hour-heading">
+                Available Classes
+              </span>
+            </div>
+            <div [@slideToggle]="isAvailbleClassDetailCollapse ? 'open' : 'closed'"
+              *ngIf="isAvailbleClassDetailCollapse">
+              <div class="flex flex-row justify-center pb-2" style="align-items:baseline;">
+                <div class="flex flex-row" style="justify-content: flex-end; width:90%;">
+                  <span (click)="selectedTab = 'tableView'"
+                    [ngClass]="selectedTab === 'tableView' ? 'selectedTab':'pointerClass'" class="border-2 p-2"
+                    style="border-radius: 4px 0px 0px 4px;text-align: center;">Table View</span>
+
+                  <span (click)="onCalenderViewClick()"
+                    [ngClass]="selectedTab === 'calenderView' ? 'selectedTab':'pointerClass'" class="border-2 p-2"
+                    style="text-align: center;">Calendar View</span>
+                </div>
+              </div>
+              <div *ngIf="selectedTab == 'tableView'">
+              <mat-table [dataSource]="availableClassesDataSource" matSort class="w-full available-class-table">
+                <ng-container matColumnDef="classStartDateTime">
+                  <mat-header-cell mat-sort-header *matHeaderCellDef>
+                    Class Start/End Date & Time
+                  </mat-header-cell>
+                  <mat-cell class="pt-3 pb-3" *matCellDef="let row">
+                    <span>{{row.startDateTime | date: 'shortDate'}} {{row.startDateTime | date:'shortTime'}} -
+                      {{row.endDateTime | date: 'shortDate'}} {{row.endDateTime | date:'shortTime'}}</span>
+                  </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="location">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Location
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{row.locationName}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="instructor">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Instructor Name
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{row.instructorName}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="availableSeat">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Available Seats
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">{{row.availableSeats.availableSeat}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="action">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Action
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row">
+                    <app-button ButtonType="button" size="sm" class="pr-2 action-button" text="Submit Request"
+                      (clicked)="onRegisterClick(onRegister,row.id);"></app-button>
+                  </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="availableClassesToDisplay"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: availableClassesToDisplay;"></mat-row>
+              </mat-table>
+              </div>
+              <div *ngIf="selectedTab == 'calenderView'">
+                <div class="flex w-full justify-center mb-3">
+                <div class="flex flex-col calender-width">
+                  <div class="bg-white flex flex-col">
+                    <mwl-calendar-month-view [headerTemplate]="monthHeader" [cellTemplate]="monthCell"
+                      [viewDate]="newDate" (beforeViewRender)="calendarBeforeViewRender($event)">
+                    </mwl-calendar-month-view>
+                  </div>
+                  <div *ngIf="dateClassesDataSource.data.length > 0">
+                    <mat-table [dataSource]="dateClassesDataSource" matSort class="w-full available-class-table">
+                      <ng-container matColumnDef="classStartDateTime">
+                        <mat-header-cell mat-sort-header *matHeaderCellDef>
+                          Class Start/End Date & Time
+                        </mat-header-cell>
+                        <mat-cell class="pt-3 pb-3" *matCellDef="let row">
+                          <span>{{row.startDateTime | date: 'shortDate'}} {{row.startDateTime | date:'shortTime'}} -
+                            {{row.endDateTime | date: 'shortDate'}} {{row.endDateTime | date:'shortTime'}}</span>
+                        </mat-cell>
+                      </ng-container>
+
+                      <ng-container matColumnDef="location">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                          Location
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{row.locationName}}</mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="instructor">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                          Instructor Name
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{row.instructorName}}</mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="availableSeat">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                          Available Seats
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{row.availableSeats.availableSeat}}</mat-cell>
+                      </ng-container>
+
+                      <ng-container matColumnDef="action">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                          Action
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                          <app-button ButtonType="button" size="sm" class="pr-2 action-button" text="Submit Request"
+                            (clicked)="onRegisterClick(onRegister,row.id);"></app-button>
+                        </mat-cell>
+                      </ng-container>
+
+                      <mat-header-row *matHeaderRowDef="selectedDateClassesToDisplay"></mat-header-row>
+                      <mat-row *matRowDef="let row; columns: selectedDateClassesToDisplay;"></mat-row>
+                    </mat-table>
+                  </div>
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </div>
+</div>
+
+<ng-template #onRegister>
+  <mat-dialog-content>
+    <div class="flex flex-row justify-between items-center pb-4 pt-4">
+      <p class="text-xl font-semibold text-gray-900">Confirm: Are you a member of our training community?</p>
+      <app-button ButtonType='icon' class="mt--4" icon="close" (clicked)="dialog.closeAll()"></app-button>
+    </div>
+
+    <p class="mt-2">If you have previously completed training with our company, log into your Employee Portal account to
+      complete your self-registration request.</p>
+
+    <p class="mt-2">If you have not previously completed training with our company, or are not sure if you have an
+      Employee Portal account with our company, proceed with completing the Registration form.</p>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+    <div class="flex justify-between w-full">
+    <app-button type="button" text="Employee Portal" color="primary" size="sm" class="mr-2"
+      (clicked)="redirectToEmployee()">
+    </app-button>
+    <app-button type="button" text="New Registration" color="primary" size="sm" class="mr-2"
+      (clicked)="openRegistrationForm()">
+    </app-button>
+    </div>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #monthHeader>
+  <div class="flex flex-row justify-between w-full px-2 py-3">
+    <button (click)="previousAndNextClick('previous')">
+      <app-icon mwlCalendarPreviousView class="cursor-pointer text-gray-500" matTooltip="Go To Previous Month"
+        view="month" [(viewDate)]="newDate" icon="arrow_back_ios">
+      </app-icon>
+    </button>
+    <div class="flex flex-row align-items-center">
+      <span mwlCalendarToday class="mr-2 cursor-pointer" matTooltip="Go To Current Date" [(viewDate)]="newDate"
+        (mwlClick)="classCellClick(newDate)">
+        {{selectedDay | date:'MMMM yyyy'}}
+      </span>
+      <app-icon [matMenuTriggerFor]="months" style="color:#456FA5;" class="linkText" icon="expand_more"></app-icon>
+      <mat-menu #months="matMenu">
+        <div *ngFor="let month of monthInfo">
+          <button mat-menu-item (click)="changeMonth(month.number) ">
+            {{month.title}}
+          </button>
+        </div>
+      </mat-menu>
+    </div>
+    <button (click)="previousAndNextClick('next')">
+      <app-icon mwlCalendarNextView class="cursor-pointer text-gray-500" matTooltip="Go To Next Month" view="month"
+        [(viewDate)]="newDate" icon="arrow_forward_ios">
+      </app-icon>
+    </button>
+  </div>
+  <div class="d-flex w-100">
+    <span *ngFor="let day of daysInfo" style="width: 15%; display: block;font-weight: 600; text-align: center;">
+      {{day}}
+    </span>
+  </div>
+</ng-template>
+
+<ng-template #monthCell let-highlightDay="highlightDay" let-unhighlightDay="unhighlightDay"
+  let-eventClicked="eventClicked" let-eventTimesChanged="eventTimesChanged" let-day="day">
+  <div class="flex p-2" [ngClass]="{
+        'cursor-pointer': day.inMonth,
+        'cursor-default': !day.inMonth
+      }" style="border-top: 1px dashed lightgray; align-items: center; justify-content: center;"
+    (click)="day.inMonth && onClickDate(day.date)">
+
+    <span class="p-3" [ngClass]="{
+          'blueBg': day.date.toDateString() === selectedDayString
+                   || day.date.toDateString() === currentDate.toDateString(),
+          'whiteBg': day.inMonth
+                     && day.date.toDateString() !== currentDate.toDateString()
+                     && day.date.toDateString() !== selectedDayString,
+          'blurBg': !day.inMonth
+        }" [style.pointer-events]="day.inMonth ? 'auto' : 'none'" [style.opacity]="day.inMonth ? '1' : '0.3'">
+      {{ day.date | date:'d' }}
+    </span>
+  </div>
+</ng-template>

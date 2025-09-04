@@ -1,0 +1,96 @@
+<div class="flex flex-col px-12 py-12">
+    <ng-container>
+        <div class="flex flex-row justify-between">
+            <h2>{{ilaTitle}} - Requirements</h2>
+            <app-button ButtonType="icon" icon="close" (clicked)="closeFlyPanel()"></app-button>
+        </div>
+        <div class="px-12">
+            <div class="container">
+                <div class="requirment-container">
+                    <div class="container_headers">Pretests linked to "{{ilaTitle}}"</div>
+                    <ul class="container_data">
+                        <li *ngFor="let item of ilaTraineeEvaluations?.pretests">
+                            {{item}}</li>
+                    </ul>
+                    <div class="container_headers">Tests linked to "{{ilaTitle}}"</div>
+                    <ul class="container_data">
+                        <li *ngFor="let item of ilaTraineeEvaluations?.tests">
+                            {{item}}</li>
+                    </ul>
+                    <div class="container_headers">CBT linked to "{{ilaTitle}}"</div>
+                    <ul class="container_data">
+                        <li *ngFor="let item of ilaTraineeEvaluations?.cbt">
+                            {{item}}</li>
+                    </ul>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="requirment-container">
+                    <div class="container_headers">Details</div>
+                    <div class="mt-4 mb-4" style="display:grid;row-gap: 2rem;">
+                        <div style="grid-row: 1;grid-column: 1;">
+                            <div class="flex flex-col">
+                                <span class="font-bold">
+                                    {{ilaRequirementsDetails.ilaNumber}} | {{ilaRequirementsDetails.ilaTitle}}
+                                </span>
+                                <span class="text-gray-400">
+                                    {{("ILA" | labelReplacement)| async}} No. & Title
+                                </span>
+                            </div>
+                        </div>
+                        <div style="grid-row: 1;grid-column: 2;">
+                            <div class="flex flex-col">
+                                <span class="font-bold">
+                                    {{ilaRequirementsDetails.totalCEHHours}}
+                                </span>
+                                <span class="text-gray-400">
+                                    Total CEHs
+                                </span>
+                            </div>
+                        </div>
+                        <div style="grid-row: 2;grid-column: 1;">
+                            <div class="flex flex-col">
+                                <span class="font-bold">
+                                    {{ilaRequirementsDetails.providerName}}
+                                </span>
+                                <span class="text-gray-400">
+                                    Provider Name
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mat-table-wrapper">
+                        <mat-table [dataSource]="ilaRequirementsDetails?.classSchedules">
+                            <ng-container matColumnDef="instructor">
+                                <mat-header-cell *matHeaderCellDef> {{("Instructor" | labelReplacement)| async}}
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.instructorName}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="location">
+                                <mat-header-cell *matHeaderCellDef>  {{("Location" | labelReplacement)| async}}
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row?.locationAddress}} {{row?.locationCity}}
+                                    {{row?.locationState}}</mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="startDate">
+                                <mat-header-cell *matHeaderCellDef> Start Date
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.startDateTime | date: 'MMMM d, y'}} </mat-cell>
+                            </ng-container>
+
+
+                            <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+
+                            <tr class="mat-row flex text-center " *matNoDataRow>
+                                <td class="mat-cell w-full m-2">No data to display</td>
+                            </tr>
+
+                        </mat-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>

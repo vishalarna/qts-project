@@ -1,0 +1,221 @@
+<app-header title="{{ 'DIF Surveys' }}"></app-header>
+<div class="px-10 pb-3 flex flex-row">
+  <div class="container bg-white rounded m-3 py-3 pl-3 shadow-sm">
+    <div class="d-flex align-items-center gap-2">
+      <div class="icon-wrap">
+        <mat-icon class="material-icons-outlined published-dif-icon"
+          >assignment_turned_in</mat-icon
+        >
+      </div>
+      <div>
+        <p>Published DIF Surveys</p>
+        <p class="status">{{difSurveyOverview_VM?.publishedDIFSurveys}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container bg-white rounded m-3 py-3 pl-3 shadow-sm">
+    <div class="d-flex align-items-center gap-2">
+      <div class="icon-wrap">
+        <mat-icon class="material-icons-outlined draft-icon"
+          >assignment_turned_in</mat-icon
+        >
+      </div>
+      <div>
+        <p>Draft DIF Surveys</p>
+        <p class="status">{{difSurveyOverview_VM?.draftDIFSurveys}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="container bg-white rounded m-3 py-3 pl-3 shadow-sm">
+    <div class="d-flex align-items-center gap-2">
+      <div class="icon-wrap">
+        <mat-icon class="material-icons-outlined employees-icon"
+          >group</mat-icon
+        >
+      </div>
+      <div>
+        <p> {{("Employee" | labelReplacement)| async}}s Pending EMP DIF Survey</p>
+        <p class="status">{{difSurveyOverview_VM?.employeesPendingEMPDIFSurveys}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="px-10">
+  <div class="bg-white rounded m-3 py-3 pl-3 shadow-sm">
+<section class="panel-section">
+  <div
+    class="
+      flex flex-row
+      bg-white-one
+      rounded-t-md
+      py-2.5
+      px-6
+      space-x-2
+      border-b-0.8 border-gray-one
+      w-full
+    "
+  >
+    <div class="flex flex-grow keyword-input">
+      <svg
+        class="flex-none w-4 h-4"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+        ></path>
+      </svg>
+      <input
+        class="text-sm flex-grow focus:outline-none"
+        placeholder="Enter survey title to search"
+        type="text"
+        (keyup)="searchUpdate($event)"
+        [value] = "searchText"
+      />
+    </div>
+    <div class="flex flex-row space-x-4 text-sm">
+      <div class="dropdown">
+        <app-button
+          color="secondary"
+          text="Filter"
+          size="sm"
+          icon="filter_alt"
+          iconPosition="left"
+          (click)="openFlyInPanel(filterDifSurvey)"
+        >
+        </app-button>
+      </div>
+      <app-button
+        text="New DIF Survey"
+        icon="add"
+        iconPosition="left"
+        size="sm"
+        (click)="openDifSurvey()"
+      >
+      </app-button>
+    </div>
+  </div>
+
+  <mat-table [dataSource]="dataSource" matSort>
+    <ng-container matColumnDef="CheckBox">
+      <mat-header-cell *matHeaderCellDef style="max-width: 100px">
+        <mat-checkbox></mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" style="max-width: 100px">
+        <mat-checkbox></mat-checkbox>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="surveyTitle">
+      <mat-header-cell *matHeaderCellDef mat-sort-header >
+        <div class="text-gray-400 text-sm font-weight-normal">
+        Survey Title
+      </div>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">{{row.surveyTitle}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="positionTitle">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>        
+        <div class="text-gray-400 text-sm font-weight-normal">
+          {{("Position" | labelReplacement)| async}}
+        </div>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">{{row.positionTitle}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="startDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>        
+        <div class="text-gray-400 text-sm font-weight-normal">
+          Start Date
+        </div>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">{{(row.startDate | dateFormat | async)}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="dueDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>        
+        <div class="text-gray-400 text-sm font-weight-normal">
+          Due Date
+        </div>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">{{(row.dueDate | dateFormat | async)}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="surveyStatus">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>        
+        <div class="text-gray-400 text-sm font-weight-normal">
+          Survey Status
+        </div>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" [ngClass]="{ 'closed-cell': row.surveyStatus === 'Closed' }">
+        <div class="d-inline-block">
+          <p class="py-2 px-4 rounded flex flex-row text-center text-xs font-medium font-weight-bold customcolor">
+            {{ row.surveyStatus | uppercase }}
+          </p>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="devStatus">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>        
+        <div class="text-gray-400 text-sm font-weight-normal">
+          Dev Status
+        </div>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" > 
+        <p class="custom-dev-status">{{row.devStatus}}</p>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="action">
+      <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="flex flex-row items-center text-gray-four btn-group">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <app-icon icon="more_vert"></app-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <label mat-menu-item translate (click)="openViewEnrollmentPage(row)"> View Enrollment </label>
+            <label mat-menu-itemtranslate mat-menu-item translate (click)="openViewDifResultsPage(row)">
+              View DIF Results
+            </label>
+            <label mat-menu-itemtranslate mat-menu-item translate  [disabled]="!row.editable" (click)="editDifSurvey(row.id)"> Edit </label>
+            <label mat-menu-itemtranslate mat-menu-item translate  [disabled]="row.isEmployeeCompleted" (click)="deleteDIFSurvey(deleteDIFSurveyRow, row)"> Delete </label>
+            <label *ngIf="row.isActive" mat-menu-itemtranslate mat-menu-item translate [disabled]="row.isEmployeeCompleted" (click)="editDifSurveyAsync(row.id, 'inactive')"> Make Inactive </label>
+            <label *ngIf="!row.isActive" mat-menu-itemtranslate mat-menu-item translate [disabled]="row.isEmployeeCompleted" (click)="editDifSurveyAsync(row.id, 'active')"> Make Active </label>
+            <label mat-menu-itemtranslate mat-menu-item translate (click)="openImportDifSurveyPage(row)"> Import from CSV </label>
+          </mat-menu>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row  *matHeaderRowDef="tableColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: tableColumns" [ngClass]="{ 'closed-row': row.surveyStatus === 'Closed', 'inActive-row': !row.isActive }"></mat-row>
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center" *matNoDataRow>
+      <td class="mat-cell w-full">No Data</td>
+    </tr>
+  </mat-table>
+</section>
+</div>
+</div>
+
+<ng-template #filterDifSurvey>
+  <app-fly-panel-filter-dif-survey  (difFilterChange)="getDIFFilterValues($event)" [filterDifValue]="filterValues" > </app-fly-panel-filter-dif-survey>
+</ng-template>
+
+<ng-template #deleteDIFSurveyRow>
+  <app-qtd-dialogue
+    header="Delete DIF Survey"
+    [isHTML]="true"
+    [isQuestion]="true"
+    [description]="deleteDescription"
+    cancelText="No"
+    confirmText="Yes"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="editDifSurveyAsync(this.deleteDIFSurveyId, 'delete')"
+  >
+  </app-qtd-dialogue>
+</ng-template>

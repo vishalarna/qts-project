@@ -1,0 +1,129 @@
+<app-data-loader *ngIf="stats === undefined"></app-data-loader>
+<div *ngIf="stats !== undefined" >
+    <div class="flex flex-row flex-wrap ml-4 mt-3">
+        <p class="font-bold text-lg"> {{("Position" | labelReplacement)| async}}s Overview</p>
+    </div>
+    <div class="px-10 pb-12 flex flex-row">
+        <ng-container *ngIf="!isLoading">
+            <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4">
+    
+                <div class="mb-4"> {{("Position" | labelReplacement)| async}}s</div>
+                <div class="flex flex-row ">
+                    <div class="flex flex-col ">
+                        <span (click)="stats.posActive>0 && openFlyInPanel(PositionNotLinkedTo, 'Active')" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.posActive>0 ,'text-lg text-black':stats.posActive==0}">
+                            {{stats.posActive | number : '2.'}}
+                        </span>
+                        <p>Active</p>
+                    </div>
+                    <span class=" pl-3 pr-3"></span>
+                    <div class="flex flex-col">
+                        <span (click)="stats.posInactive>0 && openFlyInPanel(PositionNotLinkedTo, 'Inactive')" [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':stats.posInactive>0 ,'text-lg text-black':stats.posInactive==0}">
+                            {{stats.posInactive | number : '2.'}}
+                        </span>
+                        <p>Inactive</p>
+                    </div>
+                </div>
+    
+            </div> 
+    
+            <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4" style="width:75vw;">
+    
+                <div class="mb-4"> {{("Position" | labelReplacement)| async}}s Not Linked to</div>
+                <div class="flex flex-row">
+                    <div class="flex flex-col" (click)="openFlyInPanel(PositionNotLinkedTo, 'Task')">
+                        <span *ngIf="stats.posNotLinkedToTasks >=10" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.posNotLinkedToTasks>0 ,'text-lg text-black':stats.posNotLinkedToTasks==0}">
+                            {{stats.posNotLinkedToTasks}}
+                        </span>
+                        <span *ngIf="stats.posNotLinkedToTasks <10" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.posNotLinkedToTasks>0 ,'text-lg text-black':stats.posNotLinkedToTasks==0}">
+                            0{{stats.posNotLinkedToTasks}}
+                        </span>
+                        <p>{{("Task" | labelReplacement)| async}}s</p>
+                    </div>
+                    <span class=" pl-3 pr-3"></span>
+                    <div class="flex flex-col" (click)="openFlyInPanel(PositionNotLinkedTo, 'SQ')">
+
+                        <span *ngIf="stats.posNotLinkedToSQs >=10" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.posNotLinkedToSQs>0 ,'text-lg text-black':stats.posNotLinkedToSQs==0}">
+                            {{stats.posNotLinkedToSQs}}
+                        </span>
+                        <span *ngIf="stats.posNotLinkedToSQs <10" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.posNotLinkedToSQs>0 ,'text-lg text-black':stats.posNotLinkedToSQs==0}">
+                            0{{stats.posNotLinkedToSQs}}
+                        </span>
+                        <p>SQs</p>
+                    </div>
+                    <span class=" pl-3 pr-3"></span>
+                    <div class="flex flex-col" (click)="openFlyInPanel(PositionNotLinkedTo, 'Employee')">
+
+                        <span *ngIf="stats.posNotLinkedToEmployees >=10" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.posNotLinkedToTasks>0 ,'text-lg text-black':stats.posNotLinkedToTasks==0}">
+                            {{stats.posNotLinkedToEmployees}}
+                        </span>
+                        <span *ngIf="stats.posNotLinkedToEmployees <10" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.posNotLinkedToEmployees>0 ,'text-lg text-black':stats.posNotLinkedToEmployees==0}">
+                            0{{stats.posNotLinkedToEmployees}}
+                        </span>
+                        <p> {{("Employee" | labelReplacement)| async}}</p>
+                    </div>
+                </div>
+    
+    
+            </div>      
+        </ng-container>
+        
+    </div>
+    <div class="flex flex-row flex-wrap ml-4 mr-4 justify-between">
+        <p class="font-bold text-lg">Latest Activity</p>
+        <app-button variant="text" text="View all history" (clicked)="openFlyInPanel(PositionHistory,'history')"></app-button>
+    </div>
+    
+              <div class="px-12 pb-12 mt-5" *ngIf="dataSource">
+                <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8">
+            
+                    <mat-table [dataSource]="dataSource" matSort *ngIf="dataSource">
+    
+                        <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+                            <mat-cell *matCellDef="let row">{{row.position}} - {{row.name}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="desc">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Description of change </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <div class="flex flex-col">
+                                    <span>{{row.desc}}</span>
+                                    <!-- <span class="mt-2">{{row.modifyDate | date:'medium' }}</span> -->
+                                </div>
+                            </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="modifyDate">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Modified By </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <div class="flex flex-col">
+                                    <span class="text-qtd">{{row.modifyBy}}</span>
+                                    <span class="mt-2">{{row.modifyDate | date:'medium' }}</span>
+                                </div>
+                            </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+            
+                        <!-- Row shown when there is no matching data.-->
+                        <!-- <tr class="mat-row flex text-center " *matNoDataRow>
+                            <td class="mat-cell w-full m-2">No data matching the filter</td>
+                        </tr> -->
+            
+                    </mat-table>
+            
+                 <!--    <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+                        aria-label="Select page of periodic elements">
+                    </mat-paginator> -->
+            
+                </div>
+            </div>
+    
+            <ng-template #PositionNotLinkedTo>
+                <app-fly-panel-position-not-linked [activeInactiveCheck]="activeInactiveCheck" [NotLinkedToName]="NotLinkedToPanelName"></app-fly-panel-position-not-linked>
+              </ng-template>
+
+            <ng-template #PositionHistory>
+                <app-fly-panel-positions-history></app-fly-panel-positions-history>
+            </ng-template>
+</div>
+
+

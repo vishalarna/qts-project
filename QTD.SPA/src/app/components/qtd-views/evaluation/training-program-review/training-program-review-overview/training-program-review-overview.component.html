@@ -1,0 +1,289 @@
+<app-header [toggleMenuIcon]="true" breadcrumbs="Evaluation / Training Program Review"></app-header>
+<section>
+  <div class="flex flex-row flex-wrap ml-4 mt-3 px-10">
+    <p class="font-bold text-lg">Overview</p>
+  </div>
+  <!-- <app-spinner *ngIf="spinner"></app-spinner>  -->
+  <div class="px-10 pb-12 flex flex-row" *ngIf="!spinner">
+    <div class="container bg-white rounded m-3 pt-3 pl-3 card-shadow w-fit mb-4">
+      <div class="flex flex-row">
+        <div class="flex flex-col col-divider">
+          <div class="mb-4">Initial Training Program Reviews</div>
+          <div class="flex flex-row">
+            <div class="flex flex-col" style="cursor: pointer;" (click)="filterByTilesClick('activeInitial')">
+              <span class="overview-tiles-active" [ngClass]="{
+                    'text-xl text-qtd font-bold cursor-pointer':
+                      stats.activeTask > 0,
+                    'text-lg text-black': stats.activeTask == 0
+                  }">
+                {{overviewStats?.activeInitialTrainingProgramReviews | number:'2.0'}}
+              </span>
+              <p>Active</p>
+            </div>
+            <span class="pl-3 pr-3"></span>
+            <div class="flex flex-col" style="cursor: pointer;" (click)="filterByTilesClick('inactiveInitial')">
+              <span class="overview-tiles-inactive" [ngClass]="{
+                    'text-xl text-red-600 font-bold cursor-pointer':
+                      stats.inActiveTask > 0,
+                    'text-lg text-black': stats.inActiveTask == 0
+                  }">
+                {{overviewStats?.inactiveInitialTrainingProgramReviews | number:'2.0'}}
+              </span>
+              <p>Inactive</p>
+            </div>
+          </div>
+        </div>
+        <span class=" pl-3 pr-3"></span>
+        <div class="flex flex-col col-divider">
+          <div class="mb-4">Continuing Training Program Reviews</div>
+          <div class="flex flex-row">
+            <div class="flex flex-col" style="cursor: pointer;" (click)="filterByTilesClick('activeContinuing')">
+              <span class="overview-tiles-active" [ngClass]="{
+                'text-xl text-qtd font-bold cursor-pointer':
+                  stats.activeTask > 0,
+                'text-lg text-black': stats.activeTask == 0
+                }">
+                {{overviewStats?.activeContinuingTrainingProgramReviews | number:'2.0'}}
+              </span>
+              <p>Active</p>
+            </div>
+            <span class="pl-3 pr-3"></span>
+            <div class="flex flex-col" style="cursor: pointer;" (click)="filterByTilesClick('inactiveContinuing')">
+              <span class="overview-tiles-inactive" [ngClass]="{
+                'text-xl text-red-600 font-bold cursor-pointer':
+                  stats.inActiveTask > 0,
+                'text-lg text-black': stats.inActiveTask == 0
+                }">
+                {{overviewStats?.inactiveContinuingTrainingProgramReviews | number:'2.0'}}
+              </span>
+              <p>Inactive</p>
+            </div>
+          </div>
+        </div>
+        <span class=" pl-3 pr-3"></span>
+        <div class="flex flex-col ">
+          <div class="mb-4">Cycle Training Program Reviews</div>
+          <div class="flex flex-row">
+            <div class="flex flex-col" style="cursor: pointer;" (click)="filterByTilesClick('activeCycle')">
+              <span class="overview-tiles-active" [ngClass]="{
+                'text-xl text-qtd font-bold cursor-pointer':
+                  stats.activeTask > 0,
+                'text-lg text-black': stats.activeTask == 0
+                }">
+                {{overviewStats?.activeCycleTrainingProgramReviews | number:'2.0'}}
+              </span>
+              <p>Active</p>
+            </div>
+            <span class="pl-3 pr-3"></span>
+            <div class="flex flex-col" style="cursor: pointer;" (click)="filterByTilesClick('inactiveCycle')">
+              <span class="overview-tiles-inactive" [ngClass]="{
+                'text-xl text-red-600 font-bold cursor-pointer':
+                  stats.inActiveTask > 0,
+                'text-lg text-black': stats.inActiveTask == 0
+                }">
+                {{overviewStats?.inactiveCycleTrainingProgramReviews | number:'2.0'}}
+              </span>
+              <p>Inactive</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container bg-white rounded m-3 pt-3 pl-3 card-shadow w-fit mb-4">
+      <div class="mb-4">Total Number of Training Programs</div>
+      <div class="flex flex-row">
+        <div class="flex flex-col" style="cursor: pointer;" (click)="openFlyInPanelList(noReviewPrograms)">
+          <span class="overview-tiles-training-program"
+            [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.activeTask>0 ,'text-lg text-black':stats.activeTask==0}">
+            {{overviewStats?.noReviewTrainingPrograms | number:'2.0'}}
+          </span>
+          <p>With no Reviews</p>
+        </div>
+        <span class=" pl-3 pr-3"></span>
+        <div class="flex flex-col" style="cursor: pointer;" (click)="filterByTilesClick('draft')">
+          <span class="overview-tiles-training-program"
+            [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':stats.inActiveTask>0 ,'text-lg text-black':stats.inActiveTask==0}"
+            style="cursor: pointer;">
+            {{overviewStats?.withReviewInDraftTrainingPrograms | number:'2.0'}}
+          </span>
+          <p>With Reviews in Draft</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <div class="flex justify-content-between align-items-center flex-row flex-wrap mt-3 px-12">
+    <p class="font-bold text-lg">Training Program Reviews</p>
+    <div class="d-flex flex gap-3">
+      <div class="justify-end space-x-4 text-sm mb-3">
+        <app-button (clicked)="filterClick()" color="secondary" text="Filter" size="sm" leftIcon="filter_alt"
+          rightIcon="keyboard_arrow_right">
+        </app-button>
+      </div>
+
+      <app-button text="New Training Program Review" size="sm" iconPosition="left" icon="add"
+        (clicked)="createTPReview()">
+      </app-button>
+    </div>
+  </div>
+
+
+  <div class="flex-row bg-white-one rounded-b-md ml-5 mr-5 card-shadow">
+    <div class="flex flex-col mt-3">
+      <!-- search and buttons starts -->
+      <div class="
+        flex flex-row
+        bg-white-one
+        rounded-t-md
+        py-4
+        px-6
+        space-x-2
+        border-b-0.8 border-gray-one
+        w-full
+      ">
+        <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Enter keywords to search" type="text"
+          (keyup)="searchUpdate($event)" [(ngModel)]="filterText" />
+        <div class="flex flex-row space-x-4 text-sm"></div>
+      </div>
+    </div>
+    <mat-table [dataSource]="dataSourceTrainingPrograms " matSort>
+      <ng-container matColumnDef="index">
+        <th mat-header-cell *matHeaderCellDef class="border-b-0 check-box-wrapr">
+          <mat-checkbox>
+          </mat-checkbox>
+        </th>
+        <td mat-cell *matCellDef="let row" class="border-b-0 check-box-wrapr">
+          <mat-checkbox>
+          </mat-checkbox>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="positionAbbreviation">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header-cell position-td">
+          {{("Position" | labelReplacement)| async}}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" class="position-td">
+          {{row.positionAbbreviation}}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="trainingProgramType">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header-cell">
+          Program Type
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{ row.trainingProgramType.split(' ')[0] }}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="startDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header-cell">
+          Review Time Period
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{datePipe.transform(row.startDate, 'MM/dd/yyyy')}} - {{datePipe.transform(row.endDate, 'MM/dd/yyyy')}}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="reviewers">
+        <mat-header-cell *matHeaderCellDef class="table-header-cell pl-2">
+          Reviewer Name(s)
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" class="pl-2">
+          <div class="bubbles-div">
+            <div class="bubble" *ngFor="let reviewer of row.reviewers">
+              {{reviewer.employeePersonFullName}}
+            </div>
+          </div>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="reviewDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header-cell review-date-td"> Review
+          Date</mat-header-cell>
+        <mat-cell *matCellDef="let row" class="review-date-td">
+          <span class="">{{datePipe.transform(row.reviewDate, 'MM/dd/yyyy')}}</span>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="published">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header-cell">
+          Review Development Status
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <p class="py-2 px-4 m-0 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+            [ngClass]="{'customcolorblue': row.published === true, 'customcolorpink': row.published !== true}">
+            {{ row.published ? 'Published' : 'Draft' }}</p>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="active">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="table-header-cell">
+          Review Status
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <p class="py-2 px-4 m-0 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+            [ngClass]="{'customcolorgreen': row.active === true, 'bg-gray-100': row.active !== true}">
+            {{ row.active ? 'ACTIVE' : 'INACTIVE' }}
+          </p>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef class="action-icon-td"> </mat-header-cell>
+        <mat-cell *matCellDef="let row" class="action-icon-td">
+          <div class="flex flex-row items-center text-gray-four btn-group">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <app-icon icon="more_horiz"></app-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <label mat-menu-item translate (click)="editClick(row.trainingProgramReviewId)">Edit</label>
+              <label mat-menu-item translate (click)="copyClickAsync(row.trainingProgramReviewId)">Copy</label>
+              <label mat-menu-item translate (click)="deleteClick(deleteTPR,row.trainingProgramReviewId)">Delete</label>
+              <label mat-menu-item translate
+                (click)="row.active ? makeInactiveClick(activeInactiveTPR,row) : makeActiveClick(activeInactiveTPR,row)">{{
+                row.active === true ? "Make Inactive" : "Make Active" }}</label>
+            </mat-menu>
+          </div>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row flex text-center" *matNoDataRow>
+        <td class="mat-cell w-full m-2">No data matching the filter</td>
+      </tr>
+    </mat-table>
+
+    <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons aria-label="Select page of training programs">
+    </mat-paginator>
+  </div>
+
+  <div *ngIf="isFilterPanelOpen" class="training-review-side-overlay">
+    <app-fly-panel-overview-filter [handleXClick]="filterClick" [inputPositionIdFilter]="positionIdFilter"
+      (inputPositionIdFilterChange)="positionIdFilter = $event"
+      [inputTrainingProgramTypeIdFilter]="trainingProgramTypeIdFilter"
+      (inputTrainingProgramTypeIdFilterChange)="trainingProgramTypeIdFilter = $event"
+      [inputStartDateMaxFilter]="startDateMaxfilter" (inputStartDateMaxFilterChange)="startDateMaxfilter = $event"
+      [inputEndDateMinFilter]="endDateMinFilter" (inputEndDateMinFilterChange)="endDateMinFilter = $event"
+      [inputPublishFilter]="publishedfilter" (inputPublishFilterChange)="publishedfilter = $event"
+      [inputActiveFilter]="activeFilter" (inputActiveFilterChange)="activeFilter = $event"
+      [inputEndDateMinFilter]="endDateMinFilter" (inputEndDateMinFilterChange)="endDateMinFilter = $event"
+      [inputStartDateMaxFilter]="startDateMaxfilter" (inputStartDateMaxFilterChange)="startDateMaxfilter = $event"
+      [handleApplyFiltersClick]="_filterOverviewReviews"></app-fly-panel-overview-filter>
+  </div>
+</section>
+
+<ng-template #deleteTPR>
+  <app-qtd-dialogue [description]="modalDescription" [header]="modalHeader" cancelText="Cancel" confirmText="Yes"
+    (canceled)="dialog.closeAll()" (confirmed)="getDataDeletedAsync()" [isQuestion]="false" [isHTML]="true">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #activeInactiveTPR>
+  <app-qtd-dialogue [description]="modalDescription" [header]="modalHeader" cancelText="Cancel" confirmText="Yes"
+    (canceled)="dialog.closeAll()" (confirmed)="getDataActiveInactiveAsync()" [isHTML]="true">
+  </app-qtd-dialogue>
+</ng-template>
+<ng-template #noReviewPrograms>
+  <app-fly-panel-overview-tp-noreviews></app-fly-panel-overview-tp-noreviews>
+</ng-template>

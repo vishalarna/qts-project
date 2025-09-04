@@ -1,0 +1,19 @@
+<form class="p-4" [formGroup]="criteriaForm">
+  <div class="flex flex-row justify-between items-center px-3 mt-4">
+    <p class="text-xl font-bold text-gray-900">Edit Criteria</p>
+    <app-button (clicked)="closed.emit('fp-edit-criteria')" ButtonType='icon' icon="close">
+    </app-button>
+  </div>
+  <div class="w-11/12 ml-4 mt-4 flex flex-col">
+    <div class="mt-3">
+      <ckeditor formControlName="description" [editor]="editor">
+      </ckeditor>
+      <app-input-error *ngIf="criteriaForm.get('description')?.hasError('required')" text="Description is required"></app-input-error>
+    </div>
+    <div class="flex flex-row-reverse">
+      <div class="pt-12">
+        <app-button [disabled]="criteriaForm.invalid" (clicked)="updateData()" text="Save" size="sm"></app-button>
+      </div>
+    </div>
+  </div>
+</form>

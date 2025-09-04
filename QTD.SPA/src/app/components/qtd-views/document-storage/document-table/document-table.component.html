@@ -1,0 +1,142 @@
+<section class="panel-section">
+  <div class=" flex flex-row bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one w-full " >
+    <div class="flex flex-grow keyword-input">
+      <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" ></path>
+      </svg>
+      <input class="text-sm flex-grow focus:outline-none" placeholder="Enter Document name to search" type="text" (keyup)="searchUpdate($event)" />
+    </div>
+    <div class="flex flex-row space-x-4 text-sm">
+      <div class="dropdown">
+        <app-button color="secondary" text="Filters" size="sm" icon="filter_alt" iconPosition="left" (clicked)="toggleDropdown($event)" >
+        </app-button>
+        <div class="filter-menu-container dropdown-menu" [ngClass]="{ show: isDropdownOpen }" >
+          <div class="filter-actions">
+            <app-button type="button" variant="text" text="Clear" size="sm" class="mr-2" customClasses="clear-button p-2" (clicked)="clearFilterSelection()" >
+            </app-button>
+            <app-button type="button" text="Apply" color="primary" size="sm" class="mr-2" (clicked)="filterClick($event)" >
+            </app-button>
+          </div>
+          <div class="filter-selection-list form-check">
+            <div class="filter-selection-option" *ngFor="let documentType of documentTypes" >
+              <input
+                type="checkbox" [value]="documentType.id" [id]="documentType.id" [checked]="getFilterCheckedValues(documentType.id)" (change)="onFilterValueChange(documentType.id)" />
+              <label [for]="documentType.id" class="form-check-label">
+                {{documentType.name}}
+              </label>
+            </div>
+          </div>
+        </div>
+      </div>
+      <app-button text="New Document" icon="add" iconPosition="left" size="sm" (clicked)="newDocumentClick(addNewDataStorage)" >
+      </app-button>
+    </div>
+  </div>
+  <mat-table [dataSource]="documentStorageList" class="manager-table" matSort [matSortActive]="'dateAdded'" [matSortDirection]="'desc'">
+    <ng-container matColumnDef="Check Box">
+      <mat-header-cell *matHeaderCellDef style="max-width: 100px">
+        <mat-checkbox></mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" style="max-width: 100px">
+        <mat-checkbox></mat-checkbox>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="fileName">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        File Name
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" (click)="getActiveFileAsync(row)">
+        <div style="display: flex; align-items: center; color: green">
+          <img src="./assets/icons/icon-fileType.svg" alt="icon_file" style="margin-right: 10px" />
+          <span style="cursor: pointer">{{ row.fileName }}</span>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="documentTypeName">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        Type
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row.documentTypeName }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="dateAdded">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        Date Added
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">{{
+        row.dateAdded | date: "yyyy-MM-dd hh:mm a"
+      }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="linkedDataName">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        Linked Data
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" style="cursor: pointer" (click)="linkedDataClick(row.linkedDataType, row.linkedDataId)" >
+        <div style="color: green">{{ row.linkedDataName }}</div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="Action">
+      <mat-header-cell *matHeaderCellDef>Action </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="flex flex-row items-center text-gray-four btn-group">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <app-icon icon="more_vert"></app-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <label mat-menu-item translate (click)=" viewEditDocumentStorage(row, viewEditDataStorage, modes.View) " >
+              View Details
+            </label>
+            <label mat-menu-itemtranslate mat-menu-item translate (click)=" viewEditDocumentStorage(row, viewEditDataStorage, modes.Edit) " >
+              Edit
+            </label >
+            <label mat-menu-itemtranslate mat-menu-item translate (click)="deleteDocumentStorage(deleteModal, row)" >
+              Delete
+            </label >
+          </mat-menu>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center" *matNoDataRow>
+      <td class="mat-cell w-full">No Data</td>
+    </tr>
+  </mat-table>
+</section>
+<ng-template #addNewDataStorage>
+  <app-fly-panel-document-storage
+    [documentDisplayMode]="modalType"
+    [handleCloseClick]="closeFlyPanel"
+    [handleSaveClick]="handleAddedDocument"
+    [handleSaveAndAddNewClick]="handleAddedDocument"
+    [inputDocumentType]="inputDocumentType"
+    [inputLinkedDataType]="inputLinkedDataType"
+    [inputLinkedDataId]="inputLinkedDataId"
+  >
+  </app-fly-panel-document-storage>
+</ng-template>
+<ng-template #viewEditDataStorage>
+  <app-fly-panel-document-storage
+    [documentDisplayMode]="modalType"
+    [inputDocumentType]="inputDocumentType"
+    [inputLinkedDataType]="inputLinkedDataType"
+    [inputLinkedDataId]="inputLinkedDataId"
+    [document]="documentToViewEdit"
+    [handleCloseClick]="closeFlyPanel"
+    [handleSaveClick]="handleUpdatedDocument"
+  >
+  </app-fly-panel-document-storage>
+</ng-template>
+<ng-template #deleteModal>
+  <app-qtd-dialogue
+    header="Delete Document"
+    [description]="modalDescription"
+    [header]="modalHeader"
+    cancelText="No"
+    [showEffectiveDateAndReason]="true"
+    confirmText="Yes"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="handleDeletedDocumentAsync($event)"
+  >
+  </app-qtd-dialogue>
+</ng-template>

@@ -1,0 +1,123 @@
+[
+  {
+    "ILAId": 1,
+    "SafetyHazardId": 1,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 2,
+    "SafetyHazardId": 2,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 3,
+    "SafetyHazardId": 3,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 4,
+    "SafetyHazardId": 4,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 5,
+    "SafetyHazardId": 5,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 6,
+    "SafetyHazardId": 6,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 7,
+    "SafetyHazardId": 7,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 8,
+    "SafetyHazardId": 8,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 9,
+    "SafetyHazardId": 9,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 10,
+    "SafetyHazardId": 10,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 4,
+    "SafetyHazardId": 3,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 5,
+    "SafetyHazardId": 4,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 3,
+    "SafetyHazardId": 2,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 2,
+    "SafetyHazardId": 1,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 1,
+    "SafetyHazardId": 3,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 6,
+    "SafetyHazardId": 7,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 7,
+    "SafetyHazardId": 8,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 8,
+    "SafetyHazardId": 9,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 9,
+    "SafetyHazardId": 10,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 10,
+    "SafetyHazardId": 6,
+    "Deleted": true,
+    "Active": false
+  }
+
+]

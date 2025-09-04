@@ -1,0 +1,207 @@
+.page-wrapper {
+  padding: 28px 43px 28px 34px;
+}
+
+.checkbox-spacing {
+  margin: 0 0 20px 0;
+}
+
+.navbar-heading {
+  font-size: 16px;
+  line-height: 26px;
+  color: #15372c;
+  font-weight: 600;
+  margin: 0 0 28px 0;
+}
+
+.label-spacing {
+  padding: 0 18px;
+}
+
+.text-style {
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  color: #000d09;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.file-bg {
+  background-color: #f7f1ff;
+  padding: 11px 24px;
+  margin: 15px 0 25px 0;
+}
+
+.link-color {
+  color: #5c9b31;
+}
+
+.date-style {
+  color: #79807d;
+}
+
+.due-date-description {
+  color: #7a807e;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  font-weight: 500;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.datawrap-model {
+  position: fixed;
+  top: 0;
+  z-index: 1060;
+  width: 100%;
+  height: 100%;
+  outline: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.datawrap-model .modal-content {
+  border: 0;
+  box-shadow: 0px 0px 30px rgba(122, 128, 126, 0.1);
+  border-radius: 4px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.datawrap-modal-list ul {
+  list-style-type: disc;
+  padding: 0 0 0 1.2em;
+  color: #000d09;
+  font-size: 14px;
+}
+
+.example-radio-group {
+  display: flex;
+  flex-direction: column;
+  margin: 15px 0;
+  align-items: flex-start;
+}
+
+.example-radio-button {
+  margin: 5px;
+}
+.td-style {
+  font-family: "Roboto", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+  color: #000d09;
+}
+
+.datawrap-modal-table table {
+  max-width: 692px;
+}
+
+.datawrap-modal-table {
+  margin: 51px 0 38px;
+}
+
+.datawrap-modal-body {
+  padding: 34px 0 0;
+}
+
+.datawrap-modal-title {
+  font-weight: 600;
+  font-size: 20px;
+  line-height: 160%;
+  letter-spacing: 0.15px;
+  color: #15372c;
+}
+
+.datawrap-model .modal-body {
+  padding: 24px 24px 66px;
+}
+
+.datawrap-model .modal-footer,
+.datawrap-model .modal-header {
+  padding: 24px;
+}
+
+:host ::ng-deep .ck-editor {
+  width: 100%;
+  margin: 0.875em 0 0;
+  background: #ffffff;
+  border: 0.8px solid #e1e5e4;
+  border-radius: 4px;
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.15000000596046448px;
+  text-align: left;
+}
+:host ::ng-deep .ck-editor .ck.ck-editor__main .ck-content {
+  min-height: 450px;
+  overflow: auto;
+  height: 100%;
+  max-height: 550px;
+}
+
+:host ::ng-deep .ck-editor {
+  max-width: 100%;
+}
+
+:host ::ng-deep .ck-editor .ck-blurred.ck.ck-content {
+  border: 0 !important;
+}
+
+:host ::ng-deep .ck.ck-editor {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+:host ::ng-deep .ck-editor .ck.ck-editor,
+.ck-editor .ck-editor__main,
+.ck-editor .ck.ck-editor__main > .ck-editor__editable {
+  height: 100%;
+}
+
+:host ::ng-deep .ck-editor .ck.ck-editor__main .ck-content {
+  min-height: 150px;
+  overflow: auto;
+  height: 100%;
+  max-height: 550px;
+}
+
+.panel-spin {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.cbt-radio-header {
+  font-size: 16px;
+  line-height: 26px;
+  color: #15372c;
+  font-weight: 600;
+}
+.pd-left-10 {
+  padding-left: 10px;
+}
+.m-t-9r {
+  margin-top: 9rem;
+}
+.required {
+  color: red;
+  margin-left: 4px;
+  font-size: 15px;
+  font-weight: 500;
+}
+
+:host ::ng-deep .modifiedTextbox input {
+  border: none !important;
+  padding-top: 0rem !important;
+  padding-bottom: 0rem !important;
+  height: 2rem;
+  width: 5.6rem;
+  margin-bottom: 0.5rem;
+}
+
+.border-number-box {
+  border: 1px solid #d1d7d5;
+}

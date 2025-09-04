@@ -1,0 +1,47 @@
+[
+  {
+    "ProcedureId": 1,
+    "StartDateTime": "2023-06-22",
+    "EndDateTime": "2023-07-17",
+    "IsEmployeeShowResponses": true,
+    "IsPublished": true,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ProcedureId": 2,
+    "StartDateTime": "2023-06-22",
+    "EndDateTime": "2023-07-02",
+    "IsEmployeeShowResponses": false,
+    "IsPublished": true,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ProcedureId": 3,
+    "StartDateTime": "2023-06-22",
+    "EndDateTime": "2023-07-02",
+    "IsEmployeeShowResponses": true,
+    "IsPublished": false,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ProcedureId": 4,
+    "StartDateTime": "2023-06-22",
+    "EndDateTime": "2023-07-02",
+    "IsEmployeeShowResponses": false,
+    "IsPublished": false,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ProcedureId": 5,
+    "StartDateTime": "2023-06-22",
+    "EndDateTime": "2023-07-02",
+    "IsEmployeeShowResponses": true,
+    "IsPublished": true,
+    "Deleted": false,
+    "Active": true
+  }
+]

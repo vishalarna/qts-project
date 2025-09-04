@@ -1,0 +1,19 @@
+// :host ::ng-deep .mat-tab-label {
+//   padding: 0px !important; // adjust this to whatever padding you need
+//   justify-content: left !important;
+// }
+
+:host ::ng-deep .mat-checkbox-disabled .mat-checkbox-label{
+  color:black !important;
+}
+
+:host ::ng-deep ol {
+  list-style: decimal !important;
+  margin:auto !important;
+  padding: revert !important;
+}
+:host ::ng-deep ul{
+  list-style: disc !important;
+  margin: auto !important;
+  padding:revert !important;
+}

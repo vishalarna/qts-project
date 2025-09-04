@@ -1,0 +1,39 @@
+[
+  {
+    "PositionId": 1,
+    "ChangeNotes": "Sample Change Notes 1",
+    "ChangeEffectiveDate": "2023-06-16T10:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "PositionId": 2,
+    "ChangeNotes": "Sample Change Notes 2",
+    "ChangeEffectiveDate": "2023-06-15T09:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "PositionId": 3,
+    "ChangeNotes": "Sample Change Notes 3",
+    "ChangeEffectiveDate": "2023-06-14T08:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "PositionId": 4,
+    "ChangeNotes": "Sample Change Notes 4",
+    "ChangeEffectiveDate": "2023-06-13T07:00:00",
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "PositionId": 5,
+    "ChangeNotes": "Sample Change Notes 5",
+    "ChangeEffectiveDate": "2023-06-12T06:00:00",
+    "Deleted": false,
+    "Active": true
+  }
+
+]
+

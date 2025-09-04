@@ -1,0 +1,76 @@
+<ng-container>
+    <div class="flex flex-col px-12 py-12">
+        <ng-container>
+            <div class="flex flex-row justify-between">
+                <h2>Link Meta {{ ("ILA" | labelReplacement) | async }}</h2>
+                <app-button ButtonType="icon" icon="close" (click)="flyPanelService.close()"></app-button>
+            </div>
+            <app-data-loader *ngIf="loader"></app-data-loader>
+            <div *ngIf="!loader">
+                <div class="flex flex-row items-center border-b-0.8 border-gray-one">
+                    <div class="flex flex-grow">
+                        <app-icon icon="search"></app-icon>
+                        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+                            [value]="filterSearchString" (input)="searchFilter($event)" />
+                        <app-icon icon="close" class="cursor-pointer" *ngIf="filterSearchString"
+                            (click)="clearSearchString()"></app-icon>
+                    </div>
+                </div>
+    
+                <div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+                    <div>
+                        <span> Showing:
+                            <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+                              <p *ngIf="showActive" class="font-bold">
+                                Active
+                              </p>
+                              <p *ngIf="!showActive" class="font-bold">
+                                Inactive
+                              </p>
+                  
+                            </label>
+                            <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+                          </span>
+    
+                          <mat-menu #menu="matMenu">
+                            <label mat-menu-item *ngIf="!showActive" (click)="filterActive(true)">
+                              Active</label>
+                  
+                            <label mat-menu-item *ngIf="showActive" (click)="filterActive(false)">
+                              Inactive</label>
+                          </mat-menu>
+                    </div>
+                </div>
+    
+                <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3 px-3 py-3 rounded"
+                    *ngIf="checkListSelection.selected.length > 0">
+                    <div class="flex flex-row w-full justify-between mb-3">
+                        <p class="text-xs text-gray-four pt-2">
+                            {{checkListSelection.selected.length}} Meta {{ ("ILA" | labelReplacement) | async }} selected
+                        </p>
+                        <app-button class="mb-2" type="button" color="secondary" size="sm" text="Link to Training Issue"
+                            (click)="linkMetaILA()">
+                        </app-button>
+                    </div>
+                </div>
+    
+                <app-spinner *ngIf="metaILAList=== undefined"></app-spinner>
+                <ng-container *ngIf="metaILAList !== undefined">
+                    <div *ngIf="metaILAList.length < 1" class="flex flex-col">
+                        <span>No Data Found</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <div *ngFor="let metaILA of metaILAList">
+                            <ng-container>
+                                <mat-radio-button [checked]="metaILA.id == linkedId" name="radioMetaILA"
+                                    (change)="onChangeMetaILA($event.source.checked, metaILA)">
+                                    {{metaILA.name}}
+                                </mat-radio-button>
+                            </ng-container>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+    </div>
+</ng-container>

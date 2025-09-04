@@ -1,0 +1,153 @@
+<app-header
+  [toggleMenuIcon]="false"
+  [canGoBack]="false"
+  [breadcrumbs]="url"
+></app-header>
+
+<app-data-loader *ngIf="!class"></app-data-loader>
+<div *ngIf="class" class="flex flex-row flex-wrap ml-4 mt-3 p-4">
+  <div class="flex mb-5">
+    <div class="linkText flex flex-row" style="cursor:pointer;align-items:center;" (click)="goBack()">
+      <app-icon class="mr-1" icon="keyboard_arrow_left"></app-icon>
+      <span>Back to Scheduling Classes</span>
+    </div>
+  </div>
+  <div class="flex flex-row justify-between w-full">
+    <span class="font-bold text-lg">{{(class?.providerName ?? 'N/A') + ' - ' + (class?.ilaNumber ?? 'N/A') + '  ' + (class?.ilaName ?? 'N/A') }}</span>
+    <app-button [disabled]="class === null"
+      text="Enrollment"
+      size="sm"
+      (click)="openFlyInPanelEditRoaster(editRoaster)"
+    ></app-button>
+  </div>
+  <!-- Student Evaluation Information -->
+  <section class="flex flex-row bg-white border rounded p-4 w-full mt-4">
+    <div class="flex flex-col mr-2">
+      <div class="flex flex-row">
+        <span class="font-bold text-gray-400">Start</span>
+      </div>
+      <div class="flex flex-row">
+        <span class="font-bold text-gray-400">End</span>
+      </div>
+    </div>
+    <div class="flex flex-col mr-5">
+      <div class="flex flex-row">
+        <span class="text-gray-400">{{class.startDateTime | date:'MM-dd-yy h:mma'}}</span>
+      </div>
+      <div class="flex flex-row">
+        <span class="text-gray-400">{{class.endDateTime | date:'MM-dd-yy h:mma'}}</span>
+      </div>
+    </div>
+    <div class="flex flex-col mr-5" style="width:25%;">
+      <span class="text-gray-400">{{class.locationName === null ||class.locationName === undefined || class.locationName === '' ? 'N/A':class.locationName}}</span>
+    </div>
+    <div class="flex flex-col">
+      <div class="flex flex-row">
+        <span class="text-gray-400 font-bold">{{("Instructor" | labelReplacement)| async}}:</span>
+      </div>
+      <div class="flex flex-row">
+        <span class="font-bold linkText">{{class.instructorName === null ||class.instructorName === undefined ? 'N/A':class.instructorName}}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="w-full">
+    <span class="pl-2 pr-2"></span>
+    <mat-tab-group
+      (selectedIndexChange)="toggleTab($event)"
+      [dynamicHeight]="true"
+    >
+      <mat-tab label="OVERVIEW">
+        <app-rosters-overview [ilaId]="class.ilaId" [trainingTitle]="class.ilaNumber + ' ' + class.ilaName" [startDate]="class.startDateTime" [endDate]="class.endDateTime" [classId]="classId" [IsSelfPaced]="class.isILASelfPaced"></app-rosters-overview>
+      </mat-tab>
+      <mat-tab label="PRETEST">
+        <app-roster-pretest #pretest [classId]="classId" [ilaId]="class.ilaId" [testType]="'Pretest'"></app-roster-pretest>
+      </mat-tab>
+      <mat-tab label="CBT">
+        <app-roster-cbt #cbt [classId]="classId" [ilaId]="class.ilaId" [testType]="'CBT'"></app-roster-cbt>
+      </mat-tab>
+      <mat-tab label="TEST">
+        <app-roster-test #test [classId]="classId" [ilaId]="class.ilaId" [testType]="'Test'"></app-roster-test>
+      </mat-tab>
+      <mat-tab label="RETAKE">
+        <app-roster-retake #retake [classId]="classId" [ilaId]="class.ilaId" [testType]="'Retake'"></app-roster-retake>
+      </mat-tab>
+      <mat-tab label="STUDENT EVALUATION">
+       <app-student-eval-with-emp [classId]="classId" [ilaId]="class.ilaId"></app-student-eval-with-emp>
+      </mat-tab>
+      <mat-tab label="STUDENT EVALUATION WITHOUT EMP">
+        <app-student-eval-without-emp [ilaId]="class.ilaId" [classId]="classId"
+          [location]="class.locationAddress === null ||class.locationAddress === '' ? 'N/A':class.locationAddress"
+          [ilaName]="class.ilaName" [ilaNumber]="class.ilaNumber"></app-student-eval-without-emp>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+  <ng-template #editGrades>
+    <app-fly-panel-edit-grades (closed)="flyPanelSrvc.close()">
+    </app-fly-panel-edit-grades>
+  </ng-template>
+
+  <ng-template #editScore>
+    <app-fly-panel-edit-score
+      (closed)="flyPanelSrvc.close()"
+    ></app-fly-panel-edit-score>
+  </ng-template>
+
+  <ng-template #editRoaster>
+    <app-fly-panel-edit-roaster [trainingTitle]="class.ilaNumber + ' ' + class.ilaName" [startDate]="class.startDateTime" [endDate]="class.endDateTime" [classId]="classId"
+      (closed)="flyPanelSrvc.close()"
+    ></app-fly-panel-edit-roaster>
+  </ng-template>
+
+  <ng-template #recallTestRef>
+    <app-qtd-dialogue
+      header="Recall PreTest"
+      [description]="recallDescription"
+      cancelText="No"
+      confirmText="Yes"
+      [showEffectiveDateAndReason]="false"
+      (canceled)="dialog.closeAll()"
+      (confirmed)="Success($event)"
+    >
+    </app-qtd-dialogue>
+  </ng-template>
+
+  <ng-template #releaseTestRef>
+    <app-qtd-dialogue
+      header="Release PreTest"
+      [description]="releaseDescription"
+      cancelText="No"
+      confirmText="Yes"
+      [showEffectiveDateAndReason]="false"
+      (canceled)="dialog.closeAll()"
+      (confirmed)="Success($event)"
+    >
+    </app-qtd-dialogue>
+  </ng-template>
+
+  <ng-template #recallEvaluationRef>
+    <app-qtd-dialogue
+      header="Recall Evaluation"
+      [description]="recallDescription"
+      cancelText="No"
+      confirmText="Yes"
+      [showEffectiveDateAndReason]="false"
+      (canceled)="dialog.closeAll()"
+      (confirmed)="Success($event)"
+    >
+    </app-qtd-dialogue>
+  </ng-template>
+
+  <ng-template #releaseEvaluationRef>
+    <app-qtd-dialogue
+      header="Release Evaluation"
+      [description]="releaseDescription"
+      cancelText="No"
+      confirmText="Yes"
+      [showEffectiveDateAndReason]="false"
+      (canceled)="dialog.closeAll()"
+      (confirmed)="Success($event)"
+    >
+    </app-qtd-dialogue>
+  </ng-template>
+</div>

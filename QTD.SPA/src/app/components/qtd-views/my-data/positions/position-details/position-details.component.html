@@ -1,0 +1,98 @@
+<app-data-loader *ngIf="isLoading"></app-data-loader>
+<div *ngIf="!isLoading" class="ml-4 mr-4 ">
+    <div class="flex flex-row flex-wrap mt-3 justify-between">
+      <div class="flex flex-col">
+        <p class="font-bold text-lg">{{positionNumber}} {{positionAbbreviation}} - {{posTitle}}</p>
+
+        <!-- <p class="text-xs text-gray-four">Issuing Authority: {{issuAuthTitle}}</p>
+        <p class="font-bold text-lg">{{procTitle}}</p> -->
+      </div>
+      <div class="flex flex-row  items-center text-gray-four btn-group">
+        <div class="cursor-pointer bg-gray-200 p-2 rounded">
+          <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+            <span *ngIf="isActive" class="font-bold">
+              <span style="color:green" class="mr-1">●</span>
+              Active
+            </span>
+            <span *ngIf="!isActive" class="font-bold">
+              <span style="color:red" class="mr-1">●</span>
+              Inactive
+            </span>
+
+          </label>
+          <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item *ngIf="!isActive"  (click)="changeStatus(statusModal,true)">
+              <span style="color:green" class="mr-1">●</span>Make
+              Active</button>
+
+            <label mat-menu-item *ngIf="isActive"  (click)="changeStatus(statusModal,false)">
+              <span style="color:red" class="mr-1">●</span> Make
+              Inactive</label>
+          </mat-menu>
+        </div>
+
+        <div class="ml-2 cursor-pointer ">
+          <app-icon icon="more_horiz" [matMenuTriggerFor]="options"></app-icon>
+          <mat-menu #options="matMenu">
+            <label [disabled]="!isActive" (click)="editPosition(addNewProcedure, 'Edit')" mat-menu-item> Edit</label>
+            <label [disabled]="!isActive" (click)="copyPosition(addNewProcedure, 'Copy')" mat-menu-item> Copy</label>
+            <div class="flex flex-row">
+              <label (click)="deleteProcedure(unlinkModal)" [disabled]="taskCount > 0 || employeeCount > 0 || sqCount > 0"  mat-menu-item> Delete</label>
+              <app-icon class="pt-3" icon="help" *ngIf="taskCount > 0 || employeeCount > 0 || sqCount > 0" matTooltip="The Delete option is not available due to linked data."></app-icon>
+            </div>
+          </mat-menu>
+        </div>
+
+      </div>
+
+
+    </div>
+    <div class="flex flex-row flex-wrap bg-white shadow-xs border-0.5 rounded px-2 pt-2 mt-2">
+        <p class="text-xs text-gray-four mr-4 ">Description: {{positionDescription}}</p>
+        <p class="text-xs text-gray-four mr-4">Effective Date: {{effectiveDate}}</p>
+        <p class="text-xs text-gray-four mr-4 ">Hyperlink: <span class="text-qtd">{{hyperlink}}</span></p>
+        <p class="text-xs text-gray-four mr-4 ">PDF: {{fileName}}</p>
+
+    </div>
+    <mat-tab-group class="mt-5">
+
+      <mat-tab label="{{(('Task' | labelReplacement)| async) | uppercase}}">
+        <ng-template matTabContent>
+          <app-position-tasks [posTitle]="positionTitle" [isActive]="isActive"></app-position-tasks>
+        </ng-template>
+      </mat-tab>
+      <mat-tab [label]="'Skill Qualifications'">
+        <ng-template matTabContent>
+          <app-position-skas [posTitle]="positionTitle" [isActive]="isActive"></app-position-skas>
+        </ng-template>
+      </mat-tab>
+      <mat-tab label="{{('Employee' | labelReplacement)| async}}">
+        <ng-template matTabContent>
+          <!-- <app-position-skas></app-position-skas> -->
+          <app-position-employees [isActive]="isActive"></app-position-employees>
+        </ng-template>
+      </mat-tab>
+    </mat-tab-group>
+</div>
+
+<ng-template #addNewProcedure>
+  <app-fly-panel-add-position [oldPosition]="currentPosition" [isCopy]="isCopy" [mode]= "modalType" [isCopy]="isCopy"  (closed)="flyPanelService.close()">
+  </app-fly-panel-add-position>
+  <!-- <app-fly-panel-add-instructor [oldProcedure]="currentProcedure" [isCopy]="isCopy" (closed)="flyPanelService.close()">
+  </app-fly-panel-add-instructor> -->
+</ng-template>
+
+<ng-template #unlinkModal>
+  <app-qtd-dialogue header="Delete {{('Position' | labelReplacement)| async}}" [description]="modalDescription" [header]="modalHeader" cancelText="No"  [showEffectiveDateAndReason]="true"
+    confirmText="Yes" (canceled)="dialog.closeAll()"  (confirmed)="getData($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #statusModal>
+  <app-qtd-dialogue [header]="modalHeader" [description]="modalDescription" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="changeActiveStatus($event,!isActive)">
+  </app-qtd-dialogue>
+</ng-template>
+

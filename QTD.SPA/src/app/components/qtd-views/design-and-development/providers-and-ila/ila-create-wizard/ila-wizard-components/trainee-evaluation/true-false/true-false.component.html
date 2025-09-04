@@ -1,0 +1,109 @@
+<!--Question Box Starts Here-->
+<form [formGroup]="trueFalseForm">
+  <div class="ml-12 mr-12 mt-2">
+    <mat-label class="font-medium text-sm">Question</mat-label>
+    <ckeditor formControlName="question" [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+    <app-input-error *ngIf="trueFalseForm.get('question')?.hasError('required')" text="Please Enter Question Statement">
+    </app-input-error>
+  </div>
+  <!--Question Box Ends Here-->
+
+  <!--Choices Start-->
+  <div class="ml-12 mr-12 mt-16">
+    <mat-label class="font-medium text-sm">Choices</mat-label>
+    <p class="text-gray-four text-xs">Enter the choice below and select the correct one</p>
+
+    <mat-radio-group formControlName="correctAnswer" class="w-full text-gray-500" (change)="continue_enable.emit(this.trueFalseForm.get('correctAnswer'))">
+      <div class="flex flex-row border rounded mb-3" style="border-color: rgb(92, 155, 49) !important;">
+        <app-icon icon="drag_indicator" class="text-gray-500 mr-1"></app-icon>
+        <div class="w-full">
+          <mat-radio-button [value]="1">
+            <!-- <app-textarea readonly="true" [placeholder]="'true'" [contentEditable]="false"
+              [customClasses]="'text-xs custom_width h-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded'">
+            </app-textarea> -->
+            <div>
+              True
+            </div>
+          </mat-radio-button>
+        </div>
+      </div>
+      <div class="flex flex-row border rounded mb-3" style="border-color: rgb(92, 155, 49) !important;">
+        <app-icon icon="drag_indicator" class="text-gray-500 mr-1"></app-icon>
+        <div class="w-full">
+          <mat-radio-button [value]="2">
+            <!-- <app-textarea readonly="true" [placeholder]="'true'" [contentEditable]="false"
+              [customClasses]="'text-xs custom_width h-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded'">
+            </app-textarea> -->
+            <div>
+              False
+            </div>
+          </mat-radio-button>
+        </div>
+      </div>
+      <div *ngIf="thirdOption" class="flex flex-row border rounded mb-3"
+        style="border-color: rgb(92, 155, 49) !important;">
+        <app-icon icon="drag_indicator" class="text-gray-500 mr-1"></app-icon>
+        <div class="w-full">
+          <mat-radio-button [value]="3">
+            <div class="flex flex-col">
+              <app-textarea formControlName="description" readonly="true" [placeholder]="'Enter Value Here'"
+                [value]="thirdVal"
+                [customClasses]="'text-xs custom_width h-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded'">
+              </app-textarea>
+              <app-input-error *ngIf="trueFalseForm.get('description')?.invalid"
+                text="Please Enter description for the third option"></app-input-error>
+            </div>
+          </mat-radio-button>
+        </div>
+        <app-button (clicked)="deleteThirdOption()" ButtonType='icon' class="float-right" icon="delete"></app-button>
+      </div>
+      <!-- <div  *ngFor="let dis of true_false_array" class="flex flex-row border rounded mb-3"
+        style="border-color: rgb(92, 155, 49) !important;">
+        <app-icon icon="drag_indicator" class="text-gray-500 mr-1"></app-icon>
+        <div class="w-full">
+          <mat-radio-button  [value]="dis.id"> -->
+      <!-- <app-textarea
+              readonly="true"
+               [value]="dis.text"
+               [placeholder]="dis.text"
+               [contentEditable]="false"
+               [customClasses]="'text-xs custom_width h-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded'">
+            </app-textarea> -->
+      <!-- <div>
+              {{dis.text}}
+            </div>
+          </mat-radio-button>
+        </div>
+        <app-button (click)="OnDelete(dis.id)" ButtonType='icon' class="float-right"  icon="delete"></app-button>
+      </div> -->
+    </mat-radio-group>
+
+    <div class="flex flex-col">
+      <app-input-error *ngIf="trueFalseForm.get('correctAnswer')?.hasError('required')"
+        text="please select one correct option"></app-input-error>
+      <!--add new button starts-->
+      <!--  <app-button *ngIf="!thirdOption" variant="text" text="Add another choice" iconPosition="left" icon="add"
+        (clicked)="addThirdOption()">
+      </app-button>  -->
+      <!--add new button ends-->
+    </div>
+  </div>
+</form>
+
+<!--Choices End-->
+
+
+
+<!--Save Button Starts-->
+<div class="flex flex-row float-right mr-12 mt-16">
+  <div *ngIf="!update && showSaveButton">
+    <app-button [spinner]="saveSpinner" [disabled]="trueFalseForm.invalid || saveSpinner"
+      (clicked)="saveTrueFalse(false)" class="mr-2" type="button" size="sm" color="primary" text="Save"></app-button>
+    <app-button [disabled]="trueFalseForm.invalid || saveSpinner" (clicked)="saveTrueFalse(true)" type="button"
+      size="sm" color="secondary" text="Save & Add New"></app-button>
+  </div>
+  <app-button (clicked)="updateData()" [disabled]="trueFalseForm.invalid" *ngIf="update && showSaveButton" [spinner]="false"
+    [disabled]="false" (clicked)="updateTestItem()" type="button" size="sm" color="secondary" text="Update">
+  </app-button>
+</div>
+<!--Save Button Ends-->

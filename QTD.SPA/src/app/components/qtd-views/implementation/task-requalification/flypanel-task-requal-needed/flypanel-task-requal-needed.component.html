@@ -1,0 +1,24 @@
+<div class="flex flex-col p-5">
+  <section class="flex flex-row border-b-2 pb-4">
+    <app-icon (click)="closed.emit()" icon="keyboard_arrow_left" class="linkText cursor-pointer mr-5"></app-icon>
+    <div class="flex flex-col ml-1">
+      <span class="text-xl font-bold mb-3">{{("Task" | labelReplacement)| async}} & Skill Qualification Needed For</span>
+      <div class="flex flex-row" style="align-items:center;">
+        <img class="rounded-full mr-3" style="width:2.5rem;height:2.5rem;" [src]="empImage" onerror="this.src='assets/img/ImageNotFound.jpg'">
+        <span class="text-sm font-bold">{{empName}}</span>
+      </div>
+    </div>
+  </section>
+  <app-data-loader *ngIf="isLoading"></app-data-loader>
+  <section *ngIf="!isLoading">
+    <div *ngFor="let data of tempData,index as i">
+      <div class="flex flex-row pt-5 pb-5" [ngClass]="i !== (tempData.length - 1) ? 'border-b-2':''" style="vertical-align:top">
+        <span class="mr-5 text-black">{{data.daNumber + '.' + data.sdaNumber + '.' + data.task.number}}</span>
+        <span class="text-black">{{data.task.description}}</span>
+      </div>
+    </div>
+    <div *ngIf="tempData.length < 1">
+      <span>No {{("Task" | labelReplacement)| async}} ReQualifications Found</span>
+    </div>
+  </section>
+</div>

@@ -1,0 +1,100 @@
+.selectedTab {
+  border: solid 1px #345e95 !important;
+  color: black;
+  background-color: #345e951a;
+  cursor: default;
+}
+
+.pointerClass {
+  cursor: pointer;
+}
+
+:host ::ng-deep .cal-month-view .cal-day-cell {
+  min-height: 20px;
+  border-left: none;
+  border-right: none;
+  border-radius: 1rem;
+  width: 50%;
+}
+
+.greenBg {
+  background-color: #e8fde7 !important;
+  border-color: #5c9b31 !important;
+  border-radius: 5px;
+}
+
+.blueBg {
+  background-color: #345e951a !important;
+  border-color: #345e95;
+  border-radius: 5px;
+  border-width: 1px;
+}
+
+:host ::ng-deep .cal-month-view .cal-day-cell.cal-today {
+  background-color: white;
+}
+
+:host ::ng-deep .cal-month-view .cal-cell-row .cal-cell:hover,
+.cal-month-view .cal-cell.cal-has-events.cal-open {
+  background-color: white;
+}
+
+.whiteBg {
+  background-color: white !important;
+}
+
+:host ::ng-deep .cal-month-view .cal-cell-row:hover {
+  background-color: white;
+}
+
+.grayBox {
+  background-color: lightslategray;
+  color: white;
+  border: black 1px solid;
+  border-radius: 4px;
+}
+
+.greenBox {
+  background-color: #278f6d33;
+  color: #5c9b31;
+  border-radius: 4px;
+}
+
+.blueBox {
+  background-color: #345e951a;
+  color: black;
+  border: #345e95 1px solid;
+  border-radius: 4px;
+}
+
+.greenEvent {
+  background-color: #7dac5d33;
+  border-radius: 4px;
+  align-items: center;
+}
+
+.pinkEvent {
+  background-color: #fa594333;
+  border-radius: 4px;
+  align-items: center;
+}
+
+.redText {
+  --tw-text-opacity: 1;
+  color: rgba(239, 68, 68, var(--tw-text-opacity));
+}
+
+.disabled {
+  opacity: 0.5;
+  pointer-events: none !important;
+}
+
+:host ::ng-deep .highlight-event-date > div > span {
+  border: 1px solid red !important;
+  border-radius: 4px;
+}
+
+.app-label {
+  color: red;
+  font-size: smaller;
+}

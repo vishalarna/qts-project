@@ -1,0 +1,549 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Entities.Core
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    .Correct {
+        color: black;
+    }
+
+    .Incorrect {
+        color: red;
+    }
+
+    .completion-detail {
+        color: #567DFF;
+        font-weight: 700;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="padding-bottom: 0px; border-bottom: 2px solid #020378; margin: 0 0 10px 0;">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 4px solid #020378; margin: 0 0 3px 0;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378; width: 50%;"><b>@Model.Title </b></div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.ClassSchedules.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{
+                    int j = 1;
+                }
+
+                @foreach (var classSchedule in Model.ClassSchedules)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title :</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@classSchedule?.ILA?.Name</span>
+                                    </td>
+                                </tr>
+                            }
+
+                            @if (Model.DisplayColumns.Where(r => r == "ILA Number").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Number :</b>
+                                        <span style="font-size:0.8rem;margin-left:5px"> @classSchedule?.ILA?.Number</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Class Start and End Date").Count() > 0 || Model.DisplayColumns.Where(r => r == "Class Start and End Time").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <b>Class Start date:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@(classSchedule?.StartDateTime.Date == DateTime.MinValue.Date? "": (Model.DisplayColumns.Contains("Class Start and End Date")? classSchedule?.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat): ""))
+                                            @(classSchedule?.StartDateTime.Date == DateTime.MinValue.Date? "": (Model.DisplayColumns.Contains("Class Start and End Time")? classSchedule?.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToLongTimeString(): ""))
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Class Start and End Date").Count() > 0 || Model.DisplayColumns.Where(r => r == "Class Start and End Time").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <b>Class End date:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">
+                                            @(classSchedule?.EndDateTime.Date == DateTime.MinValue.Date? "": (Model.DisplayColumns.Contains("Class Start and End Date")? classSchedule?.EndDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat): ""))
+                                            @(classSchedule?.EndDateTime.Date == DateTime.MinValue.Date? "": (Model.DisplayColumns.Contains("Class Start and End Time")? classSchedule?.EndDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToLongTimeString(): ""))
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "CBT Learning Instructions").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <b>CBT Learning Instructions:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px;display:inline-block"> @(new RawString(@classSchedule?.ILA?.CBTs.FirstOrDefault(cbt => cbt.Active)?.CBTLearningContractInstructions))</span>
+                                    </td>
+                                </tr>
+                            }
+                            @foreach (var cbt in classSchedule.ILA.CBTs)
+                            {
+                                var scormUpload = cbt.ScormUploads.FirstOrDefault(su => su.Active == true && su.ScormStatus == "Uploaded");
+                                var classEmpIds = classSchedule.ClassSchedule_Employee.Select(m => m.Id).ToList();
+                                @if (scormUpload != null && Model.DisplayColumns.Where(r => r == "CBT Completion Graph").Count() > 0)
+                                {
+                                    @{
+                                        var cbtRegDetailsData = scormUpload.CBT_ScormRegistration.Where(r => classEmpIds.Contains(r.ClassScheduleEmployeeId)).ToList();
+
+                                        // Calculate statistics for the pie chart
+                                        var pass = cbtRegDetailsData.Count(r => r.CompletedDate != null && r.Grade == "P");
+                                        var fail = cbtRegDetailsData.Count(r => r.CompletedDate != null && r.Grade == "F");
+                                        var notCompleted = cbtRegDetailsData.Count(r => r.CompletedDate == null);
+
+                                        var totalCount = cbtRegDetailsData.Count();
+                                        var passPercentage = totalCount > 0 ? (double)pass / totalCount * 100 : 0;
+                                        var failPercentage = totalCount > 0 ? (double)fail / totalCount * 100 : 0;
+                                        var notCompPercentage = totalCount > 0 ? (double)notCompleted / totalCount * 100 : 0;
+
+                                        // Bar chart data
+                                        var barData = new int[5]; // Indexes: 0=90-100, 1=80-89, 2=70-79, 3=0-69, 4=Incomplete
+                                        foreach (var record in cbtRegDetailsData)
+                                        {
+                                            if (record.CompletedDate == null)
+                                            {
+                                                barData[4]++;
+                                            }
+                                            else if (record.Score >= 90)
+                                            {
+                                                barData[0]++;
+                                            }
+                                            else if (record.Score >= 80)
+                                            {
+                                                barData[1]++;
+                                            }
+                                            else if (record.Score >= 70)
+                                            {
+                                                barData[2]++;
+                                            }
+                                            else
+                                            {
+                                                barData[3]++;
+                                            }
+                                        }
+                                    }
+                                    <tr>
+                                        @if (totalCount > 0)
+                                        {
+                                            <td style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px">
+                                                <div><b>CBT Completion Statistics</b></div>
+                                                <div style=" display: -webkit-box; display: flex;  -webkit-box-pack: justify;  justify-content: space-around;">
+                                                    <div style=" display: -webkit-box; display: flex;">
+                                                        <!-- Pie Chart -->
+                                                        <div style="position: relative; width: 150px; height: 150px;">
+                                                            @{
+                                                                double total = passPercentage + failPercentage + notCompPercentage;
+                                                                double passEndAngle = (passPercentage / total) * 360;
+                                                                double failEndAngle = (failPercentage / total) * 360 + passEndAngle;
+                                                                double notCompEndAngle = 360;
+
+                                                                double passRad = passEndAngle * (Math.PI / 180);
+                                                                double failRad = failEndAngle * (Math.PI / 180);
+                                                                double notCompRad = notCompEndAngle * (Math.PI / 180);
+                                                                bool isFullPie = false;
+                                                                string fillColor = "";
+                                                                if (passPercentage == 100)
+                                                                {
+                                                                    isFullPie = true;
+                                                                    fillColor = "#78c657";
+                                                                }
+                                                                else if (failPercentage == 100)
+                                                                {
+                                                                    isFullPie = true;
+                                                                    fillColor = "#ee6f6f";
+                                                                }
+                                                                else if (notCompPercentage == 100)
+                                                                {
+                                                                    isFullPie = true;
+                                                                    fillColor = "#dacdcd";
+                                                                }
+                                                            }
+                                                            <svg width="150" height="150" viewBox="0 0 150 150" style="border-radius: 50%;">
+
+                                                                @if (isFullPie)
+                                                                {
+                                                                    <!-- Render full pie -->
+                                                                    <circle cx="75" cy="75" r="70" fill="@fillColor" />
+                                                                }
+                                                                else
+                                                                {
+                                                                    <!-- Pass -->
+                                                                    <path d="M 75 75 L 75 5 A 70 70 0 @(passEndAngle > 180 ? 1 : 0) 1 @(75 + Math.Cos(passRad - Math.PI / 2) * 70) @(75 + Math.Sin(passRad - Math.PI / 2) * 70) Z"
+                                                                          fill="#78c657" />
+
+                                                                    <!-- Fail -->
+                                                                    <path d="M 75 75 L @(75 + Math.Cos(passRad - Math.PI / 2) * 70) @(75 + Math.Sin(passRad - Math.PI / 2) * 70) A 70 70 0 @(failEndAngle - passEndAngle > 180 ? 1 : 0) 1 @(75 + Math.Cos(failRad - Math.PI / 2) * 70) @(75 + Math.Sin(failRad - Math.PI / 2) * 70) Z"
+                                                                          fill="#ee6f6f" />
+
+                                                                    <!-- Not Completed -->
+                                                                    <path d="M 75 75 L @(75 + Math.Cos(failRad - Math.PI / 2) * 70) @(75 + Math.Sin(failRad - Math.PI / 2) * 70) A 70 70 0 @(notCompEndAngle - failEndAngle > 180 ? 1 : 0) 1 75 5 Z"
+                                                                          fill="#dacdcd" />
+                                                                }
+                                                        </div>
+
+                                                        <div style=" display: flex; display: -webkit-box; margin-left: 20px;display:block; flex-direction: column;">
+                                                            <div style="margin-bottom: 10px; display: -webkit-box; display: flex;padding:10px;">
+                                                                <span style="display: inline-block; width: 20px; height: 20px; background-color: #78c657; margin-right: 5px;"></span>
+                                                                @passPercentage.ToString("0.00")% Pass
+                                                            </div>
+                                                            <div style="margin-bottom: 10px; display: -webkit-box; display: flex; padding: 10px;">
+                                                                <span style="display: inline-block; width: 20px; height: 20px; background-color: #ee6f6f; margin-right: 5px;"></span>
+                                                                @failPercentage.ToString("0.00")% Fail
+                                                            </div>
+                                                            <div style="margin-bottom: 10px; display: -webkit-box; display: flex; padding: 10px; ">
+                                                                <span style="display: inline-block; width: 20px; height: 20px; background-color: #dacdcd; margin-right: 5px;"></span>
+                                                                @notCompPercentage.ToString("0.00")% Not Completed
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Bar Graph -->
+                                                    <div style="margin-top: 20px;">
+                                                        @for (int i = 0; i < barData.Length; i++)
+                                                        {
+                                                            <div style="display: -webkit-box; display: flex; align-items: center; margin-bottom: 10px;gap:10px">
+                                                                <div style="width: 90px;">@(i == 0 ? "90-100%" : i == 1 ? "80-89%" : i == 2 ? "70-79%" : i == 3 ? "0-69%" : "Incomplete")</div>
+                                                                @if (barData[i] > 0)
+                                                                {
+                                                                    <div style="height: 20px; width:@Math.Min((barData[i] * 100),300)px; background-color: @(i == 0 || i == 1 || i == 2 ? "#78c657" :  i == 3 ? "#ee6f6f" : "#dacdcd"); margin-left: 20px;">
+                                                                    </div>
+                                                                }
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                                @if (scormUpload != null)
+                                {
+                                    <tr>
+                                        <td style="border: 0; padding: 0" class="strip-container">
+                                            <table class="table">
+                                                <thead>
+                                                    <tr>
+                                                        <td colspan="12" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px "> <b> CBT Completion Details</b></td>
+                                                    </tr>
+
+                                                    <tr class="open-border-table-row">
+
+                                                        @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                                        {
+                                                            <th align="left" style=" border: 1px solid; padding: 5px;width:15%">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name</th>
+                                                        }
+
+                                                        @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                                                        {
+                                                            <th align="left" style=" border: 1px solid; padding: 5px;width:15%">Organization</th>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                                        {
+                                                            <th align="left" style=" border: 1px solid; padding: 5px;width:10%"> @("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "Status").Count() > 0)
+                                                        {
+                                                            <th align="left" style=" border: 1px solid; padding: 5px;width:10%">Status</th>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "Release Date").Count() > 0)
+                                                        {
+                                                            <th align="left" style=" border: 1px solid; padding: 5px;width:10%">Release Date</th>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "Last Access Date").Count() > 0)
+                                                        {
+                                                            <th align="left" style=" border: 1px solid; padding: 5px;width:10%">Last Access Date</th>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "Completed Date").Count() > 0)
+                                                        {
+                                                            <th align="left" style=" border: 1px solid; padding: 5px;width:10%">Completed Date</th>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "Total Time").Count() > 0)
+                                                        {
+                                                            <th align="left" style=" border: 1px solid; padding: 5px;width:10%">Total Time</th>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "Test Grade").Count() > 0)
+                                                        {
+                                                            <th align="left" style=" border: 1px solid; padding: 5px;width:5%"> Grade</th>
+                                                        }
+                                                        @if (Model.DisplayColumns.Where(r => r == "Test Score").Count() > 0)
+
+                                                        {
+                                                            <th align="left" style=" border: 1px solid; padding: 5px;width:5%"> Score</th>
+                                                        }
+
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+
+                                                    @{var registrations = scormUpload.CBT_ScormRegistration.Where(r => r.ClassScheduleEmployee?.Employee?.Person != null && classEmpIds.Contains(r.ClassScheduleEmployeeId)).OrderBy(r => r.ClassScheduleEmployee?.Employee?.Person?.LastName).ToList();}
+
+                                                    @foreach (var registration in registrations)
+                                                    {
+                                                        <tr class="open-border-table-row completion-detail">
+                                                            @if (Model.DisplayColumns.Any(r => r == "Employee Name"))
+                                                            {
+                                                                <td style="border: none; padding: 5px;width:15%">
+                                                                    @registration.ClassScheduleEmployee?.Employee?.Person?.FirstName
+                                                                    @registration.ClassScheduleEmployee?.Employee?.Person?.LastName
+                                                                </td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Any(r => r == "Organization"))
+                                                            {
+                                                                var activeOrganizations = string.Join(", ",
+                                                                registration.ClassScheduleEmployee?.Employee?.EmployeeOrganizations
+                                                                .Where(org => org.Active)
+                                                                .Select(org => org.Organization?.Name));
+                                                                <td style="border: none; padding: 5px;width:15%">@activeOrganizations</td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Any(r => r == "Position"))
+                                                            {
+                                                                var activePositions = string.Join(", ",
+                                                                registration.ClassScheduleEmployee?.Employee?.EmployeePositions
+                                                                .Where(pos => pos.Active)
+                                                                .Select(pos => pos.Position?.PositionAbbreviation));
+                                                                <td style="border: none; padding: 5px;width:10% ">@activePositions</td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Any(r => r == "Status"))
+                                                            {
+                                                                <td style="border: none; padding: 5px;width:10%">@registration.RegistrationCompletion.ToString()</td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Any(r => r == "Release Date"))
+                                                            {
+                                                                var releaseDate = String.Empty;
+
+                                                                if (cbt.Availablity == CBTAvailablity.OnClassEndDateTime)
+                                                                {
+                                                                    releaseDate = classSchedule?.EndDateTime.ToShortDateString();
+                                                                }
+                                                                else if (cbt.Availablity == CBTAvailablity.OnClassStartDateTime)
+                                                                {
+                                                                    releaseDate = classSchedule?.StartDateTime.ToShortDateString();
+                                                                }
+                                                                else if (cbt.Availablity == CBTAvailablity.AfterPretestComplete)
+                                                                {
+                                                                    var setting = classSchedule?.ClassSchedule_TestReleaseEMPSettings;
+
+                                                                    var csRoster = classSchedule?.ClassSchedule_Rosters?.FirstOrDefault(r => r.EmpId == registration.ClassScheduleEmployee.EmployeeId && r.TestTypeId == 1);
+
+                                                                    if (setting == null || setting.PreTestId == null || csRoster == null || !csRoster.CompletedDate.HasValue)
+                                                                    {
+                                                                        releaseDate = classSchedule?.StartDateTime.ToShortDateString();
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        releaseDate = csRoster.CompletedDate?.ToShortDateString();
+                                                                    }
+                                                                }
+
+                                                                <td style="border: none; padding: 5px; width:10%">
+                                                                    @releaseDate
+                                                                </td>
+                                                            }
+
+                                                            @if (Model.DisplayColumns.Any(r => r == "Last Access Date"))
+                                                            {
+                                                                <td style="border: none; padding: 5px;width:10%">@(registration?.LastAccessDate?.Date == DateTime.MinValue.Date ? "" :registration?.LastAccessDate?.ToShortDateString())</td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Any(r => r == "Completed Date"))
+                                                            {
+                                                                <td style="border: none; padding: 5px;width:10%">@registration?.CompletedDate?.ToShortDateString()</td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Any(r => r == "Total Time"))
+                                                            {
+                                                                @{
+                                                                    string formattedTime;
+                                                                    if (registration?.TotalTime == null || registration.TotalTime == TimeSpan.Zero)
+                                                                    {
+                                                                        formattedTime = "N/A";
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        formattedTime = registration.TotalTime.Value.ToString(@"hh\:mm\:ss");
+                                                                    }
+                                                                }
+
+                                                                <td style="border: none; padding: 5px;width:10%">@formattedTime</td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Any(r => r == "Test Grade"))
+                                                            {
+                                                                <td style="border: none; padding: 5px;width:5%">@registration?.Grade</td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Any(r => r == "Test Score"))
+                                                            {
+                                                                <td style="border: none; padding: 5px;width:5%">@registration?.Score</td>
+                                                            }
+                                                        </tr>
+
+                                                        @if (Model.IncludeTestAnswerDetails && registration.RegistrationCompletion == CBT_ScormRegistrationCompletion.COMPLETED)
+                                                        {
+                                                            <tr>
+                                                                <td style="border: 0; padding: 0;padding-top:20px" class="strip-container" colspan="11">
+                                                                    <div style="display: block; margin: auto; width:90%;">
+                                                                        <table class="table">
+                                                                            <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                                                @if (Model.DisplayColumns.Contains("Test Item"))
+                                                                                {
+                                                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom;padding:5px; width:45%">
+                                                                                        Question
+                                                                                    </th>
+                                                                                }
+                                                                                @if (Model.DisplayColumns.Contains("Submitted Response"))
+                                                                                {
+                                                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 35%">
+                                                                                        Response
+                                                                                    </th>
+                                                                                }
+                                                                                @if (Model.DisplayColumns.Contains("Correct/Incorrect Answer"))
+                                                                                {
+                                                                                    <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 20%">
+                                                                                        Correct/Incorrect Answer
+                                                                                    </th>
+                                                                                }
+                                                                            </tr>
+                                                                            @foreach (var regResponse in registration.CBT_ScormRegistration_Responses)
+                                                                            {
+                                                                                @{
+                                                                                    var isCorrect = regResponse?.CBT_ScormUpload_Question_Choice?.CorrectChoice;
+                                                                                    var result = isCorrect == true ? "Correct" : "Incorrect";
+                                                                                }
+                                                                                <tr style="padding: 10px" class="@result">
+                                                                                    @if (Model.DisplayColumns.Contains("Test Item"))
+                                                                                    {
+                                                                                        var question = regResponse?.CBT_ScormUpload_Question_Choice?.CBT_ScormUpload_Question?.Description;
+                                                                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                                                            @(new RawString(question))
+                                                                                        </td>
+                                                                                    }
+                                                                                    @if (Model.DisplayColumns.Contains("Submitted Response"))
+                                                                                    {
+                                                                                        @{
+                                                                                            var response = regResponse?.CBT_ScormUpload_Question_Choice?.Choice;
+                                                                                        }
+                                                                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                                                            @(new RawString(response?.CleanCBTScormQuestionChoice()))
+                                                                                        </td>
+                                                                                    }
+                                                                                    @if (Model.DisplayColumns.Contains("Correct/Incorrect Answer"))
+                                                                                    {
+                                                                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                                                            @result
+                                                                                        </td>
+                                                                                    }
+                                                                                </tr>
+                                                                            }
+
+                                                                        </table>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                        else
+                                                        {
+                                                            <tr>
+                                                                <td colspan="12" style="border: 0; padding: 0;"><div style="font-style:italic;font-weight:300">Questions that this Employee has not completed may not appear on this list</div></td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            <tr></tr>
+                        </table>
+                    </div>
+                    @if (!classSchedule.Equals(Model.ClassSchedules.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.ClassSchedules.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

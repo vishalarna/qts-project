@@ -1,0 +1,59 @@
+.qtd-tree-invisible {
+    display: none;
+  }
+  
+  .qtd-tree ul,
+  .qtd-tree li {
+    margin-top: 0;
+    margin-bottom: 0;
+    list-style-type: none;
+  }
+  
+  /*
+       * This padding sets alignment of the nested nodes.
+       */
+  .qtd-tree .mat-nested-tree-node div[role="group"] {
+    padding-left: 20px;
+  }
+  
+  /*
+       * Padding for leaf nodes.
+       * Leaf nodes need to have padding so as to align with other non-leaf nodes
+       * under the same parent.
+       */
+  .qtd-tree div[role="group"] > .mat-tree-node {
+    padding-left: 20px;
+  }
+  
+  mat-tree,
+  input {
+    background: transparent;
+  }
+  
+  aside {
+    visibility: hidden;
+  }
+  
+  .mat-column-id,
+  .mat-column-number {
+    flex: 0 0 120px;
+  }
+  
+  .mat-column-description {
+    flex: 1 0 300px;
+  }
+  
+  ::ng-deep mat-cell,
+  mat-row,
+  mat-header-row {
+    padding: 6px;
+  }
+  
+  mat-stepper {
+    padding-left: 5rem;
+    padding-right: 5rem;
+  }
+  
+  :host ::ng-deep .mat-select-panel-wrap{
+    margin-top: 1px;
+  }

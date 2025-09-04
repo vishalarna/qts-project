@@ -1,0 +1,24 @@
+<div class="modal-header">
+    <h4 class="modal-title">{{mode == 'add'?'Add':'Edit'}} User</h4>
+    <button type="button" class="close" aria-label="Close" (click)="activeModal.dismiss('Cross click')">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+<div class="modal-body">
+    <div class="col-lg-6">
+        <label class="block text-gray-700 font-medium" translate>L.Username</label>
+        <ngx-select-dropdown class="col-lg-3" [config]="ngSelectConfig"></ngx-select-dropdown>
+    </div>
+    <div class="col-lg-6">
+        OR
+        <input type="text" name="username"  placeholder="{{'L.Username' | translate}}"
+            class="text-base border w-full h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded">
+    </div>
+    <div class="col-lg-3">
+        <button type="submit" class="btn-primary mt-6 text-center" translate>L.Save
+        </button>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-outline-dark" (click)="activeModal.close('Close click')">Close</button>
+</div>

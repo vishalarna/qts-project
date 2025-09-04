@@ -1,0 +1,77 @@
+
+  .keyword-input {
+    align-items: center;
+    padding: 24px;
+    svg {
+      margin-right: 8px;
+    }
+    input {
+      max-width: 300px;
+      width: 100%;
+    }
+  }
+
+.title-container{
+  display: flex;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+.task-title{
+  flex: 0 0 60%;
+}
+
+.review-type{
+  flex: 0 0 40%;
+  padding-left: 3rem;
+}
+
+.date-block-wrapper {
+  width: 100%;
+  input {
+    width: 100%;
+  }
+}
+
+.select-box{
+  padding-top: 0.85rem;
+  padding-bottom: 0.85rem;
+}
+
+.dash-span {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0rem 0.5rem;
+  zoom: 1.5;
+}
+
+.trainer-dropdown{
+  flex:1 1 60%;
+}
+
+.position-dropdown{
+  width: 60%;
+}
+
+.date-range{
+  flex: 1 1 40%;
+  margin: 0;
+  padding-left: 3rem;
+}
+
+.step-controls-section {
+  padding: 1.5rem 2rem;
+  flex: 1 1 70%;
+  border-radius: 0.25rem;
+  border: 0.5px solid #e1e5e4;
+  background: #fff;
+  box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+}
+
+.step-spinner{
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

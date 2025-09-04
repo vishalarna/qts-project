@@ -1,0 +1,39 @@
+.table-person {
+    max-width: 50px;
+    width: 50px;
+  }
+  
+  .person-header {
+    font-size: 16px;
+    margin-left: .3rem;
+  }
+  
+  .person-name {
+    font-size: 15px;
+  }
+  .mat-row, .mat-header-row {
+    border-bottom: 0px !important;
+  }
+  .person-list-data{
+    margin-top: 1.125rem;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.10);
+    border-radius: 4px;
+    border: 0.5px solid #E1E5E4;
+    overflow: hidden;
+    .linked-row{
+      color: rgb(92, 155, 49)
+    }
+  }
+  :host ::ng-deep .clear-icon-btn app-icon {
+    position:relative;
+    top: 1px;
+    left: 4px;
+  }
+
+  :host ::ng-deep .person-list-data .mat-header-cell:nth-child(2),
+  :host ::ng-deep .person-list-data .mat-cell:nth-child(2) {
+    flex: 1 1 80%;
+  }
+  :host ::ng-deep .person-list-data .mat-cell,:host ::ng-deep .person-list-data .mat-header-cell {
+    padding: 1rem;
+  }

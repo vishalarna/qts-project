@@ -1,0 +1,227 @@
+<!-- All Evaluators with Assigned Qualifications -->
+<!-- <div class="flex flex-col w-full p-5" *ngIf="mode === 'all'">
+  <section class="flex flex-row justify-between" style="align-items:center;">
+    <span class="font-bold text-xl">Assign Task Qualfications</span>
+    <app-icon (click)="closed.emit()" icon="close" class="text-gray-500 cursor-pointer"></app-icon>
+  </section>
+
+  <section class="flex flex-col w-full mt-5 customBorder">
+    <table class="rounded-sm" [dataSource]="dataSource" mat-table>
+      <ng-container matColumnDef="eval">
+        <th style="width:50%;" mat-header-cell *matHeaderCellDef>
+          Evaluators
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{row.evalName}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="pending">
+        <th mat-header-cell *matHeaderCellDef>
+          Pending Task Qualifications
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span (click)="selectedData = row;mode = 'specific';" class="cursor-pointer">{{row.pendingCount}}</span>
+        </td>
+      </ng-container>
+
+      <tr style="vertical-align: top;" mat-header-row class="pl-2 pr-2" *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row class="pr-2 pl-2" *matRowDef="let row; columns: displayedColumns"></tr>
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">No Task Qualifications Found</td>
+      </tr>
+    </table>
+  </section>
+</div> -->
+
+<!-- Evaluator Specific Data -->
+<div class="flex flex-col w-full p-5" *ngIf="mode === 'specific'">
+  <!-- Header -->
+  <section class="flex flex-row justify-between" style="align-items:center;">
+    <span class="font-bold text-xl">Assigned {{("Task" | labelReplacement)| async}} & Skill Qualfications</span>
+    <app-icon (click)="closed.emit()" icon="close" class="text-gray-500 cursor-pointer"></app-icon>
+  </section>
+
+  <section class="flex flex-row w-full mt-5 mb-3 justify-between">
+    <div (click)="selectedView = 'emp'" style="border-radius: 4px 0px 0px 4px;" class="py-2 flex cursor-pointer"
+      [ngClass]="selectedView === 'emp' ? 'selected':'notSelected'">
+      {{("Employee" | labelReplacement)| async}} View
+    </div>
+    <div (click)="selectedView = 'task'" style="border-radius: 0px 4px 4px 0px;" class="py-2 flex cursor-pointer"
+      [ngClass]="selectedView === 'task' ? 'selected':'notSelected'">
+      {{("Task" | labelReplacement)| async}} View
+    </div>
+  </section>
+
+  <app-data-loader *ngIf="isLoading"></app-data-loader>
+  <section *ngIf="!isLoading && selectedView === 'emp'" class="flex flex-col">
+    <div class="flex my-5">
+      <span class="text-xs"><b>{{employees.length}}</b> {{("Employee" | labelReplacement)| async}}s have Task Qualifications that need Requalification Evaluation by
+        <span class="linkText">{{evalData.evaluatorName}}</span></span>
+    </div>
+
+    <div class="flex border-b-0.8 border-gray-one pr-4 pb-3">
+      <app-icon icon="search"></app-icon>
+      <input (input)="filterData()" class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+        [(ngModel)]="filterEmpString">
+    </div>
+    <div class="flex flex-col w-full mt-4">
+      <div class="flex w-full flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="selection.selected.length > 0">
+        <div class="flex flex-row justify-between w-full" style="align-items: center;">
+          <span><b>{{selection.selected.length}}</b> Evaluations have been selected</span>
+          <app-button (clicked)="openConfirmDialog(confirmReassign)" size="sm" color="secondary" ButtonType="button"
+            text="Remove Evaluator"></app-button>
+        </div>
+      </div>
+      <div class="flex flex-row" style="align-items:baseline;" *ngIf="employees.length > 0">
+        <mat-checkbox [checked]="selection.selected.length === totalTasks && totalTasks !== 0"
+          [indeterminate]="selection.selected.length > 0 && selection.selected.length < totalTasks"
+          (change)="masterToggle($event,assignedTQSource)" class="mr-2"></mat-checkbox>
+        <label class="text-xs text-gray-400">Select All</label>
+      </div>
+      <mat-accordion>
+        <mat-expansion-panel (opened)="selectedData = tqSrc.children" hideToggle class="mat-elevation-z0"
+          *ngFor="let tqSrc of assignedTQSource">
+          <mat-expansion-panel-header class="pl-0 pr-0" style="height: auto; min-height: 75px;">
+            <mat-panel-title class="w-full">
+              <div class="flex flex-row items-center">
+                <mat-checkbox (change)="toggleAll($event,tqSrc)" [checked]="tqSrc.checked"
+                  [indeterminate]="tqSrc.indeterminate" class="mr-2"></mat-checkbox>
+                <img class="rounded-full mr-2 mt-1" style="width:2rem;height:2rem"
+                  [src]="tqSrc.empImage" onerror="this.src='assets/img/ImageNotFound.jpg'">
+                <div class="flex flex-col">
+                  <span class="font-bold">{{tqSrc.empName}}</span>
+                  <span class="text-gray-400">{{tqSrc.empEmail}}</span>
+                </div>
+              </div>
+            </mat-panel-title>
+            <mat-panel-description>
+              <app-icon icon="keyboard_arrow_down"></app-icon>
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <mat-panel-description *ngIf="selectedData">
+            <div class="flex flex-col w-full">
+              <span class="mb-3 text-black"><b>{{selectedData.length}}</b> {{("Task" | labelReplacement)| async}} Qualifications need Requalification Evaluation</span>
+              <table class="w-full table-auto border-collapse border border-gray-300">
+                <thead>
+                  <tr>
+                    <th class="border border-gray-300 px-4 py-2"></th>
+                    <th class="border border-gray-300 px-4 py-2">Task #</th>
+                    <th class="border border-gray-300 px-4 py-2">Task Description</th>
+                    <th class="border border-gray-300 px-4 py-2">Release Date</th>
+                    <th class="border border-gray-300 px-4 py-2">Due Date</th>
+                    <th class="border border-gray-300 px-4 py-2">Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let taskData of selectedData">
+                    <td class="border px-4 py-2 text-center"><mat-checkbox [checked]="taskData.checked" (change)="checkTask($event, taskData)"></mat-checkbox></td>
+                    <td class="border px-4 py-2 text-black  text-center">{{ taskData.taskNumber }}</td>
+                    <td class="border px-4 py-2 text-black">{{ taskData.taskDescription }}</td>
+                    <td class="border px-4 py-2 text-black">{{ taskData.releaseDate == null ? 'N/A' : (taskData.releaseDate | dateFormat) | async }} </td>
+                    <td class="border px-4 py-2 text-black">{{ taskData.dueDate == null ? 'N/A' : (taskData.dueDate | dateFormat) | async }}</td>
+                    <td class="border px-4 py-2 text-black">{{ taskData.status }}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-panel-description>
+        </mat-expansion-panel>
+      </mat-accordion>
+      <!-- <div class="flex flex-row mt-2 mb-2" style="align-items:flex-end;" *ngFor="let emp of employees">
+        <mat-checkbox class="mr-2"></mat-checkbox>
+        <img class="rounded-full mr-2 mt-1" style="width:2rem;height:2rem" [src]="emp.person.image ?? placeHolder">
+        <div class="flex flex-col">
+          <span class="font-bold">{{emp.person.firstName + emp.person.lastName}}</span>
+          <span class="text-gray-400">{{emp.person.username}}</span>
+        </div>
+      </div> -->
+    </div>
+  </section>
+
+  <!-- Task Section -->
+  <section class="flex flex-col" *ngIf="selectedView === 'task' && !isLoading">
+
+    <div class="flex my-5">
+      <span class="text-xs"><b>{{qualRequiredTasks.length}}</b> {{("Task" | labelReplacement)| async}}s have Task Qualifications that need Requalification Evaluation by
+        <span class="linkText">{{evalData.evaluatorName}}</span></span>
+    </div>
+
+    <div class="flex w-full flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="taskSelection.selected.length > 0">
+      <div class="flex flex-row justify-between w-full" style="align-items: center;">
+        <span><b>{{taskSelection.selected.length}}</b> Evaluations have been selected</span>
+        <app-button (clicked)="openConfirmDialog(confirmReassign)" size="sm" color="secondary" ButtonType="button"
+          text="Remove Evaluator"></app-button>
+      </div>
+    </div>
+
+    <div class="flex border-b-0.8 border-gray-one pr-4 pb-3">
+      <app-icon icon="search"></app-icon>
+      <input [value]="searchTask"  (keyup)="inputTaskSearch($event)" class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text">
+    </div>
+    <div class="flex flex-col w-full mt-4">
+    <div class="flex flex-row mb-3" style="align-items:baseline;" *ngIf="employees.length > 0">
+      <mat-checkbox [checked]="taskSelection.selected.length === totalEmployees && totalEmployees !== 0"
+      [indeterminate]="taskSelection.selected.length > 0 && taskSelection.selected.length < totalEmployees"
+      (change)="masterToggle($event,assignedTaskSource)"  class="mr-2"></mat-checkbox>
+      <label class="text-xs text-gray-400">Select All</label>
+    </div>
+
+    <mat-accordion>
+      <mat-expansion-panel hideToggle class="mat-elevation-z0"
+        *ngFor="let data of assignedTaskSource">
+        <mat-expansion-panel-header class="pl-0 pr-0" style="height: auto; min-height: 75px;">
+          <mat-panel-title class="w-full">
+            <div class="flex flex-row items-center">
+              <mat-checkbox (change)="toggleAllTasks($event,data)" [checked]="data.checked"
+              [indeterminate]="data.indeterminate" class="mr-2"></mat-checkbox>
+              <span class="mr-3 text-black">{{data.taskNumber}}</span>
+              <span class="mr-3 text-black">{{data.taskDescription}}</span>
+            </div>
+          </mat-panel-title>
+          <mat-panel-description>
+            <app-icon icon="keyboard_arrow_down"></app-icon>
+          </mat-panel-description>
+        </mat-expansion-panel-header>
+        <mat-panel-description *ngIf="data.children">
+          <div class="flex flex-col w-full">
+            <span class="text-xs"><b>{{data.children?.length}}</b> {{("Employee" | labelReplacement)| async}}s have Task Qualifications that need Requalification Evaluation by
+              <span class="linkText">{{evalData.evaluatorName}}</span></span>      
+            <table class="w-full table-auto border-collapse border border-gray-300">
+              <thead>
+                <tr>
+                  <th class="border border-gray-300 px-4 py-2"></th>
+                  <th class="border border-gray-300 px-4 py-2">Employee Name</th>
+                  <th class="border border-gray-300 px-4 py-2">Release Date</th>
+                  <th class="border border-gray-300 px-4 py-2">Due Date</th>
+                  <th class="border border-gray-300 px-4 py-2">Status</th>
+                </tr>
+              </thead>
+              <tbody>
+                 <tr *ngFor="let empData of data.children">
+                  <td class="border px-4 py-2 text-center"><mat-checkbox [checked]="empData.checked" (change)="checkEmployee($event, empData)"></mat-checkbox></td>
+                  <td class="border px-4 py-2 text-black">{{ empData.empName }}</td>
+                  <td class="border px-4 py-2 text-black">{{ empData.releaseDate == null ? 'N/A' : (empData.releaseDate | dateFormat) | async }} </td>
+                  <td class="border px-4 py-2 text-black">{{ empData.dueDate == null ? 'N/A' : (empData.dueDate | dateFormat) | async }}</td>
+                  <td class="border px-4 py-2 text-black">{{ empData.status }}</td>
+                </tr> 
+              </tbody>
+            </table>
+          </div>
+        </mat-panel-description>
+      </mat-expansion-panel>
+    </mat-accordion>
+    </div>
+  </section>
+</div>
+
+<ng-template #confirmReassign>
+  <app-qtd-dialogue [isHTML]="true" [showEffectiveDateAndReason]="false" [header]="'Remove Evaluator'" [description]="description"
+    [cancelText]="'No'" [confirmText]="'Yes'" (canceled)="dialog.closeAll();"
+    (confirmed)="openReassignDialog(reassignDialog)"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #reassignDialog>
+  <app-task-requal-reassign-eval-dialog (saved)="dialog.closeAll();saved.emit();" [selectedView] = "selectedView" [evalId]="evalData.evaluatorId" [selectedData]="selectedView == 'emp'?selection.selected:taskSelection.selected"
+    (canceled)="dialog.closeAll();"></app-task-requal-reassign-eval-dialog>
+</ng-template>

@@ -1,0 +1,31 @@
+
+  .table-reviewer {
+    max-width: 50px;
+    width: 50px;
+  }
+  
+  .reviewer-header {
+    font-size: 16px;
+  }
+  
+  .reviewer-name {
+    font-size: 15px;
+  }
+  .mat-row, .mat-header-row {
+    border-bottom: 0px !important;
+  }
+  .reviewer-list-data{
+    margin-top: 1.125rem;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.10);
+    border-radius: 4px;
+    border: 0.5px solid #E1E5E4;
+    overflow: hidden;
+    .linked-row{
+      color: rgb(92, 155, 49)
+    }
+  }
+  :host ::ng-deep .clear-icon-btn app-icon {
+    position:relative;
+    top: 1px;
+    left: 4px;
+  }

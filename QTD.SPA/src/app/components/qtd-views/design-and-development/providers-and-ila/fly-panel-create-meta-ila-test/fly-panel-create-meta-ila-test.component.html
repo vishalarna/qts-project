@@ -1,0 +1,48 @@
+<div *ngIf="isMainFlyPanelOpen">
+  <mat-toolbar class="app-toolbar-sticky flex align-items-center meta-test-header">
+    <div class="flex items-center">
+      <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" class="meta-test-back-button" (clicked)="closeFlyPanel()" ></app-button>
+      <div  class="create-meta-test-heading ml-4">
+        <h3 translate *ngIf="mode === 'create'"> Create Meta {{("ILA" | labelReplacement)| async}} Summary Test </h3>
+        <h3 translate *ngIf="mode === 'edit'"> Edit Meta {{("ILA" | labelReplacement)| async}} Summary Test </h3>
+      </div>
+    </div>
+    <div class="flex flex-row items-center" >
+      <app-button  type="button" *ngIf="currentStepIndex < 2" text="Continue" [disabled]="currentStepIndex ==0 && !isAddTestFormValid" size="sm" customClasses="meta-test-continue-button header-button disabled-pointer" (clicked)="continueClickAsync($event)" > </app-button>
+      <app-button  type="button" *ngIf="currentStepIndex === 2" text="Publish" (clicked)="openDialog(publishDialog)" size="sm" customClasses="meta-test-continue-button header-button" > </app-button>
+    </div>
+  </mat-toolbar>
+  
+  <div class="meta-test-container">
+    <mat-stepper [linear]="true" labelPosition="bottom" [selectedIndex]="currentStepIndex" [orientation]="(stepperOrientation | async)!" class="meta-test-stepper" #stepper (selectionChange)="onSelectionChange($event)" >
+      <ng-template matStepperIcon="edit">
+        <app-icon icon="done"></app-icon>
+      </ng-template>
+      <mat-step [completed]="metaILASummaryTestVM?.id != undefined">
+        <ng-template matStepLabel>Add Test Information</ng-template>
+        <ng-template matStepContent >
+          <app-add-test-information [testTypeDescription] = "testType" [metaILASummaryTestVM]="metaILASummaryTestVM" (formStatus)="isAddTestFormValid = $event"></app-add-test-information>
+        </ng-template>
+      </mat-step>
+      <mat-step optional>
+        <ng-template matStepLabel>Add and Sequence Test Questions</ng-template>
+        <ng-template matStepContent >
+          <app-add-and-sequence-test-questions #addSequenceTestQues  [addedQuestionsData]="questionsTableData" [metaILASummaryTestVM]="metaILASummaryTestVM" (deleteTestItem)="deleteTestItem($event)" (openImportTestItemFlyPanel)="isFlyPanelImportTestItemOpen = $event; isMainFlyPanelOpen = !$event" (openAddTestItemFlyPanel)="isFlyPanelAddTestItemOpen = $event; isMainFlyPanelOpen = !$event"></app-add-and-sequence-test-questions>
+        </ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Preview & Publish</ng-template>
+        <ng-template matStepContent >
+          <app-preview-and-publish-meta-ila-test [metaILASummaryTestVM]="metaILASummaryTestVM" [testItemsToPreview]="testItemsToPreview"></app-preview-and-publish-meta-ila-test>
+        </ng-template>
+      </mat-step>
+      
+    </mat-stepper>
+  </div>
+</div>
+<app-flypanel-add-test-item *ngIf="isFlyPanelAddTestItemOpen" [isCloseClick]="true" (closeByValue)="isFlyPanelAddTestItemOpen=$event; isMainFlyPanelOpen = !$event;"  mode="add" (addQuestion)="questionAdded($event)"></app-flypanel-add-test-item>
+<app-import-meta-ila-test-questions *ngIf="isFlyPanelImportTestItemOpen" [metaILAId]="metaILADetails.id" [metaILAs]="metaILADetails" (closeByValue)="isFlyPanelImportTestItemOpen=$event; isMainFlyPanelOpen = !$event;" (questionsToAdd)="questionsImported($event)" ></app-import-meta-ila-test-questions>
+<ng-template #publishDialog>
+  <app-qtd-dialogue [header]="'Publish Test'" [description]="description" [isHTML]="true" [confirmText]="'Yes'" [cancelText]="'No'"
+    (canceled)="dialog.closeAll()" [showEffectiveDateAndReason]="true" (confirmed)="publishTest($event)"></app-qtd-dialogue>
+</ng-template>

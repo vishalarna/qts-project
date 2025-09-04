@@ -1,0 +1,260 @@
+<!--Link EO Menu -->
+<ng-container *ngIf="!AddEditEOMenu">
+
+    <!-- header starts here -->
+    <div class="flex flex-row justify-between items-center px-12">
+        <h1 class="text-xl font-medium text-gray-900">{{("Enabling Objective" | labelReplacement)| async}}</h1>
+        <button type="button" (click)="flyPanelSrvc.close()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                </path>
+            </svg>
+        </button>
+    </div>
+    <!-- header ends here -->
+
+    <!-- search starts here -->
+    <div class="flex flex-row items-center pt-12 pb-2 border-b-0.8 mx-12 border-gray-one">
+        <svg class="w-4 h-4 mr-2 stroke-current text-gray-four " fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text" [(ngModel)]="EOSearchStr"
+            (keyup)="filterEnablingObjectives($event.target)">
+    </div>
+    <!-- search starts ends -->
+
+    <app-data-loader *ngIf="EOCategories.length == 0"></app-data-loader>
+
+
+    <!-- List section starts here -->
+    <ng-container *ngIf="EOCategories.length > 0">
+        <!-- sub-header starts here -->
+        <div class="flex flex-row pt-12 items-center px-12">
+            <div class="flex-grow space-y-1">
+                <div class="flex flex-row items-center text-gray-four">
+                    <p class="text-xs mr-2">Sort by Category (A - Z)</p>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+
+            <div class="flex flex-row items-center text-green-one" *ngIf="EOToLink.length==0">
+                <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                </svg>
+                <button (click)="openEOAddEditPanel('add')" class="font-medium text-xs xl:text-sm">Add new
+                    Enabling
+                    Objective</button>
+            </div>
+            <div class="flex flex-row space-x-4 text-sm " *ngIf="EOToLink.length>0">
+                <button class="btn-icon-secondary" (click)="linkEOtoTask()">
+                    <svg class="feather feather-plus mr-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Link to {{("Task" | labelReplacement)| async}}
+                </button>
+            </div>
+        </div>
+        <!-- sub-header ends here -->
+
+        <!-- Material Accordian Example -->
+        <div class="pt-6 items-center pb-3">
+            <mat-accordion [multi]="true">
+                <mat-expansion-panel *ngFor="let item of EOCategories" [expanded]="true">
+                    <mat-expansion-panel-header>
+                        <mat-panel-title class="justify-between">
+                            <p>{{item.description}}</p>
+                            <p>[ Category ]</p>
+
+                        </mat-panel-title>
+                    </mat-expansion-panel-header>
+
+                    <ng-template matExpansionPanelContent>
+                        <mat-expansion-panel *ngFor="let subCat of item.enablingObjective_SubCategories"
+                            [expanded]="EOSearchStr">
+                            <mat-expansion-panel-header>
+                                <mat-panel-title class="justify-between">
+                                    <p>{{subCat.description}}</p>
+                                    <p>[ Sub Category ]</p>
+
+                                </mat-panel-title>
+                            </mat-expansion-panel-header>
+                            <ng-template matExpansionPanelContent *ngIf="subCat.enablingObjective_Topics.length > 0">
+                                <mat-expansion-panel *ngFor="let topic of subCat.enablingObjective_Topics"
+                                    [expanded]="EOSearchStr">
+                                    <mat-expansion-panel-header>
+                                        <mat-panel-title class="justify-between">
+                                            <p>{{topic.description}}</p>
+                                            <p>[ Topic ]</p>
+                                        </mat-panel-title>
+                                    </mat-expansion-panel-header>
+
+                                    <ng-template matExpansionPanelContent>
+                                        <div class="text-sm">
+                                            <ng-container *ngFor="let eo of topic.enablingObjectives">
+                                                <div class="flex flex-nowrap">
+                                                    <input type="checkbox" class="mr-3 bg-green-300"
+                                                        [checked]="EOToLink.includes(eo.id)"
+                                                        (change)="AddToLinkList(eo.id)">
+                                                    <p class="text-gray-900">{{eo.statement}}</p>
+                                                </div>
+                                                <div class="flex flex-row items-center justify-between pb-3 pl-6">
+                                                    <div class="flex flex-row items-center text-gray-four">
+                                                        <p class="text-xs">
+                                                             </p>
+                                                    </div>
+                                                    <div class="flex flex-row items-center text-gray-four btn-group">
+                                                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                                                            <app-icon icon="more_vert"></app-icon>
+                                                        </button>
+                                                        <mat-menu #menu="matMenu">
+                                                            <button mat-menu-item
+                                                                (click)="openEOAddEditPanel('edit',eo.id)">Edit</button>
+                                                            <button mat-menu-item>View EO linked to
+                                                                {{("Task" | labelReplacement)| async}}</button>
+                                                            <button mat-menu-item>View EO linked to
+                                                                {{("ILA" | labelReplacement)| async}}</button>
+                                                            <button mat-menu-item *ngIf="eo.active"
+                                                                (click)="modifyEOStatus(eo,'inactive')">Make
+                                                                Inactive</button>
+                                                            <button mat-menu-item *ngIf="!eo.active"
+                                                                (click)="modifyEOStatus(eo,'active')">Make
+                                                                Active</button>
+                                                            <div class="dropdown-divider"></div>
+                                                            <button mat-menu-item
+                                                                (click)="modifyEOStatus(eo,'delete')">Delete</button>
+                                                        </mat-menu>
+                                                    </div>
+                                                </div>
+                                            </ng-container>
+                                        </div>
+                                    </ng-template>
+                                </mat-expansion-panel>
+                            </ng-template>
+                        </mat-expansion-panel>
+                    </ng-template>
+                </mat-expansion-panel>
+            </mat-accordion>
+        </div>
+        <!-- Material Accordian Example -->
+
+
+    </ng-container>
+
+
+
+</ng-container>
+
+<!-- Add EO Menu -->
+<ng-container *ngIf="AddEditEOMenu">
+    <form (ngSubmit)="saveEO()" #form="ngForm">
+
+        <div>
+
+            <!-- header starts here -->
+            <button class="flex flex-row items-center px-10" (click)="AddEditEOMenu=false">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    class="stroke-current text-gray-900 feather feather-x cursor-pointer hover:text-teal-400 h-6 w-6"
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+                <h1 class="text-xl font-medium text-gray-900">{{EOMenuMode=='add'?'Add new':'Edit'}} Enabling
+                    Objective</h1>
+            </button>
+            <!-- header ends here -->
+
+            <!-- input starts here -->
+            <div class="flex flex-col pt-12 pb-2 px-12">
+                <p class="text-sm font-medium text-gray-four">{{("Enabling Objective" | labelReplacement)| async}} </p>
+                <input name="EoDesc" [(ngModel)]="eo.statement" required
+                    class="text-sm flex-grow focus:outline-none text-gray-900 border-gray-one border-0.8 mt-2 px-4 pt-3 pb-7 rounded"
+                    placeholder="{{('Enabling Objective' | labelReplacement)| async}}  descripton here" type="text">
+            </div>
+            <!-- input starts ends -->
+
+            <!-- Option section starts here -->
+            <div class="">
+
+                <!-- Category option starts here -->
+                <div class="flex flex-col pt-12 px-12">
+                    <div class="flex flex-row">
+                        <div class="flex-grow space-y-1">
+                            <div class="flex flex-row items-center text-gray-four">
+                                <p class="text-xs mr-2">Category</p>
+                            </div>
+                        </div>
+
+                    </div>
+                    <select name="Category" id="Category" [(ngModel)]="selectedCategoryId"
+                        (ngModelChange)="getSubcategories()" required
+                        class="text-sm flex-grow text-gray-900 border-gray-one border-0.8 mt-2 px-4 py-3 rounded focus:outline-none bg-white-one">
+                        <option [value]="undefined">Select</option>
+                        <option [ngValue]="item.id" *ngFor="let item of EOCategories">{{item.description}}
+                        </option>
+                    </select>
+
+                </div>
+                <!-- Category option ends here -->
+
+                <!-- sub-category option starts here -->
+                <div class="flex flex-col pt-12 px-12">
+                    <div class="flex flex-row">
+                        <div class="flex-grow space-y-1">
+                            <div class="flex flex-row items-center text-gray-four">
+                                <p class="text-xs mr-2">Sub Category</p>
+                            </div>
+                        </div>
+                    </div>
+                    <select name="Sub Category" id="SubCategory" [(ngModel)]="selectedSubCategoryId"
+                        (ngModelChange)="getTopics()" required
+                        class="text-sm flex-grow text-gray-900 border-gray-one border-0.8 mt-2 px-4 py-3 rounded focus:outline-none bg-white-one">
+                        <option [value]="undefined">Select</option>
+                        <option [ngValue]="item.id" *ngFor="let item of EOSubCategories">
+                            {{item.description}}
+                        </option>
+                    </select>
+                </div>
+                <!-- sub-category option ends here -->
+                <div class="flex flex-col pt-12 px-12">
+                    <div class="flex flex-row">
+                        <div class="flex-grow space-y-1">
+                            <div class="flex flex-row items-center text-gray-four">
+                                <p class="text-xs mr-2">Topic</p>
+                            </div>
+                        </div>
+                    </div>
+                    <select name="topic" id="topic" [(ngModel)]="eo.topicId" required
+                        class="text-sm flex-grow text-gray-900 border-gray-one border-0.8 mt-2 px-4 py-3 rounded focus:outline-none bg-white-one">
+                        <option [value]="undefined">Select</option>
+                        <option [ngValue]="item.id" *ngFor="let item of EOTopics">{{item.description}}</option>
+                    </select>
+
+                </div>
+                <!-- Button section starts here -->
+                <div class="flex text-sm w-full justify-between px-12 py-6">
+                    <button class="flex flex-row items-center" (click)="AddEditEOMenu=false">
+                        <p class="text-gray-900 text-sm font-normal">Cancel</p>
+                    </button>
+                    <button type="submit" [disabled]="form.invalid"
+                        class="flex flex-row text-sm font-medium text-green-one items-center border-2 border-green-one rounded px-4 py-2">
+                        {{EOMenuMode=='add' ?'Save':'Update'}} {{("Enabling Objective" | labelReplacement)| async}}
+                    </button>
+                </div>
+            </div>
+            <!-- Option section ends here -->
+
+        </div>
+
+    </form>
+</ng-container>

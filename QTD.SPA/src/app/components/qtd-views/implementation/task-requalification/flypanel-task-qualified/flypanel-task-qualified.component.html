@@ -1,0 +1,108 @@
+<app-data-loader *ngIf="!dataSource"></app-data-loader>
+<div *ngIf="dataSource" class="flex flex-col p-5">
+  <section class="flex flex-row justify-between">
+    <span class="font-bold text-lg">{{("Task" | labelReplacement)| async}} Qualifications</span>
+    <app-icon (click)="closed.emit()" icon="close" class="text-gray-500 cursor-pointer"></app-icon>
+  </section>
+
+  <section *ngIf="dataSource.data.length > 0" class="flex flex-row mt-5 mb-4">
+    <span class="linkText mr-1">{{this.dataSource.data[0].empName}}</span>
+    <span>has the following {{("Task" | labelReplacement)| async}} Qualification records:</span>
+  </section>
+
+  <section *ngIf="dataSource.data.length < 1" class="flex flex-row m-5" style="justify-content:center;">
+    <span>No {{("Task" | labelReplacement)| async}} Qualification Data Found</span>
+  </section>
+
+
+  <section *ngIf="dataSource.data.length > 0">
+    <table class="w-full mat-elevation-z3 rounded-sm" [dataSource]="dataSource" mat-table>
+
+      <ng-container matColumnDef="releaseDate">
+        <th style="width:18%" mat-header-cell *matHeaderCellDef>
+          EMP Release Date
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span class="text-xs font-light text-gray-400">
+            {{row.empReleaseDate === null ? "NA" :(row.empReleaseDate| date:'MM/dd/yyyy')}}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="qualDate">
+        <th style="width:17%" mat-header-cell *matHeaderCellDef>
+          Qualification Date / Evaluator
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="flex flex-col">
+            <span class="text-xs font-thin text-gray-400">{{row.qualificationDate === null ? "NA" :
+              (row.qualificationDate | dateFormat) | async}}</span>
+            <span class="linkText">{{row.evaluatorName === null || row.evaluatorName === '' ?
+              "N/A":row.evaluatorName}}</span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dueDate">
+        <th style="width:10%;" mat-header-cell *matHeaderCellDef>
+          Due Date
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span class="text-xs font-light text-gray-400">{{row.dueDate === null ? "NA" : (row.dueDate |
+            date:'MM/dd/yyyy')}}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="criteria">
+        <th style="width:11%;" mat-header-cell *matHeaderCellDef>
+          Criteria Met (Y/N)
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{row.criteriaMet ? 'Y':'N'}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="qualStatus">
+        <th style="width:19%" mat-header-cell *matHeaderCellDef>
+          Qualification Status
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="flex flex-row" style="align-items:center">
+            <!-- [ngClass]="{'initial':row.qualStatus.trim().toLowerCase() === 'initial qualification','overdue':row.qualStatus.trim().toLowerCase() === 'overdue'}" -->
+            <div
+              [ngClass]="{'initial':row.status.trim().toLowerCase() !== 'overdue','overdue':row.status.trim().toLowerCase() === 'overdue'}"
+              class="rounded-sm py-1 px-1 common text-center initial">
+              <span class="font-bold text-xs">{{row.status}}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="isRecalled">
+        <th style="width:11%;" mat-header-cell *matHeaderCellDef>
+          Recalled (Y/N)
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{row.isRecalled ? 'Y':'N'}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="comments">
+        <th style="width:21%" mat-header-cell *matHeaderCellDef>
+          Comments
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span [innerHTML] = "row.comments"></span>
+        </td>
+      </ng-container>
+
+      <tr style="vertical-align: top;" mat-header-row class="pl-2 pr-2" *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row class="pr-2 pl-2" *matRowDef="let row; columns: displayedColumns"></tr>
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">No {{("Task" | labelReplacement)| async}} Qualifications Found</td>
+      </tr>
+    </table>
+  </section>
+
+</div>

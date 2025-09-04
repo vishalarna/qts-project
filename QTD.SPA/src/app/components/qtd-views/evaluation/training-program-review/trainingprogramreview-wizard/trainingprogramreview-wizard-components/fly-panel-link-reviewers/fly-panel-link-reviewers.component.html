@@ -1,0 +1,44 @@
+<div class="flex flex-col px-12 py-12">
+    <ng-container> 
+      <div class="flex flex-row justify-between px-2 mb-3" >
+          <h2>Select Reviewer(s)</h2>
+          <app-button ButtonType="icon" icon="close" (clicked)="xClick()"></app-button>
+      </div>
+      <div class="search-set-container">
+        <div class="flex flex-grow keyword-input">
+          <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" ></path>
+          </svg>
+          <input class="text-sm flex-grow focus:outline-none" placeholder="Enter {{('Employee' | labelReplacement)| async}} First or Last Name to search" type="text" (input)="searchEmployees($event)" />
+        </div>
+        <app-button text="Set Reviewers" size="sm" (click)="setReviewersClick()"  >
+        </app-button>
+      </div>
+      <div class="employees-list">
+        <mat-table matSort [dataSource]="employeesListData" #empSort="matSort">
+            <ng-container matColumnDef="empId">
+              <mat-header-cell *matHeaderCellDef> 
+                <mat-checkbox [disabled]="true"></mat-checkbox>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" >
+                <mat-checkbox [checked]="isSelected(row.empId)" (change)="employeeSelectionChange(row)">
+                </mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2"> Name
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span>{{row.firstName}} {{row.lastName}}</span>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="employeesColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: employeesColumns;"></mat-row>
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+              <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+          </mat-table>
+    </div>
+    </ng-container>
+  </div>

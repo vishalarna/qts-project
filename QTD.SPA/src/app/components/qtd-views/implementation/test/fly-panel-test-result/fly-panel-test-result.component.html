@@ -1,0 +1,784 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+    <!-- <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBack()">
+    </app-button> -->
+    <div class="flex flex-row items-center space-x-4 w-full justify-between">
+        <h1>Test</h1>
+        <div class="justify-between">
+            <app-button type="button" color="blueBorder" (clicked)="printData()" text="Print">
+            </app-button>
+            <app-button color="blue" type="button" text="Done" (clicked)="goBack()" style="margin-left: 10px;">
+            </app-button>
+        </div>
+    </div>
+</mat-toolbar>
+
+
+<div class="mt-5 flex justify-center" style="align-items:center;">
+    <div style="width:50%;">
+        <!-- Top Header Section -->
+        <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm">
+            <div class="flex flex-row justify-center pb-3">
+                <mat-icon style="color: #34c34b; transform: scale(2);" *ngIf="isPassed">check_circle</mat-icon>
+                <mat-icon class="icon-style-incorrect" style="color: #c35134; transform: scale(2);"
+                    *ngIf="!isPassed">clear</mat-icon>
+
+            </div>
+            <div class="flex flex-row justify-center pb-3">
+                <span class="font-bold" *ngIf="isPassed">Congratulations!<i> </i></span>
+                <span class="font-bold" *ngIf="!isPassed">Fail!<i> </i></span>
+
+            </div>
+
+            <div class="flex flex-row  pb-3">
+                <div id="container">
+                    <div>
+                        <h1 style="text-align: center;position: relative;top: 15%;">Passing Score</h1>
+                        <circle-progress [percent]="passingScore" [radius]="40" [outerStrokeWidth]="4"
+                            [innerStrokeWidth]="3" [space]="-3" [outerStrokeColor]="'#ffca10'"
+                            [innerStrokeColor]="'#e7e8ea'" [titleFontSize]="'20'" [unitsFontSize]="'10'"
+                            [animation]="false" [backgroundPadding]="10" [showSubtitle]="false" [units]="'/100'"
+                            [responsive]="true" [startFromZero]="true"></circle-progress>
+                    </div>
+                    <div>
+                        <h1 style="text-align: center;">Your Score</h1>
+                        <circle-progress [percent]="totalScore" [radius]="100" [outerStrokeWidth]="10"
+                            [innerStrokeWidth]="10" [space]="-10" [outerStrokeColor]="'#41d0a1'"
+                            [innerStrokeColor]="'#e7e8ea'" [titleFontSize]="'30'" [unitsFontSize]="'15'"
+                            [showSubtitle]="false" [animation]="false" [responsive]="true" [units]="'/100'"
+                            [startFromZero]="true"></circle-progress>
+                    </div>
+                    <div>
+                        <h1 style="text-align: center;position: relative;top: 15%;">Maximum Score</h1>
+                        <circle-progress [percent]="maxScore" [radius]="40" [backgroundPadding]="10"
+                            [outerStrokeWidth]="4" [innerStrokeWidth]="3" [space]="-3" [outerStrokeColor]="'#75bdff'"
+                            [innerStrokeColor]="'#e7e8ea'" [titleFontSize]="'20'" [unitsFontSize]="'10'"
+                            [animation]="false" [showSubtitle]="false" [units]="'/100'" [responsive]="true"
+                            [startFromZero]="true"></circle-progress>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+        <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm">
+            <div class="flex flex-row justify-start">
+                <div>
+                    <div>
+                        <app-icon icon="access_time"></app-icon>
+                        <span class="text-color">
+                            TIME Spent: {{timeSpent}}
+                        </span>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- ILA DETAILS SECTION -->
+        <section class="flex flex-col w-full my-3 p-4 mat-elevation-z3 bg-white rounded-sm">
+          <div (click)="showDetails = !showDetails" class="flex flex-row justify-between pb-3 cursor-pointer" style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));font-weight: 700;border-bottom: 1px solid lightgray;">
+            <span>{{("ILA" | labelReplacement)| async}} Details</span>
+            <app-icon [icon]="showDetails ? 'keyboard_arrow_up':'keyboard_arrow_down'"></app-icon>
+          </div>
+        <!-- <mat-icon>{{panel.expanded ? 'keyboard_arrow_down':'keyboard_arrow_up'}}</mat-icon> -->
+
+        <div *ngIf="showDetails" style="display:grid;row-gap: 2rem;margin-top: 1rem;margin-bottom:1rem;">
+            <div style="grid-row: 1;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{testInfoObject !== null && testInfoObject?.providerName !== null && testInfoObject?.providerName !== undefined ? testInfoObject?.providerName:"Not Assigned"}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        Provider Name
+                    </span>
+                </div>
+            </div>
+            <div style="grid-row: 1;grid-column: 2;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{testInfoObject ? testInfoObject.ilaNumber:"Not Assigned"}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        {{("ILA" | labelReplacement)| async}} NO.
+                    </span>
+                </div>
+            </div>
+            <div style="grid-row: 2;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{testInfoObject ? testInfoObject.ila:"Not Assigned"}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        {{("ILA" | labelReplacement)| async}} Title
+                    </span>
+                </div>
+            </div>
+            <div style="grid-row: 2;grid-column: 2;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{testInfoObject ? testInfoObject.instructpr:"Not Assigned"}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        {{("Instructor" | labelReplacement)| async}}
+                    </span>
+                </div>
+            </div>
+            <div style="grid-row: 3;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{testInfoObject ? testInfoObject.location:"Not Assigned"}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        {{("Location" | labelReplacement)| async}}s
+                    </span>
+                </div>
+            </div>
+            <div style="grid-row: 3;grid-column: 2;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{datePipe.transform(currDate,'MMM d, y')}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        Start Date
+                    </span>
+                </div>
+            </div>
+            <div style="grid-row: 4;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{(currDate | date:'MMM d, yyyy')}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        Completion Date
+                    </span>
+                </div>
+            </div>
+        </div>
+        </section>
+
+        <!-- <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm">
+            <div class="float-container">
+
+                <div class="float-child">
+                    <h2 class="green">{{testInfoObject.providerName===null ?'N/A':testInfoObject.providerName}} </h2>
+                    <p class="green">Provider Name</p>
+                    <h2 class="green">{{testInfoObject.ila===null ?'N/A':testInfoObject.ila}} </h2>
+                    <p class="green">ILA Title</p>
+                    <h2 class="green">{{testInfoObject.location===null ?'N/A':testInfoObject.location}} </h2>
+                    <p class="green">{{("Locations" | labelReplacement)| async}}</p>
+                    <h2 class="green">{{todayDate}}</h2>
+                    <p class="green">Completion Date</p>
+
+                  </div>
+
+                  <div class="float-child">
+                      <h2 class="green">{{testInfoObject.ilaNumber===null ?'N/A':testInfoObject.ilaNumber}} </h2>
+                      <p class="green">ILA No.</p>
+                      <h2 class="green">{{testInfoObject.instructpr}} </h2>
+                      <p class="green">Instructor</p>
+                      <h2 class="green"> {{ datePipe.transform(testInfoObject.classDate, 'MM dd, yyyy') }} </h2>
+                      <p class="green">Completion Date</p>
+
+                  </div>
+
+            </div>
+        </section> -->
+
+
+        <!-- Section With Test Data -->
+        <div>
+            <ng-container *ngFor="let testItem of reviewTestInfo,index as i">
+                <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm"
+                    style="margin-bottom: 5rem;">
+
+                    <div>
+                        <div style="border-bottom:0.8px solid #E1E5E4;" class="pb-2 flex flex-row mt-2 mb-4">
+                            <span [matTooltip]="testItem.showCorrectIncorrectAnswers === false || testItem.showSubmittedAnswers === false ? 'Immediate feedback is not available for this test. Please contact your Training Department for review of your submitted answers':''" style="color:#7A807E; cursor: grab;" class="mr-4 font-medium question-label"
+                                (click)="showEntity(testItem)">Question : {{i+1}}</span>
+                            <div [ngClass]="testItem?.clearDescription?.trim().toLowerCase().includes('<p>') ? '':'mb-3'"
+                                class="font-normal question-text"
+                                [innerHTML]="testItem.testItem.testItemType.trim().toLowerCase() === 'fill in the blank' ? transform(testItem?.clearDescription) :transform(testItem?.testItem?.description)">
+                            </div>
+                            
+                        </div>
+                        <!-- For Fill In Blank -->
+                        <div class="mb-4"
+                        *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'fill in the blank'">
+                            <div *ngIf="testItem.showSubmittedAnswers" [ngClass]="testItem.testItem.description?.trim().toLowerCase ().includes('<p>') ? '':'mb-3'"
+                                class="font-normal flex flex-row submitted-answer wrap-text"
+                                [innerHTML]="transform(testItem?.testItem?.description)">
+                            </div>
+                            <div>
+                                <ng-container *ngIf="testItem.showCorrectIncorrectAnswers">
+                                    <mat-card style="background-color: #fff3f2;box-shadow: none;"
+                                        *ngIf="!testItem.correct">
+                                        <mat-card-content class="parent">
+
+                                            <div class="alignDiv">
+                                                <mat-icon class="icon-style-incorrect">clear</mat-icon>
+                                            </div>
+                                            <div class="alignDiv">
+                                                <span class="text-color-incorrect">
+                                                    Incorrect
+                                                </span>
+                                            </div>
+                                        </mat-card-content>
+                                    </mat-card>
+                                    <mat-card style="background-color: #effbf1;box-shadow: none; margin-top: 5px;"
+                                    *ngIf="!testItem.correct">
+                                    <mat-card-content class="parent">
+                                        <div class="alignDiv">
+                                            <mat-icon class="icon-style-correct">check</mat-icon>
+                                        </div>
+                                        <div class="alignDiv">
+                                            <span class="text-color-correct flex">
+                                                <span>Correct Answer :  </span> 
+                                                <span class="flex flex-col">
+                                                    <span *ngFor="let fib of testItem.fillInTheBlankkAnswer wrap-text" [innerHTML] = "fib"></span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </mat-card-content>
+                                </mat-card>
+                                    <mat-card style="background-color: #effbf1;box-shadow: none;"
+                                        *ngIf="testItem.correct">
+                                        <mat-card-content class="parent">
+                                            <div class="alignDiv">
+                                                <mat-icon class="icon-style-correct">check</mat-icon>
+                                            </div>
+                                            <div class="alignDiv">
+                                                <span class="text-color-correct">
+                                                    Correct
+                                                </span>
+                                            </div>
+                                        </mat-card-content>
+                                    </mat-card>
+                                </ng-container>
+                            </div>
+                        </div>
+
+                        <!-- For MCQ -->
+                        <div *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'multiple choice questions'"
+                            class="mb-4">
+                            <div>
+                                <ng-container *ngIf="testItem.showSubmittedAnswers">
+                                    <mat-radio-group
+                                        [value]="getReviewMCQCorrect(testItem.testItem.testItemMCQs,testItem.userAnswer)">
+                                        <div *ngFor="let mcq of testItem.testItem.testItemMCQs">
+                                            <mat-radio-button [disabled]="true" class="mb-2" [value]="mcq">
+                                                <div class="ml-3 font-normal wrap-text " [innerHTML]="mcq.choiceDescription"></div>
+                                            </mat-radio-button>
+                                        </div>
+                                    </mat-radio-group>
+                                </ng-container>
+                                <ng-container *ngIf="testItem.showCorrectIncorrectAnswers">
+                                    <mat-card style="background-color: #fff3f2;box-shadow: none;"
+                                        *ngIf="!testItem.correct">
+                                        <mat-card-content class="parent">
+
+                                            <div class="alignDiv">
+                                                <mat-icon class="icon-style-incorrect">clear</mat-icon>
+                                            </div>
+                                            <div class="alignDiv">
+                                                <span class="text-color-incorrect">
+                                                    Incorrect
+                                                </span>
+                                            </div>
+                                        </mat-card-content>
+                                    </mat-card>
+                                    <mat-card style="background-color: #effbf1;box-shadow: none; margin-top: 5px;"
+                                    *ngIf="!testItem.correct">
+                                    <mat-card-content class="parent">
+                                        <div class="alignDiv">
+                                            <mat-icon class="icon-style-correct">check</mat-icon>
+                                        </div>
+                                        <div class="alignDiv">
+                                            <span class="text-color-correct flex correct-answer">
+                                                Correct Answer : <span class="wrap-text" [innerHTML]="testItem.mcqAnswer"></span>
+                                            </span>
+                                        </div>
+                                    </mat-card-content>
+                                </mat-card>
+                                    <mat-card style="background-color: #effbf1;box-shadow: none;"
+                                        *ngIf="testItem.correct">
+                                        <mat-card-content class="parent">
+                                            <div class="alignDiv">
+                                                <mat-icon class="icon-style-correct">check</mat-icon>
+                                            </div>
+                                            <div class="alignDiv">
+                                                <span class="text-color-correct">
+                                                    Correct
+                                                </span>
+                                            </div>
+                                        </mat-card-content>
+                                    </mat-card>
+                                </ng-container>
+                            </div>
+                        </div>
+
+                        <!-- Multiple Correct -->
+                        <div *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'multiple correct answers'"
+                            class="mb-4">
+                            <div>
+                                <ng-container *ngIf="testItem.showSubmittedAnswers">
+                                    <div *ngFor="let mca of testItem.testItem.testItemMCQs">
+                                        <mat-checkbox [disabled]="true"
+                                            [checked]="getReviewValueForCheckbox(mca,testItem.multipleCorrectAnswer)">
+                                            <div [innerHTML]="mca.choiceDescription" class="wrap-text"></div>
+                                          </mat-checkbox>
+                                    </div>
+                                </ng-container>
+                                <ng-container *ngIf="testItem.showCorrectIncorrectAnswers">
+                                    <mat-card style="background-color: #fff3f2;box-shadow: none;"
+                                        *ngIf="!testItem.correct">
+                                        <mat-card-content class="parent">
+
+                                            <div class="alignDiv">
+                                                <mat-icon class="icon-style-incorrect">clear</mat-icon>
+                                            </div>
+                                            <div class="alignDiv">
+                                                <span class="text-color-incorrect">
+                                                    Incorrect
+                                                </span>
+                                            </div>
+                                        </mat-card-content>
+                                    </mat-card>
+                                    <mat-card style="background-color: #effbf1;box-shadow: none; margin-top: 5px;"
+                                    *ngIf="!testItem.correct">
+                                    <mat-card-content class="parent">
+                                        <div class="alignDiv">
+                                            <mat-icon class="icon-style-correct">check</mat-icon>
+                                        </div>
+                                        <div class="alignDiv"> 
+                                            <span class="text-color-correct flex correct-answer">
+                                                <span>Correct Answer :  </span> 
+                                                <span class="flex flex-col wrap-text">
+                                                    <span *ngFor="let mca of testItem.multiCorrectAnswers" [innerHTML] = "mca"></span>
+                                                </span>
+                                            </span>
+                                        </div>
+                                    </mat-card-content>
+                                </mat-card>
+                                    <mat-card style="background-color: #effbf1;box-shadow: none;"
+                                        *ngIf="testItem.correct">
+                                        <mat-card-content class="parent">
+                                            <div class="alignDiv">
+                                                <mat-icon class="icon-style-correct">check</mat-icon>
+                                            </div>
+                                            <div class="alignDiv">
+                                                <span class="text-color-correct">
+                                                    Correct
+                                                </span>
+                                            </div>
+                                        </mat-card-content>
+                                    </mat-card>
+                                </ng-container>
+                            </div>
+                        </div>
+
+                        <!-- For True False -->
+                        <div class="mb-4"
+                            *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'true / false'">
+                            <div>
+                                <ng-container *ngIf="testItem.showSubmittedAnswers">
+                                    <mat-radio-group
+                                        [value]="getReviewTFCorrect(testItem.testItem.testItemTrueFalses,testItem.userAnswer)">
+                                        <div *ngFor="let tf of testItem.testItem.testItemTrueFalses">
+                                            <mat-radio-button [disabled]="true" class="mb-2" [value]="tf">
+                                                <span class="ml-3 font-normal">{{tf.choices}}</span>
+                                            </mat-radio-button>
+                                        </div>
+                                    </mat-radio-group>
+                                </ng-container>
+                                <div>
+                                    <ng-container *ngIf="testItem.showCorrectIncorrectAnswers">
+                                        <mat-card style="background-color: #fff3f2;box-shadow: none; margin-top: 5px;"
+                                            *ngIf="!testItem.correct">
+                                            <mat-card-content class="parent">
+
+                                                <div class="alignDiv">
+                                                    <mat-icon class="icon-style-incorrect">clear</mat-icon>
+                                                </div>
+                                                <div class="alignDiv">
+                                                    <span class="text-color-incorrect">
+                                                        Incorrect
+                                                    </span>
+                                                </div>
+                                            </mat-card-content>
+                                        </mat-card>
+                                        <mat-card class="mt-2" style="background-color: #effbf1;box-shadow: none;"
+                                        *ngIf="!testItem.correct">
+                                        <mat-card-content class="parent">
+                                            <div class="alignDiv">
+                                                <mat-icon class="icon-style-correct">check</mat-icon>
+                                            </div>
+                                            <div class="alignDiv">
+                                                <span class="text-color-correct">
+                                                    Correct Answer :  {{testItem.trueFalseAnswer}}
+                                                </span>
+                                            </div>
+                                        </mat-card-content>
+                                    </mat-card>
+                                        <mat-card style="background-color: #effbf1;box-shadow: none;"
+                                            *ngIf="testItem.correct">
+                                            <mat-card-content class="parent">
+                                                <div class="alignDiv">
+                                                    <mat-icon class="icon-style-correct">check</mat-icon>
+                                                </div>
+                                                <div class="alignDiv">
+                                                    <span class="text-color-correct">
+                                                        Correct
+                                                    </span>
+                                                </div>
+                                            </mat-card-content>
+                                        </mat-card>
+                                    </ng-container>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                         <!-- For Match The Column -->
+                         <div style="display: grid;row-gap: 0.6rem;" class="mb-4"
+                         *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'match the column'">
+                         <div>
+                             <ng-container *ngIf="testItem.showSubmittedAnswers">
+                                 <section class="w-full mt-3">
+                                     <!-- Top Grid with Headers -->
+                                     <div style="display: grid; grid-template-columns: 16% 39% 6% 39%;">
+                                         <div class="pt-3 pb-3"
+                                         style="grid-column: 1; border: 1px solid lightgray; border-top-right-radius: 0.2rem; text-align: center;">
+                                             Correct Answer
+                                         </div>
+                                         <div class="flex pt-3 pb-3"
+                                         style="grid-column: 2; align-items: center; justify-content: center; border: 1px solid lightgray;">
+                                             Questions
+                                         </div>
+                                         <div class="pt-3 pb-3"
+                                         style="grid-column: 3; border: 1px solid lightgray; border-top-left-radius: 0.2rem;">
+                                         </div>
+                                         <div class="flex pt-3 pb-3"
+                                         style="grid-column: 4; align-items: center; justify-content: center; border: 1px solid lightgray;">
+                                             Choices
+                                         </div>
+                                     </div>
+
+                                     <!-- Middle grid with Data -->
+                                     <div *ngFor="let mq of testItem.testItem.testItemMatches,index as i"
+                                     style="display: grid; grid-template-columns: 16% 39% 6% 39%;">
+                                         <div class="flex pt-3 pb-3"
+                                         style="grid-column: 1; align-items: center; justify-content: center; border: 1px solid lightgray;">
+                                         <!-- <input [attr.disabled]="!mq.hasChoice ? true:null" formControlName="correct{{i}}" (input)="getKey(i,$event);"
+                       maxlength="1" type="text" style="width: 100%;height: 100%;text-align: center;outline:none"> -->
+                                         <mat-select *ngIf="mq.choiceDescription" [disabled]="true"
+                                            [value]="compareItems(testItem.testItem.testItemMatches[i],testItem.matchValueWithCorrectValue,testItem.testItem.testItemMatches)"
+                                             style="text-align: center;">
+                                             <mat-option [value]="item" *ngFor="let item of getCorrectAnswers(testItem.testItem.testItemMatches)">
+                                                 {{item}}
+                                             </mat-option>
+                                         </mat-select>
+                                     </div>
+                                         <div class="pt-3 pb-3 pl-2"
+                                         style="grid-column: 2; border: 1px solid lightgray;">
+                                             <textarea value="{{mq.choiceDescription}}" disabled type="text"
+                                                 style="width: 100%;height: 100%;outline:none;resize: none;"></textarea>
+                                         </div>
+                                         <div class="flex pt-3 pb-3"
+                                         style="grid-column: 3; align-items: center; justify-content: center; border: 1px solid lightgray;">
+
+                                         {{mq.matchValue}}
+                                     </div>
+                                         <div class="pl-2 pt-2" class="pt-3 pb-3"
+                                         style="grid-column: 4; border: 1px solid lightgray;">
+                                             <textarea value="{{mq.matchDescription}}" type="text" disabled
+                                                 style="width: 100%;height: 100%;outline:none;resize: none;"></textarea>
+                                         </div>
+                                      
+                                     </div>
+                                 </section>
+                             </ng-container>
+                             <ng-container *ngIf="testItem.showCorrectIncorrectAnswers">
+                                 <mat-card style="background-color: #fff3f2;box-shadow: none;"
+                                     *ngIf="!testItem.correct">
+                                     <mat-card-content class="parent">
+
+                                         <div class="alignDiv">
+                                             <mat-icon class="icon-style-incorrect">clear</mat-icon>
+                                         </div>
+                                         <div class="alignDiv">
+                                             <span class="text-color-incorrect">
+                                                 Incorrect
+                                             </span>
+                                         </div>
+                                     </mat-card-content>
+                                 </mat-card>
+                                 <mat-card style="background-color: #effbf1;box-shadow: none; margin-top: 5px;"
+                                 *ngIf="!testItem.correct">
+                                 <mat-card-content class="parent">
+                                     <div class="alignDiv">
+                                         <mat-icon class="icon-style-correct">check</mat-icon>
+                                     </div>
+                                     <div class="alignDiv">
+                                        <span class="text-color-correct flex">
+                                            <span>Correct Answer :  </span> 
+                                            <span class="flex flex-col">
+                                                <span *ngFor="let matchAns of testItem.matchValueAnswer" [innerHTML] = "matchAns"></span>
+                                            </span>
+                                        </span>
+                                     </div>
+                                 </mat-card-content>
+                             </mat-card>
+                                 <mat-card style="background-color: #effbf1;box-shadow: none;"
+                                     *ngIf="testItem.correct">
+                                     <mat-card-content class="parent">
+                                         <div class="alignDiv">
+                                             <mat-icon class="icon-style-correct">check</mat-icon>
+                                         </div>
+                                         <div class="alignDiv">
+                                             <span class="text-color-correct">
+                                                 Correct
+                                             </span>
+                                         </div>
+                                     </mat-card-content>
+                                 </mat-card>
+                             </ng-container>
+                         </div>
+                     </div>
+
+                     <!-- Short Answers -->
+                     <div class="mb-4"
+                         *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'short answers'">
+                         <div>
+                             <ng-container *ngIf="testItem.showSubmittedAnswers">
+                                 <div class="flex flex-row mb-3 ">
+                                     <textarea class="p-2 textAreaStyle " [disabled]="true" placeholder=""
+                                         [(ngModel)]="testItem.userAnswer"></textarea>
+                                     <!-- <div class="mr-3">{{i + 1}} )</div>
+                             <div>{{sa.responses}}</div> -->
+                                 </div>
+                             </ng-container>
+
+                             <ng-container *ngIf="testItem.showCorrectIncorrectAnswers">
+                                 <mat-card style="background-color: #fff3f2;box-shadow: none;"
+                                     *ngIf="!testItem.correct">
+                                     <mat-card-content class="parent">
+
+                                         <div class="alignDiv">
+                                             <mat-icon class="icon-style-incorrect">clear</mat-icon>
+                                         </div>
+                                         <div class="alignDiv">
+                                             <span class="text-color-incorrect">
+                                                 Incorrect
+                                             </span>
+                                         </div>
+                                     </mat-card-content>
+                                 </mat-card>
+                                 <mat-card style="background-color: #effbf1;box-shadow: none;"
+                                 *ngIf="!testItem.correct">
+                                 <mat-card-content class="parent">
+                                     <div class="alignDiv">
+                                         <mat-icon class="icon-style-correct">check</mat-icon>
+                                     </div>
+                                     <div class="alignDiv">
+                                        <span class="text-color-correct flex">
+                                            <span>Correct Answer :  </span> 
+                                            <span class="flex flex-col">
+                                                <span *ngFor="let shortAns of testItem.shortAnswer" class="wrap-text" [innerHTML] = "shortAns"></span>
+                                            </span>
+                                        </span>
+                                     </div>
+                                 </mat-card-content>
+                             </mat-card>
+                                 <mat-card style="background-color: #effbf1;box-shadow: none;"
+                                     *ngIf="testItem.correct">
+                                     <mat-card-content class="parent">
+                                         <div class="alignDiv">
+                                             <mat-icon class="icon-style-correct">check</mat-icon>
+                                         </div>
+                                         <div class="alignDiv">
+                                             <span class="text-color-correct">
+                                                 Correct
+                                             </span>
+                                         </div>
+                                     </mat-card-content>
+                                 </mat-card>
+                             </ng-container>
+                         </div>
+                     </div>
+                    </div>
+                </section>
+            </ng-container>
+        </div>
+
+
+    </div>
+</div>
+
+<div #toPrint style="display: none;">
+    <section
+        style="width:50%;align-items: center;justify-content: center;display:flex;flex-flow: column;margin-top: 5rem;">
+        <div style="width:60%;display:flex;flex-flow: column;">
+            <div style="width: 729px; margin-left: 150px;">
+                <div style="float: left; width: 100px;">
+
+                </div>
+                <div style="float: left; width: 220px;">
+                    <div style="margin: 0 auto; display: inline-block;text-decoration: none;">
+                        <div *ngIf="isPassed"><svg width="50" height="50" viewBox="0 0 109 109" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <g filter="url(#filter0_d_14248_40987)">
+                                <circle cx="54.0409" cy="54.0409" r="24.0409" fill="#5C9B31" />
+                            </g>
+                            <path
+                                d="M63.6398 47.1722C63.4615 47.1781 63.2923 47.2609 63.168 47.4031L50.9566 59.0683L46.6384 54.2681C46.5751 54.1949 46.4994 54.1365 46.4156 54.0962C46.3318 54.056 46.2416 54.0347 46.1503 54.0337C46.059 54.0326 45.9684 54.0518 45.8839 54.0902C45.7994 54.1286 45.7226 54.1853 45.658 54.257C45.5935 54.3288 45.5425 54.4142 45.5079 54.5081C45.4734 54.6021 45.4561 54.7027 45.4571 54.8042C45.458 54.9057 45.4771 55.006 45.5134 55.0991C45.5496 55.1923 45.6022 55.2765 45.668 55.3468L50.4715 60.6862C50.6002 60.8292 50.7747 60.9095 50.9566 60.9095C51.1386 60.9095 51.3131 60.8292 51.4418 60.6862L64.1384 48.4817C64.2375 48.3746 64.3053 48.2367 64.3327 48.086C64.3601 47.9353 64.3459 47.779 64.292 47.6374C64.2381 47.4959 64.147 47.3757 64.0306 47.2927C63.9143 47.2097 63.778 47.1677 63.6398 47.1722Z"
+                                fill="white" stroke="white" />
+                            <defs>
+                                <filter id="filter0_d_14248_40987" x="0" y="0" width="108.082" height="108.078"
+                                    filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+                                    <feFlood flood-opacity="0" result="BackgroundImageFix" />
+                                    <feColorMatrix in="SourceAlpha" type="matrix"
+                                        values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha" />
+                                    <feOffset />
+                                    <feGaussianBlur stdDeviation="15" />
+                                    <feComposite in2="hardAlpha" operator="out" />
+                                    <feColorMatrix type="matrix"
+                                        values="0 0 0 0 0.152941 0 0 0 0 0.560784 0 0 0 0 0.427451 0 0 0 0.1 0" />
+                                    <feBlend mode="normal" in2="BackgroundImageFix"
+                                        result="effect1_dropShadow_14248_40987" />
+                                    <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_14248_40987"
+                                        result="shape" />
+                                </filter>
+                            </defs>
+                        </svg>
+                    </div>
+                    <div *ngIf="!isPassed">
+                        <svg width="50" height="50" viewBox="0 0 14 14" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path fill-rule="evenodd" clip-rule="evenodd"
+                                d="M7 14C10.866 14 14 10.866 14 7C14 3.134 10.866 0 7 0C3.134 0 0 3.134 0 7C0 10.866 3.134 14 7 14ZM10.2437 5.86872C10.5854 5.52701 10.5854 4.97299 10.2437 4.63128C9.90202 4.28957 9.34798 4.28957 9.00629 4.63128L6.125 7.51258L4.99372 6.38128C4.65201 6.03957 4.09799 6.03957 3.75628 6.38128C3.41457 6.72299 3.41457 7.27702 3.75628 7.61871L5.50628 9.36871C5.84799 9.7104 6.40201 9.7104 6.74372 9.36871L10.2437 5.86872Z"
+                                fill="#FA5943" />
+                            <circle cx="6.5" cy="6.5" r="4.5" fill="#FA5943" />
+                            <path d="M5 9L9 5M5 5L9 9" stroke="white" stroke-width="1.5" stroke-linecap="round"
+                                stroke-linejoin="round" />
+                        </svg>
+
+                    </div>
+                    <span class="font-bold" *ngIf="isPassed">Congratulations!<i> </i></span>
+                      <span class="font-bold" *ngIf="!isPassed">Fail!<i> </i></span>
+                      <div class="flex flex-row justify-center pb-3" *ngIf="isPassed">
+                        <span class="text-color" style="color: #828886;">
+                            You have successfully pass this test
+                        </span>
+                    </div>
+                    <div class="flex flex-row justify-center pb-3" *ngIf="!isPassed">
+                        <span class="text-color" style="color: #828886;">
+                            You have fail to pass this test
+                        </span>
+                    </div>
+                    </div>
+                </div>
+                <div style="float: left; width: 168px;">
+                </div>
+                <br style="clear: left;" />
+            </div>
+
+            <div style="width: 729px;">
+                <div style="float: left; width: 100px;">
+                    <h1 style="text-align: center;position: relative;top: 15%;">Passing Score</h1>
+                    <circle-progress [percent]="passingScore" [radius]="40" [outerStrokeWidth]="4"
+                        [innerStrokeWidth]="3" [space]="-3" [outerStrokeColor]="'#ffca10'"
+                        [innerStrokeColor]="'#e7e8ea'" [titleFontSize]="'20'" [unitsFontSize]="'10'" [animation]="false"
+                        [backgroundPadding]="10" [showSubtitle]="false" [units]="'/100'"
+                        [startFromZero]="true"></circle-progress>
+                </div>
+                <div style="float: left; width: 220px;">
+                    <h1 style="text-align: center;">Total Score</h1>
+                    <circle-progress [percent]="totalScore" [radius]="100" [outerStrokeWidth]="10"
+                        [innerStrokeWidth]="10" [space]="-10" [outerStrokeColor]="'#41d0a1'"
+                        [innerStrokeColor]="'#e7e8ea'" [titleFontSize]="'30'" [unitsFontSize]="'15'"
+                        [showSubtitle]="false" [animation]="false" [units]="'/100'"
+                        [startFromZero]="true"></circle-progress>
+                </div>
+                <div style="float: left; width: 168px;">
+                    <h1 style="text-align: center;position: relative;top: 15%;">Maximum Score</h1>
+                    <circle-progress [percent]="maxScore" [radius]="40" [backgroundPadding]="10" [outerStrokeWidth]="4"
+                        [innerStrokeWidth]="3" [space]="-3" [outerStrokeColor]="'#75bdff'"
+                        [innerStrokeColor]="'#e7e8ea'" [titleFontSize]="'20'" [unitsFontSize]="'10'" [animation]="false"
+                        [showSubtitle]="false" [units]="'/100'" [startFromZero]="true"></circle-progress>
+                </div>
+                <br style="clear: left;" />
+            </div>
+
+        </div>
+    </section>
+    <section style="margin-top:1.25rem;margin-bottom: 1rem;">
+
+        <div style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));font-weight: 700;padding-bottom: 1rem;border-bottom: solid 1px lightgray">{{("ILA" | labelReplacement)| async}}
+            Details</div>
+        <!-- <mat-icon>{{panel.expanded ? 'keyboard_arrow_down':'keyboard_arrow_up'}}</mat-icon> -->
+
+        <div style="display:grid;row-gap: 2rem;margin-top: 1rem;margin-bottom:1rem;">
+            <div style="grid-row: 1;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                      {{testInfoObject !== null && testInfoObject?.providerName !== null && testInfoObject?.providerName !== undefined ? testInfoObject?.providerName:"Not Assigned"}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        Provider Name
+                    </span>
+                </div>
+            </div>
+            <div style="grid-row: 1;grid-column: 2;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{testInfoObject ? testInfoObject.ilaNumber:"Not Assigned"}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        {{("ILA" | labelReplacement)| async}} NO.
+                    </span>
+                </div>
+            </div>
+            <div style="grid-row: 2;grid-column: 1;">
+              <div style="display:flex;flex-flow:column;">
+                  <span style="font-weight: 700;">
+                      {{testInfoObject ? testInfoObject.ila:"Not Assigned"}}
+                  </span>
+                  <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                    {{("ILA" | labelReplacement)| async}} Title
+                  </span>
+              </div>
+          </div>
+            <div style="grid-row: 2;grid-column: 2;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{testInfoObject ? testInfoObject.instructpr:"Not Assigned"}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        {{("Instructor" | labelReplacement)| async}}
+                    </span>
+                </div>
+            </div>
+            <div style="grid-row: 3;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{testInfoObject ? testInfoObject.location:"Not Assigned"}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        {{("Location" | labelReplacement)| async}}s
+                    </span>
+                </div>
+            </div>
+            <div style="grid-row: 4;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                    <span style="font-weight: 700;">
+                        {{testInfoObject ? (testInfoObject.classDate | date:'MMM d, yyyy'):"Not Assigned"}}
+                    </span>
+                    <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                        Completion Date
+                    </span>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>

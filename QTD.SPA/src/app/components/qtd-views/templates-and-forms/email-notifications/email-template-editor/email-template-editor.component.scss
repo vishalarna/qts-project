@@ -1,0 +1,48 @@
+:host ::ng-deep .ck-editor {
+    width: 100%;
+    margin: 0.875em 0 0;
+    background: #FFFFFF;
+    border: 0.8px solid #E1E5E4;
+    border-radius: 4px;
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.15000000596046448px;
+    text-align: left;
+
+}
+:host ::ng-deep .ck-editor .ck.ck-editor__main .ck-content {
+    min-height: 450px;
+    overflow: auto;
+    height: 100%;
+    max-height: 550px;
+}
+
+
+:host ::ng-deep .ck-editor {
+  max-width: 100%;
+}
+
+:host ::ng-deep .ck-editor .ck-blurred.ck.ck-content {
+  border: 0 !important;
+}
+
+
+:host ::ng-deep .ck.ck-editor {
+  display: flex;
+  flex-direction: column-reverse;
+}
+
+:host ::ng-deep .ck-editor .ck.ck-editor,
+.ck-editor .ck-editor__main,
+.ck-editor .ck.ck-editor__main>.ck-editor__editable {
+  height: 100%;
+}
+
+:host ::ng-deep .ck-editor .ck.ck-editor__main .ck-content {
+  min-height: 450px;
+  overflow: auto;
+  height: 100%;
+  max-height: 550px;
+}

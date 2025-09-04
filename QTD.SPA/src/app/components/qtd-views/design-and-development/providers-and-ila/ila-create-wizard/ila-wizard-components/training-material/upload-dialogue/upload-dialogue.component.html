@@ -1,0 +1,36 @@
+<mat-dialog-content >
+    <!-- header starts here -->
+    <div class="flex flex-row justify-between border-b items-center mt-2 mb-8" >
+        <p mat-dialog-title>Upload a Self Study Document</p>
+      <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+       <app-button  ButtonType='icon' class="mt--4" icon="close" mat-dialog-close="true"></app-button>
+   </div>
+
+     <!-- form starts here -->
+            <div class="flex flex-col items-center">
+                    <ngx-dropzone (change)="onSelect($event)" accept=
+                "application/msword, application/vnd.ms-excel, application/vnd.ms-powerpoint,
+                 application/Zip, application/pdf,video/mp4,video/x-m4v,video/*"  class="flex flex-col items-center border-dashed border-2 border-gray-one p-6 rounded relative w-full">
+                    <ngx-dropzone-label class="text-sm" style="color: rgb(92, 155, 49);">  <app-icon icon="cloud_upload"></app-icon> <br> <span class="text-gray-500">Drag and Drop your files here or</span> <span> Browse</span>
+                    <br>
+                    <span class="text-xs text-gray-500">Supported format: docx/doc</span>
+                </ngx-dropzone-label>
+                    <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+                        <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                    </ngx-dropzone-preview>
+                </ngx-dropzone>
+            </div>
+    <!-- form ends here -->
+
+ 
+</mat-dialog-content>
+
+<div class="border-b h-44"></div> 
+
+<mat-dialog-actions class="flex flex-row justify-end">
+
+        <app-button type="button" text="Save" color="secondary" size="sm" mat-dialog-close="true"></app-button>
+  
+</mat-dialog-actions>
+
+

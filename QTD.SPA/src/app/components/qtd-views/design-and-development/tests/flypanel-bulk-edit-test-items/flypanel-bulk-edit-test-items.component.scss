@@ -1,0 +1,27 @@
+:host ::ng-deep .mat-select-value-text {
+  padding-left: 1.5rem;
+  color: gray;
+  font-weight: 400;
+}
+
+mat-select {
+  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
+}
+
+:host ::ng-deep .mat-horizontal-stepper-header {
+  width: 100%;
+  padding-left: 1.5rem;
+  padding-right: 1.5rem;
+}
+
+.greenicon{
+  color: #5C9B31;
+}
+
+.redicon{
+  color: red;
+}
+
+.mat-column-information{
+  width: 100%;
+}

@@ -1,0 +1,177 @@
+<!-- <div [ngClass]="{'px-12 py-12':hasSpace}" class="flex flex-col"> -->
+<div [ngClass]="{'px-12 py-12':hasSpace}" class="flex flex-col">
+  <ng-container>
+    <div class="flex flex-row justify-between items-center px-3 mt-2">
+      <h2>Add New Test Question</h2>
+      <app-button [disabled]="showSpinner" (clicked)="closed.emit('fp-add-eo-closed')" ButtonType='icon' icon="close">
+      </app-button>
+    </div>
+
+    <mat-stepper labelPosition="bottom" [linear]="true" #stepper (selectionChange)="selectedChanged($event)"
+      [orientation]="(stepperOrientation | async)!">
+      <!-- Change edit icon -->
+      <ng-template matStepperIcon="edit">
+        <app-icon icon="done"></app-icon>
+      </ng-template>
+      <mat-step [completed]="questionForm.valid" label="Question Type and Level">
+        <form [formGroup]="questionForm">
+
+          <div class="flex flex-col">
+            <div class="flex flex-row justify-between mx-3 my-4">
+              <div class="flex flex-col">
+                <label for="type" required>Question Type</label>
+                <mat-select formControlName="type" placeholder="Select Question Type"
+                  (selectionChange)="selectQuesType($event.value)"
+                  class="appearance-none rounded border px-4 py-2.5 mt-2" style="width: 18vw;">
+                  <mat-option *ngFor="let type of testTypes" [value]="type">
+                    {{type.description}}
+                  </mat-option>
+                </mat-select>
+                <app-input-error *ngIf="questionForm.get('type')?.hasError('required')"
+                  text="Question Type is Required">
+                </app-input-error>
+              </div>
+              <div class="flex flex-col">
+                <label for="taxonomy" required>Taxonomy Level <app-icon icon="help_outline" matTooltipClass="line-broken-tooltip"
+                    [matTooltip]="getToolTip()"></app-icon></label>
+                <mat-select formControlName="taxonomy" placeholder="Select Taxonomy Level"
+                  class="appearance-none rounded border px-4 py-2.5 mt-2" style="width: 18vw;">
+                  <mat-option *ngFor="let level of taxonomyLevels" [value]="level.id">
+                    {{level.description}}
+                  </mat-option>
+                </mat-select>
+                <app-input-error *ngIf="questionForm.get('taxonomy')?.hasError('required')"
+                  text="Taxonomy Level is Required">
+                </app-input-error>
+              </div>
+            </div>
+            <div class="w-1/5 mt-4 self-end">
+              <app-button [disabled]="questionForm.invalid" (clicked)="stepper.next()" text="Continue" size="sm">
+              </app-button>
+            </div>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step label="Test Question Info">
+        <div class="my-4">
+          <app-label [for]="'number'" text="Test Question Number "></app-label>
+          <app-textbox [(ngModel)]="testQuestionNumber" [disabled]="true"></app-textbox>
+        </div>
+
+        <div class="flex flex-col h-full">
+          <div style="height:fit-content;">
+            <!-- <app-mcqs-test #mcq (isDistractorValid)="isFormValid($event)" [showSaveButton]="false" [update]="false"
+              [question_Id]="undefined" *ngIf="selectedType === 'Multiple Choice Questions'">
+            </app-mcqs-test> -->
+
+            <app-add-mcq
+              #mcq
+              *ngIf="selectedType === 'Multiple Choice Questions'"
+              [showSaveButton]="false" [eoId]="eoId"
+              (itemSaved)="refresh.emit()"
+              [type]="questionForm.get('type')?.value" [levelId]="questionForm.get('taxonomy')?.value">
+
+            </app-add-mcq>
+
+            <!-- <app-fill-in-the-blanks #blanks [showSaveButton]="false" [update]="false" [question_Id]="undefined"
+              *ngIf="selectedType === 'Fill in the Blank'">
+            </app-fill-in-the-blanks> -->
+
+            <app-add-fill-in-the-blank
+              #blanks
+              *ngIf="selectedType === 'Fill in the Blank'"
+              [showSaveButton]="false" [eoId]="eoId"
+              (itemSaved)="refresh.emit()"
+              [type]="questionForm.get('type')?.value" [levelId]="questionForm.get('taxonomy')?.value">
+
+            </app-add-fill-in-the-blank>
+
+            <!-- <app-true-false (continue_enable)="TrueFalseCheck($event)" [showSaveButton]="false" #trueFalse [update]="false" [question_Id]="undefined"
+              *ngIf="selectedType === 'True / False'">
+            </app-true-false> -->
+            <app-add-true-false
+            #trueFalse
+            *ngIf="selectedType.trim().toLowerCase() === 'true / false'"
+            [showSaveButton]="false" [eoId]="eoId"
+            (itemSaved)="refresh.emit()"
+            [type]="questionForm.get('type')?.value" [levelId]="questionForm.get('taxonomy')?.value">
+
+            </app-add-true-false>
+
+            <app-add-multiple-correct-answer
+              #mca
+             *ngIf="selectedType.trim().toLowerCase() === 'multiple correct answers'"
+             [showSaveButton]="false" [eoId]="eoId"
+             (itemSaved)="refresh.emit()"
+             [type]="questionForm.get('type')?.value" [levelId]="questionForm.get('taxonomy')?.value">
+
+            </app-add-multiple-correct-answer>
+
+            <!-- <app-match-the-column #matchCol [showSaveButton]="false" [update]="false" [question_Id]="undefined"
+              *ngIf="selectedType === 'Match the Column'">
+            </app-match-the-column> -->
+            <app-add-match-the-column
+              #matchCol
+              *ngIf="selectedType === 'Match the Column'"
+              [showSaveButton]="false" [eoId]="eoId"
+              (itemSaved)="refresh.emit()"
+              [type]="questionForm.get('type')?.value" [levelId]="questionForm.get('taxonomy')?.value">
+
+            </app-add-match-the-column>
+            <!-- <app-short-answers [showSaveButton]="false" #short [update]="false" [question_Id]="undefined"
+              *ngIf="selectedType === 'Short Answers'">
+            </app-short-answers> -->
+            <app-add-short-questions
+            #short
+            *ngIf="selectedType === 'Short Answers'"
+            [showSaveButton]="false" [eoId]="eoId"
+            (itemSaved)="refresh.emit()"
+            [type]="questionForm.get('type')?.value" [levelId]="questionForm.get('taxonomy')?.value">
+
+            </app-add-short-questions>
+          </div>
+          <div class="flex flex-row-reverse mr-12 mt-3">
+            <app-button *ngIf="selectedType === 'Short Answers'"
+            [disabled]="testQuestionNumber === null || (short && (short.selection.selected.length < 1 || short.shortAnswerForm.invalid  || (short.selection.selected[0] === 2 && short.correctIndexesControl.value.length < 1)))"
+            (clicked)="stepper.next()" text="Continue" size="sm"></app-button>
+            <app-button *ngIf="selectedType === 'True / False' || selectedType === 'Multiple Choice Questions'" [disabled]="testQuestionNumber === null || (continueForm && continueForm.invalid)" (clicked)="stepper.next()" text="Continue" size="sm"></app-button>
+            <app-button *ngIf="selectedType === 'Multiple Correct Answers'" [disabled]="testQuestionNumber === null || (mca && (mca.mcaForm.invalid || mca.selection.selected.length < 1))" (clicked)="stepper.next()" text="Continue" size="sm"></app-button>
+            <app-button *ngIf="selectedType === 'Match the Column'" [disabled]="testQuestionNumber === null || (matchCol && (matchCol.totalQuestions > matchCol.totalChoices || matchCol.matchForm.invalid || matchCol.questionForm.invalid))" (clicked)="stepper.next()" text="Continue" size="sm"></app-button>
+            <app-button *ngIf="selectedType === 'Fill in the Blank'" [disabled]="testQuestionNumber === null || (blanks && (!blanks.FillBlank.valid || blanks.answers.length<1))" (clicked)="stepper.next()" text="Continue" size="sm"></app-button>
+          </div>
+        </div>
+      </mat-step>
+      <mat-step label="Revision and Date">
+        <form class="flex flex-col" [formGroup]="histForm">
+          <div class="mt-3">
+            <app-label [for]="'date'" text="Effective Date"></app-label>
+            <app-date formControlName="date"></app-date>
+          </div>
+          <div class="mt-3">
+            <app-label [for]="'reason'" text="Reason"></app-label>
+            <app-textarea formControlName="reason" placeholder="Please enter Reasons for Revision here">
+            </app-textarea>
+          </div>
+          <div class="self-end pt-12">
+            <!-- <app-button [spinner]="showSpinner" [disabled]="(questionForm.invalid && histForm.invalid) || showSpinner"
+              (clicked)="setOptions(selectedType)" text="Save" size="sm">
+            </app-button> -->
+
+            <app-button [spinner]="showSpinner" *ngIf="selectedType === 'Short Answers'"
+            [disabled]="showSpinner || histForm.invalid || testQuestionNumber === null || (short && (short.selection.selected.length < 1 || short.shortAnswerForm.invalid  || (short.selection.selected[0] === 2 && short.correctIndexesControl.value.length < 1)))"
+            (clicked)="setOptions(selectedType)" text="Save" size="sm"></app-button>
+            <app-button
+            [spinner]="showSpinner"
+            *ngIf="selectedType === 'True / False' || selectedType === 'Multiple Choice Questions'"
+            [disabled]="showSpinner || histForm.invalid || testQuestionNumber === null || (continueForm && continueForm.invalid)"
+            (clicked)="setOptions(selectedType)" text="Save" size="sm"></app-button>
+            <app-button  [spinner]="showSpinner" *ngIf="selectedType === 'Multiple Correct Answers'" [disabled]="showSpinner || histForm.invalid || testQuestionNumber === null || (mca && (mca.mcaForm.invalid || mca.selection.selected.length < 1))" (clicked)="setOptions(selectedType)" text="Save" size="sm"></app-button>
+            <app-button [spinner]="showSpinner" *ngIf="selectedType === 'Match the Column'" [disabled]="showSpinner || histForm.invalid || testQuestionNumber === null || (matchCol && (matchCol.totalQuestions > matchCol.totalChoices || matchCol.matchForm.invalid || matchCol.questionForm.invalid))" (clicked)="setOptions(selectedType)" text="Save" size="sm"></app-button>
+            <app-button [spinner]="showSpinner" *ngIf="selectedType === 'Fill in the Blank'" [disabled]="showSpinner || histForm.invalid || testQuestionNumber === null || (blanks && (!blanks.FillBlank.valid || blanks.answers.length<1))" (clicked)="setOptions(selectedType)" text="Save" size="sm"></app-button>
+          </div>
+        </form>
+      </mat-step>
+
+    </mat-stepper>
+  </ng-container>
+</div>

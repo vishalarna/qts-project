@@ -1,0 +1,164 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse; margin:auto;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-left:0px;padding-right:0">
+            <div class="repeatedReportHeader" style="padding-bottom: 3px; border-bottom: 2px solid #020378; margin: 0 0 10px 0;">
+                <table style="width:100%;">
+                    <tr>
+                        <td style="border: 0;" colspan="3">
+                            @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                            {
+                                <div>
+                                    <img src="@Model.CompanyLogo" alt="Company logo" style="float: left;height: 65px !important;object-fit: scale-down !important;" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div></div>
+                            }
+                        </td>
+                        <td align="center" style="vertical-align: middle; border: 0; font-size: 24px; color: #020378;" colspan="6">
+                            <b>@Model.Title </b>
+                        </td>
+                        <td align="right" style="vertical-align:middle;border:0;" colspan="3">
+                            <b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.Tasks.Count() > 0)
+    {
+        <tr>
+            <td style="border:none;padding-top:0;" class="strip-container">
+                @{
+                    int j = 1;
+                    var dutyAreas = Model.Tasks.Select(r => r.SubdutyArea.DutyArea).Distinct().OrderBy(s => s.Letter).ThenBy(s => s.Number);
+                }
+                @foreach (var dutyArea in dutyAreas)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table class="table">
+                            <tr>
+                                <td style="border: none !important; font-size: 24px; padding: 0.4rem 0 0.2rem 0;padding-bottom:10px" colspan="12">
+                                    <div style="display:flex">
+                                        <span style="flex:1 1 70%">
+                                            <b style="display:block">@dutyArea.Letter@dutyArea.Number - @dutyArea.Title</b>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            @{
+                                var subdutyAreas = Model.Tasks.Where(sda => sda.SubdutyArea.DutyAreaId == dutyArea.Id).Select(sda => sda.SubdutyArea).Distinct().OrderBy(s => s.SubNumber);
+                            }
+                            @foreach (var subdutyArea in subdutyAreas)
+                            {
+                                <tr>
+                                    <td style="border: none !important; font-size: 18px; padding: 0.5rem 0 0.2rem 1.2rem;padding-bottom:10px" colspan="12">
+                                        <div style="display:flex">
+                                            <span style="flex:1 1 70%">
+                                                <b style="display:block;padding-left:10px;">@subdutyArea.DutyArea.Letter@subdutyArea.DutyArea.Number.@subdutyArea.SubNumber - @subdutyArea.Title</b>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @{
+                                    var tasks = Model.Tasks.Where(sda => sda.SubdutyAreaId == subdutyArea.Id).Distinct().OrderBy(s => s.Number);
+                                }
+                                @foreach (var task in tasks)
+                                {
+                                    <tr style="font-weight:bold">
+                                        <td style="vertical-align:top;width:7rem;border:0;padding:10px 0px 0px 40px;font-size:16px">
+                                            @task.SubdutyArea.DutyArea.Letter@task.SubdutyArea.DutyArea.Number.@task.SubdutyArea.SubNumber.@task.Number
+                                        </td>
+                                        <td style="vertical-align: top; border: 0; padding: 10px 0px 0px 0px;font-size:16px">
+                                            @task.Description
+                                        </td>
+                                    </tr>
+                                    @if (task.ILA_TaskObjective_Links.Count() > 0)
+                                    {
+                                        @foreach (var ilaTaskLink in task.ILA_TaskObjective_Links.Where(m => m.ILA != null).OrderBy(x => x.ILA.Name))
+                                        {
+                                            <tr>
+                                                <td style="vertical-align:top;width:7rem;border:0;padding:0;color:#567DFF;padding-left:150px" colspan="12">
+                                                    @ilaTaskLink.ILA.Name (@ilaTaskLink.ILA.Number)
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    <tr></tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                    @if (!dutyArea.Equals(Model.Tasks.Select(r => r.SubdutyArea.DutyArea).Distinct().Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Tasks.Select(r => r.SubdutyArea.DutyArea).Distinct().Count(); i++)
+    {
+        <a href=@("#page" + i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

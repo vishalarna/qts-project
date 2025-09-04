@@ -1,0 +1,978 @@
+<app-header *ngIf="mode === 'add'" title="{{ 'L.AddEmp' | translate  | dynamicLabelReplacement| async }}" [canGoBack]="true"
+            prevUrl="/implementation/employees"></app-header>
+<app-header *ngIf="mode === 'edit'" title="{{ 'L.EditEmployee' | translate | dynamicLabelReplacement| async }}" [canGoBack]="true"
+            prevUrl="/implementation/employees"></app-header>
+
+<app-data-loader class="loader-wrap" *ngIf="isLoading"></app-data-loader>
+<div *ngIf="!isLoading">
+  <div *ngIf="employeeName !== null && employeeName !== undefined && employeeName !== ''" class="flex flex-col py-4 mx-12 pl-4" style="position:sticky;z-index:25;top:5.5rem;background-color: white;">
+    <div class="flex flex-col text-sm">
+      <p class="mb-4 font-bold text-xl">
+        {{("Employee" | labelReplacement)| async}} Information
+        <!-- <span class="ml-2">></span> -->
+      </p>
+
+      <div *ngIf="employeeName !== null && employeeName !== undefined && employeeName !== ''">
+        <span class="font-bold mr-3">{{("Employee" | labelReplacement)| async}} Name: </span>
+        <span>{{employeeName}}</span>
+      </div>
+      <div *ngIf="employeeName !== null && employeeName !== undefined && employeeName !== ''">
+        <span class="font-bold mr-3">{{("Employee" | labelReplacement)| async}} Email: </span>
+        <span>{{step1Form.get('emailAddr')?.value ?? ''}}</span>
+      </div>
+      <div class="idp-btn">
+        <app-button text="View IDP" size="sm" color="secondary" (clicked)="viewIDP()" ></app-button>
+      </div>
+      <!-- <button (click)="openFlyInPanel(renewcertificate)" type="button"
+                                class="focus:outline-none text-green-600 text-sm">
+                               Renew Certificate
+                            </button> -->
+      <!-- <p class="mb-4 ml-2 text-gray-three">
+            Complete
+        </p> -->
+    </div>
+  </div>
+  <!-- main-header ends -->
+  <div class="flex px-12">
+    <div class="w-5/6 w-full">
+      <div class="bg-white-one rounded shadow-md">
+        <!-- header starts here -->
+        <!-- <div class="flex flex-row justify-between border-b items-center px-6 py-4 mb-7">
+                <h1 class="text-xl font-medium text-green-900">Add new employee</h1>
+            </div> -->
+        <!-- header ends here -->
+
+        <!-- form starts here -->
+
+        <app-data-loader *ngIf="isLoading"></app-data-loader>
+        <mat-stepper [ngClass]="employeeName !== null && employeeName !== undefined && employeeName !== '' ? '':'mt-5'" *ngIf="!isLoading" labelPosition="bottom" [linear]="true" #stepper
+                     (selectionChange)="selectedChanged($event)" [orientation]="(stepperOrientation | async)!">
+          <!-- Change edit icon -->
+          <ng-template matStepperIcon="edit">
+            <app-icon icon="done"></app-icon>
+          </ng-template>
+          <mat-step label="{{('Employee' | labelReplacement)| async}} Details"
+                    [completed]="checkNavigationAllowed()">
+            <form class="flex flex-col" [formGroup]="step1Form">
+              <!-- <form #empAddForm="ngForm" class="block text-sm space-y-6 px-6"> -->
+              <!-- <p>{{empAddForm.value|json}}</p> -->
+              <div class="
+                flex flex-row
+                justify-between
+                border-b
+                items-center
+                py-3
+                mb-3
+              ">
+                <h1 class="text-base text-black">{{("Employee" | labelReplacement)| async}} Details</h1>
+              </div>
+
+              <div class="flex flex-row px-12 justify-between">
+                <div>
+                  <div *ngIf="!url && !person.image">NO IMAGE SELECTED</div>
+                  <!-- <app-input-error *ngIf="img !== ''" [text]="img"></app-input-error> -->
+                  <img style="width:7rem;" [src]="url" *ngIf="url" />
+                  <!--                 <img
+                  style="width: 230px; height: 90px"
+                  [src]="person.image"
+                  *ngIf="person.image"
+                /> -->
+                </div>
+
+                <!--change button-->
+                <div class="float-right flex flex-col">
+                  <input type="file" (change)="selectFile($event)" accept="image/*" class="align-right float-right"
+                         title=" " id="upload-file" hidden #fileUpload />
+                  <p>{{ image_name }}</p>
+                  <label for="upload-file" class="text-green-800 align-right">Upload Image</label>
+                  <label (click)="removeImage()" *ngIf="url || person.image" class="text-green-800 align-right">Delete
+                    Image</label>
+
+                </div>
+              </div>
+              <div class="flex flex-row px-12">
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'firstName'" [text]="'First Name'"
+                             class="mt-6 float-left label required"></app-label>
+                  <app-textbox aria-label="first name" type="text" placeholder="Enter first name"
+                               formControlName="firstName" required>
+                  </app-textbox>
+
+                  <app-input-error *ngIf="step1Form.get('firstName')?.invalid || step1Form.get('firstName')?.hasError('whitespaceOnly')" text="{{('Employee' | labelReplacement)| async}} First Name Is Required Or Contains WhiteSpaces">
+                  </app-input-error>
+
+                </div>
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'middleName'" [text]="'Middle Initial'" class="mt-6 float-left label"></app-label>
+                  <app-textbox aria-label="middle name" type="text" placeholder="Enter middle name"
+                               formControlName="middleName">
+                  </app-textbox>
+                </div>
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'lastName'" [text]="'Last Name'" class="mt-6 float-left label required"></app-label>
+                  <app-textbox aria-label="last name" type="text" placeholder="Enter last name"
+                               formControlName="lastName" required>
+                  </app-textbox>
+
+                  <app-input-error *ngIf="step1Form.get('lastName')?.invalid || step1Form.get('lastName')?.hasError('whitespaceOnly')" text="{{('Employee' | labelReplacement)| async}} Last Name Is Required Or Contains WhiteSpaces">
+                  </app-input-error>
+                </div>
+              </div>
+              <div class="flex flex-row px-12">
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'empNum'" text="{{('Employee' | labelReplacement)| async}} Number"
+                             class="mt-6 float-left"></app-label>
+                  <app-textbox aria-label="empNum" type="text"
+                               placeholder="Enter {{('Employee' | labelReplacement)| async}} Number"
+                               formControlName="empNum"
+                               >
+                  </app-textbox>
+                  <app-input-error *ngIf="step1Form.get('empNum')?.hasError('alreadyExists')" text="{{('Employee' | labelReplacement)| async}} Number already in use">
+                  </app-input-error>
+
+                </div>
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'emailAddr'" [text]="'Email Address'"
+                             class="mt-6 float-left label required"></app-label>
+                  <!-- [disabled]="mode === 'edit' || id != undefined" -->
+                  <app-textbox aria-label="email address" type="text" placeholder="Enter email address"
+                               formControlName="emailAddr" required>
+                  </app-textbox>
+
+                  <app-input-error *ngIf=" (!step1Form.get('emailAddr')?.hasError('alreadyExists') && step1Form.get('emailAddr')?.invalid || step1Form.get('emailAddr')?.hasError('whitespaceOnly'))" text="{{('Employee' | labelReplacement)| async}} Email Address Is Required Or Contains WhiteSpaces">
+                  </app-input-error>
+                  <app-input-error *ngIf="step1Form.get('emailAddr')?.hasError('alreadyExists')" text="{{('Employee' | labelReplacement)| async}} Username already in use">
+                  </app-input-error>
+
+                </div>
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw" *ngIf="!hidePassword">
+
+                </div>
+                <div *ngIf="hidePassword" class="forget-pass-email-link">
+                  <app-button variant="text" class="mt-2 ml-8" text="Send Forgot Password Email"
+                              [disabled]="!step1Form.get('emailAddr')?.value"
+                              [title]="!step1Form.get('emailAddr')?.value ? 'You need to add an email address first' : ''"
+                              (click)="sendForgotPasswordEmail()"></app-button>
+                </div>
+              </div>
+
+              <div class="flex flex-row px-12">
+                <mat-checkbox class="example-margin" formControlName="tqEvaluator">TQ Evaluator</mat-checkbox>
+              </div>
+              <div class="flex flex-row px-12" *ngIf="isChecked" >
+                <mat-checkbox class="example-margin" formControlName="publicUser">Public {{("Employee" | labelReplacement)| async}}  </mat-checkbox>
+              </div>
+              <div class="flex flex-row px-12 mt-0">
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <div class="flex flex-row">
+                    <div class="pb-2">
+                      <h4 class="mb-0 mt-3 font-weight-bold">Receives EMP Completion Email</h4>
+                    </div>
+                  </div>
+                  <span class="ml-3">
+                    <ul class="list-style-none">
+                      <li>
+                        <mat-checkbox #allActivity  [value]="'All'" (change)="changeActivityNotification('All',$event)" [checked]="empIndex.length == emp.length" [indeterminate]="(empIndex.length != 0 && empIndex.length < emp.length)">
+                         All
+                        </mat-checkbox>
+                      </li>
+                      <li *ngFor="let ind of emp; let i = index">
+                        <mat-checkbox  [value]="ind.id" (change)="changeActivityNotification(ind.id,$event)" [checked]="ind.checked">
+                          {{ ind.title }}
+                        </mat-checkbox>
+                      </li>
+                    </ul>
+                  </span>
+                </div>
+              </div>
+              <div class="
+                flex flex-row
+                justify-between
+                border-b
+                items-center
+                py-3
+                mb-3
+              ">
+                <h1 class="text-base text-black">Additional Info</h1>
+              </div>
+
+              <div class="flex flex-row px-12">
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'address'" [text]="'Address'" class="mt-6 float-left label"></app-label>
+                  <app-textbox aria-label="address" type="text" placeholder="Enter address" formControlName="address">
+                  </app-textbox>
+                </div>
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'city'" [text]="'City'" class="mt-6 float-left label"></app-label>
+                  <app-textbox aria-label="city" type="text" placeholder="Enter city" formControlName="city">
+                  </app-textbox>
+                </div>
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'state'" [text]="'State'" class="mt-6 float-left label"></app-label>
+                  <app-textbox aria-label="state" type="text" placeholder="Enter state" formControlName="state">
+                  </app-textbox>
+                </div>
+              </div>
+              <div class="flex flex-row px-12">
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'zipcode'" [text]="'Zip Code'" class="mt-6 float-left label"></app-label>
+                  <app-textbox aria-label="zipcode" placeholder="Enter zipcode" formControlName="zipcode">
+                  </app-textbox>
+                </div>
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'phoneNumber'" [text]="'Phone Number'" class="mt-6 float-left label"></app-label>
+                  <app-textbox aria-label="phoneNumber" type="text" placeholder="Enter phone number"
+                               formControlName="phoneNumber">
+                  </app-textbox>
+                </div>
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw">
+                  <app-label [for]="'location'" text="Work {{('Location' | labelReplacement)| async}}s"
+                             class="mt-6 float-left label"></app-label>
+                  <app-textbox aria-label="location'" type="text"
+                               placeholder="Enter work {{('Location' | labelReplacement)| async}}s" formControlName="location">
+                  </app-textbox>
+                </div>
+              </div>
+              <div class="flex flex-row px-12">
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 100vw">
+                  <app-label [for]="'notes'" [text]="'Notes'" class="mt-6 float-left label"></app-label>
+                  <ckeditor name="notes" [editor]="editor" formControlName="notes">
+                  </ckeditor>
+                </div>
+              </div>
+              <div *ngIf="mode === 'edit'">
+                <div class="flex flex-row justify-between border-b items-center py-3 mb-3">
+                  <h1 class="text-base text-black"> Documents</h1>
+                </div>
+                <div class="flex flex-row px-12 mat-table-datawrapper">
+                 <app-document-table [inputLinkedDataType]="'Employees'" [inputLinkedDataId]="id"></app-document-table>
+               </div>
+              </div>
+
+              <div *ngIf="mode === 'add'">
+                <div class="flex flex-row justify-between border-b items-center py-3 mb-3 ml-12">
+                  <h4 class="text-base text-black">Attach Documents</h4>
+                </div>
+                <div class="flex flex-row px-12">
+                  <ngx-dropzone [multiple]="false" (change)="onSelect($event)">
+                    <ngx-dropzone-label style="color: rgb(92, 155, 49)">
+                      <app-icon icon="cloud_upload"></app-icon> <br />
+                      Choose file to upload PDF <br />
+                      <span class="text-gray-500">or</span> <br />
+                      <span class="text-gray-500">Drag and Drop your PDF files here</span>
+                    </ngx-dropzone-label>
+                    <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+                      <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+                    </ngx-dropzone-preview>
+                  </ngx-dropzone>
+
+                  <!-- <ng-container *ngIf="uploadedFiles.length > 0" class=" example-box">
+                    <div class="h-40 px-4 py-3 flex flex-row">
+                      <div class="mb-4 mt-4" *ngFor="let f of uploadedFiles">
+                        <div>
+                          <ngx-dropzone-preview [removable]="true" (removed)="onRemove1(f)">
+                            <ngx-dropzone-label>{{ f.fileName }}</ngx-dropzone-label>
+                          </ngx-dropzone-preview>
+                        </div>
+                        <div>
+                          <app-button variant="text" iconPosition="left" icon="cloud_download"
+                                      (clicked)="downloadFile(f.id)" class="ml-3 mt-8" text="download">
+                          </app-button>
+                        </div>
+                      </div> -->
+                      <!--  <div class="flex flex-col ml-5">
+                      <div  *ngFor="let file of uploadedFiles,index as i">
+                      </div>
+                      </div> -->
+                    <!-- </div> -->
+                    <!--   </div> -->
+                  <!-- </ng-container> -->
+                  <!--   <div class="flex float-right pt-3">
+          <app-button  class="float-right"
+            (clicked)="uploadFiles()" color="secondary" text="Upload"></app-button>
+        </div> -->
+                  <!--  <div
+          class="flex flex-col items-center border-dashed border-2 border-gray-one p-6 rounded relative">
+          <input class="absolute left-0 text-2xl opacity-0 w-0" type="file" name="file"
+              id="upload-btn" aria-label="file upload" (change)="onChange($event)">
+          <p *ngIf="file">{{file.name}}</p>
+
+          <label class="flex flex-col items-center p-1 cursor-pointer" for="upload-btn">
+              <svg class="feather feather-plus mb-2 stroke-current text-gray-four"
+                  xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24"
+                  fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                  stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              <p class="text-gray-four">Browse a file or drag and drop here</p>
+              <p class="text-gray-four text-center ">Word, PDF, Excel, PPT, file size no more than 10 MB</p>
+          </label>
+      </div> -->
+                </div>
+            </div>
+              <div class="self-end pt-12">
+                <app-button [spinner]="empSpinner" color="secondary" text="Continue" size="sm" [disabled]="step1Form.invalid || empSpinner"
+                            (clicked)="limitExceedRef = licencelimitExceed;SaveEmployeeAndstepNext()"></app-button>
+              </div>
+            </form>
+          </mat-step>
+
+          <mat-step label="Linkages">
+            <div>
+              <div class="flex flex-col">
+                <div class="
+                  flex flex-row
+                  justify-between
+                  border-b
+                  items-center
+                  py-3
+                  mb-3
+                ">
+                  <h1 class="text-base text-black">Organization Details</h1>
+                </div>
+                <div class="flex flex-col justify-between">
+                  <div class="sm:w-full">
+                    <!--  <div class="flex justify-between w-full">
+                    <app-button
+                      variant="text"
+                      iconPosition="left"
+                      text="View Organization"
+                      class="mb-4"
+                      (click)="openFlyInPanel(linkorg)"
+                    ></app-button>
+                  </div> -->
+                    <!--   <div class="flex justify-between w-full"> -->
+                    <!-- <label class="inline-block text-gray-700" for="organization name">Organization Name</label> -->
+                    <!--  <button
+                      (click)="openFlyInPanel(addNewOrg)"
+                      type="button"
+                      class="focus:outline-none text-green-600 text-sm"
+                    >
+                      Add New Organization
+                    </button>
+                  </div> -->
+                    <div class="flex justify-between w-full">
+                      <app-button variant="text" iconPosition="left" icon="link" text="Link Organization" class="mb-4"
+                                  (click)="openFlyInPanel(linkorg)"></app-button>
+                    </div>
+                    <div class="flex justify-between w-full">
+                      <!-- <app-button variant="text" iconPosition="left" icon="link" text="Link Positions" class="mb-4" (click)="openFlyInPanel(addposition)"></app-button> -->
+                     <!--  <app-button variant="text" iconPosition="left" icon="add" text="Add New Organization" class="mb-4"
+                                  (click)="openFlyInPanel(addNewOrg)"></app-button> -->
+                    </div>
+                    <!-- *ngIf="dataSourceOrg" -->
+                    <div class="pb-12 mt-5">
+                      <div class="
+                        border-gray-one
+                        shadow-xs
+                        border-0.5
+                        rounded
+                        mat-elevation-z8
+                      ">
+                        <mat-table [dataSource]="dataSourceOrg" matSort #orgSort="matSort">
+                          <ng-container matColumnDef="select">
+                            <mat-header-cell *matHeaderCellDef>
+                              Is Manager</mat-header-cell>
+                            <!-- <th mat-header-cell *matHeaderCellDef> -->
+                            <!-- <mat-checkbox (change)="$event ? masterToggle() : null"
+                                                        [checked]="selection.hasValue() && isAllSelected()"
+                                                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+                                          </mat-checkbox> -->
+                            <!-- Is Manager
+                                        </th> -->
+                            <!-- <td mat-cell *matCellDef="let row"> -->
+                            <mat-cell *matCellDef="let row">
+                              <mat-checkbox (click)="$event.stopPropagation" [checked]="row.isManager"
+                                            (change)="openManagerPopup(statusModal,$event.checked,row.organizationId,row.name)">
+                              </mat-checkbox>
+                              <!--   <mat-checkbox
+                              (change)="
+
+                                ManagerChecked(
+                                  $event.checked,
+                                  row.organizationId
+                                )
+                              "
+                              [checked]="row.isManager"
+                            >
+                            </mat-checkbox> -->
+                            </mat-cell>
+                            <!-- </td> -->
+                          </ng-container>
+                          <ng-container matColumnDef="id">
+                            <mat-header-cell *matHeaderCellDef>Id</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                              <button mat-icon-button [matMenuTriggerFor]="options">
+                                <app-icon icon="more_horiz"></app-icon>
+                              </button>
+                              <mat-menu #options="matMenu" backdropClass="qtd__menu">
+                                <label mat-menu-item
+                                       (click)="UnlinkOrganization(unlinkOrg,row.name,row.organizationId)">
+                                  Unlink
+                                </label>
+                              </mat-menu>
+                            </mat-cell>
+                          </ng-container>
+                          <ng-container matColumnDef="name">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                              Organization Name</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                              {{ row.name }}
+                            </mat-cell>
+                          </ng-container>
+
+                          <!--  <ng-container matColumnDef="id">
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Action
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                            <div class="
+                                flex flex-row
+                                items-center
+                                text-gray-four
+                                btn-group
+                              ">
+                              <button
+                                mat-icon-button
+                                [matMenuTriggerFor]="options">
+                                <app-icon icon="more_horiz"></app-icon>
+                              </button>
+                              <mat-menu
+                                #options="matMenu"
+                                backdropClass="qtd__menu"
+                              >
+                                <label mat-menu-item
+                                (click)="deletePosition(deleteposition,row.position.positionTitle,row.positionId)"
+
+                                >
+                                 Unlink
+
+                                </label>
+                              </mat-menu>
+                            </div>
+                          </mat-cell>
+                        </ng-container> -->
+                          <!-- <ng-container matColumnDef="select">
+                                        <mat-header-cell *matHeaderCellDef mat-sort-header> Is Manager</mat-header-cell>
+                                        <mat-checkbox>
+
+                                        </mat-checkbox>
+                                    </ng-container> -->
+                          <mat-header-row *matHeaderRowDef="displayedColumnsOrg"></mat-header-row>
+                          <mat-row *matRowDef="let row; columns: displayedColumnsOrg"></mat-row>
+                          <tr class="mat-row flex text-center" *matNoDataRow>
+                            <td class="mat-cell w-full m-2">
+                              No data to display
+                            </td>
+                          </tr>
+                        </mat-table>
+                        <mat-paginator #orgpaginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+                                       aria-label="Select page of organizations">
+                        </mat-paginator>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- Position details start here -->
+                  <div class="
+                    flex flex-row
+                    justify-between
+                    border-b
+                    items-center
+                    py-3
+                    mb-3
+                  ">
+                    <h1 class="text-base text-black">{{("Position" | labelReplacement)| async}}s</h1>
+                  </div>
+
+                  <div class="flex flex-row justify-between">
+                    <div class="sm:w-full">
+                      <div class="flex justify-between w-full">
+                        <app-button variant="text" iconPosition="left" icon="link"
+                                    text="Link {{('Position'| labelReplacement)| async}}" class="mb-4"
+                                    (click)="openFlyInPanel(linkpositionEmployeer)"></app-button>
+                      </div>
+                      <div class="flex justify-between w-full">
+                        <!-- <app-button variant="text" iconPosition="left" icon="link" text="Link Positions" class="mb-4" (click)="openFlyInPanel(addposition)"></app-button> -->
+                       <!--  <app-button variant="text" iconPosition="left" icon="add"
+                                    text="Add New {{('Position' | labelReplacement)| async}}" class="mb-4"
+                                    (click)="openFlyInPanel(addposition)"></app-button> -->
+                      </div>
+
+                      <!-- position table start -->
+                      <div class="pb-12 mt-5">
+                        <div class="
+                          border-gray-one
+                          shadow-xs
+                          border-0.5
+                          rounded
+                          mat-elevation-z8
+                        ">
+                          <div class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+                            <h2 class="text-base text-black text-sm flex-grow"> {{("Position" | labelReplacement)|
+                              async}} Linked to {{("Employee"| labelReplacement)| async}}</h2>
+                            <div style="align-items:baseline;" class="flex flex-row space-x-4 text-sm">
+                              <label>Showing {{this.posFilter}} {{("Position" | labelReplacement)|
+                                async}}: </label>
+                              <app-button text="Filters" size="sm" icon="filter_alt" iconPosition="left"
+                                          [matMenuTriggerFor]="addEmpMenu">
+                              </app-button>
+                              <mat-menu #addEmpMenu="matMenu">
+                                <!-- <label mat-menu-item routerLink=""(click)="PositionsFilter('current')">Current Position(s)</label>
+                                <label mat-menu-item routerLink= ""(click)="PositionsFilter('past')">Past Position(s)</label>
+                                <label mat-menu-item routerLink="" (click)="PositionsFilter('all')">All</label> -->
+                                <button mat-menu-item (click)="PositionsFilter('current')">Current {{("Position" |
+                                  labelReplacement)| async}}(s)</button>
+                                <button mat-menu-item (click)="PositionsFilter('past')">Past {{("Position" |
+                                  labelReplacement)| async}}(s)</button>
+                                <button mat-menu-item (click)="PositionsFilter('all')">All</button>
+                              </mat-menu>
+                            </div>
+                          </div>
+
+                          <mat-table [dataSource]="DataSourcePositions" matSort #posSort="matSort" *ngIf="DataSourcePositions">
+                            <ng-container matColumnDef="id">
+                              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Action
+                              </mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                <div class="
+                                  flex flex-row
+                                  items-center
+                                  text-gray-four
+                                  btn-group
+                                ">
+                                  <button mat-icon-button [matMenuTriggerFor]="options">
+                                    <app-icon icon="more_horiz"></app-icon>
+                                  </button>
+                                  <mat-menu #options="matMenu" backdropClass="qtd__menu">
+                                    <label mat-menu-item (click)="
+                                    openLinkedFlyInPanel(
+                                        editLinkPos,
+                                        row.positionId,row.id
+                                      )
+                                    ">
+                                      Edit
+                                    </label>
+                                    <label mat-menu-item
+                                           (click)="deletePosition(deleteposition,row.positionTitle,row.positionId,row.id)">
+                                      Delete
+                                    </label>
+                                  </mat-menu>
+                                </div>
+                              </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="positionTitle">
+                              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                {{("Position" | labelReplacement)| async}}s Title
+                              </mat-header-cell>
+                              <mat-cell class="mr-2" *matCellDef="let row">
+                                {{ row.positionTitle }}
+                              </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="startDate">
+                              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Start Date
+                              </mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                {{ datePipe.transform(row.startDate, 'MM/dd/yyyy') }}
+                              </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="trainee">
+                              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Trainee
+                              </mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                <div class="flex flex-col">
+                                  <span> {{row.trainee == true ? 'YES' : 'NO'}}</span>
+                                  <!-- <span class="mt-2">{{row.modifyDate | date:'medium' }}</span> -->
+                                </div>
+                              </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="qualificationDate">
+                              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Qualification Date</mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                <div class="flex flex-col">
+                                  <span>{{ datePipe.transform(row.qualificationDate, 'MM/dd/yyyy') }}</span>
+                                </div>
+                              </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="trainingProgramVersion">
+                              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Training Program Version
+                              </mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                <div class="flex flex-col">
+                                  <span>{{ row.trainingProgramVersion }}</span>
+                                </div>
+                              </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="endDate">
+                              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                End Date
+                              </mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                <div class="flex flex-col">
+                                  <span>{{ datePipe.transform(row.endDate, 'MM/dd/yyyy') }}</span>
+                                </div>
+                                <!-- <div class="flex flex-col" *ngIf="!row.employee.active">
+                                  <span>{{ datePipe.transform(row.employee.inactiveDate, 'MM/dd/yyyy') }}</span>
+                                </div> -->
+                              </mat-cell>
+                            </ng-container>
+
+                            <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayColumns"></mat-row>
+                            <tr class="mat-row flex text-center" *matNoDataRow>
+                              <td class="mat-cell w-full m-2">
+                                No data to display
+                              </td>
+                            </tr>
+                          </mat-table>
+                          <mat-paginator #posPaginator="matPaginator" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+                                         aria-label="Select page of periodic elements">
+                          </mat-paginator>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Certification details starts here -->
+                  <div class="
+                    flex flex-row
+                    justify-between
+                    border-b
+                    items-center
+                    py-3
+                    mb-3
+                  ">
+                    <h1 class="text-base text-black">{{("Certification" | labelReplacement)| async}}s</h1>
+                  </div>
+                  <!-- <div class="flex flex-row justify-between">
+                    <div class="sm:w-full">
+                      <mat-checkbox class="example-margin" formControlName="certRequired"
+                                    (change)="changeEMPCertStatus($event)">{{("Certifications" | labelReplacement)| async}} not
+                        required for {{("Position" | labelReplacement)| async}}
+                        responsibilities</mat-checkbox>
+                    </div>
+                  </div> -->
+                  <div class="flex flex-row justify-between">
+                    <div class="sm:w-full">
+                      <div class="flex justify-between w-full">
+                        <app-button  variant="text" iconPosition="left"
+                                    icon="link" text="Link Certificates" class="mb-4"
+                                    (click)="openFlyInPanel(linkcertificatesEmployee)"></app-button>
+                      </div>
+                      <div class="flex justify-between w-full">
+                        <!-- <app-button variant="text" iconPosition="left" icon="link" text="Link Positions" class="mb-4" (click)="openFlyInPanel(addposition)"></app-button> -->
+                      <!--   <app-button  variant="text" iconPosition="left"
+                                    icon="add" text="Add New Certificate" class="mb-4"
+                                    (click)="openFlyInPanel(addNewCert)"></app-button> -->
+                      </div>
+                    </div>
+                  </div>
+                  <!-- certification table start -->
+                  <div class="pb-12 mt-5" *ngIf="dataSourceCert">
+                    <div class="
+                      border-gray-one
+                      shadow-xs
+                      border-0.5
+                      rounded
+                      mat-elevation-z8
+                    ">
+                      <div id="empCertificationNavagate"  class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+                        <h2 class="text-base text-black text-sm flex-grow">{{("Certification" | labelReplacement)|
+                          async}}s Linked to {{("Employee" | labelReplacement)| async}}</h2>
+                        <div style="align-items:baseline;" class="flex flex-row space-x-4 text-sm">
+                          <label>Showing {{this.certFilter}} {{("Certification" | labelReplacement)| async}}s: </label>
+                          <app-button text="Filters" size="sm" icon="filter_alt" iconPosition="left"
+                                      [matMenuTriggerFor]="addEmpMenu">
+                          </app-button>
+                          <mat-menu #addEmpMenu="matMenu">
+                            <!-- <label mat-menu-item routerLink="/implementation/employee">Current Certification(s)</label>
+                       <label mat-menu-item routerLink='upload-csv'>Past Certification(s)</label>
+                       <label mat-menu-item routerLink="api">All</label> -->
+                            <button mat-menu-item (click)="CertificatiomFilter('current')">Current {{("Certification" |
+                              labelReplacement)| async}}s</button>
+                            <button mat-menu-item (click)="CertificatiomFilter('all')">All</button>
+                          </mat-menu>
+                        </div>
+                      </div>
+                      <mat-table matSort [dataSource]="dataSourceCert" *ngIf="dataSourceCert" #certSort="matSort">
+                        <ng-container matColumnDef="id">
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Action
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                            <div class="
+                              flex flex-row
+                              items-center
+                              text-gray-four
+                              btn-group
+                            ">
+                              <button mat-icon-button [matMenuTriggerFor]="options">
+                                <app-icon icon="more_horiz"></app-icon>
+                              </button>
+                              <mat-menu #options="matMenu" backdropClass="qtd__menu">
+                                <label mat-menu-item (click)="
+                                openLinkedFlyInPanelEditCertificate(
+                                    linkcertificatesEmployee,
+                                    row
+                                  )
+                                ">
+                                  Edit
+                                </label>
+                                <!-- [disabled]="row.isrenewal === false" -->
+                                <label *ngIf="!row.isFromHistory" mat-menu-item (click)="
+                                openRenewCertificateFlyPanel(
+                                    renewcertificate,
+                                    row.certificationId,
+                                    row.empCertificationId
+                                  )
+                                ">
+                                  Renew Certificate
+                                </label>
+                                <label mat-menu-item
+                                       (click)="deletecerttificate(deleteCert,row)">
+                                  Delete
+
+                                </label>
+                                <label mat-menu-item (click)="viewCertificationHistory(viewCertificateHistory,row)">
+                                  View History
+                               </label>
+                              </mat-menu>
+                            </div>
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="name">
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            {{("Certification" | labelReplacement)| async}}s Name
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                            {{ row.name }}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="isExpired">
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            {{("Certification" | labelReplacement)| async}}s Status
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                            <label class="linkText" *ngIf="!row.isExpired">Current</label>
+                            <ng-container *ngIf="row.isExpired">
+                              <ng-container *ngIf="getCertStatus(row.expirationDate, row.isNERCCertification) as certStatus">
+                                <label class="linkText"
+                                  [ngStyle]="{color: certStatus === 'Suspended' ? '#567DFF' : 'red'}">
+                                  {{ certStatus }}
+                                </label>
+                              </ng-container>
+                            </ng-container>
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="certificationNumber">
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            {{("Certification" | labelReplacement)| async}}s Number
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                            {{ row.certificationNumber }}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="issueDate">
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Issue Date
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                            {{ row.issueDate }}
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="renewalDate">
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Renewal Date
+                          </mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                            <div class="flex flex-col">
+                              <span>
+                                {{ row.renewalDate }}
+                              </span>
+                              <!-- <span class="mt-2">{{row.modifyDate | date:'medium' }}</span> -->
+                            </div>
+                          </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="expirationDate">
+                          <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Expiration Date</mat-header-cell>
+                          <mat-cell *matCellDef="let row">
+                            <div class="flex flex-col">
+                              <span>
+                                {{ row.expirationDate }}
+                              </span>
+                            </div>
+                          </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedColumnsCert"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumnsCert"></mat-row>
+                        <tr class="mat-row flex text-center" *matNoDataRow>
+                          <td class="mat-cell w-full m-2">
+                            No data to display
+                          </td>
+                        </tr>
+                      </mat-table>
+                    </div>
+                  </div>
+                  <!-- certification table end -->
+                  <!-- </form> -->
+                </div>
+              </div>
+            </div>
+            <div class="flex flex-row-reverse">
+              <app-button (clicked)="route.navigate(['/implementation/employees']);"
+                          text="Save" size="sm"></app-button>
+            </div>
+          </mat-step>
+        </mat-stepper>
+      </div>
+      <!-- <div
+        class="relative py-6 px-6 overflow-hidden border-t mt-12"
+        *ngIf="mode === 'add'"
+      >
+        <button
+          type="button"
+          (click)="AddNewEmployee()"
+          id="btnSubmit"
+          class="
+            float-right
+            text-green-800
+            border border-green-one
+            inline-block
+            py-3
+            px-6
+            rounded
+            font-medium
+            text-sm text-center
+          "
+        >
+          Add Employee
+        </button>
+      </div> -->
+      <!-- <div
+        class="relative py-6 px-6 overflow-hidden border-t mt-12"
+        *ngIf="mode === 'edit'"
+      >
+        <button
+          type="button"
+          (click)="UpdateEmployee()"
+          id="btnSubmit"
+          class="
+            float-right
+            text-green-800
+            border border-green-one
+            inline-block
+            py-3
+            px-6
+            rounded
+            font-medium
+            text-sm text-center
+          "
+        >
+          Update Employee
+        </button>
+      </div> -->
+
+      <!-- button ends -->
+    </div>
+  </div>
+</div>
+
+<ng-template #posContainer>
+  <app-fly-panel-positions (closed)="flyPanelService.close()"></app-fly-panel-positions>
+</ng-template>
+
+<ng-template #certBodyContainer>
+  <app-fly-panel-certifying-body (closed)="flyPanelService.close()"></app-fly-panel-certifying-body>
+</ng-template>
+
+<ng-template #addorgContainer>
+  <app-flyPanel-organizations></app-flyPanel-organizations>
+</ng-template>
+<ng-template #linkpositionEmployeer>
+  <app-fly-panel-add-employee-position [empId]="id" [employeeForm]="step1Form" (closed)="flyPanelService.close()"
+                                       (refresh)="getPositionsByEmployeeId(this.posFilter)"></app-fly-panel-add-employee-position>
+</ng-template>
+<ng-template #addposition>
+  <app-fly-panel-add-position (closed)="flyPanelService.close()"></app-fly-panel-add-position>
+</ng-template>
+
+<ng-template #linkcertificatesEmployee>
+  <app-fly-panel-link-employee-certification [isFromHistory]="isFromHistory" (closed)="flyPanelService.close()"
+                                             (refresh)="getcertificationsByEmployeeId(this.certFilter)" [mode]="modalType" [empId]="id" [empcertId]="posId"
+                                             [certId]="certId" [oldempCert]="editCertObj"></app-fly-panel-link-employee-certification>
+</ng-template>
+
+<ng-template #addNewOrg>
+  <app-fly-panel-add-organization (closed)="flyPanelService.close();getOrganizationsByEmployeeId()"
+                                  (refresh)="getOrganizationsByEmployeeId()"></app-fly-panel-add-organization>
+</ng-template>
+
+<ng-template #linkorg>
+  <app-fly-panel-link-emp-organization (closed)="close()" (confirmed)="close()" [alreadyLinkedIds]="linkedIds"
+                                       [empfromAddView]="id" (refresh)="getOrganizationsByEmployeeId()"></app-fly-panel-link-emp-organization>
+</ng-template>
+
+<ng-template #addNewCert>
+  <app-fly-panel-add-certification (closed)="flyPanelService.close()"></app-fly-panel-add-certification>
+</ng-template>
+
+<ng-template #editLinkPos>
+  <app-fly-panel-add-employee-position [mode]="modalType" [oldPosId]="posId" [empId]="id" [empPosEditId] = "empPosId"
+                                       (closed)="flyPanelService.close()"
+                                       (refresh)="getPositionsByEmployeeId(this.posFilter)"></app-fly-panel-add-employee-position>
+</ng-template>
+
+<ng-template #renewcertificate>
+  <app-fly-panel-renew-certification (closed)="flyPanelService.close()" [empId]="id" [certId]="posId"
+                                     [empCertId]="empCertId" (refresh)="getcertificationsByEmployeeId(this.certFilter)"></app-fly-panel-renew-certification>
+</ng-template>
+
+<ng-template #viewCertificateHistory>
+<app-fly-panel-view-emp-certification-history [empCertification]="empCertification" [employeeId]="id" ></app-fly-panel-view-emp-certification-history>
+</ng-template>
+
+<ng-template #deleteposition>
+  <app-qtd-dialogue header="Delete {{('Position' | labelReplacement)| async}}" [description]="deleteDescription"
+                    cancelText="No" confirmText="Yes" [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()"
+                    (confirmed)="DelPosition($event)">
+  </app-qtd-dialogue>
+</ng-template>
+<ng-template #deleteCert>
+  <app-qtd-dialogue header="Delete {{('Certification' | labelReplacement)| async}}s"
+                    [description]="deletecertDescription" cancelText="No" confirmText="Yes" [showEffectiveDateAndReason]="false"
+                    (canceled)="dialog.closeAll()" (confirmed)="Delcertification($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #statusModal>
+  <app-qtd-dialogue [description]="modalDescription" [header]="modalHeader" cancelText="No" confirmText="Yes"
+                    [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()"
+                    (confirmed)="ManagerChecked(optionOrganizationManager)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #unlinkOrg>
+  <app-qtd-dialogue header="Unlink Organization" [description]="unlinkOrgDescription" cancelText="No" confirmText="Yes"
+                    [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()" (confirmed)="unlinkOrganization($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #licencelimitExceed>
+  <app-dialogue-limit-emp [licenseNum]="licenceNumber" (close)="dialog.closeAll()">
+
+  </app-dialogue-limit-emp>
+</ng-template>
+
+<ng-template #alreadyExistUsername>
+  <app-qtd-dialogue [description]="alreadyExistUsernameDesc" cancelText="No" confirmText="Yes"
+                    [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()" >
+  </app-qtd-dialogue>
+</ng-template>

@@ -1,0 +1,18 @@
+ <!-- header starts here -->
+<div class="flex flex-row justify-between items-center px-12 mt-5" >
+    <p class="text-xl font-semibold text-gray-900">PowerData Simulation</p>
+    <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+</div>
+<!-- header ends here -->
+
+<!--Content starts-->
+<div class="ml-12 mr-12 mt-8 flex flex-col justify-between">
+    <mat-checkbox class="font-normal" *ngFor="let i of powerData_array" [(ngModel)]="i.checked" [value]="i.id"  (change)="OnSelectionChange(i)">{{i.text}}</mat-checkbox>
+</div>  
+<!--Content ends-->
+
+<!--Save Button starts-->
+<div class="ml-12 mr-12 float-left mt-12">
+    <app-button (clicked)="OnClick()" type="button" size="sm" color="secondary" text="Import PowerData Simulation"></app-button>
+</div>
+<!--Save Button ends-->

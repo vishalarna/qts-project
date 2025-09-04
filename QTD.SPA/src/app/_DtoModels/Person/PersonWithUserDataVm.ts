@@ -1,0 +1,34 @@
+export class PersonWithUserDataVm {
+  personId!: string;
+  employeeId: string;
+  instructorId: string;
+  qtdUserId: string;
+  username!: string;
+  firstName!: string;
+  middleName!: string;
+  lastName!: string;
+  image!: string;
+  isEmployee: boolean = false;
+  employeeNumber: string;
+  employeeAddress: string;
+  employeeCity: string;
+  employeeState: string;
+  employeeZipCode: string;
+  employeePhoneNumber: string;
+  employeeWorkLocation: string;
+  employeeNotes: string;
+  isTQEvaluator: boolean;
+  isInstructor: boolean = false;
+  instructorCategoryTitle: string;
+  instructorCategoryId: string;
+  instructorNumber: number;
+  instructorDescription: string;
+  instructorIsworkbookadmin: boolean;
+  instructorEffectiveDate: Date;
+  isQTDUser: boolean = false;
+  databaseName: string;
+  isQTDUserActive: boolean;
+  isEmployeeActive: boolean;
+  isInstructorActive: boolean;
+  active: boolean;
+}

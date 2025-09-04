@@ -1,0 +1,110 @@
+<div class="flex flex-col px-12 py-12" *ngIf="openPanel == 'main'">
+    <ng-container> 
+      <div class="flex flex-row justify-between px-2 mb-3" >
+          <h2>Add {{('Employee' | labelReplacement)| async}}s</h2>
+          <app-button ButtonType="icon" icon="close" (clicked)="closed.emit()"></app-button>
+      </div>
+      <div class="search-set-container">
+        <div class="flex flex-grow keyword-input">
+          <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" ></path>
+          </svg>
+          <input class="text-sm flex-grow focus:outline-none" [value]="searchString" placeholder="Enter {{('Employee' | labelReplacement)| async}} First or Last Name to search" type="text" (input)="searchEmployees($event)" />
+        </div>
+        <div class="flex flex-row space-x-4 text-sm">
+          <app-button color="secondary" text="Filters" size="sm" icon="filter_alt" iconPosition="left"
+              [matMenuTriggerFor]="filterMenu">
+          </app-button>
+          <mat-menu #filterMenu="matMenu">
+              <label (click)="openPanel = 'pos'" mat-menu-item>Filter by {{("Position" | labelReplacement)| async}}</label>
+              <label (click)="openPanel = 'org'" mat-menu-item>Filter by Organization</label>
+              <label (click)="clearFilters()" mat-menu-item>
+                  Clear Filter
+              </label>
+          </mat-menu>
+        </div>
+      </div>
+      <div class="rounded-t-md py-4 space-x-2" *ngIf="selection.selected.length > 0">
+        <mat-toolbar class="h-28 app-toolbar-sticky w-full">
+            <div class="flex flex-row items-center space-x-4 w-full justify-between">
+                <span class="text-sm">
+                    {{ selection.selected.length }} {{('Employee' | labelReplacement)| async}} has been selected
+                </span>
+                <div class="flex flex-row space-x-4 m-3 text-sm float-right">
+                    <app-button color="secondary" text="Add to Meta {{('ILA' | labelReplacement)| async}} " 
+                        (clicked)="enrollStudents()" size="sm" icon="link" iconPosition="left">
+                    </app-button>
+                </div>
+            </div>
+        </mat-toolbar>
+      </div>
+      <div class="flex flex-row my-4">
+        <mat-checkbox  (change)="$event ? masterToggle() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()" class="mr-3"></mat-checkbox>
+        <span class="font-bold text-gray-500">All  {{("Employee" | labelReplacement)| async}}s</span>
+      </div>
+      <div class="employees-list" *ngIf="!isLoading">
+        <mat-table matSort [dataSource]="employeesListData" >
+            <ng-container matColumnDef="empId">
+              <mat-header-cell *matHeaderCellDef> 
+                <mat-checkbox [disabled]="true"></mat-checkbox>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" >
+                <mat-checkbox *ngIf="!empIds.includes(row.id)" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)"></mat-checkbox>
+                <div *ngIf="empIds.includes(row.id)" (click)="removeEMPDialog(deleteDialog,row)" style="align-items: baseline;" class="flex flex-row cursor-pointer">
+                  <app-icon class="linkText" icon="link"></app-icon>
+                </div>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef  class="px-2"> Name
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 ml-2 mb-2"
+                        [src]="row.person.image" onerror="this.src='assets/img/ImageNotFound.jpg'" />
+                <span>{{row.person.firstName}} {{row.person.lastName}}</span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="positions">
+              <mat-header-cell *matHeaderCellDef class="px-2"> {{("Position" | labelReplacement)| async}}s
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span>{{getPositionsString(row.employeePositions)}}</span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="organizations">
+              <mat-header-cell *matHeaderCellDef class="px-2"> Organizations
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span>{{getOrganizationsString(row.employeeOrganizations)}}</span>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="employeesColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: employeesColumns;"></mat-row>
+            <!-- Row shown when there is no matching data.-->
+            <tr class="no-data-mat-row flex text-center " *matNoDataRow>
+              <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+          </mat-table>
+      </div>
+      <app-data-loader *ngIf="isLoading"></app-data-loader>
+    </ng-container>
+  </div>
+
+<ng-container *ngIf="openPanel === 'org'">
+    <app-flypanel-filter-emp-by-org [selectedOrg]="orgId" (closed)="openPanel = 'main'"
+        (orgSelected)="filterByOrg($event)"></app-flypanel-filter-emp-by-org>
+</ng-container>
+
+<ng-container *ngIf="openPanel === 'pos'">
+    <app-flypanel-filter-tq-emp-by [selectedPos]="posId" [mode]="'Position'" (closed)="openPanel = 'main'"
+        (filterSelected)="filterByPos($event)"></app-flypanel-filter-tq-emp-by>
+</ng-container>
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue [header]="'Remove ' + (('Employee' | labelReplacement)| async)" [description]="description" [confirmText]="'Yes'" [cancelText]="'No'"
+      (canceled)="dialog.closeAll()" [showEffectiveDateAndReason]="false"
+      (confirmed)="removeEMP()"></app-qtd-dialogue>
+</ng-template>

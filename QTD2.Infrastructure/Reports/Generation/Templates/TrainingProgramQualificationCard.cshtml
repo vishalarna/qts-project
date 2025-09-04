@@ -1,0 +1,361 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    .expired-row {
+        color: gray;
+        font-style: italic;
+    }
+
+    tr.open-border-table-row td {
+        border: 1px solid black;
+    }
+
+        tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+            border-left: 0 !important;
+        }
+
+        tr.open-border-table-row th:last-child, tr.open-border-table-row td:last-child {
+            border-right: 0 !important;
+        }
+
+</style>
+<table id="content-table" class="table" style="border-collapse: collapse; width:98%;margin:auto;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.Positions.Count() > 0)
+    {
+        <tr>
+            <td style="border:none;padding-top:0;" class="strip-container" colspan="12">
+                @{
+                    int j = 1;
+                }
+                @foreach (var position in Model.Positions)
+                {
+                    @foreach (var trainingProgram in position.TrainingPrograms)
+                    {
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                            <table style="width:100% ;border-collapse:collapse;">
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name:</span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;">@Model.EmployeeFullName</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                {
+                                    <tr class="excel-not-include">
+                                        <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                            <table style="table-layout: auto">
+                                                <tr>
+                                                    <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                        <span style="padding: 0px 5px;">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</span>
+                                                    </td>
+                                                    <td style="border: none;padding:0px;vertical-align:top;">
+                                                        <span style="padding: 0px 5px;"> @($"{position.PositionTitle} ({position.PositionAbbreviation})")</span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                    <span style="padding: 0px 5px;">Training Program:</span>
+                                                </td>
+                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                    <span style="padding: 0px 5px;"> @trainingProgram.ProgramTitle </span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Training Program Version").Count() > 0)
+                                {
+                                    <tr class="excel-not-include">
+                                        <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                            <table style="table-layout: auto">
+                                                <tr>
+                                                    <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                        <span style="padding: 0px 5px;">Version:</span>
+                                                    </td>
+                                                    <td style="border: none;padding:0px;vertical-align:top;">
+                                                        <span style="padding: 0px 5px;"> @trainingProgram.TPVersionNo </span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Training Program Date Range").Count() > 0)
+                                {
+                                    <tr class="excel-not-include">
+                                        <td style="border:none !important;padding: 3px 0px;" colspan="12">
+                                            <table style="table-layout: auto">
+                                                <tr>
+                                                    <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                        <span style="padding: 0px 5px;">Effective Date:</span>
+                                                    </td>
+                                                    <td style="border: none;padding:0px;vertical-align:top;">
+                                                        <span style="padding: 0px 5px;">
+                                                            @if (trainingProgram.TrainingProgramTypeId == 1 || trainingProgram.TrainingProgramTypeId == 3)
+                                                            {
+                                                                @(trainingProgram.StartDate.ToShortDateString() + " - " + (trainingProgram.EndDate.HasValue ? trainingProgram.EndDate.Value.ToShortDateString() : "N/A"))
+                                                                ;
+                                                            }
+                                                            else
+                                                            {
+                                                                @trainingProgram.Year.Year.ToString()
+                                                                ;
+                                                            }
+                                                        </span>
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                                <tr class="excel-not-include">
+                                    <td style="border: none !important; padding: 3px 0px;" colspan="12">
+                                        @{
+                                            var index = 0;
+                                        }
+                                        @foreach (var link in trainingProgram.TrainingProgram_ILA_Links)
+                                        {
+                                            if (index > 0)
+                                            {
+                                                <div style="page-break-after:always"></div>
+                                            }
+
+                                            <table style="table-layout: auto; width: 100%;">
+                                                <tr>
+                                                    <td style="font-weight: 600; border: none; padding: 0px; vertical-align: top; padding-left: 0;">
+                                                        &nbsp;
+                                                    </td>
+                                                    <td style="border: none; padding: 0px 5px; vertical-align: top; font-weight: 600;padding-top: 10px; color: #47B4DF;">
+                                                        @(link.ILA?.Number + " / " + link.ILA?.Name)
+                                                    </td>
+                                                </tr>
+
+                                                @if (Model.DisplayColumns.Where(r => r == "Overall Completion Sign-offs").Count() > 0)
+                                                {
+                                                    <tr class="excel-not-include">
+                                                        <td colspan="2" style="border: none; padding-top: 20px; font-weight: 600; padding-left: 35px;">
+                                                            Course Completion Sign-off
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="excel-not-include">
+                                                        <td colspan="2" style="border: none; padding-top: 15px;padding-left:17px;">
+                                                            <table style="width: 100%; table-layout: fixed; border-collapse: separate; border-spacing: 20px 0;">
+                                                                <tr>
+                                                                    <td style="border: none; border-bottom: 1px solid #000;"></td>
+                                                                    <td style="border: none; border-bottom: 1px solid #000;"></td>
+                                                                    <td style="border: none; border-bottom: 1px solid #000;"></td>
+                                                                </tr>
+                                                                <tr>
+                                                                    <td style="border: none; text-align: left; font-size: 12px;">Trainer Name</td>
+                                                                    <td style="border: none; text-align: left; font-size: 12px;">Trainer Signature</td>
+                                                                    <td style="border: none; text-align: left; font-size: 12px;">Date</td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                @{
+                                                    var taskCount = @link.ILA?.ILA_TaskObjective_Links?.Where(x => x.Task != null).Count() ?? 0;
+                                                }
+                                                <tr class="excel-not-include">
+                                                    <td style="border:none !important;padding: 3px 0px 0px 35px;" colspan="12">
+                                                        <table style="table-layout: auto">
+                                                            <tr>
+                                                                <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                                    <span style="padding: 0px 5px;">Task Linked:</span>
+                                                                </td>
+                                                                <td style="border: none;padding:0px;vertical-align:top;">
+                                                                    <span style="padding: 0px 5px;">  @(taskCount > 0 ? taskCount.ToString() : "N/A")</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+
+                                                @if (Model.DisplayColumns.Where(r => r == "Task Qualification Sign-offs").Count() > 0)
+                                                {
+                                                    <tr class="excel-not-include">
+                                                        <td colspan="2" style="border: none; padding-top: 20px; font-weight: 600; padding-left: 35px;">
+                                                            Course Task Qualification Sign-off
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="excel-not-include">
+                                                        <td style="border: none; padding-right: 0px; padding-left: 39px;padding-bottom:20px;" class="strip-container" colspan="12">
+                                                            <table style="width:100% ;border-collapse:collapse;table-layout:fixed;">
+                                                                <thead>
+                                                                    <tr class="open-border-table-row">
+                                                                        <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:30%;">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                                                        @if (Model.DisplayColumns.Where(r => r == "Task Qualification Methods").Count() > 0)
+                                                                        {
+                                                                            <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:20%;">Qualification Method</th>
+                                                                        }
+                                                                        <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:20%;">Trainer Intials</th>
+                                                                        <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:20%;">Trainer signature</th>
+                                                                        <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:10%;">Date</th>
+                                                                    </tr>
+                                                                </thead>
+
+                                                                @{
+                                                                    var tasks = link.ILA?.ILA_TaskObjective_Links?.Select(x => x.Task).Where(task => task?.SubdutyArea?.DutyArea != null).ToList();
+                                                                }
+                                                                <tbody>
+                                                                    @foreach (var task in tasks)
+                                                                    {
+                                                                        <tr class="open-border-table-row">
+                                                                            <td style="padding: 5px; vertical-align: top;width:30%;">
+                                                                                @(task.IsReliability == true ? "*" : "")  @task.SubdutyArea.DutyArea.Letter@task.SubdutyArea.DutyArea.Number.@task.SubdutyArea.SubNumber.@task.Number
+                                                                                @if (task.IsMeta && Model.DisplayColumns.Contains("Meta Task Label"))
+                                                                                {
+                                                                                    <span style="color: green;"> (META)</span>
+                                                                                }
+                                                                                @task.Description
+                                                                                @if (task.IsMeta == true && Model.DisplayColumns.Contains("Include Tasks linked to Meta Task"))
+                                                                                {
+                                                                                    <br />
+                                                                                    @foreach (var metaTaskLink in task.Task_MetaTask_Links)
+                                                                                    {
+                                                                                        <span style="font-style:italic">@(metaTaskLink?.Task?.IsReliability == true ? "*" : "")@metaTaskLink?.Task?.FullNumber - </span>
+                                                                                        <span style="font-style:italic; padding-left:5px">@metaTaskLink?.Task?.Description</span>
+                                                                                    }
+                                                                                }
+                                                                            </td>
+
+                                                                            @if (Model.DisplayColumns.Where(r => r == "Task Qualification Methods").Count() > 0)
+                                                                            {
+                                                                                <td style="padding: 5px; vertical-align: top;width:20%">
+                                                                                    <div style="display:flex;align-items:center;gap:10px"> <input type="checkbox" disabled /> <span>Perform</span>  </div>
+                                                                                    <div style="display:flex;align-items:center;gap:10px"> <input type="checkbox" disabled /> <span>Simulate</span> </div>
+                                                                                    <div style="display:flex;align-items:center;gap:10px"> <input type="checkbox" disabled /> <span>Discuss</span>  </div>
+                                                                                    <div style="display:flex;align-items:center;gap:10px"> <input type="checkbox" disabled /> <span>Other</span>    </div>
+                                                                                </td>
+                                                                            }
+                                                                            <td style="padding: 5px; vertical-align: top;width:20%"></td>
+                                                                            <td style="padding: 5px; vertical-align: top;width:20%"></td>
+                                                                            <td style="padding: 5px; vertical-align: top;width:10%"></td>
+                                                                        </tr>
+                                                                    }
+                                                                </tbody>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </table>
+                                            index++;
+                                        }
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                        @if (!trainingProgram.Equals(position.TrainingPrograms.Last()))
+                        {
+                            <div style="page-break-after:always"></div>
+                            <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        }
+                        @{
+                            j++;
+                        }
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+@{
+    var allTrainingPrograms = Model.Positions.SelectMany(p => p.TrainingPrograms).ToList();
+}
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= allTrainingPrograms.Count(); i++)
+    {
+        <a href=@("#page" + i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

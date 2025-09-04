@@ -1,0 +1,40 @@
+<mat-dialog-content>
+  <div class="flex flex-row justify-between items-center mt-2">
+    <p mat-dialog-title [textContent]="'Disclaimer'"></p>
+    <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+    <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+
+</div>
+    <div class="float-container">
+
+        <div class="float-child">
+          <label class="proc-label">{{("Procedure" | labelReplacement)| async}} Name</label>
+          <p class="proc-para">{{data.object.procedureName===null || data.object.procedureName===undefined ?'N/A':data.object.procedureName}} </p>
+          <!-- <p class="green">Procedure Name </p> -->
+          <label class="proc-label">{{("Procedure" | labelReplacement)| async}} Review Title</label>
+          <p class="proc-para">{{data.object.procedureReviewTitle===null || data.object.procedureReviewTitle===undefined ?'N/A':data.object.procedureReviewTitle}} </p>
+
+        </div>
+
+        <div class="float-child">
+          <label class="proc-label">{{("Procedure" | labelReplacement)| async}} No.</label>
+            <p class="proc-para">{{data.object.procedureNumber===null || data.object.procedureNumber===undefined ?'N/A':data.object.procedureNumber}} </p>
+            <label class="proc-para">Due Date</label>
+            <p class="proc-para"> {{(data.object.procedureReviewDueDate | dateFormat | async)}} </p>
+        </div>
+
+        <div class="float-child" style="width:100%">
+          <label class="proc-label">{{("Procedure" | labelReplacement)| async}} Review {{("Instruction" | labelReplacement)| async}}s</label>
+          <span>
+            <p>Once you are ready to start the {{("Procedure" | labelReplacement)| async}} review, click on the Start {{("Procedure" | labelReplacement)| async}} Review button to start the Review. If you are NOT ready, click on the Exit button to return to the homepage.
+            Once you begin taking the {{("Procedure" | labelReplacement)| async}} Review, you can save your progress and return to complete the review.</p>
+            <p>Finally, you may be required to click on the {{("Procedure" | labelReplacement)| async}} Hyperlink or PDF to view the contents of the {{("Procedure" | labelReplacement)| async}} prior to entering your responses and comments.</p>
+          </span>
+        </div>
+      </div>
+  <mat-checkbox class="example-margin" [(ngModel)]="checked"><p>I agree that by checking this box, that I have read the disclaimer and am ready to complete the assigned {{("Procedure" | labelReplacement)| async}} review.</p></mat-checkbox>
+    </mat-dialog-content>
+<mat-dialog-actions align="end">
+    <app-button type="button"  [disabled]="!checked" text="Start {{('Procedure' | labelReplacement)| async}} Review" (clicked)="startNewTest()" color="blue" size="sm" class="mr-2">
+    </app-button>
+</mat-dialog-actions>

@@ -1,0 +1,21 @@
+<div class="nav-wrap">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="navbrand-wrap col-md-6">
+                <div class="d-flex">
+                    <div class="back-icon">
+                        <mat-icon>arrow_back_ios</mat-icon>
+                    </div>
+                    <h2 class="navbar-heading m-0">Email Notifications</h2>
+                </div>
+            </div>
+                <div class="navbrand-wrap col-md-6">
+                    <div class="d-flex justify-content-end">
+                        <button type="button" *ngIf="mode == 'write'" class="btn btn-outline-secondary" (click)="onCancelClick()"  >Cancel</button>
+                        <button type="button" class="btn btn-outline-secondary" *ngIf="mode == 'read'" (click)="onEditClick()" [disabled]="!this.enabled">Edit</button>
+                        <button type="button" class="btn btn-success" *ngIf="mode == 'write'" (click)="onSaveSettingsClick()">Save Settings</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

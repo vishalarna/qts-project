@@ -1,0 +1,98 @@
+<ng-container>
+    <div class="flex flex-col px-12 py-12">
+        <ng-container>
+            <div class="flex flex-row justify-between">
+                <h2>Link {{ ("Tool" | labelReplacement) | async }}</h2>
+                <app-button ButtonType="icon" icon="close" (click)="flyPanelSrvc.close()"></app-button>
+            </div>
+            <app-data-loader *ngIf="loader"></app-data-loader>
+            <div *ngIf="!loader">
+                <div class="flex flex-row items-center border-b-0.8 border-gray-one">
+                    <div class="flex flex-grow">
+                        <app-icon icon="search"></app-icon>
+                        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+                            [value]="filterSearchString" (input)="searchFilter($event)" />
+                        <app-icon icon="close" class="cursor-pointer" *ngIf="filterSearchString"
+                            (click)="clearSearchString()"></app-icon>
+                    </div>
+                </div>
+    
+                <div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+                    <div>
+                        <span> Showing:
+                            <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+                              <p *ngIf="showActive" class="font-bold">
+                                Active
+                              </p>
+                              <p *ngIf="!showActive" class="font-bold">
+                                Inactive
+                              </p>
+                  
+                            </label>
+                            <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+                          </span>
+    
+                          <mat-menu #menu="matMenu">
+                            <label mat-menu-item *ngIf="!showActive" (click)="filterActive(true)">
+                              Active</label>
+                  
+                            <label mat-menu-item *ngIf="showActive" (click)="filterActive(false)">
+                              Inactive</label>
+                          </mat-menu>
+                    </div>
+                </div>
+    
+                <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3 px-3 py-3 rounded"
+                    *ngIf="treeCheckListSelection.selected.length > 0">
+                    <div class="flex flex-row w-full justify-between mb-3">
+                        <p class="text-xs text-gray-four pt-2">
+                            {{treeCheckListSelection.selected.length}} {{ ("Tool" | labelReplacement) | async }} selected
+                        </p>
+                        <app-button class="mb-2" type="button" color="secondary" size="sm" text="Link to Training Issue"
+                            (click)="linkTool()">
+                        </app-button>
+                    </div>
+                </div>
+    
+                <app-spinner *ngIf="dataSource.data === undefined"></app-spinner>
+                <ng-container *ngIf="dataSource.data !== undefined">
+                    <div *ngIf="dataSource.data.length < 1" class="flex flex-col">
+                        <span>No Data Found</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="qtd-tree">
+                            <!-- This is the tree node template for expandable nodes -->
+                            <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+                                <div class="mat-tree-node">
+                                    <button style="outline: none;" mat-icon-button matTreeNodeToggle
+                                        [attr.aria-label]="'Toggle ' + node.description">
+                                        <app-icon
+                                            [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'expand_less'"></app-icon>
+                                    </button>
+    
+                                    <mat-radio-button [checked]="isCategorySelected(node)" [disabled]="true">
+                                    </mat-radio-button>
+                                    <label> {{ node.description }}</label>
+                                </div>
+    
+                                <div [class.qtd-tree-invisible]="!treeControl.isExpanded(node)" role="group">
+                                    <ng-container matTreeNodeOutlet></ng-container>
+                                </div>
+                            </mat-nested-tree-node>
+    
+                            <!-- This is the tree node template for leaf nodes -->
+                            <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                                <ng-container>
+                                    <mat-radio-button (change)="onChangeTool($event.source.checked, node)"
+                                        [checked]="isToolSelected(node)" name="radioTool">
+                                        {{ node.description }}
+                                    </mat-radio-button>
+                                </ng-container>
+                            </mat-tree-node>
+                        </mat-tree>
+                    </div>
+                </ng-container>
+            </div>
+        </ng-container>
+    </div>
+</ng-container>

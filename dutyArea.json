@@ -1,0 +1,82 @@
+[
+	{
+	  "Id":1,
+	  "Title":"Transmission Operations",
+	  "Letter":"§",
+	  "Number":1,
+	  "Active":TRUE
+	},
+	
+	{
+	  "Id":2,
+	  "Title":"Generation",
+	  "Letter":"§",
+	  "Number":2,
+	  "Active":TRUE
+	},
+	
+	{
+	  "Id":3,
+	  "Title":"Interchange",
+	  "Letter":"§",
+	  "Number":3,
+	  "Active":TRUE
+	},
+	
+	{
+	  "Id":4,
+	  "Title":"Balancing",
+	  "Letter":"§",
+	  "Number":4,
+	  "Active":TRUE
+	},
+	
+	{
+	  "Id":5,
+	  "Title":"Emergency Operations",
+	  "Letter":"§",
+	  "Number":5,
+	  "Active":TRUE
+	},
+	
+	
+	{
+	  "Id":6,
+	  "Title":"Monitoring Telecommunication, Control and Protective test systems",
+	  "Letter":"§",
+	  "Number":6,
+	  "Active":TRUE
+	},
+	
+	{
+	  "Id":7,
+	  "Title":"Administrative Tasks and Documentation",
+	  "Letter":"§",
+	  "Number":7,
+	  "Active":TRUE
+	},
+	
+	{
+	  "Id":8,
+	  "Title":"DISTRIBUTION SYSTEM OPERATIONS",
+	  "Letter":"§",
+	  "Number":8,
+	  "Active":TRUE
+	},
+	
+	{
+	  "Id":9,
+	  "Title":"APPRENTICESHIP LINEMEN",
+	  "Letter":"§",
+	  "Number":9,
+	  "Active":TRUE
+	},
+	
+	{
+	  "Id":10,
+	  "Title":"LOCOMOTIVE OPERATIONS",
+	  "Letter":"§",
+	  "Number":10,
+	  "Active":TRUE
+	},
+]

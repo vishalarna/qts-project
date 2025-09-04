@@ -1,0 +1,47 @@
+
+        <div class="col-md-12 p-0">
+            <div class="row heighttop">
+                <div class="col-md-12 p-0">
+                    <h1 class="section-header">{{("Employee" | labelReplacement)| async}}s linked to Recieve Notifications</h1>
+                </div>
+                <div class="table-data-wrap">
+                <table datatable [dtOptions]="dtOptions" placeholder="Enter Keyword to search" [dtTrigger]="dtTrigger" class="row-border hover">
+                    <thead>
+                        <tr>
+                            <td><input type="checkbox" [disabled]="mode==='read' ? true : false"></td>
+                            <th>Name</th>
+                            <th> {{("Position" | labelReplacement)| async}}s</th>
+                            <th>{{("Employee" | labelReplacement)| async}} ID</th>
+                            <th>Organization Manager</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of Employees">
+                            <td><input type="checkbox"
+                                       [disabled]="mode==='read' ? true : false"
+                                       (click)="handleEmployeeChecked($event, item)"
+                                       [checked]="getCheckedValue(item)"></td>
+                            <td>
+                                <div class="d-flex flex-datatwrap">
+                            <div  class="img-wrap">
+                                <img src="https://via.placeholder.com/150">
+                            </div>
+                            <div  class="content-wrap">
+                            <div  class="name-wrap">
+                                {{item.person.firstName}} {{item.person.lastName}}
+                            </div>
+                            <span class="mail-wrap">
+                                {{item.person.username}}
+                            </span>
+                        </div>
+                         </div>
+                            <td> {{("Position" | labelReplacement)| async}}s Title - UNK Field</td>
+                            <td>{{item.employeeNumber}}</td>
+                            <td>Organizational Manager - Unk Field</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            </div>
+
+</div>

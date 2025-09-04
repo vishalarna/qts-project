@@ -1,0 +1,65 @@
+<div class="flex flex-row justify-between border-b items-center header-spacing">
+    <h1 class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+      Add Action Steps
+    </h1>
+    <button class="focus:outline-none" (click)="closeFlyPanel()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" ></path>
+      </svg>
+    </button>
+</div>
+
+<div [formGroup] = "actionItemForm" class="p-3">
+  <div class="flex flex-col ml-3">
+    <app-label text ="Action Step Name" class="font-weight-bold label required"></app-label>
+    <app-textbox formControlName = "actionStepName" class="mb-2"></app-textbox>
+  </div>
+  <div class="flex flex-row w-100 pt-2">
+    <div class="flex flex-col ml-3 w-50">
+      <app-label text = "Assignee(s)" class="font-weight-bold"></app-label>
+      <app-textbox formControlName = "assigneeName" class="mb-2"></app-textbox>
+    </div>
+    <div class="flex flex-col ml-3 w-50">
+      <app-label text = "Priority" class="font-weight-bold "></app-label>
+      <mat-form-field appearance="outline" class="dropdown mt-1">
+        <mat-select formControlName = "priority" placeholder = "Select Priority">
+          <mat-option *ngFor = "let actionItemPriority of actionItemPriorities" [value] = "actionItemPriority.id">{{actionItemPriority.priority}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="flex flex-row mb-2 w-100">
+    <div class="flex flex-col ml-3 w-50">
+      <app-label text ="Assigned Date"  class="font-weight-bold "></app-label>
+      <app-date formControlName = "dateAssigned" [maxDate]="actionItemForm.get('dueDate')?.value"></app-date>
+    </div>
+    <div class="flex flex-col ml-3 w-50">
+      <app-label text ="Due Date" class="font-weight-bold "></app-label>
+      <app-date formControlName = "dueDate" [minDate]="actionItemForm.get('dateAssigned')?.value" ></app-date>
+    </div>
+  </div>
+  <div class="flex flex-row w-100 pt-2">
+    <div class="flex flex-col ml-3 w-50">
+      <app-label text ="Date Completed"  class="font-weight-bold "></app-label>
+      <app-date formControlName = "dateCompleted" [minDate]="actionItemForm.get('dateAssigned')?.value"></app-date>
+    </div>
+    <div class="flex flex-col ml-3 w-50">
+      <app-label text ="Status" class="font-weight-bold "></app-label>
+      <mat-form-field appearance="outline" class="dropdown mt-1">
+        <mat-select formControlName = "status" placeholder = "Select Status">
+          <mat-option *ngFor = "let actionItemStatus of actionItemStatuses" [value] = "actionItemStatus.id">{{actionItemStatus.status}}</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="flex flex-col ml-3">
+    <app-label text ="Notes" class="font-weight-bold "></app-label>
+    <app-textbox formControlName = "notes"></app-textbox>
+  </div>
+  <div class="ml-3 mt-4">
+    <mat-checkbox formControlName = "addAnother">Add Another</mat-checkbox>
+  </div>
+  <div class="flex justify-end mt-3 m-2 pt-2">
+    <app-button text="Save" size="sm" type="submit" (clicked) = "onActionItemSave()" [disabled] = "this.actionItemForm.invalid"></app-button>
+  </div>
+</div>

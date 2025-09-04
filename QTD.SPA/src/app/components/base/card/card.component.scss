@@ -1,0 +1,51 @@
+
+mat-card-title{
+   
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: 0.15000000596046448px;
+  text-align: left;
+}
+
+.expand_more{
+  color: grey;
+  transform: translateY(30%);
+}
+
+.business_center{
+  transform: translateY(20%);
+}
+
+.plusbutton{
+  transform: translate(200px,30%);
+  background: rgba(39, 143, 108, 1);
+  width: 35px;
+  height: 35px;
+}
+
+.commitbutton{
+  width: 37px;
+  height: 37px;
+  background-color:rgba(225, 225, 225, 1);
+  transform: translate(165px,70px);
+}
+
+#commit{
+  transform: translateY(-40%);
+  color:rgba(255, 255, 255, 1);
+}
+
+#add{
+  color: rgba(255, 255, 255, 1);
+  transform: translateY(-40%);
+}
+ 
+#sticky-point {
+  position: absolute;
+  width: 0;
+  height: 0;
+  display: none;
+}

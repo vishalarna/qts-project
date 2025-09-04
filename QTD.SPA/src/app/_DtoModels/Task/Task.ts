@@ -1,0 +1,47 @@
+﻿import { Employee_Task } from '../EmployeeTask/Employee_Task';
+import { Entity } from '../Entity';
+import { SubdutyArea } from '../SubdutyArea/SubdutyArea';
+import { Task_Question } from '../Task_Question/Task_Question';
+import { Task_EnablingObjective_Link } from '../Task_EnablingObjective_Link/Task_EnablingObjective_Link';
+import { Task_Position } from '../Task_Position/Task_Position';
+import { Task_Procedure_Link } from '../Task_Procedure_Link/Task_Procedure_Link';
+import { Task_SaftyHazard_Link } from '../Task_SaftyHazard_Link/Task_SaftyHazard_Link';
+import { Task_Step } from '../Task_Step/Task_Step';
+import { Task_Tool } from '../Task_Tool/Task_Tool';
+import { Version_Task } from '../Version_Task/Version_Task';
+import { Position_Task } from '../Position_Task/Position_Task';
+import { DutyArea } from '../DutyArea/DutyArea';
+
+export class Task extends Entity {
+  subdutyAreaId!: any;
+  description!: string;
+  number!: number;
+  conditions!: string;
+  standards!: string;
+  critical!: boolean;
+  tools!: string;
+  suggestions?:string;
+  references!: string;
+  taskCriteriaUpload!:string;
+  criteria!:string;
+  requiredTime!: number;
+  majorVersion!: number;
+  minorVersion!: number;
+  subdutyArea: SubdutyArea = new SubdutyArea();
+  task_Steps: Task_Step[] = [];
+  task_SaftyHazard_Links: Task_SaftyHazard_Link[] = [];
+  task_EnablingObjective_Links: Task_EnablingObjective_Link[] = [];
+  task_Tools: Task_Tool[] = [];
+  task_Procedure_Links: Task_Procedure_Link[] = [];
+  employee_Tasks: Employee_Task[] = [];
+  task_Questions: Task_Question[] = [];
+  task_Positions: Task_Position[] = [];
+  version_Tasks: Version_Task[] = [];
+  position_Tasks: Position_Task[] = [];
+  dutyAreaId!: any;
+  dutyAreaDesc!: string;
+  isMeta!: boolean;
+  isReliability!: boolean;
+  effectiveDate?:Date;
+  fullNumber?:any;
+}

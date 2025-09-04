@@ -1,0 +1,113 @@
+<!--Question Box Starts Here-->
+<div class="ml-12 mr-12 mt-2">
+  <form [formGroup]="questionForm">
+    <mat-label class="font-medium text-sm">Question</mat-label>
+    <ckeditor formControlName="question" [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+    <app-input-error *ngIf="questionForm.get('question')?.invalid" text="Please Enter Question Description">
+    </app-input-error>
+  </form>
+</div>
+<!--Question Box Ends Here-->
+
+<!--choices start-->
+<div>
+  <div class="ml-12 mr-12 mt-8">
+    <mat-label class="font-bold text-sm">Choices <app-icon icon="help_outline" class="ml-2"></app-icon>
+    </mat-label>
+  </div>
+  <form [formGroup]="choiceForm">
+    <div class="ml-12 mr-12 mt-3 flex flex-col" *ngFor="let i of choice_array,index as x">
+      <mat-label class="text-sm font-bold">{{x + 1}}</mat-label>
+      <div class="flex flex-row justify-between">
+        <div class="w-21/24">
+          <ckeditor formControlName="choiceDescription{{x+1}}" [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+          <app-input-error *ngIf="choiceForm.get('choiceDescription' + (x+1))?.invalid"
+            text="Please Enter Description for the choice"></app-input-error>
+        </div>
+
+        <div class="border w-2/24 rounded ml-2 h-32">
+          <div class="flex flex-col justify-between">
+            <div>
+              <app-button ButtonType="icon" icon="expand_less" (clicked)="onIncreaseAlphabet(x)" class="px-1">
+              </app-button>
+            </div>
+            <div class="pt-2">
+              <p class="text-2xl font-medium px-3">{{correctOptions[x]}}</p>
+            </div>
+            <div>
+              <app-button ButtonType="icon" icon="expand_more" (clicked)="onDecreaseAlphabet(x)" class="px-1">
+              </app-button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="ml-12 mr-12 mt-6">
+    <app-button *ngIf="choice_array.length < 10" (clicked)="OnAddChoice()" iconPosition="left" variant="text"
+      text="Add another choice" icon="add">
+    </app-button>
+  </div>
+  <div class="ml-12 mr-12 mt-6">
+    <app-button *ngIf="choice_array.length > 4" (clicked)="onRemoveChoice()" iconPosition="left" variant="text"
+      text="Remove latest choice" icon="delete">
+    </app-button>
+  </div>
+</div>
+<!--choices end-->
+
+
+<!--matches start-->
+<div class="mt-12">
+  <form [formGroup]="matchesForm">
+    <div class="ml-12 mr-12 ">
+      <mat-label class="font-bold text-sm">Matches <app-icon icon="help_outline" class="ml-2"></app-icon>
+      </mat-label>
+    </div>
+
+    <div class="ml-12 mr-12 mt-3 flex flex-col" *ngFor="let i of option_array,index as x">
+      <mat-label class="text-sm font-bold">{{i.text}}</mat-label>
+      <ckeditor formControlName="matchDescription{{x + 1}}" [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+      <app-input-error *ngIf="matchesForm.get('matchDescription' + (x+1))?.invalid"
+        text="Please Enter Description for the match"></app-input-error>
+    </div>
+  </form>
+  <div class="ml-12 mr-12 mt-6">
+    <app-button *ngIf="option_array.length < 10" (clicked)="OnAddOption()" iconPosition="left" variant="text"
+      text="Add another option" icon="add">
+    </app-button>
+  </div>
+  <div class="ml-12 mr-12 mt-6">
+    <app-button *ngIf="option_array.length > 4" (clicked)="onRemoveOptions()" iconPosition="left" variant="text"
+      text="Remove latest option" icon="delete">
+    </app-button>
+  </div>
+</div>
+<!--matches end-->
+
+
+<!--Save Button Starts-->
+<div class="float-right">
+  <div class="flex flex-col">
+    <div class="flex flex-row float-right mr-12 mt-16 pb-2">
+      <div *ngIf="!update && showSaveButton">
+        <app-button [spinner]="saveSpinner"
+          [disabled]="questionForm.invalid || choiceForm.invalid || matchesForm.invalid || choice_array.length > option_array.length || saveSpinner"
+          (clicked)="saveQuestion(false)" class="mr-2" type="button" size="sm" color="primary" text="Save"></app-button>
+        <app-button
+          [disabled]="questionForm.invalid || choiceForm.invalid || matchesForm.invalid || choice_array.length > option_array.length || saveSpinner"
+          (clicked)="saveQuestion(true)" type="button" size="sm" color="secondary" text="Save & Add New"></app-button>
+      </div>
+      <app-button *ngIf="update && showSaveButton"
+          [disabled]="questionForm.invalid || choiceForm.invalid || matchesForm.invalid || choice_array.length > option_array.length"
+          (clicked)="updateData()" type="button" size="sm" color="secondary" text="Update"></app-button>
+    </div>
+    <div class="flex flex-row float-right mr-12 mt-2 pb-2">
+      <app-input-error *ngIf="choice_array.length > option_array.length" text="Choices cannot be more then matches">
+      </app-input-error>
+    </div>
+  </div>
+</div>
+
+<!--Save Button Ends-->

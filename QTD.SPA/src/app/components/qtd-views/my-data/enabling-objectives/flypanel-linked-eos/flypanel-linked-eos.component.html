@@ -1,0 +1,33 @@
+<div *ngIf="!linkedTests" class="flex flex-col px-12 py-12">
+  <div class="flex flex-row justify-between mt-2">
+      <p class="text-xl text-gray-900">{{selectedTypeNumber}} - {{Title}}</p>
+      <app-button (clicked)="closed.emit('fp-linked-procs-closed')" ButtonType='icon' icon="close">
+      </app-button>
+  </div>
+  <div class="flex flex-row mt-4">
+      <p class="text-base text-gray-900">The selected {{selectedType}} is linked to the following {{("Enabling Objective" | labelReplacement)| async}}</p>
+  </div>
+  <span *ngIf="linkedEos.length < 1"> No Data Found </span>
+  <div *ngFor="let item of linkedEos" class="w-full">
+      <div class="px-3 py-3 border">
+          <p class="text-sm text-gray-900">{{item.number}} - {{item.description}}</p>
+      </div>
+  </div>
+</div>
+
+<div *ngIf="linkedTests" class="flex flex-col px-12 py-12">
+  <div class="flex flex-row justify-between mt-2">
+      <span class="text-xl text-gray-900 flex flex-row">{{selectedTypeNumber}} - &nbsp;<p [innerHTML]="Title"></p></span>
+      <app-button (clicked)="closed.emit('fp-linked-procs-closed')" ButtonType='icon' icon="close">
+      </app-button>
+  </div>
+  <div class="flex flex-row mt-4">
+      <p class="text-base text-gray-900">The selected {{selectedType}} is linked to the following Tests</p>
+  </div>
+  <span *ngIf="linkedTests.length < 1">No Data Found</span>
+  <div *ngFor="let item of linkedTests,index as i" class="w-full">
+      <div class="px-3 py-3 border">
+          <p class="text-sm text-gray-900">{{i + 1}} - {{item.testTitle}}</p>
+      </div>
+  </div>
+</div>

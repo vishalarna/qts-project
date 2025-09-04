@@ -1,0 +1,59 @@
+.certificate-details {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  .certificate-detail {
+    display: flex;
+    flex-direction: column;
+    flex: 1 1 33.33%;
+    .detail-head {
+      font-size: 1.05rem;
+      font-weight: 500;
+      margin-bottom: 0.5rem;
+      padding: 0px 7px;
+    }
+    .detail-value {
+      padding: 0.8rem 1rem;
+      border: 1px solid #dee2e6;
+      border-radius: 4px;
+      font-size: 1rem;
+      background: rgba(239, 239, 239, 0.3);
+      color: rgba(0, 0, 0, 0.87);
+    }
+    &:not(:last-child):not(:first-child) {
+      margin: 0px 0.8rem;
+    }
+  }
+}
+
+.certification-history-table {
+  h2 {
+    font-size: 1.05rem;
+    font-weight: 500;
+    padding: 0px 7px;
+    margin-bottom:0.5rem;
+  }
+  .certification-history-list {
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+    border-radius: 4px;
+    border: 0.5px solid #e1e5e4;
+    overflow: hidden;
+  }
+}
+
+:host ::ng-deep .certification-history-list .mat-cell {
+  padding: 1rem;
+  flex: 1 1 50%;
+}
+
+.table-spinner {
+  display: none;
+}
+.loader{
+  .table-spinner {
+    display: flex;
+  }
+  .certification-history-list{
+    display:none ;
+  }
+}

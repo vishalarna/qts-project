@@ -1,0 +1,190 @@
+<app-header [toggleMenuIcon]="false" [canGoBack]="false" [breadcrumbs]="url"></app-header>
+<div class="flex flex-row flex-wrap ml-4 mt-3 justify-between p-3">
+    <div class="flex flex-row justify-between" style="align-items: baseline; width: 50%">
+        <span class="font-bold text-lg" style="width: 50%">{{("Procedure" | labelReplacement)| async}} Review</span>
+        <!-- <div class="flex flex-row float-right bg-white-one text-sm"> -->
+        <!-- </div> -->
+    </div>
+
+
+    <section class="mat-elevation-z8 w-full mt-4 bg-white" *ngIf="isLoading===false">
+
+        <mat-tab-group #tabGroup>
+            <mat-tab>
+                <ng-template mat-tab-label>
+                    <span>Completed {{("Procedure" | labelReplacement)| async}} Reviews</span>
+                    <div class="icon" *ngIf="CompleteCount > 0">
+                        <span class="icon__value">{{CompleteCount}}</span>
+                    </div>
+                </ng-template>
+                <app-spinner *ngIf="isLoading" class="spinner internal-spinner"></app-spinner>
+                <div *ngIf="completedDataSource && !isLoading">
+                    <!-- search and buttons starts -->
+                    <div
+                        class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+                        <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input class="text-sm flex-grow focus:outline-none" placeholder="Enter key word to search"
+                            type="text" (keyup)="filterPendingTest($event)">
+
+                    </div>
+                    <!-- search and button ends -->
+                    <!-- table starts -->
+                    <div class="flex-row bg-white-one rounded-b-md m-2 ">
+                        <mat-table [dataSource]="completedDataSource" matSort (matSortChange)="sortData($event)">
+                            <ng-container matColumnDef="procedureNo">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Procedure" | labelReplacement)| async}} Review #
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row; let i = index">{{i + 1}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="procedureCode">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Procedure" | labelReplacement)| async}} # </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.procedureNumber}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="procedureName">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Procedure" | labelReplacement)| async}} Name </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.procedureName}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="procedureTitle">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Procedure" | labelReplacement)| async}} Review Title
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.procedureReviewTitle }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="procedureDueDate">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Completion Date
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    {{ datePipe.transform(convertUtcToLocalDate(row.procedureReviewCompletionDate), 'MM/dd/yyyy') }}
+                                </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="action">
+                                <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <app-button color="blueBorder" *ngIf="row.hyperLink===''"  text="View {{('Procedure' | labelReplacement)| async}}" (clicked)="showPdf(row)" size="sm" [disabled]="row.file===''"
+                                    iconPosition="left">
+                                </app-button>
+                                <app-button color="blueBorder"  [disabled]="row.hyperLink===null" (clicked)="goToLink(row.hyperLink)" *ngIf="row.hyperLink!==''"  text="View {{('Procedure' | labelReplacement)| async}}" size="sm"
+                                    iconPosition="left">
+                                </app-button>
+                                </mat-cell>
+                            </ng-container>
+                            <mat-header-row *matHeaderRowDef="displayedCompletedColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedCompletedColumns;"></mat-row>
+
+                            <!-- Row shown when there is no matching data.-->
+                            <tr class="mat-row flex text-center " *matNoDataRow>
+                                <td class="mat-cell w-full m-2">No data matching the filter</td>
+                            </tr>
+
+                        </mat-table>
+                        <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #compPage
+                            aria-label="Select page of periodic elements">
+                        </mat-paginator>
+                    </div>
+                    <!-- table ends -->
+                </div>
+
+            </mat-tab>
+            <mat-tab label="Pending Procedure Reviews">
+                <ng-template mat-tab-label>
+                    <span>Pending {{("Procedure" | labelReplacement)| async}} Reviews</span>
+                    <div class="icon" *ngIf="PendingCount > 0">
+                        <span class="icon__value">{{PendingCount}}</span>
+                    </div>
+                </ng-template>
+                <app-spinner *ngIf="isLoading" class="spinner internal-spinner"></app-spinner>
+                <div *ngIf="pendingDataSource && !isLoading">
+                    <!-- search and buttons starts -->
+                    <div
+                        class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+                        <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                        <input class="text-sm flex-grow focus:outline-none" placeholder="Enter key word to search"
+                            type="text" (keyup)="filterPendingTest($event)">
+
+                    </div>
+                    <!-- search and button ends -->
+                    <!-- table starts -->
+                    <div class="flex-row bg-white-one rounded-b-md m-2 ">
+                        <mat-table [dataSource]="pendingDataSource" matSort (matSortChange)="sortpendingProcedureReviewsData($event)">
+                            <ng-container matColumnDef="procedureNo">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Procedure" | labelReplacement)| async}} Review #
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row; let i = index">{{i + 1}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="procedureCode">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Procedure" | labelReplacement)| async}} # </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.procedureNumber}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="procedureName">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Procedure" | labelReplacement)| async}} Name </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.procedureName}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="procedureTitle">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Procedure" | labelReplacement)| async}} Review Title
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.procedureReviewTitle }} </mat-cell>
+                            </ng-container>
+
+                            <ng-container matColumnDef="procedureDueDate">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Procedure" | labelReplacement)| async}} Review Due Date
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <!-- {{(row.procedureReviewDueDate | dateFormat | async)}} -->
+                                    {{ datePipe.transform(convertUtcToLocalDate(row.procedureReviewDueDate), 'MM/dd/yyyy') }}
+                                </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="status">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>Status</mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <mat-chip-list>
+                                        <mat-chip style="background-color: #fff6df;color: #f0b43e;"
+                                            *ngIf="row.status==='Pending'">
+                                            Pending
+                                        </mat-chip>
+                                        <mat-chip style="background-color: #fef3f2;color: #fa634e;"
+                                            *ngIf="row.status==='In Progress'">
+                                            In Progress
+                                        </mat-chip>
+                                    </mat-chip-list>
+                                </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="action">
+                                <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <app-button color="blueBorder" (click)="startTest(row)" text="Start Review" size="sm"
+                                        iconPosition="left">
+                                    </app-button>
+                                </mat-cell>
+                            </ng-container>
+                            <mat-header-row *matHeaderRowDef="displayedPendingColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedPendingColumns;"></mat-row>
+
+                            <!-- Row shown when there is no matching data.-->
+                            <tr class="mat-row flex text-center " *matNoDataRow>
+                                <td class="mat-cell w-full m-2">No data matching the filter</td>
+                            </tr>
+
+                        </mat-table>
+                        <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #pendPage
+                            aria-label="Select page of periodic elements">
+                        </mat-paginator>
+                    </div>
+                    <!-- table ends -->
+                </div>
+
+
+            </mat-tab>
+        </mat-tab-group>
+
+    </section>
+</div>
+
+<app-data-loader *ngIf="isLoading"></app-data-loader>

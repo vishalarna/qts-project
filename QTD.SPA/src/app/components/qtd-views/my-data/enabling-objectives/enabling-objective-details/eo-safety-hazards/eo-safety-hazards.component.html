@@ -1,0 +1,96 @@
+<div class="flex flex-row flex-wrap mt-3 justify-between">
+  <div class="flex flex-col">
+    <p class="font-bold text-lg">Linkages: {{("Safety Hazard" | labelReplacement)| async}}s</p>
+    <p class="text-xs text-gray-four">{{ srcList.length }} {{ ('Safety Hazard' | labelReplacement | async) }}s linked to selected {{ isMeta ? 'Meta EO' : ('Enabling Objective' | labelReplacement | async) }}</p>
+  </div>
+  <app-button *ngIf="!isMeta" (clicked)="openLinkFlyPanel(linkSH)" [disabled]="!isActive" variant="text" icon="link" iconPosition="left"
+    text="Link {{('Safety Hazard' | labelReplacement)| async}}s">
+  </app-button>
+</div>
+
+<app-data-loader *ngIf="!DataSource"></app-data-loader>
+<div class="shadow-md" *ngIf="DataSource">
+  <div class="flex flex-row flex-wrap bg-gray-one justify-between mb-3 mt-3  px-3 py-3 rounded"
+    *ngIf="unlinkIds.length > 0">
+    <p class="text-xs text-gray-four pt-2">{{unlinkIds.length}} {{("Safety Hazard" | labelReplacement)| async}}s selected</p>
+    <app-button (clicked)="unlinkModal(unlinkSafetyHazards)" [spinner]="spinner" [disabled]="spinner" icon="link_off"
+      iconPosition="left" size="sm" color="secondary" text="Unlink {{('Safety Hazard' | labelReplacement)| async}}s">
+    </app-button>
+  </div>
+  <mat-table [dataSource]="DataSource" matSort class="table-bordered" (matSortChange)="sortData($event)">
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef>
+        <mat-checkbox [disabled]="!isActive || isMeta" (change)="$event ? masterToggle() : null"
+          [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <mat-checkbox [disabled]="!isActive || isMeta" (click)="$event.stopPropagation()"
+          (change)="$event ? selectrow(row) : null" [checked]="selection.isSelected(row)">
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="number">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Safety Hazard" | labelReplacement)| async}}s Number
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.number}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="title">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Safety Hazard" | labelReplacement)| async}}s Title
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.title}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="linkCount">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> # of Linkages
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" class="flex flex-row justify-between cursor-pointer">
+        <label style="color:rgba(92, 155, 49, 1)"
+          (click)="selectedId = row.id;selectedTitle = row.title;selectedNumber = row.number;openLinkedFlyPanel(linkedPanel);"
+          >
+          {{row.linkCount}}
+        </label>
+        <app-button (clicked)="unlinkModal(unlinkSafetyHazards,row.id)" [disabled]="!isActive || isMeta || spinner" ButtonType="icon"
+          icon="link_off" style="color:lightgray"></app-button>
+      </mat-cell>
+    </ng-container>
+
+
+    <ng-container>
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" matTooltip="Unlink {{('Safety Hazard' | labelReplacement)| async}}s">
+        <app-icon icon="link_off"></app-icon>
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayColumns;" [class.inActiveItem]="!row.active"></mat-row>
+
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center " *matNoDataRow>
+      <td class="mat-cell w-full m-2 pt-1">No data to display</td>
+    </tr>
+
+  </mat-table>
+  <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons aria-label="Select page of periodic elements">
+  </mat-paginator>
+</div>
+
+<ng-template #linkSH>
+  <app-flypanel-eo-safety-hazard-link [alreadyLinked]="alreadyLinked" (refresh)="refreshData();flyPanelSrvc.close();"
+    (closed)="flyPanelSrvc.close()">
+  </app-flypanel-eo-safety-hazard-link>
+</ng-template>
+
+<ng-template #unlinkSafetyHazards>
+  <app-qtd-dialogue header="Unlink {{('Safety Hazard' | labelReplacement)| async}}s" [description]="unlinkDescription" cancelText="No"
+    confirmText="Yes" [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="getData($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #linkedPanel>
+  <app-flypanel-linked-eos [Title]="selectedTitle" (closed)="flyPanelSrvc.close()" [Id]="selectedId"
+    [selectedType]="'Safety Hazard'" [selectedTypeNumber]="selectedNumber"></app-flypanel-linked-eos>
+</ng-template>

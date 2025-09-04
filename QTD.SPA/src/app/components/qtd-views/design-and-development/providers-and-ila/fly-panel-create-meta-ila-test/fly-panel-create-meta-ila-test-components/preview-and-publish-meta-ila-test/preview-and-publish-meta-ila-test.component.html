@@ -1,0 +1,97 @@
+<div *ngIf="metaILASummaryTestVM.test && testItemsToPreview" class="flex justify-center" style="align-items:center;">
+  <div style="width:100%;">
+    <!-- Top Header Section -->
+    <section style="border-bottom:0.8px solid #E1E5E4" class="flex flex-col pb-5">
+      <span class="text-base font-medium mb-2" style="color:#5C9B31;">{{'New Hire Assessment' | uppercase}}</span>
+      <span class="font-bold mb-4 text-3xl">{{metaILASummaryTestVM.test.testTitle}}</span>
+      <span class="text-sm mb-4" style="color:#4D4D4D;">{{metaILASummaryTestVM.testInstruction}}</span>
+      <div class="flex flex-row" style="align-items:center;">
+        <mat-icon class="material-symbols-outlined" style="color:#7A807E;">schedule</mat-icon>
+        <span class="font-semibold ml-2">TIME:
+          <span *ngIf="!metaILASummaryTestVM.testTimeLimitHours && !metaILASummaryTestVM.testTimeLimitMinutes">N/A</span>
+          <span *ngIf="metaILASummaryTestVM.testTimeLimitHours">{{metaILASummaryTestVM.testTimeLimitHours}} Hours </span>
+          <span *ngIf="metaILASummaryTestVM.testTimeLimitMinutes">{{metaILASummaryTestVM.testTimeLimitMinutes}} Minutes</span>
+        </span>
+      </div>
+    </section>
+
+    <section class="mb-5 mt-4" *ngIf="testItemsToPreview && testItemsToPreview.length < 1">
+      <div>No Test Questions Found</div>
+    </section>
+    <!-- Section With Test Data -->
+    <section *ngIf="testItemsToPreview && testItemsToPreview.length > 0"
+      class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm" style="margin-bottom: 5rem;">
+      <div class="mb-4" *ngFor="let testItem of testItemsToPreview,index as i">
+        <div style="border-bottom:0.8px solid #E1E5E4;" class="pb-2 flex flex-row mt-2 mb-4">
+          <span style="color:#7A807E;" class="mr-4 font-medium">Question {{i+1}}:</span>
+          <span class="font-normal"
+            [innerHTML]="testItem.testItemType.description.trim().toLowerCase() === 'fill in the blank' ? processFIB(testItem.description,testItem.testItemFillBlanks):testItem.description"></span>
+        </div>
+
+        <!-- For Fill in Blanks -->
+        <div class="mb-4" *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'fill in the blank'">
+          <div class="flex flex-col" *ngFor="let fib of testItem.testItemFillBlanks">
+            <div class="flex flex-row mb-2">
+              <div class="mr-3">{{fib.correctIndex}} )</div>
+              <div>{{fib.correct}}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- For MCQ -->
+        <div *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'multiple choice questions'"
+          class="mb-4">
+          <mat-radio-group [disabled]="true" [value]="getCorrectMCQ(testItem.testItemMCQs)">
+            <div *ngFor="let mcq of testItem.testItemMCQs">
+              <mat-radio-button class="mb-2" [value]="mcq.id">
+                <div [innerHTML]="mcq.choiceDescription" class="ml-3 font-normal"></div>
+              </mat-radio-button>
+            </div>
+          </mat-radio-group>
+        </div>
+
+        <!-- Multiple Correct -->
+        <div *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'multiple correct answers'" class="mb-4">
+          <div *ngFor="let mca of testItem.testItemMCQs">
+            <mat-checkbox [disabled]="true" [checked]="mca.isCorrect">
+              <div [innerHTML]="mca.choiceDescription"></div>
+            </mat-checkbox>
+          </div>
+        </div>
+
+        <!-- For True False -->
+        <div *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'true / false'">
+          <mat-radio-group [disabled]="true" [value]="getCorrectTF(testItem.testItemTrueFalses)">
+            <div *ngFor="let tf of testItem.testItemTrueFalses">
+              <mat-radio-button class="mb-2" [value]="tf.id">
+                <span class="ml-3 font-normal">{{tf.choices}}</span>
+              </mat-radio-button>
+            </div>
+          </mat-radio-group>
+        </div>
+
+        <!-- For Match The Column -->
+        <div style="display: grid;row-gap: 0.6rem;" class="mb-4"
+          *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'match the column'">
+          <div *ngFor="let mtc of testItem.testItemMatches">
+            <div style="display:grid;grid-template-columns: repeat(3, 1fr);row-gap:1rem;">
+              <div [innerHTML]="mtc.choiceDescription" class="mr-2"></div>
+              <div [innerHTML]="mtc.matchDescription" class="mr-2"></div>
+              <div>{{mtc.correctValue}}</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Short Answers -->
+        <div *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'short answers'">
+          <div *ngFor="let sa of testItem.testItemShortAnswers,index as i">
+            <div class="flex flex-row mb-2 mt-2">
+              <div class="mr-2">{{i + 1}} )</div>
+              <div [innerHTML]="sa.responses"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>

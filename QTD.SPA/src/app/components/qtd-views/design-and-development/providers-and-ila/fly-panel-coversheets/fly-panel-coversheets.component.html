@@ -1,0 +1,37 @@
+<div
+  class="
+    bg-white-one
+    shadow-md
+    py-2
+    h-screen
+    w-full
+    overflow-x-hidden overflow-y-scroll
+  "
+>
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-bold text-gray-900">Coversheets</p>
+    <button type="button" (click)="flyPanelSrvc.close()">
+      <app-icon icon="close"></app-icon>
+    </button>
+  </div>
+  <form [formGroup]="coverForm">
+    <mat-radio-group formControlName="cover">
+      <div *ngFor="let cov of coversheetsList" class="px-12 flex">
+        <mat-radio-button class="py-3" [value]="cov">
+          {{ cov.coversheetTitle }}
+        </mat-radio-button>
+      </div>
+    </mat-radio-group>
+  </form>
+
+  <app-button
+    type="button"
+    size="sm"
+    color="secondary"
+    text="Use selected Coversheet Template"
+    (clicked)="Save()"
+    [disabled]="coverForm.invalid"
+    class="mr-5 pb-4 px-12 mt-6"
+  >
+  </app-button>
+</div>

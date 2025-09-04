@@ -1,0 +1,117 @@
+<!-- Tool bar of test wizard -->
+<div *ngIf="newMode === 'none'">
+  <mat-toolbar class="h-28 app-toolbar-sticky">
+
+    <mat-icon class="backIcon" (click)="goBack()">
+      keyboard_arrow_left
+    </mat-icon>
+
+    <h1 *ngIf="stepper.selectedIndex !== 4 && (mode === 'add' || mode === 'edit')" class="flex-auto font-medium text-xl" id="title"
+      translate>
+      Add New Test</h1>
+    <!-- <h1 *ngIf="stepper.selectedIndex !== 4 && mode === 'edit'" class="flex-auto font-medium text-xl" id="title"
+      translate>
+      Edit Test</h1> -->
+    <h1 *ngIf="stepper.selectedIndex !== 4 && mode === 'copy'" class="flex-auto font-medium text-xl" id="title"
+      translate>
+      Copy Test</h1>
+    <h2 class="flex-auto font-medium text-xs text-gray-three" *ngIf="stepper.selectedIndex !== 4 && isDraft">Saved as
+      Draft</h2>
+    <h1 *ngIf="stepper.selectedIndex === 4" class="flex-auto font-medium text-xl" id="title" translate>Test - Preview
+    </h1>
+    <div class="flex flex-row items-center space-x-4">
+
+      <app-button
+        *ngIf="(stepper.selectedIndex !== 0 && mode === 'edit') || stepper.selectedIndex !== 4 && mode === 'add' && (!isTestCreated || selectedIndex > 0) || showSpinner"
+        [spinner]="showSpinner"
+        [disabled]="selectedIndex === 0 && createInfo && createInfo.TestInformationFormGroup.invalid" type="button"
+        text="Continue" (clicked)="continueClicked()">
+      </app-button>
+
+      <app-button
+        *ngIf="stepper.selectedIndex === 0 && mode === 'edit' || (mode !== 'edit' && selectedIndex === 0 && isTestCreated)"
+        [spinner]="showSpinner"
+        [disabled]="selectedIndex === 0 && createInfo && createInfo.TestInformationFormGroup.invalid || showSpinner"
+        type="button" text="Update" (clicked)="updateClicked()">
+      </app-button>
+
+      <app-button *ngIf="stepper.selectedIndex !== 4 && mode === 'copy'" [spinner]="showSpinner"
+        [disabled]="selectedIndex === 0 && createInfo && createInfo.TestInformationFormGroup.invalid || showSpinner"
+        type="button" text="Copy">
+      </app-button>
+
+      <app-button *ngIf="stepper.selectedIndex === 4" [spinner]="showSpinner" type="button" text="Publish">
+      </app-button>
+
+    </div>
+  </mat-toolbar>
+
+  <!-- Stepper in create test wizard -->
+  <div class="m-4">
+    <mat-stepper [linear]="linear" [hidden]="previewContainer!=undefined" [orientation]="(stepperOrientation | async)!"
+      #stepper (selectionChange)="onSelectionChange($event)">
+      <ng-template matStepperIcon="edit">
+        <app-icon icon="done"></app-icon>
+      </ng-template>
+
+      <mat-step [completed]="enableNavigation">
+        <ng-template matStepLabel>Add Test Information</ng-template>
+        <ng-template matStepContent>
+          <app-create-test-information #createInfo [mode]="mode" [Id]="testId" (testData)="CreateTestData($event)"
+            (infoSaved)="changeStep()" (error)="setNotSaved()"
+            (evaluationData)="CreateEvaluationData($event)"></app-create-test-information>
+          <router-outlet *ngIf="0 === selectedIndex"></router-outlet>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Import Test Questions</ng-template>
+      <ng-template matStepContent>
+        <app-import-test-questions #importTestQuestion [testId]="testId"></app-import-test-questions>
+        <router-outlet *ngIf="1 === selectedIndex"></router-outlet>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Add new Test Questions</ng-template>
+      <app-add-new-test-questions [testId]="testId" #addNewTestQuestion></app-add-new-test-questions>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Sequence Test Questions</ng-template>
+
+      <app-sequence-test-questions [testId]="testId" #sequenceTestQues></app-sequence-test-questions>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Preview & Publish</ng-template>
+    </mat-step>
+
+    </mat-stepper>
+
+  </div>
+</div>
+
+
+<div *ngIf="newMode !== 'none'">
+  <div>
+    <section>
+      <mat-toolbar class="h-28 app-toolbar-sticky">
+        <mat-icon class="backIcon" (click)="goBack()">
+          keyboard_arrow_left
+        </mat-icon>
+        <h1 *ngIf="newMode === 'copy'" class="flex-auto font-medium text-xl" id="title" translate>
+          Copy Test</h1>
+        <h1 *ngIf="newMode === 'edit'" class="flex-auto font-medium text-xl" id="title" translate>
+          Edit Test</h1>
+        <app-button *ngIf="newMode === 'edit'" [spinner]="showSpinner" [disabled]="showSpinner" type="button"
+          text="Update" color="secondary" size="sm">
+        </app-button>
+
+        <app-button *ngIf="newMode === 'copy'" [spinner]="showSpinner" [disabled]="showSpinner" type="button"
+          text="Copy" color="secondary" size="sm">
+        </app-button>
+      </mat-toolbar>
+    </section>
+
+    <section>
+
+    </section>
+  </div>
+</div>

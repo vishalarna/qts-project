@@ -1,0 +1,46 @@
+.greenText {
+  color: green;
+}
+
+.defaultLabel {
+  font-weight: 400;
+  font-size: small;
+  cursor: pointer;
+}
+
+.grayText {
+  color: gray;
+}
+
+.iconSize {
+  transform: scale(1.5);
+  color: gray;
+  font-weight: 400;
+}
+
+.mainBorder {
+  border-right: 2px #f2f2f2 solid;
+}
+
+.mat-column-id,
+.mat-column-order,
+.mat-column-number {
+  flex: 0 0 120px;
+}
+
+
+
+.label_style:hover{
+  background-color: #5C9B31;
+  color: white;
+  cursor: pointer;
+}
+
+ol{
+  list-style: decimal !important;
+}
+
+.inactiveRow > td{
+  color: darkgray !important;
+  font-style: italic !important;
+}

@@ -1,0 +1,26 @@
+<div>
+  <mat-dialog-content>
+    <div class="flex flex-row justify-between items-center mt-2">
+      <p mat-dialog-title>Select Date</p>
+      <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+      <app-button
+        ButtonType="icon"
+        icon="close"
+        (clicked)="closeDialog()"
+      ></app-button>
+    </div>
+
+    <form [formGroup]="empForm" class="flex flex-col" style="margin-top: 4rem; margin-bottom: 4rem">
+      <label>Select Date of Enrollment</label>
+      <mat-select placeholder="Select Date" class="appearance-none rounded border w-full px-4 py-2.5 mt-2" formControlName="data">
+        <mat-option *ngFor="let cs of classes" [value]="{id:cs.id,startDate:cs.startDateTime,endDate:cs.endDateTime}">
+          <span>{{ cs.startDateTime | date:'MM-dd-yy' }}&nbsp;-&nbsp;{{cs.endDateTime | date:'MM-dd-yy' }}</span>
+        </mat-option>
+      </mat-select>
+    </form>
+
+    <mat-dialog-actions align="end">
+      <app-button class="mb-4" (clicked)="emitData()" color="secondary" text="Continue" size="sm"></app-button>
+    </mat-dialog-actions>
+  </mat-dialog-content>
+</div>

@@ -1,0 +1,7 @@
+:host ::ng-deep .employees-list .mat-header-cell:nth-child(1),
+:host ::ng-deep .employees-list .mat-cell:nth-child(1) {
+  max-width: 60px;
+}
+:host ::ng-deep .employees-list .mat-cell,:host ::ng-deep .employees-list .mat-header-cell {
+  padding: 1rem;
+}

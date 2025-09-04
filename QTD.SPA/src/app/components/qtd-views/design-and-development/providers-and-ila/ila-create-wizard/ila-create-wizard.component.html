@@ -1,0 +1,124 @@
+<mat-toolbar class="h-28 app-toolbar-sticky">
+  <!-- <app-button *ngIf="!previewContainer" type="button" ButtonType='icon' icon='menu' (clicked)="toggleMainMenu()">
+  </app-button> -->
+  <app-button type="button" ButtonType='icon' icon='arrow_back' (clicked)="goBack()">
+  </app-button>
+
+  <h1 class="flex-auto font-medium text-xl" id="title" translate
+    *ngIf="previewContainer==='ila' || previewContainer===undefined || ila" [textContent]="dynamicName"></h1>
+  <h2 *ngIf="savedDraftCheck || (ila && !ila.isPublished)" class="flex-auto font-medium text-xs text-gray-three">Saved as Draft</h2>
+  <h2 *ngIf="(ila && ila.isPublished)" class="flex-auto font-medium text-xs text-gray-three">Published</h2>
+  <div class="flex flex-row items-center space-x-4">
+    <app-button [spinner]="deleteSpinner" [disabled]="deleteSpinner || createILA === undefined || createILA.editILAId === undefined" (clicked)="deleteIla(deleteTopic)" *ngIf="selectedIndex===0 && !previewContainer"
+      color="secondary" variant="contained" style="color: black !important;" text="Delete {{('ILA' | labelReplacement)| async}}">
+    </app-button>
+    <!-- <app-button
+      *ngIf="selectedIndex===1 || selectedIndex===3 || selectedIndex===7 || selectedIndex===4 || selectedIndex===6 && !previewContainer"
+      color="secondary" (clicked)="collaborate_Clicked()" variant="contained" style="color: black !important;"
+      text="Collaborate">
+    </app-button> -->
+    <app-button [spinner]="showSpinner" [disabled]="(selectedIndex === 0 ? formStatus === 'INVALID' : false) || (selectedIndex == 5 ? (this.ilaEvaluationComponent?.hasAddedEvaluation && this.ilaEvaluationComponent?.ilaStudentEvaluationForm.invalid) : false) || isLoading || isILASaved"
+      *ngIf="(providerIsNerc ? selectedIndex !== 7:selectedIndex!==6) && !previewContainer" type="button" text="Continue" (clicked)="continueClicked()">
+    </app-button>
+    <app-button *ngIf="(providerIsNerc ? selectedIndex === 7:selectedIndex === 6) && !previewContainer" (clicked)="publish_Clicked(publishILA)"
+      style="color: black !important;" type="button" text="Publish" [disabled] = "(stepper.selectedIndex === 7 ? !ilaApplication?.ILAApplicationForm?.valid :false)">
+    </app-button>
+    <app-button *ngIf="previewContainer==='ila'" (clicked)="close_Clicked()" size="sm" color="secondary"
+      variant="contained" style="color: black !important;" text="Close">
+    </app-button>
+    <ng-container *ngIf="previewContainer==='edit'">
+      <app-button (clicked)="closeGuideEditor()" size="sm" color="secondary" style="color: black !important;"
+        text="Close">
+      </app-button>
+      <app-button (clicked)="closeGuideEditor()" size="sm" style="color: black !important;" text="Save">
+      </app-button>
+    </ng-container>
+  </div>
+</mat-toolbar>
+
+
+<!-- Stepper starts here  -->
+<div class="m-4">
+  <mat-stepper [linear]="true" [hidden]="previewContainer!=undefined" [orientation]="(stepperOrientation | async)!"
+               #stepper (selectionChange)="onSelectionChange($event)" [ngClass]="{'mode-edit':mode ==='edit','create-ila-stepper':true}">
+    <!-- change default 'edit' icon -->
+    <ng-template matStepperIcon="edit">
+      <app-icon icon="done"></app-icon>
+    </ng-template>
+    <!-- <mat-step>  -->
+    <!-- [completed]="enableNavigation" -->
+    <mat-step [completed]="enableNavigation || mode==='edit'" >
+      <ng-template matStepLabel>Create {{("ILA" | labelReplacement)| async}}</ng-template>
+      <ng-template matStepContent>
+        <app-create-ila (dynamicName)="dynamicName = $event" (isProviderNerc)="checkProviderIsNerc($event)" #createILA 
+          (editILACheck)="editIlaCheck = $event" (loadingEvent)="getLoadingFlag($event)"
+          (formChanges)="detectCreateIlaFormStatus($event)" (isILASaved) = detectILACreation($event)>
+        </app-create-ila>
+      </ng-template>
+    </mat-step>
+    <mat-step [optional]="mode==='edit'"   >
+      <ng-template matStepLabel >
+        {{("ILA" | labelReplacement)| async}} Details 
+        </ng-template>
+      <ng-template matStepContent>
+        <app-ila-details *ngIf="stepper.selectedIndex !== null && stepper.selectedIndex === 1" (dynamicName)="dynamicName = $event"  (nerc_check)="nerc_check = $event" (formChanges)="detectIlaDetailsFormStatus($event)"
+                         (ila_details)="stepper.selectedIndex=0" (loadingEvent)="getLoadingFlag($event)" [editIlaCheck]="editIlaCheck" #ilaDetails>
+        </app-ila-details>
+      </ng-template>
+    </mat-step>
+    <mat-step [optional]="mode==='edit'">
+      <ng-template matStepLabel>Training Plan</ng-template>
+      <app-training-plan *ngIf="stepper.selectedIndex !== null && stepper.selectedIndex === 2" (loadingEvent)="getLoadingFlag($event)" [editIlaCheck]="editIlaCheck" (formEvent)="detectTrainingPlanFormStatus($event)"
+                         (edit)="stepper.selectedIndex=0">
+      </app-training-plan>
+    </mat-step>
+    <mat-step [optional]="mode==='edit'">
+      <ng-template matStepLabel>Training Material</ng-template>
+      <app-training-material *ngIf="stepper.selectedIndex !== null && stepper.selectedIndex === 3" [editIlaCheck]="editIlaCheck" (training_material)="stepper.selectedIndex = 0"
+                             (previewEvent)="guideEditEvent($event)" (loadingEvent)="getLoadingFlag($event)">
+      </app-training-material>
+    </mat-step>
+    <mat-step [optional]="mode==='edit'">
+      <ng-template matStepLabel>Trainee Assessment</ng-template>
+      <app-trainee-evaluation  [contorlCheckSimulation]="contorlCheckSimulation" [editIlaCheck]="editIlaCheck"
+                              (formEvent)="CaptureFormEventEval($event)" [title_text]="title_text" [show_simulations]="show_simulations"
+                              *ngIf="!create_new && stepper.selectedIndex !== null && stepper.selectedIndex === 4" (previewEvent)="previewContainer = $event" 
+                              (create_new)="receiveCreateNew($event)" (loadingEvent)="getLoadingFlag($event)"
+                              [simulation_status]="simulation_status" #traineeAssessment></app-trainee-evaluation>
+      <app-new-simulation *ngIf="create_new" (new_event)="recieveNewEvent($event)"
+                          (new_text)="recieveTitleText($event)"></app-new-simulation>
+    </mat-step>
+    <mat-step [optional]="mode==='edit'">
+      <ng-template matStepLabel>{{("ILA" | labelReplacement)| async}} Evaluation</ng-template>
+      <app-ila-evaluation #ilaEvaluation *ngIf="stepper.selectedIndex !== null && stepper.selectedIndex === 5" (loadingEvent)="getLoadingFlag($event)" (formChanges)="detectIlaDetailsFormStatus($event)"></app-ila-evaluation>
+    </mat-step>
+    <mat-step [optional]="mode==='edit'">
+      <ng-template matStepLabel>EMP Settings</ng-template>
+      <app-seq-and-schedule *ngIf="stepper.selectedIndex !== null && stepper.selectedIndex === 6" (loadingEvent)="getLoadingFlag($event)" (seq_and_schedule)="stepper.selectedIndex=0" (isNickNameEmpty)="onNickNameEmpty($event)" (isPublicCourseCheckboxChecked)="isPublicCourseCheckboxChecked($event)" #seqAndSchedule></app-seq-and-schedule>
+    </mat-step>
+    <mat-step *ngIf="providerIsNerc === true" [optional]="mode==='edit'">
+      <ng-template matStepLabel>{{("ILA" | labelReplacement)| async}} Application</ng-template>
+      <app-ila-application (loadingEvent)="getLoadingFlag($event)" *ngIf="stepper.selectedIndex !== null && stepper.selectedIndex === 7" (previewEvent)="previewContainer = $event" #ilaApplication></app-ila-application>
+    </mat-step>
+  </mat-stepper>
+  <app-preview-ila *ngIf="previewContainer==='ila'" [ilaId]="ila.id"></app-preview-ila>
+  <app-preview-test *ngIf="previewContainer==='test'"></app-preview-test>
+
+  <!-- Stepper ends here -->
+</div>
+<app-create-guide-editor *ngIf="previewContainer === 'edit'"></app-create-guide-editor>
+<ng-template #deleteTopic>
+  <app-qtd-dialogue [header]="'Deleting Created ILA'" [description]="'You are selecting to delete the current ILA this action is non reversible!'"
+    [cancelText]="'Cancel'" [confirmText]="'Delete'" (confirmed)="deleteILA()" (canceled)="dialog.closeAll()">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #saveILA>
+  <app-qtd-dialogue [header]="header" [description]="description"
+    [cancelText]="'No'" [confirmText]="'Yes'" (confirmed)="closeILA()">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #publishILA>
+  <app-publish-ila-modal [ilaId]="ilaId"></app-publish-ila-modal>
+</ng-template>

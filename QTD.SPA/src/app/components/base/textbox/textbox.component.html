@@ -1,0 +1,16 @@
+<div class="percent-input-wrapper" *ngIf="isPercentage; else normalInput">
+    <input [type]="type" [name]="name" [placeholder]="placeholder" [disabled]="disabled" [value]="defaultValue"
+  (input)="valueChanged($event)" [(ngModel)]="defaultValue" [maxlength]="maxLength" [minLength]="minLength" [class]="
+    'text-base border w-full h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '
+  " [attr.data-cy]="cy"/>
+  <span class="percent-symbol-inside">%</span>
+</div>
+
+
+
+<ng-template #normalInput>
+<input [type]="type" [name]="name" [placeholder]="placeholder" [disabled]="disabled" [value]="defaultValue"
+  (input)="valueChanged($event)" [(ngModel)]="defaultValue" [maxlength]="maxLength" [minLength]="minLength" [class]="
+    'text-base border w-full h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '
+  " [attr.data-cy]="cy"/>
+</ng-template>

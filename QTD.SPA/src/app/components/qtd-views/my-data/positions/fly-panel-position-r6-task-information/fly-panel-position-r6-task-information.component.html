@@ -1,0 +1,16 @@
+<div class="flex flex-col px-12 py-12">
+    <div class="flex flex-row justify-between px-2">
+        <h2>Linked RR {{ "Task" | labelReplacement | async }}</h2>
+        <app-button
+            ButtonType="icon"
+            icon="close"
+            (clicked)="closed.emit()"
+        ></app-button>
+    </div>
+    <div>
+        <app-label style="color: #7A807E;" text="Effective Date"></app-label>
+        <app-date  [(ngModel)]="effectiveDateString" [disabled]="true"></app-date>
+        <app-label style="color: #7A807E;" text="Note/Reason"></app-label>
+        <app-textarea [value]="reason" [isDisabled]="true"></app-textarea>
+    </div>
+</div>

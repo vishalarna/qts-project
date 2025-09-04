@@ -1,0 +1,92 @@
+<ng-container>
+    <div class="ml-4 mr-4 ">
+      <div class="flex flex-row flex-wrap mt-3 mb-3 justify-between">
+        <div class="flex flex-col">
+          <p class="font-bold text-lg">{{toolNumber}} - {{toolName}}</p>
+        </div>
+        <div class="flex flex-row  items-center text-gray-four btn-group">
+          <div class="cursor-pointer bg-gray-200 p-2 rounded">
+            <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+              <span *ngIf="isActive" class="font-bold">
+                <span style="color:green" class="mr-1">●</span>
+                Active
+              </span>
+              <span *ngIf="!isActive" class="font-bold">
+                <span style="color:red" class="mr-1">●</span>
+                Inactive
+              </span>
+  
+            </label>
+            <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+            <mat-menu #menu="matMenu">
+              <label  mat-menu-item *ngIf="!isActive"  (click)="changeStatus(statusModal,true)">
+                <span style="color:green" class="mr-1">●</span>Make
+                Active</label>
+  
+              <label  mat-menu-item *ngIf="isActive"  (click)="changeStatus(statusModal,false)">
+                <span style="color:red" class="mr-1">●</span> Make
+                Inactive</label>
+            </mat-menu>
+          </div>
+          <div class="ml-2 cursor-pointer ">
+            <app-icon icon="more_horiz" [matMenuTriggerFor]="options"></app-icon>
+            <mat-menu #options="matMenu">
+              <label (click)="openEditOrCopy(editOrCopy,false)" [disabled]="!isActive" mat-menu-item> Edit</label>
+              <label (click)="openEditOrCopy(editOrCopy,true)" [disabled]="!isActive" mat-menu-item> Copy</label>
+              <!-- <label  (click)="deleteTool(deleteModal)"  mat-menu-item> Delete</label> -->
+
+              <div class="flex flex-row" >
+                <label  mat-menu-item (click)="deleteTool(deleteModal)" [disabled]="toolData?.task_Tools.length > 0 || toolData?.safetyHazard_Tool_Links.length > 0 || toolData?.enablingObjective_Tools.length > 0 || !isActive">
+                  Delete
+                </label>
+                <app-icon class="pt-3" icon="help_outline" *ngIf="toolData?.task_Tools.length > 0 || toolData?.safetyHazard_Tool_Links.length > 0 || toolData?.enablingObjective_Tools.length > 0 " matTooltip="The Delete option is not available due to linked data."></app-icon>
+           </div>
+<!--               <label  (click)="deleteTool(deleteModal)"  mat-menu-item> Delete</label>
+ -->            </mat-menu>
+          </div>
+  
+        </div>
+      </div>
+  
+      <div class="flex flex-row flex-wrap bg-white shadow-xs border-0.5 rounded px-2 pt-2">
+        <p class="text-xs text-gray-four mr-4 ">{{("Tool" | labelReplacement)| async}} ID: {{toolNumber}}</p>
+        <p class="text-xs text-gray-four mr-4 ">Effective Date: {{datePipe.transform(toolDate,'MM-dd-yyyy')}}</p>
+        <p class="text-xs text-gray-four mr-4 ">Hyperlink: <app-link class="text-qtd" [text]="toolHyperLink">
+          </app-link>
+        </p>
+      </div>
+  
+      <mat-tab-group class="mt-5">
+  
+        <mat-tab  [label]="'Task' | uppercase">
+          <app-tool-task [isActive]="!isActive" [toolName]="toolName"></app-tool-task>
+        </mat-tab>
+        <mat-tab label="{{(('Skill Assessment'| labelReplacement)| async) | uppercase}}">
+          <app-tool-skill [isActive]="!isActive" [toolName]="toolName"></app-tool-skill>
+        </mat-tab>
+        <mat-tab label="{{(('Safety Hazard'| labelReplacement)| async) | uppercase}}s">
+          <app-tool-sh [isActive]="!isActive" [toolName]="toolName" ></app-tool-sh>
+        </mat-tab>
+       
+      </mat-tab-group>
+    </div>
+  
+  </ng-container>
+
+  <ng-template #editOrCopy>
+    <app-fly-panel-add-tool [isCopy]="makeCopy" [oldToolData]="toolData" (refreshCategories)="refresh()" (closed)="flyPanelService.close()"></app-fly-panel-add-tool>
+</ng-template>
+
+
+<ng-template #statusModal>
+  <app-qtd-dialogue [header]="modalHeader" [description]="modalDescription" cancelText="No" confirmText="Yes"
+      [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="MakeActive($event,!isActive)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #deleteModal>
+  <app-qtd-dialogue [header]="modalHeader" [description]="modalDescription" cancelText="No" confirmText="Yes"
+  [showEffectiveDateAndReason]="true"
+    (canceled)="dialog.closeAll()" (confirmed)="getData($event,'delete')">
+  </app-qtd-dialogue>
+</ng-template>

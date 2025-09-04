@@ -1,0 +1,279 @@
+<div class="w-full flex flex-row mt-16">
+  <div class="flex flex-col pl-5 w-full">
+    <section class="flex flex-col">
+      <div class="flex flex-row justify-between" style="align-items: center">
+        <span class="font-bold text-gray-500 text-2xl">EMP Settings</span>
+        <div class="flex flex-row">
+          <span
+            (click)="selectedTab = 'registration'"
+            [ngClass]="
+              selectedTab === 'registration' ? 'selectedTab' : 'pointerClass'
+            "
+            class="border-2 p-2"
+            style="
+              border-radius: 4px 0px 0px 4px;
+              width: 50%;
+              text-align: center;
+            "
+            >Registration Options</span
+          >
+          <span
+            (click)="
+              allowSettings && evaluationForm.get('useForEMP').value
+                ? (selectedTab = 'setting')
+                : null
+            "
+            [ngClass]="{
+              selectedTab: selectedTab === 'setting',
+              pointerClass: selectedTab !== 'setting' && allowSettings,
+              disableClass:
+                !allowSettings || !evaluationForm.get('useForEMP').value
+            }"
+            [matTooltip]="
+              !allowSettings || !evaluationForm.get('useForEMP').value
+                ? (('ILA' | labelReplacement)| async) +' not Used for EMP'
+                : ''
+            "
+            class="border-2 p-2"
+            style="
+              border-radius: 0px 4px 4px 0px;
+              width: 50%;
+              text-align: center;
+              display: block;
+              width: 240px;
+            "
+            >EMP Settings</span
+          >
+        </div>
+      </div>
+      <form class="w-full" [formGroup]="evaluationForm">
+        <div class="flex flex-col float-left">
+      <div class="flex flex-row float-left" style="margin-right: 3rem">
+        <app-label
+          style="white-space: nowrap; margin-right: 2.5rem"
+          text="Use EMP For {{('ILA' | labelReplacement)| async}}"
+          class="font-medium"
+        >
+        </app-label>
+          <mat-checkbox
+            formControlName="useForEMP"
+            (change)="useEmpForILA($event)"
+          ></mat-checkbox>        
+      </div>
+      <div *ngIf="isChecked" class="flex items-center pt-2">
+        <app-label style="white-space: nowrap;" text="Make Publically Available" class="font-medium"></app-label>
+        <app-icon
+          matTooltip="Selecting this option will make this course available in the Public Portal for external registration. You can disable this option for specific classes under Scheduling Classes"
+          class="text-gray-400 hover:text-blue-500 transition-colors duration-150 cursor-pointer pb-4" icon="help"></app-icon>
+        <mat-checkbox formControlName="IsPubliclyAvailableILA" name="publiclyAvailable" (change)="disableSelfRegCheckbox($event)"
+          class="ml-2 pb-1"></mat-checkbox>
+      </div>
+            </div>
+          </form>
+      <div
+        class="
+          flex flex-row
+          rounded-sm
+          p-3
+          justify-between
+          bg-white
+          mat-elevation-z3
+          my-3
+        "
+        style="align-items: center"
+      >
+        <div class="flex flex-row">
+          <span class="text-gray-500">Delivery Method:</span>
+          <span
+            class="text-black ml-3 font-bold"
+            >{{deliveryMethodName ?? "N/A"}}</span
+          >
+        </div>
+        <div class="flex flex-row">
+          <app-icon class="text-gray-500 mr-2" icon="edit"></app-icon>
+          <span class="text-gray-500 cursor-pointer">Edit</span>
+        </div>
+      </div>
+    </section>
+    <!-- Stepper Section OR EMP Setting Section -->
+    <section *ngIf="selectedTab === 'setting'" class="w-full">
+      <mat-tab-group>
+        <mat-tab label="TEST RELEASE">
+          <app-ila-emp-test-settings
+            [ilaId]="ilaId" [classScheduleId] = ""
+            #ilaTestRelease
+          ></app-ila-emp-test-settings>
+        </mat-tab>
+        <mat-tab label="CBT RELEASE">
+          <app-cbt-manager
+            *ngIf="ila !== null && ila !== undefined"
+            [ila]="ila"
+          ></app-cbt-manager>
+        </mat-tab>
+        <mat-tab label="TQ RELEASE">
+          <app-ila-emp-tq-settings [classScheduleId] = ""
+            [ilaId]="ilaId"
+            #ilaEmpTqSettings
+          ></app-ila-emp-tq-settings>
+        </mat-tab>
+        <mat-tab label="EVALUATION RELEASE">
+          <app-ila-emp-eval-settings
+            [ilaId]="ilaId"
+            #ilaEmpEvalSettings
+          ></app-ila-emp-eval-settings>
+        </mat-tab>
+        <mat-tab label="SCHEDULING">
+          <app-ila-emp-scheduling [ilaId]="ilaId"></app-ila-emp-scheduling>
+        </mat-tab>
+      </mat-tab-group>
+    </section>
+    <section *ngIf="selectedTab === 'registration'">
+      <div class="flex w-full pt-4" style="justify-content: center">
+        <div style="width: 100%" class="flex flex-col">
+          <form [formGroup]="trainingForm">
+            <div
+              class="
+                border-gray-one border-0.5
+                bg-white-one
+                rounded
+                pb-4
+                pt-4
+                pl-16
+                pr-16
+                mb-3
+                box-shadow
+              "
+            >
+              <div class="flex flex-col mb-3">
+                <ul>
+                  <li>
+                    <span class="text-lg font-bold">
+                      Self Registration Options
+                    </span>
+                  </li>
+ 
+                  <li class="pt-3">
+                    <mat-checkbox formControlName="makeAvailableForSelfReg"
+                      >Make Available for Self Registration</mat-checkbox
+                    >
+                  </li>
+                  <li
+                    class="pt-3 ml-4"
+                    *ngIf="trainingForm.get('makeAvailableForSelfReg')?.value"
+                  >
+                    <mat-checkbox
+                      formControlName="requireAdminApproval"
+                      (change)="enableSendEMail($event)"
+                      >Require Admin approval of Registration</mat-checkbox
+                    >
+                  </li>
+                  <li
+                    class="pt-3"
+                    style="margin-left: 3rem"
+                    *ngIf="trainingForm.get('makeAvailableForSelfReg')?.value"
+                  >
+                    <mat-checkbox formControlName="sendApprovedEmail"
+                      >Send {{ "Employee" | labelReplacement | async }} email
+                      when self-registration is approved</mat-checkbox
+                    >
+                  </li>
+                  <li class="pt-3 ml-4"
+                    *ngIf="trainingForm.get('makeAvailableForSelfReg')?.value">
+                    <mat-checkbox formControlName="acknowledgeRegDisclaimer"
+                      >Acknowledge Registration Disclaimer</mat-checkbox
+                    >
+                  </li>
+                  <li
+                    class="pt-3 ml-4"
+                    *ngIf="trainingForm.get('makeAvailableForSelfReg')?.value"
+                  >
+                    <ckeditor
+                      name="selfRegMessage"
+                      [editor]="editor"
+                      formControlName="regDisclaimer"
+                      [disabled]="!trainingForm.value.acknowledgeRegDisclaimer"
+                      (ready)="onReady($event)"
+                    >
+                    </ckeditor>
+                  </li>
+                  <li
+                    class="pt-3 ml-4"
+                    *ngIf="trainingForm.get('makeAvailableForSelfReg')?.value"
+                  >
+                    <mat-checkbox formControlName="limitForLinkedPositions"
+                      >Limit self-registration for
+                      {{ "Position" | labelReplacement | async }} linked to
+                      {{("ILA" | labelReplacement)| async}}:</mat-checkbox
+                    >
+                    <ng-container *ngIf="linkedPositionToIla.length > 0">
+                      <p
+                        class="text-gray-400 ml-4"
+                        *ngFor="let item of linkedPositionToIla"
+                      >
+                        {{ item.positionTitle }}
+                      </p>
+                    </ng-container>
+                  </li>
+                  <li
+                    class="pt-3 ml-4"
+                    *ngIf="trainingForm.get('makeAvailableForSelfReg')?.value"
+                  >
+                    <mat-checkbox formControlName="closeRegOnStartDate"
+                      >Close Registration on Start Date</mat-checkbox
+                    >
+                  </li>
+                  <li
+                    class="pt-3 ml-4"
+                    *ngIf="trainingForm.get('makeAvailableForSelfReg')?.value"
+                  >
+                    <mat-checkbox formControlName="enableWaitlist"
+                      >Show Waitlist Enabled</mat-checkbox
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+            <div
+              class="
+                border-gray-one border-0.5
+                bg-white-one
+                rounded
+                pb-4
+                pt-4
+                pl-16
+                pr-16
+                mt-3
+                box-shadow
+              "
+            >
+              <div class="class-size">
+                <app-label
+                  [for]="'Class Size'"
+                  [text]="'Class Size'"
+                  class="label required"
+                ></app-label>
+              </div>
+              <div style="width: 20%" class="mt-1">
+                <app-textbox formControlName="classSize"></app-textbox>
+                <small
+                  class="text-danger"
+                  *ngIf="
+                    trainingForm.get('classSize')?.dirty &&
+                    trainingForm.get('classSize')?.hasError('required')
+                  "
+                  >Class Size is Required</small
+                >
+              </div>
+              <span class="text-gray-400 py-2"
+                >Class size includes both manual enrollment and
+                self-registration</span
+              >
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+ 
+ 

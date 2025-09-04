@@ -1,0 +1,60 @@
+:host
+  ::ng-deep
+  .task-review-list-data
+  > .mat-table
+  > .mat-header-row
+  > .mat-header-cell,
+:host ::ng-deep .task-review-list-data > .mat-table > .mat-row > .mat-cell {
+  padding: 0.5rem 0.8rem;
+  flex: 1 1 10%;
+}
+
+:host ::ng-deep .task-review-list-data .mat-row.example-expanded-row,
+:host ::ng-deep .task-review-list-data .mat-row.example-detail-row,
+.expanded-mat-table {
+  background-color: #f5ffed;
+}
+:host ::ng-deep .task-review-list-data .mat-row.example-expanded-row {
+  border-bottom: 1px solid #5c9b31;
+}
+
+:host ::ng-deep .task-review-list-data .expanded-mat-table .mat-row,
+:host ::ng-deep .task-review-list-data .expanded-mat-table .mat-header-row {
+  border: none;
+}
+:host ::ng-deep .task-review-list-data .mat-row.example-detail-row {
+  min-height: unset;
+}
+
+:host ::ng-deep .task-review-list-data .mat-row.example-expanded-row .mat-cell {
+  color: #5c9b31;
+}
+
+.customcolorblue {
+  background-color: #f5faff;
+  color: #0084fa;
+}
+
+.customcolorpink {
+  background-color: rgba(255, 249, 232, 1);
+  color: rgba(255, 207, 92, 1);
+}
+
+.sub-table-cell {
+  height: unset !important;
+}
+
+.keyword-input {
+  align-items: center;
+  padding: 24px;
+  svg {
+    margin-right: 8px;
+  }
+  input {
+    max-width: 300px;
+    width: 100%;
+  }
+}
+.qtd-col-reviewers {
+  min-width: 220px;
+}

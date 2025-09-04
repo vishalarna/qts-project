@@ -1,0 +1,219 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="padding-bottom: 0px; border-bottom: 2px solid #020378; margin: 0 0 10px 0;">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 4px solid #020378; margin: 0 0 3px 0;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378; "><b>@Model.Title </b></div>
+                    <div><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.DIFSurvey.Count() > 0)
+    {
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+
+                @{int j = 1;}
+                @foreach (var difSurvey in Model.DIFSurvey)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:separate;border-spacing:0">
+                            <tbody>
+                                <tr>
+                                    <td colspan="1" style="border: none !important; width: 16%; padding: 0px;">
+                                        <p style="display: block; font-weight: 600; padding: 0 40px 0 0; font-size: 1.2rem; margin-bottom: 1.2rem">Survey Title:</p>
+                                    </td>
+                                    <td colspan="4" style="border: none !important; padding: 0px; padding-left: 10px;">
+                                        <p style="display: block; padding: 0 15px 0 0; font-weight: 600; font-size: 1.2rem; margin-bottom: 1.2rem">@difSurvey.Title</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="1" style="border: none !important; width: 16%; padding: 0px;">
+                                        <p style="display: block;  font-weight: 600; padding: 0 40px 0 0; font-size: 1.2rem; margin-bottom: 1.2rem">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</p>
+                                    </td>
+                                    <td colspan="4" style="border: none !important; padding: 0px; padding-left: 10px;">
+                                        <p style="display: block; padding: 0 15px 0 0; font-weight: 600; font-size: 1.2rem; margin-bottom: 1.2rem">@difSurvey.Position.PositionTitle</p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    @if (Model.DisplayColumns.Where(r => r == "Include Survey Instructions").Count() > 0)
+                                    {
+                                        <td colspan="1" style="border: none !important; width: 16%; padding: 0px; vertical-align: top; ">
+                                            <p style="display: block; min-width: 140px; font-weight: 600; padding: 0 40px 0 0; font-size: 1.2rem; margin-bottom: 1.2rem">@("Instruction".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</p>
+                                        </td>
+                                        <td colspan="4" style="border: none !important; padding: 0px; padding-left: 10px; word-break: break-word;">
+                                            <p style="display: block; padding: 0 15px 0 0; font-weight: 600; font-size: 1.2rem; margin-bottom: 1.2rem;"> @(new RawString(difSurvey.Instructions))</p>
+                                        </td>
+                                    }
+                                </tr>
+
+                                <tr style=" border-bottom: 2px solid #000; border-collapse: collapse" class="open-border-table-row">
+
+                                    <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; padding: 5px; width: 5%; " align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))#</th>
+
+                                    <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; padding: 5px; width: 45%" align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Statement</th>
+
+                                    <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; padding: 5px; min-width: 100px; text-align: center; ">
+                                        <span>Difficulty</span>
+                                        <p style="display: -webkit-box; display: flex; gap: 3px; -webkit-box-pack: justify; justify-content:space-around; ">
+                                            <span style="display: block; width: 13px; text-align: center;">1</span>
+                                            <span style="display: block; width: 13px; text-align: center;">2</span>
+                                            <span style="display: block; width: 13px; text-align: center;">3</span>
+                                            <span style="display: block; width: 13px; text-align: center;">4</span>
+                                            <span style="display: block; width: 13px; text-align: center;">5</span>
+                                        </p>
+                                    </th>
+
+                                    <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; padding: 5px; min-width: 100px; text-align: center;">
+                                        <span>Importance</span>
+                                        <p style="display: -webkit-box; display: flex; gap: 3px; -webkit-box-pack: justify; justify-content: space-around;">
+                                            <span style="display: block; width: 13px; text-align: center;">1</span>
+                                            <span style="display: block; width: 13px; text-align: center;">2</span>
+                                            <span style="display: block; width: 13px; text-align: center;">3</span>
+                                            <span style="display: block; width: 13px; text-align: center;">4</span>
+                                            <span style="display: block; width: 13px; text-align: center;">5</span>
+                                        </p>
+                                    </th>
+
+                                    <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; padding: 5px; min-width: 100px; text-align: center; ">
+                                        <span>Frequency</span>
+                                        <p style="display: -webkit-box; display: flex; gap: 3px; -webkit-box-pack: justify; justify-content: space-around;">
+                                            <span style="display: block; width: 13px; text-align: center;">1</span>
+                                            <span style="display: block; width: 13px; text-align: center;">2</span>
+                                            <span style="display: block; width: 13px; text-align: center;">3</span>
+                                            <span style="display: block; width: 13px; text-align: center;">4</span>
+                                            <span style="display: block; width: 13px; text-align: center;">5</span>
+                                        </p>
+                                    </th>
+
+                                    <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; padding: 5px; width: 5%; " align="center">NA</th>
+
+                                </tr>
+
+                                @foreach (var difSurveyTask in difSurvey.Tasks)
+                                {
+                                    <tr>
+                                        <td style="text-align: left; vertical-align: top; border-left: 0; border-top: 2px solid #000; border-bottom: 0; border-right: 2px solid #000; padding: 5px; ">@difSurveyTask.Task.FullNumber</td>
+                                        <td style="text-align: left; vertical-align: top; border-left: 0; border-top: 2px solid #000; border-bottom: 0; border-right: 2px solid #000; padding: 5px; ">@difSurveyTask.Task.Description</td>
+                                        <td style="text-align: left; vertical-align: top; border-left: 0; border-top: 2px solid #000; border-bottom: 0; border-right: 2px solid #000; padding: 5px; ">
+                                            <div style=" display: -webkit-box; display: flex; -webkit-box-pack: justify; justify-content: space-around;">
+                                                <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />
+                                            </div>
+                                        </td>
+                                        <td style="text-align: left; vertical-align: top; border-left: 0; border-top: 2px solid #000; border-bottom: 0; border-right: 2px solid #000; padding: 5px; ">
+                                            <div style=" display: -webkit-box; display: flex; -webkit-box-pack: justify; justify-content: space-around;">
+                                                <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />
+                                            </div>
+                                        </td>
+                                        <td style="text-align: left; vertical-align: top; border-left: 0; border-top: 2px solid #000; border-bottom: 0; border-right: 2px solid #000; padding: 5px; ">
+                                            <div style=" display: -webkit-box; display: flex; -webkit-box-pack: justify; justify-content: space-around;">
+                                                <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />  <input type="radio" style="display: block; width: 13px;" />
+                                            </div>
+                                        </td>
+                                        <td style="text-align: left; vertical-align: top; border-left: 0; border-top: 2px solid #000; border-bottom: 0; border-right: 0; padding: 5px; "><input type="radio" /></td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="12" style="text-align: left; border-left: 0; border-top: 0; border-bottom: 0; border-right: 0; padding-bottom: 40px; ">
+                                            <strong><u>Comments:</u></strong>
+                                            <span>@difSurveyTask.Comments</span>
+                                        </td>
+                                    </tr>
+                            }
+                                <tr>
+                                    <td style="text-align: left; border-left: 0; border-top: 0; border-bottom: 0; border-right: 0;margin-top:1rem;">
+                                        <strong><u>Additional Comments:</u></strong>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        @if (!difSurvey.Equals(Model.DIFSurvey.Last()))
+                        {
+                            <div style="page-break-after:always"></div>
+                            <div class="@(j%2==0?"strip-dark":"")"></div>
+                        }
+                        @{j++;}
+                    }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.DIFSurvey.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

@@ -1,0 +1,77 @@
+﻿@model IEnumerable<QTD2.Domain.Entities.Core.Report>
+
+<table class="table">
+    <tr>
+        <th>Report Name</th>
+        <th>Internal Name</th>
+        <th>Run</th>
+        <th>Export</th>
+        <th>Send</th>
+    </tr>
+    <tbody>
+        @foreach (var report in Model)
+        {
+            <tr>
+                <td>@report.OfficialReportTitle</td>
+                <td>@report.InternalReportTitle</td>
+                <td>
+                    @using (Html.BeginForm("GenerateReport", "Reports", FormMethod.Post, new { @class = "generate-report-form" }))
+                    {
+                        @Html.Hidden("reportId", report.Id)
+                        <input type="submit" value="Run">
+                    }
+                </td>
+                <td>
+
+                    @using (Html.BeginForm("ExportReport", "Reports", FormMethod.Post, new { @class = "export-report-form" }))
+                    {<select class="form-control" name="exportType">
+                            <option selected="selected" value="Pdf">PDF</option>
+                            <option value="Excel">Excel</option>
+                        </select>
+                        @Html.Hidden("reportId", report.Id)
+                        <input type="submit" value="Export">
+                    }
+                </td>
+                <td>
+                    @using (Html.BeginForm("SendReport", "Reports", FormMethod.Post, new { @class = "send-report-form" }))
+                    {
+                        <select class="form-control" name="exportType">
+                            <option selected="selected" value="Pdf">PDF</option>
+                            <option value="Excel">Excel</option>
+                        </select>
+                        @Html.Hidden("reportId", report.Id)
+                        @Html.Hidden("sendTo", "sample@qts.com")
+
+                        <input type="submit" value="Export">
+                    }
+                </td>
+            </tr>
+        }
+
+    </tbody>
+
+</table>
+
+<div id="report-content">
+
+</div>
+
+@section Scripts
+{
+
+    <script>
+        $(function () {
+
+            $(".generate-report-form").submit(function (e) {
+                e.preventDefault();  //prevent normal form submission
+
+                var actionUrl = $(this).attr("action");  // get the form action value
+                $.post(actionUrl, $(this).serialize(), function (res) {
+                    $("#report-content").html(res);
+                });
+            });
+
+        });
+    </script>
+
+}

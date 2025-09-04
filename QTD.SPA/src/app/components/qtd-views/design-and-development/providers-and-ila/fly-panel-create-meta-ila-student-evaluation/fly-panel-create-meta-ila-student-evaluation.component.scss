@@ -1,0 +1,29 @@
+:host ::ng-deep .meta-eval-header .meta-eval-back-button span mat-icon {
+    font-size: 30px;
+    position: relative;
+    bottom: 2px;
+    right: 5px;
+    color: #5C9B31;
+  }
+
+  app-button.meta-eval-back-button {
+    background-color: rgba(92, 155, 49, 0.10);
+    border-radius: 50%;
+  }
+
+  .meta-eval-header {
+    padding: 1.12rem 1.5rem;
+    background-color: white;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+    justify-content: space-between;
+    .create-student-eval-heading {
+      flex: 1 1 78%;
+      color: #000d09;
+      font-size: 1.25rem;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 160%; /* 2rem */
+      letter-spacing: 0.00938rem;
+    }
+  }
+  

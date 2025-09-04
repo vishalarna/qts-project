@@ -1,0 +1,35 @@
+.panel-heading {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 143%;
+    color: #4D4D4D;
+}
+
+.txt-label {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 166%;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.15px;
+    color: rgba(122, 128, 126, 0.8);
+}
+
+.header-wrap {
+    font-family: 'Roboto';
+    font-style: normal;
+    font-weight: 500;
+    font-size: 14px;
+    line-height: 118%;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.15px;
+    color: #5C9B31;
+}
+
+.input-flexdata input {
+    width: 163px;
+    margin: 0 14px 0 0;
+}

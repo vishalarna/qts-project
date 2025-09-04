@@ -1,0 +1,70 @@
+.panel-heading {
+    font-weight: 600;
+    font-size: 20px;
+    line-height: 143%;
+    color: #4D4D4D;
+    margin: 0px !important;
+}
+
+.text-wrap {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 143%;
+    color: #5C9B31;
+}
+
+.flypanel-close {
+    font-size: 1.3rem;
+    position: absolute;
+    right: 1rem;
+    top: 1rem;
+}
+
+.flypanel {
+    background-color: #fff;
+    position: absolute;
+    right: 0;
+    width: 630px;
+    top: 0;
+    bottom: 0;
+    min-height: 100vh;
+    overflow: auto;
+    z-index: 1;
+    left: auto;
+}
+
+.btn-class {
+    background: #5C9B31;
+    display: inline-block;
+    color: #FFFFFF;
+    border-radius: 4px;
+    padding: .4rem .8rem;
+    margin: 0 0 1rem 0;
+}
+.flypanel .border-gray-one{
+    border: none;
+  }
+
+  .flypanel-outer-wrapper{
+    background-color: rgba(0,0,0,.5);
+    bottom: 0;
+    display:block;
+    height:100vh;
+    position:fixed;
+    right:0;
+    top:0;
+    width: 100vw;
+    z-index: 10;
+  }
+ 
+ .flypanel .switch-box{
+    margin: 0;
+  }
+  .flypanel .pt-4{
+    padding-top: 0;
+  }
+ 
+  app-customize-dashboard .mat-elevation-z3{
+    box-shadow: none !important;
+  }
+  

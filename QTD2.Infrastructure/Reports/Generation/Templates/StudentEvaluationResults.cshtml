@@ -1,0 +1,314 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+        table-layout:fixed;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .fix-question * {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .fix-question img {
+        width: 400px !important;
+        height: auto !important;
+        display: inline-block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+        vertical-align: middle;
+        max-width: 100%
+    }
+
+    .fix-question ul, .fix-question ol {
+        margin: 0 !important;
+        padding: 0 0 0 20px !important;
+        list-style-position: inside !important;
+    }
+
+    .fix-question li {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1rem;
+    }
+
+    .fix-question p {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table" width="100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="padding-bottom: 0px; border-bottom: 2px solid #020378; margin: 0 0 10px 0;">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 4px solid #020378; margin: 0 0 3px 0;padding-top:12px">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378; width: 50%;"><b>@Model.Title </b></div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @{
+        var evalRosters = Model.ClassEvalRosters.GroupBy(x => new { x.ClassScheduleInfo.ILA, x.StudentEvaluationInfo }).Select(m => new
+        {
+            ILA = m.Key.ILA,
+            StudentEvaluationInfo = m.Key.StudentEvaluationInfo,
+            ClassEvalRostersList = m.ToList()
+        });
+    }
+    @if (evalRosters.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: none; padding-top: 0;" class="strip-container">
+                @{
+                    int j = 1;
+                }
+                @foreach (var classEvalRoster in evalRosters)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;padding-bottom:0" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table class="table" style="color: #000000;">
+                            @{
+                                var ila = classEvalRoster.ILA;
+                                var questions = classEvalRoster.StudentEvaluationInfo.StudentEvaluationQuestions.Select(r => r.QuestionBank).Distinct();
+                            }
+
+                            @if (Model.DisplayColumns.Contains("ILA"))
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 18px; padding-top: 0px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex"><b style="width: 140px">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #:</b><div><b>@ila.Number</b></div></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex"><b style="width: 140px">Title:</b><div><b>@ila.Name</b></div></div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Contains("Provider"))
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex"><b style="width: 140px">Prov. ID:</b><div><b>@ila.Provider?.Name</b></div></div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Contains("Date Range"))
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex">
+                                            <b style="width: 140px">Date Range:</b>
+                                            <div>
+                                                @((Model.DateRange != null && Model.DateRange.Count() > 0) ? Model.DateRange[0].ToString(Model.DefaultDateFormat) + " - " + Model.DateRange[1].ToString(Model.DefaultDateFormat) : "All")
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Contains("Delivery Method"))
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: -webkit-box; display: flex"><b style="width: 140px">Delivery Method:</b><div>@ila.DeliveryMethod?.Name</div></div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Contains("Form Name"))
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex "><b style="width: 140px">Form Used:</b><div>@classEvalRoster.StudentEvaluationInfo?.Title</div></div>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                @{
+                                    var isCompleted = classEvalRoster.ClassEvalRostersList.Count(x => x.IsCompleted);
+                                    var participants = classEvalRoster.ClassEvalRostersList.Distinct().Count();
+                                    var percentageCompleted = participants > 0 ? Math.Round((isCompleted / (double)participants) * 100, 2) : 0;
+                                }
+                                <td colspan="4" style="border: none !important; font-size: 15px; padding-top: 3px; padding-bottom: 3px;">
+                                    <div style=" display: -webkit-box; display: flex">
+                                        <b>No. of Forms Completed:</b>
+                                        <div style="padding-left: 0.5rem;"><b>@isCompleted</b></div>
+                                    </div>
+                                </td>
+                                <td colspan="4" style="border: none !important; font-size: 15px; padding-top: 3px; padding-bottom: 3px;">
+                                    <div style="display: -webkit-box; display: flex"><b>No. of Participants:</b><div style="padding-left: 0.5rem;"><b>@participants</b></div></div>
+                                </td>
+                                <td colspan="4" style="border: none !important; font-size: 15px; padding-top: 3px; padding-bottom: 3px;">
+                                    <div style="display: -webkit-box; display: flex">
+                                        <b>% Completed:</b>
+                                        <div style="padding-left: 0.5rem;"><b>@percentageCompleted.ToString()</b></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                @if (Model.DisplayColumns.Contains("Evaluation Rating Scale"))
+                                {
+                                    <td colspan="9" style="padding-top: 10px; color: #800000; padding-left: 1rem; border: 0; padding-bottom: 1rem"><b>@classEvalRoster.StudentEvaluationInfo?.RatingScaleN?.RatingScaleDescription</b></td>
+                                }
+                                <td colspan="3" style="text-align: center; padding-top: 30px; text-decoration: underline; border: 0; font-weight: 500; color: #000; padding-bottom: 2px">Rating:</td>
+                            </tr>
+                            <tr>
+                                <td colspan="9" style="text-decoration: underline; font-weight: 500; color: #000; border: 0; padding: 0 12px 0 0.7rem;">Questions</td>
+                                <td colspan="1" style="text-decoration: underline; font-weight: 500; color: #000; border: 0; padding:5px">High:</td>
+                                <td colspan="1" style="text-decoration: underline; font-weight: 500; color: #000; border: 0; padding:5px">Low:</td>
+                                <td colspan="1" style="text-decoration: underline; font-weight: 500; color: #000; border: 0; padding:5px">AVG:</td>
+                            </tr>
+                            @{
+                                int index = 1;
+                                var highRatings = new List<double>();
+                                var lowRatings = new List<double>();
+                                var averageRatings = new List<double>();
+                            }
+
+                            @foreach (var question in questions)
+                            {
+                                @{
+                                    var emps = classEvalRoster.ILA.ClassSchedules.SelectMany(cs => cs.StudentEvaluationWithoutEmps).Where(r => r.QuestionId == question.Id && r.RatingScaleExpanded?.Ratings != 0);
+                                    var high = emps.Any() ? emps.Max(r => r.RatingScaleExpanded?.Ratings) : (double?)null;
+                                    var low = emps.Any() ? emps.Min(r => r.RatingScaleExpanded?.Ratings) : (double?)null;
+                                    var average = emps.Any() ? emps.Average(r => r.RatingScaleExpanded?.Ratings) : (double?)null;
+                                    if (high.HasValue) highRatings.Add(high.Value);
+                                    if (low.HasValue) lowRatings.Add(low.Value);
+                                    if (average.HasValue) averageRatings.Add(average.Value);
+                                }
+
+                                <tr style="border-bottom: 1px dashed #000;">
+                                    <td colspan="9" style="border: 0; padding:5px 5px 5px 1.75rem">
+                                        <div style="display: -webkit-box; display: flex;"><div>@index. </div> <div class="fix-question">@(new RawString(question.Stem))</div></div>
+                                    </td>
+                                    <td colspan="1" style="border: 0; padding:5px">@(high.HasValue ? high.Value.ToString() : "")</td>
+                                    <td colspan="1" style="border: 0; padding:5px">@(low.HasValue ? low.Value.ToString() : "")</td>
+                                    <td colspan="1" style="border: 0; padding:5px">@(average.HasValue ? average.Value.ToString("F2") : "")</td>
+                                </tr>
+
+                                index++;
+                            }
+                            <tr>
+                                <td colspan="9" style="border: 0; padding:5px 5px 5px 1.75rem; font-weight: bold;"></td>
+                                <td colspan="1" style="border: 0; padding:5px; font-weight: bold;">@(highRatings.Count() > 0 ? highRatings.Max().ToString() : "")</td>
+                                <td colspan="1" style="border: 0; padding:5px; font-weight: bold;">@(lowRatings.Count() > 0 ? lowRatings.Min().ToString() : "")</td>
+                                <td colspan="1" style="border: 0; padding:5px; font-weight: bold;">@(averageRatings.Count() > 0 ? averageRatings.Average().ToString("F1") : "")</td>
+                            </tr>
+                            @if (Model.DisplayColumns.Contains("Evaluation Comments"))
+                            {
+                                @{
+                                    int i = 1;
+                                }
+                                @foreach (var question in questions)
+                                {
+                                    <tr style="font-weight: 500;">
+                                        <td colspan="12" style="border: 0; padding: 0.5rem 10px 0 1.75rem;">
+                                            <div style="display: -webkit-box; display: flex;"><div style="margin:0;padding:0;">@i.</div><div class="fix-question"> @(new RawString(question.Stem))</div></div>
+                                        </td>
+                                    </tr>
+
+                                    @{
+                                        var comments = classEvalRoster.ILA.ClassSchedules
+                                        .SelectMany(cs => cs.StudentEvaluationWithoutEmps)
+                                        .Where(r => r.QuestionId == question.Id && !string.IsNullOrWhiteSpace(r.Notes)).Select(r => r.Notes).Distinct().ToList();
+                                    }
+                                    <tr>
+                                        <td style="border:none;padding:0px 0px 0px 3.1em;vertical-align:top" colspan="2"><span style="text-decoration: underline;">Comments:</span></td>
+                                        <td style="border:none;padding:0px 5px" colspan="11">@(comments.Any() ? comments.First() : "")</td>
+                                    </tr>
+                                    @if (comments.Count > 1)
+                                    {
+                                        for (var m = 1; m < comments.Count; m++)
+                                        {
+                                            <tr>
+                                                <td style="border:none;padding:0px 0px 0px 3.1em;" colspan="2"></td>
+                                                <td style="border:none;padding:0px 5px" colspan="11">@comments[m]</td>
+                                            </tr>
+                                        }
+                                    }
+                                    <tr></tr>
+
+                                    @{
+                                        i++;
+                                    }
+                                }
+                            }
+                            <tr></tr>
+                        </table>
+                    </div>
+                    @if (j != evalRosters.Count())
+                    {
+                        <div style="page-break-after: always;"></div>
+                        <div class="@(j != 1  ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border: none;">
+            <td style="border: none; text-align: center;">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0; overflow-y: hidden; white-space: nowrap;">
+    @for (int i = 1; i <= evalRosters.Count(); i++)
+    {
+        <a href=@("#page" + i) class="pagerNumber" style="padding: 0.9rem;">@i</a>
+    }
+</div>

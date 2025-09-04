@@ -1,0 +1,116 @@
+<div class="flex flex-col">
+  <!-- This section is for the Question -->
+  <section class="flex flex-col">
+    <form [formGroup]="shortAnswerForm">
+      <label class="font-medium">Question</label>
+      <ckeditor #ckeditor  [editor]="Editor"  formControlName="question"></ckeditor>
+      <app-input-error *ngIf="shortAnswerForm.get('question')?.hasError('required')" text="Enter Question Description">
+      </app-input-error>
+    </form>
+  </section>
+  <section class="flex flex-col mt-5">
+    <p class="font-bold">Acceptable Responses</p>
+    <span class="mt-3 text-gray-500">Acceptable Responses include key words or phrase that should be used to grade
+      the short answer
+      response</span>
+  </section>
+  <section class="flex flex-col mt-3">
+    <form [formGroup]="shortAnswerForm" class="flex flex-col">
+      <div *ngFor="let item of acceptableResponses, index as i">
+        <div class="flex flex-col mt-4">
+          <p>Acceptable Response {{i+1}}</p>
+          <app-textarea [value]="shortAnswerForm.get('acceptedRes' + i)?.value ?? ''"
+            formControlName="acceptedRes{{i}}" ></app-textarea>
+          <app-input-error *ngIf="shortAnswerForm.get('acceptedRes' + i)?.invalid"
+            text="Please enter description for acceptable responses"></app-input-error>
+          <mat-checkbox formControlName="caseSensitive{{i}}">
+            <label class="m-0 p-0">Case Sensitive</label>
+          </mat-checkbox>
+        </div>
+      </div>
+    </form>
+  </section>
+  <section class="flex flex-col mt-3 w-full">
+    <div class="flex flex-row justify-between">
+      <app-button (clicked)="OnAddResponses()" class="mr-2" ButtonType="button" variant="text" color="secondary"
+        text="Add more acceptable responses" icon="add" iconPosition="left"></app-button>
+      <app-button (clicked)="onRemoveResponse()" *ngIf="acceptableResponses.length > 3" text="Remove Response"
+        ButtonType="button" variant="text" color="secondary" icon="delete"></app-button>
+    </div>
+    <p class="font-bold mt-3">Grading Short Answer Test Item</p>
+    <mat-checkbox [checked]="selection.selected[0] === 1" class="mt-3 mb-3" (change)="selectionChange($event,1)">
+      Require All Acceptable responses to pass
+    </mat-checkbox>
+    <mat-checkbox [checked]="selection.selected[0] === 2" (change)="selectionChange($event,2)">
+      Require Selected Acceptable Responses to Pass:
+    </mat-checkbox>
+    <div class="flex flex-row mb-2 w-3/6 border-2 rounded-sm justify-between" style="align-items: center;">
+      <mat-select [disabled]="selection.selected[0] !== 2" placeholder="Select Acceptable Responses"
+        [formControl]="correctIndexesControl" [compareWith]="compareObjects"
+        class="appearance-none rounded w-1/4 px-4 py-2.5 mt-2" multiple>
+        <mat-select-trigger>
+          <mat-chip-list>
+            <mat-chip [disabled]="selection.selected[0] !== 2" *ngFor="let i of correctIndexesControl.value"
+              [removable]="true" (removed)="removeIndex(i)"
+              [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+              selected>
+              {{ i }}
+              <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+              </app-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </mat-select-trigger>
+
+        <mat-option *ngFor="let i of indexes" [value]="i" #matOption>
+          {{i}}
+        </mat-option>
+      </mat-select>
+    </div>
+    <app-input-error *ngIf="selection.selected[0] === 2 && correctIndexesControl.value.length < 1"
+      text="Please Select at least 1 acceptable response"></app-input-error>
+    <app-input-error class="mt-2" *ngIf="selection.selected.length < 1" text="Select atleast 1 Grading option">
+
+    </app-input-error>
+  </section>
+  <section *ngIf="mode === 'add' && showSaveButton" class="flex flex-row justify-between mt-4">
+     <!--add another-->
+    <mat-checkbox [(ngModel)]="AddAnother"
+      [disabled]="selection.selected.length < 1 || shortAnswerForm.invalid || (selection.selected[0] === 2 && correctIndexesControl.value.length < 1)">
+    Add Another Short Question</mat-checkbox>
+
+    <!--save-->
+    <app-button [spinner]="saveSpinner" (clicked)="close=true;saveTestItem($event,close)" class="mr-3"
+      [disabled]="selection.selected.length < 1 || shortAnswerForm.invalid || saveAndAddSpinner || saveSpinner || (selection.selected[0] === 2 && correctIndexesControl.value.length < 1)"
+      ButtonType="button" size="sm" text="Save"></app-button>
+
+
+  </section>
+
+  <!--edit-->
+  <section *ngIf="mode === 'edit'" class="flex flex-row" style="justify-content: flex-end;">
+    <app-button (clicked)="openDialog(reasonDialog)" ButtonType="button" size="sm" [spinner]="saveSpinner"
+      [disabled]="saveSpinner || selection.selected.length < 1 || shortAnswerForm.invalid || (selection.selected[0] === 2 && correctIndexesControl.value.length < 1)"
+      text="Update">
+    </app-button>
+  </section>
+
+  <!--copy-->
+  <section *ngIf="mode === 'copy'" class="flex flex-row" style="justify-content: flex-end;">
+    <app-button (clicked)="close=true;openSaveDialog(saveDialog)" ButtonType="button" size="sm" [spinner]="saveSpinner"
+      [disabled]="saveSpinner || selection.selected.length < 1 || shortAnswerForm.invalid || (selection.selected[0] === 2 && correctIndexesControl.value.length < 1)"
+      text="Copy">
+    </app-button>
+  </section>
+</div>
+
+<ng-template #reasonDialog>
+  <app-qtd-dialogue [header]="'Update Short Answers'" [cancelText]="'No'" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" [reasonOnly]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="editTestItem($event)"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #saveDialog>
+  <app-qtd-dialogue [header]="'Save Short Answers'" [cancelText]="'No'" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" [reasonOnly]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="saveTestItem($event,close)"></app-qtd-dialogue>
+</ng-template>

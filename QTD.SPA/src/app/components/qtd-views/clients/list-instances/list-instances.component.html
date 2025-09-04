@@ -1,0 +1,107 @@
+<app-header title="Instances" [canGoBack]="true" prevUrl="/clients/index"></app-header>
+
+<div class="flex flex-col px-12">
+    <div class="border-b py-8">
+        <div class="flex flex-row items-center py-4" *ngIf="!selectClientInstance" >
+            <h1 class="flex-auto font-medium text-xl">{{'L.Instances' | translate}} ({{clientName}})</h1>
+
+        </div>
+        <!-- table starts -->
+        <div class="border-gray-one shadow-xs border-0.5 rounded">
+            <!-- table header starts -->
+            <div *ngIf="!selectClientInstance" 
+                class="flex flex-row justify-between bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one">
+                <div class="flex flex-row ">
+                    <app-button text="Change Instance" size="sm" class="mr-2" (clicked)="changeClientInstance()">
+                    </app-button>
+                    <app-button text="Add Instance" size="sm" icon="add" iconPosition="left" color="secondary"
+                        (clicked)="open()"></app-button>
+                </div>
+                <app-textbox placeholder="Search here" (keyup)="filterData($event)"></app-textbox>
+
+
+            </div>
+            <!-- table header ends -->
+
+            <!-- table content starts -->
+            <div class="flex-row bg-white-one rounded-b-md m-2" id="tblInstances" *ngIf="!selectClientInstance">
+
+                <mat-table [dataSource]="instanceDataSource" matSort>
+
+                    <ng-container matColumnDef="name">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="db_v">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Database version </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.db_v}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="active">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <p [ngClass]="{'bg-green-50':row.active,'bg-gray-100':!row.active}"
+                                class="w-20 px-2 py-2 rounded text-center  text-xs text-gray-700 font-medium">
+                                {{row.active ?
+                                "ACTIVE":"INACTIVE"}}</p>
+                        </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="obj">
+                        <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <div class="flex flex-row items-center text-gray-four btn-group">
+                                <button mat-icon-button [matMenuTriggerFor]="menu">
+                                    <app-icon icon="more_vert"></app-icon>
+                                </button>
+                                <mat-menu #menu="matMenu">
+                                    <label mat-menu-item (click)="open(row.name)" translate>L.Edit</label>
+                                    <label mat-menu-item (click)="delete(row.name)" *ngIf="row.active==true"
+                                        translate>L.Delete</label>
+                                </mat-menu>
+                            </div>
+                        </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                    <!-- Row shown when there is no matching data.-->
+                    <tr class="mat-row flex text-center " *matNoDataRow>
+                        <td class="mat-cell w-full m-2">No data to display</td>
+                    </tr>
+
+                </mat-table>
+                <app-data-loader *ngIf="!instanceDataSource"></app-data-loader>
+
+                <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+                    aria-label="Select page of periodic elements">
+                </mat-paginator>
+            </div>
+
+
+
+            <div class="flex-row bg-white-one rounded-b-md m-2" id="tblSelectInstance" *ngIf="selectClientInstance">
+                <h3 class="text-center pt-8">Please select an instance to continue</h3>
+                <table class="table w-full text-left mt-5 row-border hover">
+                    <thead>
+                        <tr class="table-row text-xs text-gray-four">
+                            <th class="table-cell py-5 border-b-0.8 border-gray-one font-normal" translate>
+                                L.InstanceName
+                            </th>
+                            <th class="table-cell py-5 border-b-0.8 border-gray-one font-normal" translate>L.Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let item of clientInstance" class="table-row border-b-8 text-sm hover:bg-gray-50">
+                            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{item}}</td>
+
+                            <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+
+                                <button type="button" class="btn btn-sm btn-primary"
+                                    (click)="setClient(item)">Select</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

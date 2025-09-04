@@ -1,0 +1,69 @@
+.backButton {
+  align-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  background-color: #5c9b311c;
+  border-radius: 100%;
+  color: #5c9b31;
+  justify-content: center;
+  display: flex;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.boxStyle {
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  border: 1px solid lightgray;
+}
+
+.scaleStyle > div:first-of-type {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.scaleStyle > div:last-of-type {
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+:host ::ng-deep .innerBox > textarea {
+  height: 5rem;
+  width: 75%;
+  outline: none;
+}
+
+.filled {
+  background-color: #456fa5;
+  color: white;
+}
+.raing-scaled {
+  color: rgb(0, 0, 0);
+}
+
+.rating-label{
+  white-space: nowrap;
+}
+
+.text-color {
+  font-weight: 500;
+  color: black;
+}
+
+.text-color i {
+  color: green;
+}
+.description-no-box {
+  width: 100%;
+  max-width: 8rem;
+  text-align: center;
+}
+
+.description-height {
+  height: 100%;
+  min-height: 3.6rem;
+  display: flex;
+  align-items: center;
+}

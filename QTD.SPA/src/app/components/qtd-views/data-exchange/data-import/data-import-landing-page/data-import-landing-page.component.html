@@ -1,0 +1,19 @@
+<app-header title="Data Import" [canGoBack]="false"></app-header>
+  <form [formGroup]="dataImportForm" class="flex flex-col px-12 py-12">
+    <div class="step-controls-section">
+      <div>
+        <h1 class="landing-page-heading">QTD Data Import</h1>
+        <p class="landing-page-caption">To get started, select which types of data you would like to import into QTD </p>
+      </div>
+    <div class="d-flex flex-col">
+      <mat-checkbox formControlName="isEmployeeData" class="mt-4">{{("Employee" | labelReplacement)| async}} Data</mat-checkbox>
+      <mat-checkbox formControlName="isILAData" class="mt-4">{{("ILA" | labelReplacement)| async}} Data</mat-checkbox>
+      <mat-checkbox formControlName="isClassRecordData" class="mt-4">Class Record Data</mat-checkbox>
+    </div>
+    <section class="flex w-full ml-2 mt-3" style="justify-content:flex-end;">
+        <app-button ButtonType="button" color="secondary" size="sm" [disabled]="isSelectedAnyOne()" (click)="continueClick()"
+            text="Continue"></app-button>
+    </section>
+  </div>
+</form>
+ 

@@ -1,0 +1,152 @@
+<div class="flex flex-row justify-between items-center px-12 mb-3">
+    <div class="flex flex-row">
+        <button type="button" (click)="getPositionList()" class="focus:outline-none" *ngIf="!showlistPosition">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                </path>
+            </svg>
+        </button>
+        <h1 class="text-lg font-medium text-gray-900">{{posHeader}}
+        </h1>
+    </div>
+    <button type="button" class="focus:outline-none" (click)="closed.emit($event)" *ngIf="showlistPosition">
+        <svg class="w-7 h-7 stroke-current text-gray-four" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </button>
+    <button type="button" class="focus:outline-none" (click)="getPositionList()" *ngIf="!showlistPosition">
+        <svg class="w-7 h-7 stroke-current text-gray-four" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </button>
+</div>
+<ng-container *ngIf="showlistPosition">
+    <!-- search starts here -->
+    <div class="flex flex-row items-center pb-2 border-b-0.8 mx-12 border-gray-one mb-3">
+        <svg class="w-4 h-4 mr-2 stroke-current text-gray-four " fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+            (keyup)="filterPositions($event)">
+    </div>
+    <!-- search starts ends -->
+
+    <!-- sub-header starts here -->
+    <div class="flex flex-row items-center px-12">
+        <div class="flex-grow space-y-1">
+            <div class="flex flex-row items-center text-gray-four">
+                <p class="text-xs mr-2">Sort by Category (A - Z)</p>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="flex flex-row items-center text-green-one mr-2">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                </path>
+            </svg>
+            <button class="font-medium text-xs xl:text-sm" (click)="addPosition()">Add new
+                {{("Position" | labelReplacement)| async}}s</button>
+        </div>
+    </div>
+    <div class="flex flex-row justify-end px-12">
+
+        <div class="text-green-one" *ngIf="positionsToLink.length>0 && showLinkBtn">
+            <button class="btn-icon-secondary" (click)="LinkPositionToTask()">
+                <svg class="feather feather-plus mr-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                    stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Link to {{("Task" | labelReplacement)| async}}
+            </button>
+        </div>
+    </div>
+    <!-- sub-header ends here -->
+    <app-data-loader *ngIf="!listPosition"></app-data-loader>
+    <!-- list starts here -->
+    <div class="flex flex-col text-sm">
+        <div *ngFor="let item of listPosition"
+            class="py-6 border-b-0.8 border-gray-one px-12 hover:bg-white-three flex flex-row justify-between">
+            <div class="flex flex-nowrap items-center">
+                <input type="checkbox" class="mr-3 bg-green-300" [checked]="positionsToLink.includes(item.id)"
+                    (change)="addPositionsToLinkList(item.id)">
+                <p>{{item.name}}</p>
+            </div>
+            <div class="flex flex-row items-center text-gray-four">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                    <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu" class="p-2">
+                    <label mat-menu-item translate (click)="editPosition(item)">Edit</label>
+                    <label mat-menu-item translate (click)="deletePosition(item.id)">Delete</label>
+                </mat-menu>
+            </div>
+        </div>
+    </div>
+    <!-- list ends here -->
+</ng-container>
+<ng-container *ngIf="!showlistPosition">
+
+    <!-- form starts here -->
+    <form class="block text-sm px-6">
+        <div class="mt-12">
+            <!--Add New Position Acronym and Position Title Starts -->
+            <div class="flex" *ngIf="posHeader.startsWith('Add')">
+                <div class=" flex flex-col w-1/6">
+                    <label class="inline-block text-black font-medium" for="acronym">Acronym</label>
+                    <input aria-label="acronym name" name="acronym" type="text" placeholder="Enter acronym"
+                        [(ngModel)]="acronymName"
+                        class="border mr-2 px-4 py-3 mt-0 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded">
+                </div>
+                <div class=" flex flex-col w-5/6">
+                    <label class="inline-block text-black font-medium" for="position name">{{("Position" | labelReplacement)| async}}s Title</label>
+                    <input aria-label="position name" name="position" type="text" placeholder="Enter {{('Position' | labelReplacement)| async}} title"
+                        [(ngModel)]="posName"
+                        class="border px-4 py-3 mt-0 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded">
+                </div>
+            </div>
+            <!--Add New Position Acronym and Position Title Ends -->
+
+            <!--Update Position for  Acronym and Position Title Starts-->
+            <div class="flex" *ngIf="posHeader.startsWith('Edit')">
+                <div class=" flex flex-col w-1/6">
+                    <label class="inline-block text-black font-medium" for="acronym">Acronym</label>
+                    <input aria-label="acronym name" name="acronym" type="text" placeholder="Enter acronym"
+                        [(ngModel)]="PosUpdateOpt.acronym"
+                        class="border mr-2 px-4 py-3 mt-0 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded">
+                </div>
+
+                <div class=" flex flex-col w-5/6">
+                    <label class="inline-block text-black font-medium" for="position name">{{("Position" | labelReplacement)| async}}s
+                        Title</label>
+                    <input aria-label="position name" name="position" type="text" placeholder="Enter {{('Position' | labelReplacement)| async}}  name"
+                        [(ngModel)]="PosUpdateOpt.name"
+                        class="border px-4 py-3 mt-0 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded">
+                </div>
+            </div>
+        </div>
+        <!--Update Position for  Acronym and Position Title Ends-->
+
+        <div class="flex justify-between mt-6">
+            <button type="button" class="focus:outline-none" (click)="getPositionList()">Cancel</button>
+            <button type="button" class="focus:outline-none btn-icon-secondary" *ngIf="posHeader.startsWith('Add')"
+                (click)="createNewPosition()">Add
+                {{("Position" | labelReplacement)| async}}s </button>
+            <button type="button" class="focus:outline-none btn-icon-secondary" *ngIf="posHeader.startsWith('Edit')"
+                (click)="updatePosition()">Update
+                {{("Position" | labelReplacement)| async}}s </button>
+        </div>
+    </form>
+    <!-- form ends here -->
+</ng-container>

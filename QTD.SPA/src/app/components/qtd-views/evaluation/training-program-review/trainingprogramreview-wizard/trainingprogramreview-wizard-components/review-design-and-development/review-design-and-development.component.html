@@ -1,0 +1,30 @@
+<div class="step-container">
+  <form [formGroup]="reviewDndForm">
+    <div class="mat-step-section">
+      <div class="step-header-section">
+        <h2 class="step-main-header">Design & Development</h2>
+        <p class="step-header-caption">Enter the training program design and development details</p>
+      </div>
+      <div class="step-controls-section">
+        <div class="step-control-container mb-5">
+          <div class="step-control-label">Program Design</div>
+          <div class="step-control">
+            <ckeditor formControlName="programDesign" (change)="programDesignChange()" [config]="configCKEditor" [editor]="Editor" ></ckeditor>
+          </div>
+        </div>
+        <div class="step-control-container mb-5" >
+          <div class="step-control-label">Program Materials</div>
+          <div class="step-control">
+            <ckeditor formControlName="programMaterials" (change)="programMaterialsChange()" [config]="configCKEditor" [editor]="Editor" ></ckeditor>
+          </div>
+        </div>
+        <div class="step-control-container mb-5">
+          <div class="step-control-label">Program Implementation</div>
+          <div class="step-control">
+            <ckeditor formControlName="programImplementation" (change)="programImplementationChange()" [config]="configCKEditor" [editor]="Editor" ></ckeditor>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

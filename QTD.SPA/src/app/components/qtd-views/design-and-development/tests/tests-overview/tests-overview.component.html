@@ -1,0 +1,537 @@
+<app-header [toggleMenuIcon]="false" breadcrumbs="Design and Development / Test Items and Tests"></app-header>
+
+
+<!-- <ng-template #testByILA>
+
+    <mat-table class="w-full" matSort [dataSource]="testByILAdataSource" >
+        <ng-container matColumnDef="cb">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <mat-checkbox></mat-checkbox>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <mat-checkbox></mat-checkbox>
+                <app-button variant="text" icon="arrow_drop_down" class="align-item-center"
+                (clicked)="(expandedData = expandedData === row ?null:row);$event.stopPropagation();getTestLinkedILAs(row.id);"></app-button>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="ilaNum">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              ILA No. </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+
+              {{row.ilaNum}}
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="ilaTitle">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> ILA Title </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.ilaTitle}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="nickname">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Nickname </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.nickname}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="credithours">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Credit Hours </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.credithours}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="deliverymethod">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Delivery Method </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.deliverymethod}} </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="isMeta">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Is Meta </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.isMeta}} </mat-cell>
+        </ng-container>
+
+        <ng-container class="items-end justify-end" matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <div class="d-inline-block">
+                <p class="py-2 px-4 rounded flex flex-row text-center text-xs  font-medium"
+                  [ngClass]="{'customcolorgreen':row.status==='ACTIVE','bg-gray-100':row.status!=='ACTIVE'}">
+                  {{row.status | uppercase}}
+
+                </p>
+              </div>
+            </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="expandedDetail">
+            <mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns">
+              <div style="width: 100%;" class="example-element-detail"
+                [@detailExpand]="row === expandedData ? 'expanded' : 'collapsed'">
+
+                <div class="mt-4"  [attr.colspan]="displayedExpandedColumns">
+                  <ng-container class="mt-4" [attr.colspan]="displayedExpandedColumns"
+                    *ngTemplateOutlet="expandedTable"></ng-container>
+                </div>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+        <mat-row *matHeaderRowDef="displayedColumns"></mat-row>
+            <mat-row *matRowDef="let row; columns : displayedColumns"></mat-row>
+            <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full m-2">No Data Found</td>
+            </tr>
+    </mat-table>
+
+    <mat-paginator #metaPaginator="matPaginator" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+        aria-label="Select page of periodic elements">
+    </mat-paginator>
+</ng-template> -->
+
+<ng-template #testByILA>
+  <mat-table class="table-auto w-full" #providerSort="matSort" [dataSource]="testByILAdataSource" matSort
+    [multiTemplateDataRows]="true">
+    <!-- <ng-container matColumnDef="cb">
+      <mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+          [checked]="selection.isSelected(row)">
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container> -->
+    <ng-container matColumnDef="expand">
+      <mat-header-cell *matHeaderCellDef>
+
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <app-button class="mr-1 arrowButton" variant="text" icon="arrow_drop_down"
+          (clicked)="(expandedData === row ?(expandedData = null):(expandedData = row));getTestLinkedILAs(row.id);$event.stopPropagation();">
+        </app-button>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="provName">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        Provider </mat-header-cell>
+      <mat-cell class="mr-2" *matCellDef="let row">
+        <!-- <app-button variant="text" icon="arrow_drop_down"
+          (clicked)="(expandedData = expandedData === row ?null:row);$event.stopPropagation();">
+        </app-button> -->
+        {{row.provName}}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="ilaNum">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{("ILA" | labelReplacement)| async}} No. </mat-header-cell>
+      <mat-cell class="mr-2" *matCellDef="let row">
+        <!-- <app-button variant="text" icon="arrow_drop_down"
+          (clicked)="(expandedData = expandedData === row ?null:row);$event.stopPropagation();">
+        </app-button> -->
+        {{row.ilaNum}}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="ilaTitle">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> {{("ILA" | labelReplacement)| async}} Title </mat-header-cell>
+      <mat-cell class="mr-2" *matCellDef="let row"> {{row.ilaTitle}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="nickname">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Nickname </mat-header-cell>
+      <mat-cell class="mr-2" *matCellDef="let row"> {{row.nickname}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="credithours">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> No. of Tests </mat-header-cell>
+      <mat-cell class="mr-2" *matCellDef="let row"> {{row.credithours}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="deliverymethod">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Delivery Method </mat-header-cell>
+      <mat-cell class="mr-2" *matCellDef="let row"> {{row.deliverymethod}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="isMeta">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Is Meta </mat-header-cell>
+      <mat-cell class="mr-2" *matCellDef="let row"> {{row.isMeta}} </mat-cell>
+    </ng-container>
+
+<!--
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="d-inline-block">
+          <p class="py-2 px-4 rounded flex flex-row text-center text-xs text-green-700 font-medium m-0"
+            [ngClass]="{'publish':row.status==='Published','develop':row.status ==='Draft','inactive':row.status === 'Inactive'}">
+            {{row.status | uppercase}}
+          </p>
+        </div>
+      </mat-cell>
+    </ng-container> -->
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef>
+        <!--Grid And List view buttons-->
+        <div>
+          <button class="float-right ml-3 pl-1 pr-1 pt-1 rounded"
+            [ngStyle]="{'border' : toggle ? '2px solid rgba(92, 155, 49, 1)' : '2px solid lightgray'}"
+            (click)="toggle=true" style="color:rgb(92, 155, 49);outline: 2px rgb(92, 155, 49);">
+            <mat-icon>grid_on</mat-icon>
+          </button>
+          <button style="color:rgb(92, 155, 49);outline: 2px rgb(92, 155, 49)"
+            [ngStyle]="{'border' : !toggle ? '2px solid rgba(92, 155, 49, 1)' : '2px solid lightgray'}"
+            class="float-right pl-1 pr-1 pt-1 rounded" (click)="toggle=false">
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="flex flex-row items-center text-gray-four btn-group">
+          <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" [matMenuTriggerFor]="menu">
+          </app-button>
+          <mat-menu #menu="matMenu">
+            <!-- <label mat-menu-item (click)="openFlyPanelProviderEdit(addNewProvider,row.id,'Edit')">Edit</label>
+            <label mat-menu-item (click)="openFlyPanelProviderEdit(addNewProvider,row.id,'Copy')">Copy</label>
+            <label mat-menu-item (click)="OnDelete(deleteTopic,'Provider',row)">Delete</label>
+            <label mat-menu-item (click)="onMakeProviderInactive(activeInactive,row)">Make {{row.status === "active" ?
+              "Inactive":"Active"}}</label> -->
+            <!-- <label mat-menu-item (click)="openFlyPanelChangeTopic(topicFlyPanel)">Change Topic</label> -->
+          </mat-menu>
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <!--Expanded Details-->
+    <ng-container matColumnDef="expandedDetail">
+      <mat-cell class="p-0" *matCellDef="let row" [attr.colspan]="displayedColumns">
+        <div style="width: 100%;" class="example-element-detail"
+          [@detailExpand]="row === expandedData? 'expanded' : 'collapsed'">
+          <!--Grid view in expanded Details-->
+          <div *ngIf="expandedData && toggle">
+            <ng-container *ngTemplateOutlet="expandedGrid"></ng-container>
+          </div>
+
+          <!--List View in expanded details-->
+          <div *ngIf="toggle===false" [attr.colspan]="displayedExpandedColumns">
+            <ng-container style="background: rgba(246, 246, 246, 0.58);" class="mt-4"
+              [attr.colspan]="displayedExpandedColumns"
+              *ngTemplateOutlet="!toggle ? expandedTable : null"></ng-container>
+          </div>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <!--Expanded Details End here-->
+
+    <mat-header-row class="p-2" *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row class="example-element-row p-2" [class.example-expanded-row]="expandedData === row"
+      *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+    <!--Expanded Details row-->
+    <mat-row style="background: rgba(246, 246, 246, 0.58);"
+      [ngStyle]="{'display' : expandedData===row  ? 'block' : 'none'} " *matRowDef="let row; columns: ['expandedDetail']"
+      class="example-detail-row"></mat-row>
+
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center " *matNoDataRow>
+      <td class="mat-cell w-full m-2">No data matching the filter</td>
+    </tr>
+  </mat-table>
+
+  <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+    aria-label="Select page of periodic elements">
+  </mat-paginator>
+
+</ng-template>
+
+<ng-template #expandedGrid>
+  <app-data-loader *ngIf="!expandedDataSource"></app-data-loader>
+  <p *ngIf="expandedDataSource&& expandedDataSource.length == 0">No Tests are linked</p>
+  <ng-container *ngIf="expandedDataSource&& expandedDataSource.length > 0">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 flex flex-nowrap" *ngFor="let ila of expandedDataSource">
+
+          <mat-checkbox class="float-left mt-16 mr-3" (change)="$event ? selection_test.toggle(ila.index) : null"
+            [checked]="selection_test.isSelected(ila.index)">
+          </mat-checkbox>
+          <div class="card mt-2 mb-2 " style="width:25rem;">
+            <div class="row no-gutters">
+              <div class="col-auto">
+                <img style="width: 110px;height: 110px;" class="img-fluid mr-2 mt-2 ml-2 mb-2" [src]="ila.image"
+                  onerror="this.src='assets/img/ImageNotFound.jpg'">
+                <!-- <img src="assets/img/ImageNotFound.jpg" style="width: 110px;height: 110px;" class="img-fluid" alt=""> -->
+              </div>
+              <div class="col">
+                <div class="card-block px-2">
+                  <h4 class="card-title">
+                    <app-button ButtonType="icon" class="text-gray-four float-right" icon="more_horiz"
+                      [matMenuTriggerFor]="menu">
+                    </app-button>
+                    <span class="ml-auto p-2 rounded float-right h-auto"
+                      [ngClass]="{'yellowBg':ila.status==='Draft','bg-gray-100':ila.status!=='active'}">{{ila.status}}</span>
+                    <mat-menu #menu="matMenu">
+                      <!-- <label mat-menu-item (click)="OnEditILA(ila)">Edit</label>
+                      <label mat-menu-item>Copy</label>
+                      <label mat-menu-item (click)="OnDelete(deleteTopic,'ILA',ila)">Delete</label>
+                      <label mat-menu-item (click)="onMakeILAInactive(activeInactive,ila)">Make {{ila.active ?
+                        "Inactive":"Active"}}</label>
+                      <label mat-menu-item
+                        (click)="openFlyInPanelChangeProvider(addNewProvider, ila.providerId,ila.id)">Change
+                        Provider</label>
+                      <label mat-menu-item (click)="openFlyInPanelChangeTopic(topicFlyPanel, ila.topicId,ila.id)">Change
+                        Topic</label>
+                      <label mat-menu-item (click)=" openFlyInPanelVersionHistory(versionHistory)">View Version
+                        History</label> -->
+                    </mat-menu>
+                  </h4>
+                  <br /><br />
+                  <span class="text-lg"><b>{{ila.title}}</b></span><br />
+                  <span class="text-sm text-gray-four overflow-wrap">{{ ila.nickName + '-' + ila.num + ' ' +
+                    ila.deliveryMethode}}</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </ng-container>
+
+</ng-template>
+
+<!-- Expanded Table in row starts here -->
+<ng-template #expandedTable>
+  <app-data-loader *ngIf="innerLoader"></app-data-loader>
+  <table class="w-full" mat-table style="background: rgba(246, 246, 246, 0.58);" *ngIf="!innerLoader"
+    [dataSource]="expandedTableDataSource | testFilter:filterString | testSort:[sortCol,sortOrder]">
+    <!-- <ng-container matColumnDef="index">
+      <th style="width:10%;" mat-header-cell *matHeaderCellDef>
+        <mat-checkbox class="p-3 mt-2" (change)="$event ? masterToggleILAList() : null"
+          [checked]="selection_test.hasValue() && isAllSelectedILAList()"
+          [indeterminate]="selection_test.hasValue() && !isAllSelectedILAList()"></mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox class="p-3 mt-2" (click)="$event.stopPropagation()"
+          (change)="$event ? selection_test.toggle(row) : null" [checked]="selection_test.isSelected(row)">
+        </mat-checkbox>
+      </td>
+    </ng-container> -->
+    <ng-container matColumnDef="testID">
+      <th style="width:26%;" mat-header-cell class="cursor-pointer prevent_selection"
+        (click)="sortInnerColumn('testNum')" *matHeaderCellDef>
+        Test ID
+        <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'testNum'" icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'testNum'" icon="keyboard_arrow_up"></app-icon>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        {{row.testNum}}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="testTitle">
+      <th mat-header-cell class="cursor-pointer prevent_selection" (click)="sortInnerColumn('testTitle')"
+        *matHeaderCellDef>
+        Test Title <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'testTitle'"
+          icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'testTitle'" icon="keyboard_arrow_up"></app-icon>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <p class="m-0">
+          {{row.testTitle}}
+        </p>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="numOfQuestion">
+      <th style="width:12%;" mat-header-cell class="cursor-pointer prevent_selection"
+        (click)="sortInnerColumn('numOfQuestion')" *matHeaderCellDef>
+        No. of Question <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'numOfQuestion'"
+          icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'numOfQuestion'" icon="keyboard_arrow_up"></app-icon>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        {{row.numOfQuestion}} </td>
+    </ng-container>
+    <!-- <ng-container matColumnDef="creditHours">
+      <mat-header-cell (click)="sortInnerColumn('creditHours')" *matHeaderCellDef>
+        Credit Hours <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'creditHours'" icon="keyboard_arrow_down">
+        </app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'creditHours' " icon="keyboard_arrow_up"></app-icon>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.creditHours}} </mat-cell>
+    </ng-container> -->
+    <ng-container matColumnDef="testType">
+      <th style="width:10%;" mat-header-cell class="cursor-pointer prevent_selection"
+        (click)="sortInnerColumn('testType')" *matHeaderCellDef>
+        Test Type<app-icon *ngIf="sortOrder === 'asc' && sortCol === 'testType'" icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'testType'" icon="keyboard_arrow_up"></app-icon>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        {{row.testType}} </td>
+    </ng-container>
+    <ng-container matColumnDef="testStatus">
+      <th style="width:10%;" mat-header-cell class="cursor-pointer prevent_selection"
+        (click)="sortInnerColumn('testStatus')" *matHeaderCellDef>
+        Status <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'testStatus'" icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'testStatus'" icon="keyboard_arrow_up"></app-icon>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <p class="rounded-sm text-xs text-green-700 font-medium pt-2 pb-2 mt-2" style="width:8rem;text-align: center;"
+          [ngClass]="{'publish':row.testStatus==='Published','inactive':row.testStatus === 'Inactive','develop':row.testStatus==='In Development'}">
+          {{row.testStatus}}</p>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="actions">
+      <th style="width:5%" mat-header-cell *matHeaderCellDef="">
+
+      </th>
+      <td class="pl-4" mat-cell *matCellDef="let row">
+        <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" [matMenuTriggerFor]="testMenu">
+        </app-button>
+        <mat-menu #testMenu="matMenu">
+          <label class="label_style" [disabled]="!row.active" (click)="routeWithData('edit',row.id)" mat-menu-item>Edit</label>
+          <label class="label_style" [disabled]="!row.active" (click)="routeWithData('copy',row.id)" mat-menu-item>Copy</label>
+          <label class="label_style" [disabled]="!row.active || row.isReleased" (click)="deleteTest(row,deleteDialog)" mat-menu-item>Delete</label>
+        <div class="flex flex-row">
+          <label [disabled]="row.isReleased" class="label_style" (click)="changeTestStatus(row,statusDialog)" mat-menu-item>Make {{row.active ?
+            "Inactive":"Active"}} </label>
+
+          <app-icon *ngIf="row.isReleased" class="pt-3"
+          matTooltip="The Make Inactive option is not available due to linked data in EMP" icon="help"></app-icon>
+        </div>
+
+
+
+
+          <label class="label_style" [disabled]="!row.active" (click)="testId = row.id;openFlyPanel(changeILA,'changeILA')" mat-menu-item>Change
+            {{("ILA" | labelReplacement)| async}}</label>
+        </mat-menu>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row class="pl-2 pr-2" *matHeaderRowDef="displayedExpandedColumns"></tr>
+    <tr mat-row class="pr-2 pl-2" *matRowDef="let row; columns: displayedExpandedColumns"></tr>
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" [attr.colspan]="displayedExpandedColumns.length">No Tests linked to {{("ILA" | labelReplacement)| async}}</td>
+    </tr>
+  </table>
+</ng-template>
+
+
+<div class="flex flex-col p-4 pl-5">
+  <p class="text-lg font-bold">Tests Overview</p>
+  <app-data-loader *ngIf="!testStats"></app-data-loader>
+  <!-- This section is for stats -->
+  <section *ngIf="testStats" class="flex flex-row bg-white rounded shadow-sm">
+    <div class="pr-4 my-3 ml-12 mr-12" style="border-right: 1px solid #F2F2F2;">
+      <p class="m-0 p-0 mb-1">Total number of Published Tests</p>
+      <p (click)="testStats.publishedTests>0 && openFlyInPanel(list, 'Published')" [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':testStats.publishedTests>0,'text-xl text-black':testStats.publishedTests==0}">
+        {{testStats.publishedTests | number: '2.0'}}</p>
+    </div>
+    <div class="pr-4 my-3 px-12" style="border-right: 1px solid #F2F2F2;">
+      <p class="m-0 p-0 mb-1">Total number of In Development Tests</p>
+      <p (click)="testStats.inDevelopmentTests>0 && openFlyInPanel(list, 'In Development')" [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':testStats.inDevelopmentTests>0,'text-xl text-black':testStats.inDevelopmentTests==0}">
+        {{testStats.inDevelopmentTests | number : '2.0'}}</p>
+    </div>
+    <div class="my-3 px-12">
+      <p class="m-0 p-0 mb-1">Total number of Inactive Tests</p>
+      <p (click)="testStats.inActiveTests>0 && openFlyInPanel(list, 'Inactive')" [ngClass]="{'text-2xl text-red-600 font-bold cursor-pointer':testStats.inActiveTests>0,'text-xl text-black':testStats.inActiveTests==0}">
+        {{testStats.inActiveTests | number : '2.0'}}</p>
+    </div>
+  </section>
+  <!-- this section is bulk edit, filter and add new section -->
+  <section class="flex flex-row justify-between mt-5" style="align-items: baseline;">
+    <app-button (clicked)="redirectToBulkEdit()" ButtonType="button" variant="text" [icon]="'edit'" iconPosition="left"
+      text="Bulk Edit"></app-button>
+    <div class="flex flex-row">
+      <!-- [matMenuTriggerFor]="filter" -->
+      <app-button class="mr-2" size="sm" color="secondary" ButtonType="button" text="Filter"
+        rightIcon="keyboard_arrow_down" leftIcon="filter_alt" [matMenuTriggerFor]="filter"></app-button>
+        <mat-menu #filter="matMenu">
+          <label (click)="applyStatusFilter('inactive');filterName1 = 'Inactive'" *ngIf="status !== 'inactive'" class="label_style" mat-menu-item>Inactive</label>
+          <label (click)="applyStatusFilter('active');filterName1 = 'Active'" *ngIf="status !== 'active'" class="label_style" mat-menu-item>Active</label>
+          <label (click)="applyStatusFilter('none');filterName1 = ''" *ngIf="status !== 'none'" class="label_style" mat-menu-item>All</label>
+          <label (click)="openFlyPanel(changeILA,'filterProvider');filterName1 = 'Provider'"  class="label_style" mat-menu-item>Provider</label>
+          <label (click)="testFilterOptions.onlyWithLink=true;readyData(filterString);filterName1 = 'Show ILAs With Linked Tests'"  class="label_style" mat-menu-item>Show {{("ILA" | labelReplacement)| async}}s With Linked Tests</label>
+          <label (click)="testFilterOptions.onlyWithLink=false;readyData(filterString);filterName1 = 'Show ILAs Withiout Linked Tests'"  class="label_style" mat-menu-item>Show {{("ILA" | labelReplacement)| async}}s Withiout Linked Tests</label>
+
+        </mat-menu>
+      <app-button size="sm" ButtonType="button" text="Add New Test" routerLink="/dnd/tests/create"></app-button>
+    </div>
+
+  </section>
+
+  <div class="flex flex-col justify-between ml-12 px-4 py-2 bg-white-one w-1/5 pt-2" *ngIf="filterName1">
+    <span class="font-bold mb-4">Filter(s) Applied</span>
+<!--     <span *ngFor="let name of filterName">{{name}}</span>  
+ -->
+      <span>{{filterName1}}</span>
+      <span *ngIf="outputProvider">{{outputProvider}}</span>  
+
+      <div *ngIf="FilterProviderILAData" class="flex flex-col">
+        <span class="font-bold mb-2">{{("ILA" | labelReplacement)| async}}</span>
+
+        <span *ngFor="let filter of FilterProviderILAData">{{filter.name}}</span>
+      </div>
+      <app-button variant="text" class="mt-4" (clicked)="testFilterOptions.onlyWithLink=true;clearFilter();" text="Clear filter" icon="clear" iconPosition="right"></app-button>
+
+</div>
+
+  <!-- This section is for the table and filter -->
+  <section class="flex flex-col bg-white rounded shadow-sm mt-4">
+    <div class="pl-3 pt-3 m-0 flex flex-row justify-between"
+      style="align-items: baseline;border-bottom: 2px solid #F2F2F2;">
+      <mat-form-field style="width:70%" appearance="outline">
+        <div class="flex flex-row">
+          <mat-icon matPrefix>search</mat-icon>
+          <input (input)="filterData()" [(ngModel)]="filterString" type="text" matInput
+            placeholder="Enter keywords to search">
+            <app-icon icon="close" class="pt-2 cursor-pointer" (click)="clearFilter()"></app-icon>
+  
+        </div>
+        
+      </mat-form-field>
+      <div class="flex flex-row pr-3 flex-wrap" style="align-items: center">
+        <!-- <p class="m-0 pr-2 font-bold text-gray-400">View Question by</p> -->
+        <span class="pl-4 pr-4 pt-2 pb-2" style="border-radius: 4px 0px 0px 4px;"
+          [ngClass]="{'selected':viewSelected === 'testByILA','basic':viewSelected !== 'testByILA'}">Tests by {{("ILA" | labelReplacement)| async}}</span>
+        <span [matTooltip]="'Not Available'" class="pl-4 pr-4 pt-2 pb-2"
+          style="border-radius: 0px 4px 4px 0px;cursor:not-allowed;"
+          [ngClass]="{'selected':viewSelected === 'testByPosition','basic':viewSelected !== 'testByPosition'}">Tests by
+          {{("Position" | labelReplacement)| async}}s</span>
+
+      </div>
+    </div>
+
+    <app-data-loader *ngIf="isLoading"></app-data-loader>
+    <div class="flex-row bg-white-one rounded-b-md" *ngIf="!isLoading">
+      <ng-container *ngTemplateOutlet="viewSelected === 'testByILA' ?  testByILA : null"></ng-container>
+
+    </div>
+  </section>
+
+
+</div>
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue [header]="header" [description]="description" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (confirmed)="performDelete($event)"
+    (canceled)="dialog.closeAll()"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #statusDialog>
+  <app-qtd-dialogue [header]="header" [description]="description" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (confirmed)="performStatusChange($event)"
+    (canceled)="dialog.closeAll()"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #changeILA>
+  <app-flypanel-change-ila (outputProvider)="outputProvider = $event" (filterData)="GetFilterData($event)" [filterProvider]="filterProvider" [currentIlaId]="expandedData?.id" [testId]="testId" [saveHere]="true"
+    (closed)="flyPanelService.close()" (ilaChanged)="ilaChanged();flyPanelService.close()"></app-flypanel-change-ila>
+</ng-template>
+
+<ng-template #list>
+  <app-fly-panel-test-list [moduleName]="moduleName"></app-fly-panel-test-list>
+</ng-template>

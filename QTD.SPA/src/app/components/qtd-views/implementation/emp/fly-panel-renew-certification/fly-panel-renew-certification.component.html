@@ -1,0 +1,107 @@
+<div class="flex flex-col">
+    <ng-container *ngIf="addTask">
+      <div class="flex flex-row justify-between items-center px-3 mt-2">
+        <div class="flex flex-row" *ngIf="oldTask === undefined">
+          <!-- <app-button [disabled]="showSpinner" (clicked)="closed.emit('fp-add-task-closed')" ButtonType='icon'
+            icon="keyboard_arrow_left">
+          </app-button> -->
+          <p class="text-xl font-bold py-2" style="color: #000000;">Renew Certificate</p>
+        </div>
+
+        <!--  <p *ngIf="oldTask === undefined" class="text-xl font-bold text-gray-900">Add New Task</p> -->
+        <p *ngIf="oldTask !== undefined && !isCopy" class="text-xl font-bold text-gray-900">{{"Edit"}} {{("Task" | labelReplacement)| async}}</p>
+        <p *ngIf="isCopy" class="text-xl font-bold text-gray-900">{{"Copy"}} {{("Task" | labelReplacement)| async}}</p>
+        <app-button [disabled]="showSpinner" (clicked)="closed.emit('fp-add-task-closed')" ButtonType='icon' icon="close">
+        </app-button>
+      </div>
+
+      <mat-stepper labelPosition="bottom" [linear]="true" #stepper (selectionChange)="selectedChanged($event)"
+        [orientation]="(stepperOrientation | async)!">
+        <!-- Change edit icon -->
+        <ng-template matStepperIcon="edit">
+          <app-icon icon="done"></app-icon>
+        </ng-template>
+        <mat-step label="Renew Certificate" [stepControl]="step1Form" [completed]="step1Form.valid">
+          <form class="flex flex-col" [formGroup]="step1Form">
+            <div class="flex flex-row px-12">
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+                    <app-label [for]="'certDate'" [text]="'Issued Date '"></app-label>
+                        <app-date  formControlName="certDate" placeholder="Select Date" >
+                        </app-date>
+                       <!--  <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+                        </app-input-error> -->
+                  </div>
+                <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+                    <app-label [for]="'renewDate'" [text]="'Renewal Date '"></app-label>
+                    <app-date [minDate]="step1Form.get('certDate')?.value" formControlName="renewDate" placeholder="Select Date" (input)="getDiffDays()">
+                    </app-date>
+                 <!--    <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+                    </app-input-error> -->
+               </div>
+        </div>
+        <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 20vw;">
+            <app-label [for]="'exptDate'" [text]="'Expiration Date '"></app-label>
+               <app-date formControlName="exptDate" placeholder="Select Date" [minDate]="step1Form.get('renewDate')?.value">
+               </app-date>
+             <!--   <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+               </app-input-error> -->
+         </div>
+        </div>
+            <div class="self-end pt-12">
+              <app-button color="secondary" [disabled]="step1Form.invalid" text="Continue" size="sm"
+                (clicked)="stepper.next()"></app-button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step label="Calculate Rollover" [stepControl]="step2Form">
+          <form class="flex flex-col" [formGroup]="step2Form">
+            <div class="mt-3">
+              <app-label [for]="'rolloverhours'" text="Enter Roll Over Hours">
+              </app-label>
+              <div class="flex flex-row">
+                <app-textbox class="mr-3" formControlName="rolloverhours">
+                </app-textbox>
+                
+              </div>
+              <div *ngIf="step2Form.get('rolloverhours').hasError('invalidDecimal')" class="text-danger">Value must be a valid number.</div>
+
+            </div>
+
+            <div class="self-end pt-12">
+              <app-button color="secondary" [disabled]="step2Form.invalid" text="Continue" size="sm"
+                (clicked)="stepper.next()"></app-button>
+            </div>
+          </form>
+        </mat-step>
+        <mat-step label="Revision and Date" [stepControl]="step3Form">
+          <form class="flex flex-col" [formGroup]="step3Form">
+            <div class="mt-3">
+              <app-label style="color: rgba(122, 128, 126, 1);" [for]="'effectiveDate'" text="Effective Date"></app-label>
+              <app-date formControlName="effectiveDate"></app-date>
+             <!--  <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+              </app-input-error> -->
+            </div>
+            <div class="mt-3">
+              <app-label style="color: rgba(122, 128, 126, 1);" [for]="'reason'" text="Reason for revision"></app-label>
+              <app-textarea formControlName="reason" placeholder="Please enter Reasons for Revision here">
+              </app-textarea>
+            </div>
+            <div class="self-end pt-12">
+              <!-- <app-button [disabled]="(step2Form.invalid && step3Form.invalid) || dateError" (clicked)="saveTask();"
+                text="Save" size="sm"></app-button> -->
+              <app-button [spinner]="showSpinner"
+                [disabled]="(step2Form.invalid && step3Form.invalid) || showSpinner" (clicked)="renewCertificate()"
+                text="Save" size="sm">
+              </app-button>
+
+            </div>
+
+          </form>
+
+        </mat-step>
+
+      </mat-stepper>
+    </ng-container>
+
+  </div>

@@ -1,0 +1,48 @@
+<div class="flex flex-col px-12 py-12">
+  <app-data-loader *ngIf="isLoading"></app-data-loader>
+  <ng-container *ngIf="!isLoading">
+    <div class="flex flex-row justify-between px-2">
+        <h2>Link RR {{("Task" | labelReplacement)| async}}s </h2>
+        <app-button ButtonType="icon" icon="close" (clicked)="closed.emit('fp-sh-task-link-closed')"></app-button>
+    </div>
+    <div class="r6-marking-header">
+        <span class="selected-tasks-caption"><span class="selected-count">{{selectedTasks.length}}</span> {{("Task" | labelReplacement)| async}}s selected</span>
+        <app-button class="p-1" color="secondary" text="Mark as R6 Impact" size="sm" (clicked)="openR6MarkDialogue(markR6Tasks)">
+        </app-button>
+    </div>
+    <div class="marking-instructions px-2">
+        The selected {{("Task" | labelReplacement)| async}}(s) are identified as impacting reliable operations of the BES during normal and emergency operations as described in PER-005-2 R6:
+    </div>
+    <div class="selected-tasks-list">
+        <mat-table matSortActive="number" matSortDirection="asc" matSort [dataSource]="selectedTaskData" (matSortChange)="sortDataTest()">
+            <ng-container matColumnDef="number">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> #
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" >
+                <span *ngIf="row.active">{{row.number}}</span>
+                <span *ngIf="!row.active" class="italic text-gray-four">{{row.number}}</span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="description" >
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2"> {{("Task" | labelReplacement)| async}} Statement
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span *ngIf="row.active">{{row.description}} </span>
+                <span *ngIf="!row.active" class="italic text-gray-four">{{row.description}} </span>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayColumns;" [class.inActiveItem]="!row.active"></mat-row>
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+              <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+          </mat-table>
+    </div>
+  </ng-container>
+</div>
+<ng-template #markR6Tasks>
+  <app-qtd-dialogue header="Link R-R {{('Task' | labelReplacement)| async}}s" [reasonDescription]="modalReason" [description]="modalDescription" cancelText="No" confirmText="Yes"
+      [showEffectiveDateAndReason]="true" [reasonOnly]="true" (canceled)="dialog.closeAll()" (confirmed)="getDataAsync($event)">
+  </app-qtd-dialogue>
+</ng-template>

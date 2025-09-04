@@ -1,0 +1,144 @@
+<div *ngIf = "isLoading" class="step-spinner">
+  <app-spinner></app-spinner>
+</div>
+<div *ngIf = "!isLoading">
+<div>
+  <label class="text-xl font-weight-bold">Review Details</label>
+</div>
+<div class="step-controls-section" [formGroup]="createTaskListReviewForm">
+  <div class="title-container">
+    <div class="task-title">
+      <app-label [for]="'title'" text="{{'Task' | labelReplacement | async }} List Review Title" class="font-weight-bold label required"></app-label>
+      <app-textbox type="text" placeholder="Enter title" formControlName="title" (input)="titleChange()"></app-textbox>
+    </div>
+    <div class="flex flex-col review-type">
+      <app-label [for]="'reviewType'" text="Review Type" class="font-weight-bold label required"></app-label>
+      <mat-select formControlName="reviewType" class="appearance-none rounded border w-full px-4 select-box mt-2" (selectionChange)="reviewTypeChange()" placeholder="Select Review Type ">
+          <mat-option *ngFor="let reviewType of reviewTypes" [value]="reviewType.id">
+            {{ reviewType.type }}
+          </mat-option>
+        </mat-select>
+    </div>
+  </div>
+
+  <div class="d-flex mt-2">
+     <div class="flex flex-col mr-2 trainer-dropdown">
+      <app-label [for]="'reviewedBy'" text="Reviewed By" class="font-weight-bold label"></app-label>
+      <app-textbox type="text" placeholder="Enter Reviewed By" formControlName="reviewedBy" (input)="reviewedByChange()"></app-textbox>
+    </div>
+    <div class="d-flex align-items-center flex-col date-range">
+      <app-label  text="Select Date Range" class="font-weight-bold label required w-100"></app-label>
+      <div class="d-flex flex-row w-100">
+        <div class="d-block date-block-wrapper position-relative">
+          <app-date formControlName="startDate"  [maxDate]="createTaskListReviewForm.get('endDate')?.value" (input)="startDateChange()"></app-date>
+        </div>
+        <div class="dash-span">-</div>
+        <div class="d-block date-block-wrapper position-relative">
+          <app-date formControlName="endDate" [minDate]="createTaskListReviewForm.get('startDate')?.value" (input)="endDateChange()"></app-date>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-flex mt-2">
+    <div class="flex flex-col mr-2 position-dropdown">
+      <app-label text="Positions" class="font-weight-bold label required"></app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select formControlName="positions" multiple #positionSelect="matSelect" placeholder="Select Position" [compareWith]="compareById"
+                       (selectionChange)="positionChange()">
+            <mat-select-trigger>
+              <mat-chip-list>
+                <mat-chip *ngFor="let posId of selectedPositionIds"
+                          [removable]="true" (removed)="removePosition(posId)"
+                          [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color': 'rgba(243, 244, 246)','border-radius': '1px'}"selected>
+                  {{ getPositionName(posId) }}
+                  <app-icon icon="cancel" [ngStyle]="{ 'color': 'rgb(92, 155, 49)' }" matChipRemove></app-icon>
+                </mat-chip>
+              </mat-chip-list>
+            </mat-select-trigger>
+
+            <input matInput class="pt-3 pb-3 pl-3 w-100" type="text"  formControlName ='positionSearchText' (blur) = "resetSearch()" (keydown)="handleKeydown($event)" placeholder="Enter Text to Search" >
+            <mat-option *ngFor="let pos of allPositions" [value]="pos.id" [style.display]="filterMatch(pos) ? '' : 'none'">
+              {{ pos.positionTitle }}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+    </div>
+  </div>
+</div>
+
+<div class="mt-5">
+  <label class="text-xl font-weight-bold">Task List Review Participants</label>
+</div>
+
+<div class="step-controls-section">
+  <div class="d-flex justify-content-end">
+    <app-button
+      text="Add Review Participants"
+      size="sm"
+      color="secondary"
+      (clicked)="openFlyInPanelAddReviewers(addReviewerPanel)"
+    ></app-button>
+  </div>
+  <div class="px-10">
+    <div class="bg-white rounded m-3 py-3 pl-3 shadow-sm">
+      <section class="panel-section">
+        <div class="flex flex-grow keyword-input">
+          <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" ></path>
+          </svg>
+          <input class="text-sm flex-grow focus:outline-none" placeholder="Enter keywords to search" type="text" (keyup)="searchUpdate($event)" [value]="searchText" />
+        </div>
+        <mat-table [dataSource]="dataSource" class="manager-table" matSort>
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              <div class="text-gray-400 text-sm font-weight-normal">Name</div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{ row.name }}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="remove">
+            <mat-header-cell *matHeaderCellDef>
+              <div class="text-gray-400 text-sm font-weight-normal w-full d-flex justify-end mr-2">
+                Remove
+              </div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <div class="flex flex-row items-center text-gray-four btn-group w-full justify-end mr-2">
+                <button mat-icon-button (click)="deleteGeneralReviewerDialog();deletedGeneralReviewer = row">
+                  <app-icon icon="delete"></app-icon>
+                </button>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full">No Data</td>
+          </tr>
+        </mat-table>
+      </section>
+    </div>
+  </div>
+
+  <ng-template #addReviewerPanel>
+    <app-fly-panel-add-reviewers
+      [alreadyLinkedReviewers]="linkedReviewerIds"
+      (reviewerList)="getReviewersfromFlyPanel($event)"
+      (qtdUsersCreated)="getQTDUsersfromFlyPanel($event)"
+    ></app-fly-panel-add-reviewers>
+  </ng-template>
+
+  <ng-template #deleteGeneralReviewer>
+    <app-qtd-dialogue
+      header="Delete Review Participants"
+      description="This will delete the List Review Participant from the {{ 'Task' | labelReplacement | async }} List Review"
+      [cancelText]="'No'"
+      [confirmText]="'Yes'"
+      (confirmed)="removeReviewer(deletedGeneralReviewer)"
+    >
+    </app-qtd-dialogue>
+  </ng-template>
+
+</div>
+</div>

@@ -1,0 +1,22 @@
+<div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-bold text-gray-900">Certificate Filter</p>
+    <app-button (click)="closed.emit()" ButtonType="icon" icon="close" ></app-button>
+</div>
+<div class="flex bg-white-one rounded-b-md py-4 px-12 flex-col">
+    <div class="text-lg">
+        {{("Certification" | labelReplacement)| async}} Expiration
+    </div>
+    <div class="flex-1 pt-2 pb-2">
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-label>Select Filters</mat-label>
+            <mat-select multiple [value]="selectedFilters" (selectionChange)="onFilterChange($event.value)">
+                <mat-option *ngFor="let filter of certificateFilters" [value]="filter">
+                    {{ filter }}
+                </mat-option>
+            </mat-select>
+        </mat-form-field>
+    </div>
+    <div class="flex justify-end">
+        <app-button text="Apply Filter" size="sm" (clicked) = "onFilterApplied()"></app-button>
+    </div>
+</div>

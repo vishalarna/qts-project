@@ -1,0 +1,134 @@
+<ng-container *ngIf="instructorCategoryCheck===false">
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <!-- {{oldProcedure ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+        <ng-container *ngIf="mode==='Add'">
+           Add New {{("Instructor" | labelReplacement)| async}}
+          </ng-container>
+        <ng-container *ngIf="mode==='Edit'" >
+                 Edit {{("Instructor" | labelReplacement)| async}}
+                </ng-container>
+        <ng-container *ngIf="mode==='Copy'">
+        Copy {{("Instructor" | labelReplacement)| async}}
+      </ng-container>
+
+      </p>
+      <app-button (click)="closeInstructor()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <form [formGroup]="instructorForm">
+      <div class="flex flex-row px-12 ">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+            <div class="flex flex-row justify-between">
+                <app-label required [for]="'insCategory'" [text]="'Category'"
+                  class="mt-6 float-left label required">
+                </app-label>
+
+                <app-button class="pt-4" (clicked)="openAddNewInstructorCategory()" variant="text" text="Add New Category" icon="add"
+                iconPosition="left">
+              </app-button>
+              </div>
+
+            <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                <mat-select formControlName="insCategory" placeholder="Select {{('Instructor' | labelReplacement)| async}} Category">
+                  <mat-option *ngFor="let i of instructorCategoryList" [value]="i.id" [hidden]="!i.active">
+                    {{i.iCategoryTitle}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'insNumber'" text="{{('Instructor' | labelReplacement)| async}} Number" class="mt-6 float-left label required"></app-label>
+          <app-textbox type="text" formControlName="insNumber"
+            placeholder="'Enter {{('Instructor' | labelReplacement)| async}} number'">
+          </app-textbox>
+        </div>
+    </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'insName'" text="{{('Instructor' | labelReplacement)| async}} Name" class="mt-6 float-left label required"></app-label>
+          <app-textbox type="text" formControlName="insName"
+            placeholder="Enter {{('Instructor' | labelReplacement)| async}} Name">
+          </app-textbox>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'insEmail'" text="{{('Instructor' | labelReplacement)| async}} Email"></app-label>
+          <app-textbox type="text" formControlName="insEmail"
+            placeholder="Enter {{('Instructor' | labelReplacement)| async}} Email">
+          </app-textbox>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <mat-checkbox formControlName="isWorkBookAdmin">
+          WorkBook Admin
+        </mat-checkbox>
+    </div>
+    </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'insDescription'" [text]="'Description'"></app-label>
+          <app-textarea type="text" formControlName="insDescription"
+            placeholder="Enter {{('Instructor' | labelReplacement)| async}} Description"
+            [value]="instructorForm.get('insDescription')?.value || ''">
+          </app-textarea>
+        </div>
+      </div>
+
+
+
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'EffectiveDate'" [text]="'Effective Date '"></app-label>
+<!--           <app-date (ngModelChange)="dateChanged($event)" formControlName="EffectiveDate" placeholder="Select Date">
+          </app-date> -->
+          <app-date  formControlName="EffectiveDate" placeholder="Select Date">
+          </app-date>
+         <!--  <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+          </app-input-error> -->
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'insNotes'" [text]="'Notes'" class="label required"></app-label>
+          <app-textarea type="text" formControlName="insNotes"
+            placeholder="Enter {{('Instructor' | labelReplacement)| async}} Notes"
+            [value]="instructorForm.get('insNotes')?.value || ''">
+          </app-textarea>
+        </div>
+      </div>
+
+      <div *ngIf="mode==='Add'" class="flex flex-row flex-grow justify-between pt-12 px-12">
+        <div class="flex flex-row">
+          <mat-checkbox formControlName="AddAnother" name="AddAnother"></mat-checkbox>
+          <span class="ml-1 pb-1">Add another {{("Instructor" | labelReplacement)| async}}</span>
+        </div>
+        <div class="pr-4">
+          <app-button [spinner]="showSpinner" [disabled]="instructorForm.invalid || showSpinner " (clicked)="createNewInstructor()"
+            type="button" size="sm"  text="Save">
+          </app-button>
+        </div>
+      </div>
+
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='Edit'">
+        <app-button [spinner]="showSpinner" [disabled]="instructorForm.invalid || showSpinner " (clicked)="updateInstructor()"
+          type="button" size="sm"  text="Update">
+        </app-button>
+      </div>
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='Copy'">
+        <app-button [spinner]="showSpinner" [disabled]="instructorForm.invalid || showSpinner " (clicked)="createNewInstructor()"
+          type="button" size="sm"  text="Copy">
+        </app-button>
+      </div>
+
+  <!-- <p>{{instructorForm.value | json}}</p> -->
+    </form>
+  </ng-container>
+
+  <app-fly-panel-add-instructor-category (refresh)="getCategoriesList()" *ngIf="instructorCategoryCheck===true" (closed)="instructorCategoryCheck=false"></app-fly-panel-add-instructor-category>
+

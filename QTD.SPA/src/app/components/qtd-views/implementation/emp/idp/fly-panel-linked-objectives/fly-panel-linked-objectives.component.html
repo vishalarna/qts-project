@@ -1,0 +1,24 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">{{"Linked"}} {{("Enabling Objective" | labelReplacement)| async}}
+      </p>
+      <app-button (click)="closeFlyPanel()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <app-spinner style="margin-left: 20%;" *ngIf="showSpinner"></app-spinner>
+
+  <div  *ngIf="!showSpinner" class="items-center px-12 mt-5">
+
+    <div *ngFor="let item of objectivesList">
+        <p>
+          {{item}}
+        </p>
+     </div>
+          <div *ngIf="objectivesList.length===0" >
+            <p>
+            No {{("Enabling Objective" | labelReplacement)| async}} available.
+            </p>
+          </div>
+  </div>
+
+  </ng-container>

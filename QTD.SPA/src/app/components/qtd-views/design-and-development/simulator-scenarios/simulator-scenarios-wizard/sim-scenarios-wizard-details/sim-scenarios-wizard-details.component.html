@@ -1,0 +1,40 @@
+<form [formGroup]="scenarioDetailsForm">
+    <section class="bg-white section p-5 mt-4">
+        <div>
+            <app-label [for]="'scenariotitle'" text="Scenario Title" class="float-left label required"></app-label>
+            <app-textbox type="text" formControlName="scenarioTitle" placeholder="Enter Scenario Title"
+                (input)="onTitleInput()"  [disabled]="mode === 'view'">
+            </app-textbox>
+        </div>
+
+        <div class="mt-4">
+            <app-label [for]="'scenarioDescription'" text="Description"></app-label>
+            <app-textarea type="text" formControlName="scenarioDescription" placeholder="Enter Description" [isDisabled]="mode == 'view'"
+                (input)="onDescriptionInput()"
+                [value]="this.scenarioDetailsForm.get('scenarioDescription')?.value || ''">
+            </app-textarea>
+        </div>
+
+        <div class="mt-4">
+            <div>
+                <label>Duration</label>
+            </div>
+
+            <div class="d-flex">
+                <app-textbox type="number" placeholder="Hrs" formControlName="scenarioHours" [disabled]="mode === 'view'" (keypress)="validateNumberInput($event)"
+                    (input)="onHoursInput()"></app-textbox>
+
+                <app-textbox class="ml-2" type="number" placeholder="Mins" formControlName="scenarioMins" (keypress)="validateNumberInput($event)"
+                    (input)="onMinutesInput()" [disabled]="mode === 'view'"></app-textbox>
+            </div>
+        </div>
+        <div class="mt-4">
+            <label>Difficulty level</label>
+            <mat-select placeholder="Select Difficulty Level" [disabled]="mode === 'view'"
+                class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white"
+                formControlName="difficultyLevel" (selectionChange)="onDifficultySelect($event)">
+                <mat-option *ngFor="let dif of difficultyList" [value]="dif.id">{{dif?.difficulty}}</mat-option>
+            </mat-select>
+        </div>
+    </section>
+</form>

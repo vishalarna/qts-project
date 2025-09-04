@@ -1,0 +1,81 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+        <p class="text-xl font-bold text-gray-900">Schedule classes </p>
+        <app-button [disabled]="showSpinner" (click)="closeProvider()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <div class="flex flex-col px-12 pb-12 mt-12">
+        <!-- search and buttons starts -->
+
+
+
+        <div class="rounded-t-md py-4 px-6 space-x-2  " *ngIf="selection.selected.length>0">
+            <mat-toolbar class="h-28 app-toolbar-sticky w-full">
+                <div class="flex flex-row items-center space-x-4 w-full justify-between">
+                    <p class="text-xs"> {{selection.selected.length}} {{("Employee" | labelReplacement)| async}} has been selected </p>
+                    <div class="flex flex-row space-x-4 m-3 text-sm float-right">
+                        <!-- <app-button color="secondary" text="Remove" size="sm">
+                        </app-button> -->
+                        <app-button color="secondary" text="Add to Class" (click)="addToClass(selection.selected)" size="sm" icon="link"
+                            iconPosition="left">
+                        </app-button>
+                    </div>
+                </div>
+            </mat-toolbar>
+
+        </div>
+        <!-- search and button ends -->
+        <!-- table starts -->
+        <div class="flex-row bg-white-one rounded-b-md m-2 ">
+            <div class="float-container">
+
+                <div class="float-child">
+                  <div class="green">
+                    <mat-table [dataSource]="dataSource" >
+
+                        <!-- Checkbox Column -->
+                        <ng-container matColumnDef="select">
+                            <mat-header-cell *matHeaderCellDef>
+                                <mat-checkbox (change)="$event ? masterToggle() : null"
+                                    [checked]="selection.hasValue() && isAllSelected()"
+                                    [indeterminate]="selection.hasValue() && !isAllSelected()">
+                                </mat-checkbox>
+
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <mat-checkbox (click)="$event.stopPropagation()"
+                                    (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)">
+                                </mat-checkbox>
+                            </mat-cell>
+                        </ng-container>
+                        <!-- Name Column -->
+
+                        <ng-container matColumnDef="employees">
+                            <mat-header-cell *matHeaderCellDef>Class Date/Time </mat-header-cell>
+                            <mat-cell *matCellDef="let element"> {{ datePipe.transform(element.startDateTime, 'yyyy-MM-dd @ hh:mm a') }} </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="displayedColumns" width ="20%"
+                            [style.border-bottom]="'0px solid #fafafa'"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayedColumns;" width ="20%" [style.border-bottom]="'0px solid #fafafa'">
+                        </mat-row>
+                    </mat-table>
+                  </div>
+                </div>
+
+                <div class="float-child">
+                  <!-- <div class="blue">
+                      <app-button color="secondary"  (click)="openFlyInPanelAssignScore(assignScore)" text="Assign Score/Grade" size="sm"
+                    > -->
+                <!-- </app-button></div> -->
+                </div>
+
+              </div>
+
+
+
+        </div>
+        <!-- table ends -->
+
+    </div>
+
+</ng-container>

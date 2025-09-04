@@ -1,0 +1,54 @@
+.qtd-tree-invisible {
+    display: none;
+  }
+  
+  .qtd-tree ul,
+  .qtd-tree li {
+    margin-top: 0;
+    margin-bottom: 0;
+    list-style-type: none;
+  }
+  
+  /*
+     * This padding sets alignment of the nested nodes.
+     */
+  .qtd-tree .mat-nested-tree-node div[role="group"] {
+    padding-left: 40px;
+  }
+  
+  /*
+     * Padding for leaf nodes.
+     * Leaf nodes need to have padding so as to align with other non-leaf nodes
+     * under the same parent.
+     */
+  .qtd-tree div[role="group"] > .mat-tree-node {
+    padding-left: 40px;
+  }
+
+.filter-list-data{
+  box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.10);
+  border-radius: 4px;
+  border: 0.5px solid #E1E5E4;
+  overflow: hidden;
+}
+.objective-table{
+  .check-box-column{
+    flex:1 1 10%;
+  }
+  .objective-type-column,.objective-number-column{
+    flex:1 1 15%;
+  }
+  .objective-description-column{
+    flex:1 1 60%;
+  }
+  .linked-row{
+    color: rgb(92, 155, 49)
+  }
+
+}
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+

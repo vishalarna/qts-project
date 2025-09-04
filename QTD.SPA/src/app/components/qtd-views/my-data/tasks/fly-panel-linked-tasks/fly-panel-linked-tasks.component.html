@@ -1,0 +1,16 @@
+<div class="flex flex-col px-12 py-12">
+  <div class="flex flex-row justify-between mt-2">
+      <p class="text-xl text-gray-900">{{titleNumber}} - {{Title}}</p>
+      <app-button (clicked)="closed.emit('fp-linked-tasks-closed')" ButtonType='icon' icon="close">
+      </app-button>
+  </div>
+  <div class="flex flex-row mt-4">
+      <p class="text-base text-gray-900">The selected {{selectedType}} is linked to the following {{("Task" | labelReplacement)| async}}s</p>
+  </div>
+  <div class="w-full mt-2">
+      <app-data-loader *ngIf="!linkedTasks"></app-data-loader>
+      <div class="px-3 py-3 border" *ngFor="let item of linkedTasks">
+          <p class="text-sm text-gray-900 mt-2">{{item.number + " - " + item.description}}</p>
+      </div>
+  </div>
+</div>

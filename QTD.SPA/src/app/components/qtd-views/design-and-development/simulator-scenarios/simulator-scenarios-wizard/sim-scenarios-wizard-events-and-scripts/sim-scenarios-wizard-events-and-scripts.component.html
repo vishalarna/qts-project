@@ -1,0 +1,153 @@
+<div class="d-flex justify-content-between">
+    <div class="w-70">
+        <section class="bg-white section p-4 mt-4">
+            <div class="d-flex justify-content-between w-full space-x-4 text-sm mb-3">
+                <div>
+                    <p class="font-bold text-lg">Events & Scripts</p>
+                </div>
+                <div>
+                    <app-button variant="text" text="Add New" icon="add" iconPosition="left" *ngIf="mode !== 'view'"
+                        (click)="openFlypanel(addEvent, 'add', null);">
+                    </app-button>
+                </div>
+            </div>
+
+            <ng-container>
+                <div cdkDrag class="table-list">
+                    <mat-table [dataSource]="eventsAndScriptDataSource" cdkDropList [cdkDropListData]="eventsAndScriptDataSource" (cdkDropListDropped)="dropTable($event)" [cdkDropListDisabled]="mode === 'view'">
+
+                        <ng-container matColumnDef="drag">
+                            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                            <mat-cell *matCellDef="let row"> 
+                                <app-icon cdkDragHandle class="pt-3 mr-2"  [ngClass]="{'disabled': mode == 'view'}" icon="drag_indicator" >
+                                </app-icon>
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="title">
+                            <mat-header-cell *matHeaderCellDef>Title</mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.title}}</mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="description">
+                            <mat-header-cell *matHeaderCellDef>Description</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <div>{{ row.description }}</div>
+                            </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="id">
+                            <mat-header-cell *matHeaderCellDef>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <div class="flex flex-row items-center text-gray-four btn-group">
+                                    <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" *ngIf="mode !== 'view'"
+                                        [matMenuTriggerFor]="menu">
+                                    </app-button>
+                                    <mat-menu #menu="matMenu">
+                                        <label mat-menu-item [disabled]="mode === 'view'"  (click)="openFlypanel(addEvent, 'edit', row);">Edit</label>
+                                        <label mat-menu-item  [disabled]="mode === 'view'" (click) = "copyEventAndScript(row.id)">Copy</label>
+                                        <label mat-menu-item [disabled]="mode === 'view'"  (click) = "deleteEventAndScript(row.id)">Delete</label>
+                                    </mat-menu>
+                                </div>
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row mat-header-row
+                            *matHeaderRowDef="displayEventsAndScriptsColumns"></mat-header-row>
+                        <mat-row mat-row *matRowDef="let row; columns: displayEventsAndScriptsColumns;" cdkDrag
+                        [cdkDragData]="row" [cdkDragDisabled]="mode === 'view'"></mat-row>
+                    </mat-table>
+                </div>
+            </ng-container>
+        </section>
+    </div>
+    <div class="w-30">
+        <section class="bg-white section p-4 mt-4">
+            <div class="flex flex-col justify-between w-full space-x-4 text-sm mb-3">
+                <div>
+                    <p class="font-bold text-lg">Scenario Specifications</p>
+                </div>
+
+                <div>
+                    <div class="mt-4">
+                        <div class="font-bold">
+                            Network Configuration
+                        </div>
+                        <div class="mt-2">
+                            {{inputSimulatorScenario_VM?.networkConfiguration}}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="font-bold">
+                            Loading Conditions
+                        </div>
+                        <div class="mt-2">
+                            {{inputSimulatorScenario_VM?.loadingConditions}}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="font-bold">
+                            Generation
+                        </div>
+                        <div class="mt-2">
+                            {{inputSimulatorScenario_VM?.generation}}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="font-bold">
+                            Interchange
+                        </div>
+                        <div class="mt-2">
+                            {{inputSimulatorScenario_VM?.interchange}}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="font-bold">
+                            Other Base Case
+                        </div>
+                        <div class="mt-2">
+                            {{inputSimulatorScenario_VM?.otherBaseCase}}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="font-bold">
+                            Validity Checks
+                        </div>
+                        <div class="mt-2">
+                            {{inputSimulatorScenario_VM?.validityChecks}}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="font-bold">
+                            Role Plays
+                        </div>
+                        <div class="mt-2">
+                            {{inputSimulatorScenario_VM?.rolePlays}}
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="font-bold">
+                            Documentation
+                        </div>
+                        <div class="mt-2">
+                            {{inputSimulatorScenario_VM?.documentation}}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>
+
+<ng-template #addEvent>
+    <app-fly-panel-add-event [inputSimulatorScenario_VM]="inputSimulatorScenario_VM" (closed)="flyPanelService.close()" [mode]="mode" [editEventId]="editEventId"
+        [inputSimScenariosId]="inputSimScenariosId" (newEventAdded) = "getNewlyAddedEventData($event)" (eventUpdated)="getUpdatedEventData($event)">
+    </app-fly-panel-add-event>
+</ng-template>

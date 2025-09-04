@@ -1,0 +1,20 @@
+<form class="p-4" [formGroup]="referenceForm">
+  <div class="flex flex-row justify-between items-center px-3 mt-4">
+    <p class="text-xl font-bold text-gray-900">Edit References</p>
+    <app-button (clicked)="closed.emit('fp-edit-references')" ButtonType='icon' icon="close">
+    </app-button>
+  </div>
+  <div class="w-11/12 ml-4 mt-4 flex flex-col">
+    <div class="mt-3">
+      <ckeditor formControlName="description" [editor]="editor">
+      </ckeditor>
+      <app-input-error *ngIf="referenceForm.get('description')?.hasError('required')" text="Description is required">
+      </app-input-error>
+    </div>
+    <div class="flex flex-row-reverse">
+      <div class="self-end pt-12">
+        <app-button (clicked)="updateData()" [disabled]="referenceForm.invalid" text="Save" size="sm"></app-button>
+      </div>
+    </div>
+  </div>
+</form>

@@ -1,0 +1,464 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    table {
+        width: 100%;
+    }
+
+    .table td, .table th {
+        padding: .15rem;
+    }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .table-header-row th {
+        border: 1px solid #000 !important;
+        font-weight: 800;
+        color: #000;
+    }
+
+        .table-header-row th:first-child {
+            border-left: 0;
+        }
+
+        .table-header-row th:last-child {
+            border-right: 0;
+        }
+
+    .table-data-row td {
+        font-weight: 500;
+    }
+
+    tbody {
+        border: none !important;
+        padding: 1rem 0 0 0;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    .expired-row {
+        color: lightgray;
+        font-style: italic;
+    }
+</style>
+<table id="content-table" class="table landscape-report" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="18" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat)</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="9" style="border:none;padding-right:1rem;padding-left:1rem;"></td>
+    </tr>
+    @if (Model.ILAs.Count() > 0 && Model.ILAs.SelectMany(r => r.ClassSchedules).Count() > 0 && Model.ILAs.SelectMany(r => r.ClassSchedules).SelectMany(r => r.ClassSchedule_Employee).Count() > 0)
+    {
+        <tr>
+            <td class="strip-container" colspan="18" style="border: none;">
+                @{
+                    int j = 1;
+                }
+                @foreach (var ila in Model.ILAs.OrderBy(ila => ila.Number))
+                {
+
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            <tbody>
+                                <tr>
+                                    @if (Model.DisplayColumns.Where(r => r == "ILA Provider").Count() > 0)
+                                    {
+                                        <td colspan="18" style=" border: none !important; font-size: 1rem;">
+                                            <b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements))  Provider :</b>
+                                            <b style="margin-left:5px">@(ila.Provider != null ? ila.Provider.Name : "")</b>
+                                        </td>
+                                    }
+                                </tr>
+
+                                <tr>
+                                    @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                    {
+                                        <td colspan="18" style="border: none !important; font-size:1rem;">
+                                            <b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title:</b>
+                                            <b style="font-size:1.2rem;margin-left:5px"> @ila.Name</b>
+                                        </td>
+                                    }
+                                </tr>
+
+                                <tr>
+                                    @if (Model.DisplayColumns.Where(r => r == "ILA ID").Count() > 0)
+                                    {
+                                        <td colspan="18" style="border: none !important; font-size:1rem;">
+                                            <b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) ID:</b>
+                                            <b style="font-size:1.2rem;margin-left:5px">@ila.Number</b>
+                                        </td>
+                                    }
+                                </tr>
+                                <tr style="height:10px">
+                                    <td colspan="9" style="border:none !important">
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="8" style="text-align:right;border:none !important">
+                                    </td>
+                                    <td colspan="11" style="text-align:right;border:none !important">
+                                        @{
+                                            var nercCertLink = ila.ILACertificationLinks.Where(r => r.Certification.CertifyingBodyId == 1).FirstOrDefault();
+                                        }
+                                        @if (nercCertLink != null)
+                                        {
+                                            <table style="border:none; float:right; border-collapse:collapse">
+                                                <thead>
+                                                    <tr class="table-header-row">
+                                                        <th colspan="6" style="text-align: center; border:1px solid #000;">
+                                                            NERC CEHs
+                                                        </th>
+                                                        <th colspan="5" style="text-align: center; border: 1px solid #000;">
+                                                            PER-005
+                                                        </th>
+                                                    </tr>
+                                                    <tr class="table-header-row">
+                                                        <th style="text-align: center; border: 1px solid #000;padding:5px" colspan="2">Total Hours</th>
+                                                        <th style="text-align: center;padding:5px" colspan="2">Standards Hours</th>
+                                                        <th style="text-align: center;padding:5px" colspan="2">Simulation Hours</th>
+                                                        <th style="text-align: center;padding:5px">EOPs</th>
+                                                        <th style="text-align: center;padding:5px">Reg</th>
+                                                        <th style="text-align: center;padding:5px">Prof</th>
+                                                        <th style="text-align: center;padding:5px">Other</th>
+                                                        <th style="text-align: center;padding:5px; border: 1px solid #000;">Total</th>
+                                                    </tr>
+                                                    <tr class="table-data-row">
+
+                                                        @{
+                                                            var standardSubLink = nercCertLink.ILACertificationSubRequirementLink?.Where(r => r.CertificationSubRequirement.ReqName == "Standards").FirstOrDefault();
+                                                            var simSubLink = nercCertLink.ILACertificationSubRequirementLink?.Where(r => r.CertificationSubRequirement.ReqName == "Simulations").FirstOrDefault();
+                                                            var emergencyCertLink = ila.ILACertificationLinks.Where(r => r.Certification.InternalIdentifier == "Emergency Response").FirstOrDefault();
+                                                            var regCertLink = ila.ILACertificationLinks.Where(r => r.Certification.InternalIdentifier == "Reg").FirstOrDefault();
+                                                            var reg2CertLink = ila.ILACertificationLinks.Where(r => r.Certification.InternalIdentifier == "Reg2").FirstOrDefault();
+                                                        }
+
+                                                        <td style="text-align: center;" colspan="2">@nercCertLink?.CEHHours.GetValueOrDefault()</td>
+                                                        <td style="text-align: center;" colspan="2">@(standardSubLink == null ? 0 : standardSubLink.ReqHour)</td>
+                                                        <td style="text-align: center;" colspan="2">@(simSubLink == null ? 0 : simSubLink.ReqHour)</td>
+                                                        <td style="text-align: center;">@emergencyCertLink?.CEHHours.GetValueOrDefault()</td>
+                                                        <td style="text-align: center;">@regCertLink?.CEHHours.GetValueOrDefault()</td>
+                                                        <td style="text-align: center;">0</td>
+                                                        <td style="text-align: center;">0</td>
+                                                        <td style="text-align: center;">@ila.TotalTrainingHours.GetValueOrDefault()</td>
+                                                    </tr>
+                                                </thead>
+                                                <tbody></tbody>
+                                            </table>
+                                        }
+                                    </td>
+                                </tr>
+                                <tr style="height:10px; border:none !important" class="excel-remove">
+                                    <td colspan="9" style="border:none !important">
+                                    </td>
+                                </tr>
+                                
+                                <tr class="table-header-row">
+                                    @if (Model.DisplayColumns.Where(r => r == "Employee").Count() > 0)
+                                    {
+                                        <th colspan="2" style="text-align: center; border: 1px solid #dee2e6;">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Employee ID").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid #dee2e6;">Id</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Positions").Count() > 0)
+                                    {
+                                        <th colspan="2" style="text-align: center; border: 1px solid #dee2e6;">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                                    {
+                                        <th colspan="2" style="text-align: center; border: 1px solid #dee2e6; width: 10%">Organizations</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "NERC Cert #").Count() > 0)
+                                    {
+                                        <th colspan="2" style="text-align: center; border: 1px solid #dee2e6;">Nerc Cert. #</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Certification Area").Count() > 0)
+                                    {
+                                        <th colspan="2" style="text-align: center; border: 1px solid #dee2e6;">@("Certification".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Area</th>
+                                    }
+
+                                    <th colspan="2" style="text-align: center; border: 1px solid #dee2e6;">Course Completed Date</th>
+
+                                    @if (Model.DisplayColumns.Where(r => r == "Instructor").Count() > 0)
+                                    {
+                                        <th colspan="2" style="text-align: center; border: 1px solid #dee2e6;">@("Instructor".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Course Location").Count() > 0)
+                                    {
+                                        <th colspan="2" style="text-align: center; border: 1px solid #dee2e6;">Course @("Location".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Score").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid #dee2e6;">Score</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Grade").Count() > 0)
+                                    {
+                                        <th style="text-align: center; border: 1px solid #dee2e6;">Grade</th>
+                                    }
+                                </tr>
+                                @{
+                                   
+                                    var allEmployees = ila.ClassSchedules
+                                        .SelectMany(cs => cs.ClassSchedule_Employee.Select(emp => new { Schedule = cs, Employee = emp }))
+                                        .ToList();
+
+                                    var completedEmployees = allEmployees.Where(x => x.Employee.CompletionDate != null).OrderBy(x => x.Employee.Employee.Person.LastName).ToList();
+                                    var notCompletedEmployees = allEmployees.Where(x => x.Employee.CompletionDate == null).OrderBy(x => x.Employee.Employee.Person.LastName).ToList();
+                                }
+
+                                @if (completedEmployees.Any())
+                                {
+                                     <tr>
+                                         <td colspan="20" style="color: #2596be; font-weight: bold; text-align: left;font-size:18px;padding:10px;">Completed</td>
+                                     </tr>
+
+                                    @foreach (var item in completedEmployees)
+                                    {
+                                        var csEmployee = item.Employee;
+                                        var csSchedule = item.Schedule;
+                                        var certification = csEmployee.Employee.EmployeeCertifications.FirstOrDefault(r => r.Certification.CertifyingBodyId == 1 && r.Active);
+
+                                        <tr class="table-data-row @(csEmployee.Employee.Active ? "" : "expired-row")">
+                                            @if (Model.DisplayColumns.Contains("Employee"))
+                                            {
+                                                <td colspan="2" style="text-align: center; border: none !important;"> @csEmployee.Employee.Person.LastName, @csEmployee.Employee.Person.FirstName</td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Employee ID"))
+                                            {
+                                                <td style="text-align: center; border: none !important;"> @csEmployee.Employee.EmployeeNumber </td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Positions"))
+                                            {
+                                                <td colspan="2" style="text-align: center; border: none !important;">
+                                                    @{
+                                                        var positions = csEmployee.Employee.EmployeePositions.Where(r => r.Active)
+                                                            .Select(p => p.Position.PositionAbbreviation).ToList();
+                                                    }
+                                                    @if (positions.Any())
+                                                    {
+                                                        <p>@string.Join(", ", positions)</p>
+                                                    }
+                                                </td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Organization"))
+                                            {
+                                                  <td colspan="2" style="text-align: center; border: none !important;">
+                                                    @foreach (var org in csEmployee.Employee.EmployeeOrganizations.Where(r => r.Active))
+                                                    {
+                                                        <p>@org.Organization.Name</p>
+                                                    }
+                                                  </td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("NERC Cert #"))
+                                            {
+                                                  <td colspan="2" style="text-align: center; border: none !important;"> @(certification?.CertificationNumber ?? "") </td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Certification Area"))
+                                            {
+                                                  <td colspan="2" style="text-align: center; border: none !important;"> @(certification?.Certification?.CertDesc ?? "") </td>
+                                            }
+
+                                                <td colspan="2" style="text-align: center; border: none !important;"> @csEmployee.CompletionDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat) </td>
+
+                                            @if (Model.DisplayColumns.Contains("Instructor"))
+                                            {
+                                                <td colspan="2" style="text-align: center; border: none !important;"> @(csSchedule.Instructor?.InstructorName ?? "") </td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Course Location"))
+                                            {
+                                                <td colspan="2" style="text-align: center; border: none !important;">  @(csSchedule.Location?.LocName ?? "")</td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Score"))
+                                            {
+                                                <td style="text-align: center; border: none !important;">@(csEmployee.FinalScore?.ToString() ?? "N/A")</td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Grade"))
+                                            {
+                                              <td style="text-align: center; border: none !important;">@(string.IsNullOrEmpty(csEmployee.FinalGrade) ? "N/A" : csEmployee.FinalGrade)</td>
+                                            }
+                                        </tr>
+
+                                        <tr style="height: 15px; border: none !important" class="excel-remove">
+                                            <td colspan="20" style="border: none !important;"></td>
+                                        </tr>
+                                    }
+                                }
+
+                                @if (notCompletedEmployees.Any())
+                                {
+                                    <tr>
+                                        <td colspan="20" style="color: #2596be; font-weight: bold; text-align: left; font-size:18px;padding:10px;">Not Completed</td>
+                                    </tr>
+
+                                    @foreach (var item in notCompletedEmployees)
+                                    {
+                                        var csEmployee = item.Employee;
+                                        var csSchedule = item.Schedule;
+                                        var certification = csEmployee.Employee.EmployeeCertifications.FirstOrDefault(r => r.Certification.CertifyingBodyId == 1 && r.Active);
+
+                                        <tr class="table-data-row @(csEmployee.Employee.Active ? "" : "expired-row")">
+                                          
+                                            @if (Model.DisplayColumns.Contains("Employee"))
+                                            {
+                                                <td colspan="2" style="text-align: center; border: none !important;"> @csEmployee.Employee.Person.LastName, @csEmployee.Employee.Person.FirstName</td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Employee ID"))
+                                            {
+                                               <td style="text-align: center; border: none !important;"> @csEmployee.Employee.EmployeeNumber</td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Positions"))
+                                            {
+                                               <td colspan="2" style="text-align: center; border: none !important;">
+                                                   @{
+                                                       var positions = csEmployee.Employee.EmployeePositions.Where(r => r.Active)
+                                                           .Select(p => p.Position.PositionAbbreviation).ToList();
+                                                   }
+                                                   @if (positions.Any())
+                                                   {
+                                                       <p>@string.Join(", ", positions)</p>
+                                                   }
+                                               </td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Organization"))
+                                            {
+                                                 <td colspan="2" style="text-align: center; border: none !important;">
+                                                     @foreach (var org in csEmployee.Employee.EmployeeOrganizations.Where(r => r.Active))
+                                                     {
+                                                        <p>@org.Organization.Name</p>
+                                                     }
+                                                 </td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("NERC Cert #"))
+                                            {
+                                                  <td colspan="2" style="text-align: center; border: none !important;"> @(certification?.CertificationNumber ?? "") </td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Certification Area"))
+                                            {
+                                                 <td colspan="2" style="text-align: center; border: none !important;">@(certification?.Certification?.CertDesc ?? "") </td>
+                                            }
+
+                                            <td colspan="2" style="text-align: center; border: none !important;">@(csEmployee.CompletionDate != null ? csEmployee.CompletionDate.GetValueOrDefault().ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat) : "N/A")</td>
+
+                                            @if (Model.DisplayColumns.Contains("Instructor"))
+                                            {
+                                                <td colspan="2" style="text-align: center; border: none !important;">@(csSchedule.Instructor?.InstructorName ?? "")</td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Course Location"))
+                                            {
+                                                <td colspan="2" style="text-align: center; border: none !important;">@(csSchedule.Location?.LocName ?? "") </td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Score"))
+                                            {
+                                                 <td style="text-align: center; border: none !important;">@(csEmployee.FinalScore?.ToString() ?? "N/A")</td>
+                                            }
+
+                                            @if (Model.DisplayColumns.Contains("Grade"))
+                                            {
+                                                <td style="text-align: center; border: none !important;">@(string.IsNullOrEmpty(csEmployee.FinalGrade) ? "N/A" : csEmployee.FinalGrade)</td>
+                                            }
+                                        </tr>
+
+                                        <tr style="height: 15px; border: none !important" class="excel-remove">
+                                            <td colspan="20" style="border: none !important;"></td>
+                                        </tr>
+                                    }
+                                }
+
+                            </tbody>
+                        </table>
+                    </div>
+                    @if (!ila.Equals(Model.ILAs.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @if (Model.ILAs.Count() > 0 && Model.ILAs.SelectMany(r => r.ClassSchedules).Count() > 0 && Model.ILAs.SelectMany(r => r.ClassSchedules).SelectMany(r => r.ClassSchedule_Employee).Count() > 0)
+    {
+        for (int i = 1; i <= Model.ILAs.Count(); i++)
+        {
+            <a href=@("#page" + i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+        }
+    }
+</div>

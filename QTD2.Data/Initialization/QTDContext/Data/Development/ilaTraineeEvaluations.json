@@ -1,0 +1,38 @@
+[
+  {
+    "TestId": 1,
+    "ILAId": 1,
+    "EvaluationTypeId": 1,
+    "TestTimeLimitHours": 3,
+    "TestTimeLimitMinutes": 5,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestId": 2,
+    "ILAId": 2,
+    "EvaluationTypeId": 2,
+    "TestTimeLimitHours": 1,
+    "TestTimeLimitMinutes": 2,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestId": 3,
+    "ILAId": 3,
+    "EvaluationTypeId": 3,
+    "TestTimeLimitHours": 3,
+    "TestTimeLimitMinutes": 5,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestId": 4,
+    "ILAId": 4,
+    "EvaluationTypeId": 4,
+    "TestTimeLimitHours": 1,
+    "TestTimeLimitMinutes": 2,
+    "Deleted": false,
+    "Active": true
+  }
+]

@@ -1,0 +1,143 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<table id="content-table" class="table" style=" border-collapse: collapse">
+    <thead>
+        <tr>
+            <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+                <div class="repeatedReportHeader" style="display: -webkit-box; -webkit-box-pack: justify;display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #020378; margin: 0 0 10px 0;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; "><b>@Model.Title </b></div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </td>
+        </tr>
+    </thead>
+
+    @if (Model.EnablingObjectives.Count() > 0 || Model.Tasks.Count() > 0)
+    {
+        <tbody style="border:none !important;">
+            <tr style="text-align: left; border: none;">
+                <td style=" border: 0 !important; border: none;"><b style="font-size: 1.2rem">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</b></td>
+            </tr>
+            <tr style="border:none; border-collapse: collapse" align="left">
+                <th style=" border-bottom: 2px solid #000; border-top:none; border-collapse:collapse" align="left"></th>
+                <th style=" border-bottom: 2px solid #000; border-top: none; border-collapse: collapse" align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))#</th>
+                <th style=" border-bottom: 2px solid #000; border-top: none; border-collapse: collapse" align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Description</th>
+                <th style=" border-bottom: 2px solid #000; border-top: none; border-collapse: collapse" align="left">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name</th>
+                @if (Model.DisplayColumns.Where(r => r == "Start Date").Count() > 0)
+                {
+                    <th style=" border-bottom: 2px solid #000; border-top: none;">Start Date</th>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Trainee Status").Count() > 0)
+                {
+                    <th style="border-bottom: 2px solid #000; border-top: none;">Trainee Status</th>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Position Qualification Date").Count() > 0)
+                {
+                    <th style="border-bottom: 2px solid #000; border-top: none; ">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Qualification Date</th>
+                }
+            </tr>
+
+            @foreach (var task in Model.Tasks)
+            {
+                <tr>
+                    <td style=" border: none !important;"></td>
+                    <td style=" border: none !important;">@task.Number</td>
+                    <td style=" border: none !important;">@task.Description</td>
+                    @if (task.Employee_Tasks.Any())
+                    {
+                        <td style="border: none !important;">@task.Employee_Tasks.First().Employee.Person.FirstName @task.Employee_Tasks.First().Employee.Person.LastName</td>
+                    }
+                    @if (Model.DisplayColumns.Where(r => r == "Start Date").Count() > 0)
+                    {
+                        <td style=" border: none !important;">@task.EffectiveDate.ToShortDateString()</td>
+                    }
+                    @if (Model.DisplayColumns.Where(r => r == "Trainee Status").Count() > 0)
+                    {
+                        <td style=" border: none !important;">??</td>
+                    }
+                    @if (task.Task_Positions.Any() && (Model.DisplayColumns.Where(r => r == "Position Qualification Date").Count() > 0))
+                    {
+                        <td style=" border: none !important;">@task.Task_Positions.First().Position.EmployeePositions.First().QualificationDate?.ToShortDateString()</td>
+                    }
+                    else if (Model.DisplayColumns.Where(r => r == "Position Qualification Date").Count() > 0)
+                    {
+                        <td style=" border: none !important;"></td>
+                    }
+                </tr>
+            }
+
+            @if (Model.EnablingObjectives != null && Model.EnablingObjectives.Count() > 0)
+            {
+                <tr style="text-align: left;">
+                    <td colspan="3" style=" border: 0 !important;"><b style="font-size: 1.2rem">@("Enabling Objective".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</b></td>
+                </tr>
+                <tr style=" border-bottom: 2px solid #000;">
+                    <th style=" border: none !important;" align="left"></th>
+                    <th style=" border: none !important;" align="left">EO Number</th>
+                    <th style=" border: none !important;" align="left">EO Description</th>
+                    <th style=" border: none !important;" align="left">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name</th>
+                    @if (Model.DisplayColumns.Where(r => r == "Start Date").Count() > 0)
+                    {
+                        <th style=" border: none !important;" align="left">Start Date</th>
+                    }
+                    @if (Model.DisplayColumns.Where(r => r == "Trainee Status").Count() > 0)
+                    {
+                        <th style=" border: none !important;" align="left">Trainee Status</th>
+                    }
+                    @if (Model.DisplayColumns.Where(r => r == "Position Qualification Date").Count() > 0)
+                    {
+                        <th style=" border: none !important;" align="left">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Qualification Date</th>
+                    }
+                </tr>
+
+                @foreach (var eo in Model.EnablingObjectives)
+                {
+                    <tr>
+                        <td style=" border: none !important;"></td>
+                        <td style=" border: none !important;">@eo.Number</td>
+                        <td style=" border: none !important;">@eo.Description</td>
+                        @if (eo.EnablingObjective_Employee_Links.Any())
+                        {
+                            <td style="border: none !important;">@eo.EnablingObjective_Employee_Links.First().Employee.Person.FirstName @eo.EnablingObjective_Employee_Links.First().Employee.Person.LastName</td>
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "Start Date").Count() > 0)
+                        {
+                            <td style=" border: none !important;">@eo.EffectiveDate.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</td>
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "Trainee Status").Count() > 0)
+                        {
+                            <td style=" border: none !important;">??</td>
+                        }
+                        @if (eo.Position_SQs.Any() && (Model.DisplayColumns.Where(r => r == "Position Qualification Date").Count() > 0))
+                        {
+                            <td style="border: none !important;">@eo.Position_SQs.First().Position.EmployeePositions.First().QualificationDate?.ToShortDateString()</td>
+                        }
+                        else if (Model.DisplayColumns.Where(r => r == "Position Qualification Date").Count() > 0)
+                        {
+                            <td style=" border: none !important;"></td>
+                        }
+
+                    </tr>
+                }
+            }
+        </tbody>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>

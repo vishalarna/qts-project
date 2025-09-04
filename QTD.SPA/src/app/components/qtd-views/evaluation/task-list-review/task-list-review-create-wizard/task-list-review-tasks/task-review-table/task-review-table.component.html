@@ -1,0 +1,180 @@
+
+<div class="flex flex-row flex-wrap bg-gray-one justify-between mb-3 mt-3  px-3 py-3 rounded"
+    *ngIf="unlinkIds.length > 0">
+    <p class="text-xs text-gray-four pt-2">{{unlinkIds.length}} {{("Task" | labelReplacement)| async}}s selected</p>
+    <div class="flex justify-content-end align-items-center">
+      
+      <app-button class="p-1" color="secondary" icon="link_off" iconPosition="left" size="sm" color="secondary" text="Unlink {{ 'Task' | labelReplacement | async }} Review"
+          (clicked)="unlinkItemsModal()">
+      </app-button>
+  </div>
+</div>
+<app-data-loader *ngIf="!inputTaskReviewVMs"></app-data-loader> 
+<div class="task-review-list-data">
+  <div *ngIf="isComingFromWizard" class=" flex flex-row bg-white-one rounded-t-md py-2.5 px-6 space-x-2 border-b-0.8 border-gray-one w-full " >
+        <div class="flex flex-grow keyword-input">
+          <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" ></path>
+          </svg>
+          <input class="text-sm flex-grow focus:outline-none" placeholder="Enter keywords to search" type="text" (keyup)="searchUpdate($event)" [value]="searchText" />
+        </div>
+  </div>
+  <mat-table [dataSource]="getTaskReviewDataSource()" matSort [multiTemplateDataRows]="true" (matSortChange)="sortTaskReviewData($event)">
+
+    <ng-container matColumnDef="id" *ngIf="isComingFromWizard">
+      <mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selectrow(row) : null"
+          [checked]="selection.isSelected(row)">
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="number">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+      #
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row"> 
+        {{row.number}}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="statement">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ 'Task' | labelReplacement | async }} Statement
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row"> 
+        {{row.statement}}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="recentHistoryDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+       Last Viewed
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row"> 
+        {{row.recentHistoryDate == null ? 'N/A' : (row.recentHistoryDate | dateFormat )| async}}
+      </mat-cell>
+    </ng-container>
+   <ng-container matColumnDef="assignedReviewer">
+  <mat-header-cell *matHeaderCellDef mat-sort-header>
+    Assigned Reviewer(s)
+  </mat-header-cell>
+  <mat-cell *matCellDef="let row" class="qtd-col-reviewers">
+  <ng-container *ngIf="isComingFromWizard; else showReviewerNames">
+     <ng-container *ngIf="taskReviewForms.get(row.id) as form">
+    <form [formGroup]="form">
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+        <mat-select formControlName="reviewedBy" multiple #selectControl="matSelect" [compareWith]="compareReviewers">
+          <mat-select-trigger>
+            <mat-chip-list *ngIf="taskReviewForms?.get(row?.id)?.get('reviewedBy')?.value?.length > 0; else showPlaceholder">
+              <mat-chip *ngFor="let i of taskReviewForms.get(row.id).get('reviewedBy')?.value"
+                [removable]="true"
+                (removed)="removeReviewer(i, row)"
+                [ngStyle]="{
+                  'color': 'rgb(92, 155, 49)',
+                  'background-color': 'rgba(243, 244, 246)',
+                  'border-radius': '1px'
+                }"
+                selected>
+                {{ getDisplayName(i) }}
+                <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove></app-icon>
+              </mat-chip>
+            </mat-chip-list>
+            <ng-template #showPlaceholder>
+              <span class="text-gray-500">Select Reviewer(s)</span>
+            </ng-template>
+          </mat-select-trigger>
+          <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search"
+            formControlName="searchReviewerTxt" (keyup)="reviewerSearch(row.id)" (blur)="resetSearch(row.id)"
+            (keydown)="handleKeydown($event)">
+          <mat-option *ngFor="let i of reviewerData" [value]="i" (click)="onReviewedByClick(i?.id, row)">
+            {{i.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </form>
+    </ng-container>
+  </ng-container>
+
+  <ng-template #showReviewerNames>
+    {{ row.reviewedBy }}
+  </ng-template>
+ </mat-cell>
+  </ng-container>
+        <ng-container matColumnDef="reviewDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          Review Date
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            {{row.reviewDate == null ? 'N/A' : (row.reviewDate | dateFormat )| async}}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          Review Status
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <p class="py-2 m-0 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+          [ngClass]="{'customcolorblue': row.status == 'In Progress', 'customcolorpink': row.status == 'Completed'}">
+          {{row.status}}</p>
+        </mat-cell>
+      </ng-container>
+
+    <ng-container matColumnDef="action">
+      <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="flex flex-row items-center text-gray-four btn-group">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <app-icon icon="more_vert" class="horizontal-icon"></app-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <label mat-menu-item translate (click)="openTaskReviewEditWizard(row.id)">Complete Task Review</label>
+            <label mat-menu-item translate (click)="deleteTaskReviewDialog();deletedTaskReviewId = row.id">Unlink</label>
+          </mat-menu>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="findings">
+        <mat-header-cell *matHeaderCellDef >
+          Overall Findings
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            {{row.finding}}
+        </mat-cell>
+      </ng-container>
+
+    <mat-header-row *matHeaderRowDef="taskReviewDisplayColumn"></mat-header-row>
+    <mat-row class="example-element-row" *matRowDef="let row; columns: taskReviewDisplayColumn"></mat-row>
+
+    <tr class="mat-row flex text-center" *matNoDataRow>
+      <td class="mat-cell w-full m-2">No data to display</td>
+    </tr>
+    </mat-table>
+</div>
+
+<ng-template #deleteTaskReview>
+  <app-qtd-dialogue
+    header="Unlink {{ 'Task' | labelReplacement | async }} Review"
+    description=" Are you sure you want to unlink the selected {{ 'Task' | labelReplacement | async }}(s) from this Task List Review?"
+    [cancelText]="'No'"
+    [confirmText]="'Yes'"
+    (confirmed)="deleteTaskReviewAsync(deletedTaskReviewId)"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+<ng-template #unlinkModal>
+  <app-qtd-dialogue
+    header="Unlink {{ 'Task' | labelReplacement | async }} Review"
+    description=" Are you sure you want to unlink the selected {{ 'Task' | labelReplacement | async }}(s) from this Task List Review?"
+    [cancelText]="'No'"
+    [confirmText]="'Yes'"
+    (confirmed)="UnlinkTaskReviewsAsync()"
+  >
+  </app-qtd-dialogue>
+</ng-template>

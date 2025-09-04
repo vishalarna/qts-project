@@ -1,0 +1,176 @@
+<div [ngClass]="{'px-12 py-12':hasSpace}" class="flex flex-col">
+  <ng-container *ngIf="addEO">
+    <div class="flex flex-row justify-between items-center px-3 mt-2">
+      <p *ngIf="eo === undefined && !sqPosition" class="text-xl font-bold text-gray-900">Add New {{("Enabling Objective" | labelReplacement)| async}}</p>
+      <p *ngIf="sqPosition" class="text-xl font-bold text-gray-900">Add New SQs</p>
+      <p *ngIf="makeCopy" class="text-xl font-bold text-gray-900">Copy {{("Enabling Objective" | labelReplacement)| async}}</p>
+      <p *ngIf="eo !== undefined && !makeCopy && !changeCatSubTopic" class="text-xl font-bold text-gray-900">Edit
+        {{("Enabling Objective" | labelReplacement)| async}}</p>
+      <p *ngIf="changeCatSubTopic" class="text-xl font-bold text-gray-900">Change Category / Sub Category / Topic</p>
+      <app-button [disabled]="showSpinner" (clicked)="closed.emit('fp-add-eo-closed')" ButtonType='icon' icon="close">
+      </app-button>
+    </div>
+
+    <mat-stepper labelPosition="bottom" [linear]="true" #stepper (selectionChange)="selectedChanged($event)"
+      [orientation]="(stepperOrientation | async)!">
+      <!-- Change edit icon -->
+      <ng-template matStepperIcon="edit">
+        <app-icon icon="done"></app-icon>
+      </ng-template>
+      <mat-step label="Category, Sub Category, Topic" [stepControl]="step1Form" [completed]="step1Form.valid">
+        <form class="flex flex-col" [formGroup]="step1Form">
+          <div class="flex-col mt-3">
+            <div class="flex flex-row justify-between">
+              <app-label [for]="'categoryId'" [text]="'Category'"></app-label>
+              <app-button [disabled]="!this.changeCatSubTopic && eo !== undefined" variant="text"
+                (clicked)="openCategoryPanel()" text="Add new Category" icon="add" iconPosition="left">
+              </app-button>
+            </div>
+            <mat-select formControlName="categoryId" placeholder="Select Category"
+              (selectionChange)="refreshCatSelection();getCategories($event.value)"
+              class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+              <!-- <mat-option  *ngIf="true"> -->
+              <app-data-loader *ngIf="categoryLoader"></app-data-loader>
+              <!-- </mat-option> -->
+              <mat-option *ngFor="let d of categories" [value]="d.id" [hidden]="!d.active">
+                {{d.number}} - {{d.title}}
+              </mat-option>
+            </mat-select>
+            <app-input-error *ngIf="step1Form.get('categoryId')?.invalid" text="Category is Required">
+            </app-input-error>
+          </div>
+
+          <div class="flex-col mt-3">
+            <div class="flex flex-row justify-between">
+              <app-label [for]="'subcategoryId'" [text]="'Sub Category'"></app-label>
+              <app-button [disabled]="!this.changeCatSubTopic && eo !== undefined" variant="text"
+                (clicked)="openSubCategoryPanel()" text="Add new Sub Category" icon="add" iconPosition="left">
+              </app-button>
+            </div>
+            <mat-select formControlName="subcategoryId" placeholder="Select Sub Category"
+              (selectionChange)="refreshSubCatSelection();getSubCategories($event.value)"
+              class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+              <!-- <mat-option *ngIf="subCategoryLoader"> -->
+                <app-data-loader *ngIf="subCategoryLoader"></app-data-loader>
+              <!-- </mat-option> -->
+              <mat-option *ngFor="let d of subcategories" [value]="d.id" [hidden]="!d.active">
+                {{d.number}} - {{d.title}}
+              </mat-option>
+            </mat-select>
+            <app-input-error *ngIf="step1Form.get('subcategoryId')?.invalid" text="Sub Category is Required">
+            </app-input-error>
+          </div>
+
+          <div class="flex-col mt-3">
+            <div class="flex flex-row justify-between">
+              <app-label [for]="'topicId'" [text]="'Topic'"></app-label>
+              <app-button [disabled]="!this.changeCatSubTopic && eo !== undefined" variant="text"
+                (clicked)="openTopicPanel()" text="Add new Topic" icon="add" iconPosition="left">
+              </app-button>
+            </div>
+            <mat-select formControlName="topicId" placeholder="Select Topic" (selectionChange)="getTopics($event.value)"
+              class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+              <!-- <mat-option *ngIf="topicLoader"> -->
+                <app-data-loader *ngIf="topicLoader"></app-data-loader>
+              <!-- </mat-option> -->
+              <!-- <mat-option [value]="'null'">No Topic Selected</mat-option> -->
+              <mat-option *ngFor="let d of topics" [value]="d.id" [hidden]="!d.active">
+                {{d.number}} - {{d.title}}
+              </mat-option>
+            </mat-select>
+            <app-input-error *ngIf="step1Form.get('topicId')?.invalid" text="Topic is Required">
+            </app-input-error>
+          </div>
+
+          <div class="self-end pt-12">
+            <app-button color="secondary" [disabled]="step1Form.invalid" text="Continue" size="sm"
+              (clicked)="stepper.next()"></app-button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step [label]="informationLabel" [stepControl]="step2Form">
+        <form class="flex flex-col" [formGroup]="step2Form">
+          <div class="mt-3">
+            <app-label [for]="'EONumber'" [text]="numberLabel"></app-label>
+            <app-textbox formControlName="EONumber" [disabled]="true" [(ngModel)]="EONumber"></app-textbox>
+            <app-textbox formControlName="ChangedNumber" [disabled]="this.eo !== undefined" type="number"
+              [(ngModel)]="changeNumber"></app-textbox>
+            <app-input-error *ngIf="step2Form.get('EONumber')?.invalid || step2Form.get('ChangedNumber')?.invalid"
+              text="EO Number Is Required">
+            </app-input-error>
+          </div>
+          <div class="mt-3">
+            <app-label [for]="'EOStatement'" [text]="statmentLabel"></app-label>
+            <app-textarea [isDisabled]="changeCatSubTopic" [value]="this.step2Form.get('EOStatement')?.value ?? ''"
+              formControlName="EOStatement" placeholder="Please enter EO Statement here">
+            </app-textarea>
+            <app-input-error *ngIf="(step2Form.get('EOStatement')?.invalid || step2Form.get('EOStatement')?.hasError('whitespaceOnly') )&& !sqPosition" text="EO Statement Is Required Or Contains WhiteSpaces">
+            </app-input-error>
+            <app-input-error *ngIf="(step2Form.get('EOStatement')?.invalid  || step2Form.get('EOStatement')?.hasError('whitespaceOnly'))&& sqPosition" text="SQ Statement Is Required Or Contains WhiteSpaces">
+            </app-input-error>
+          </div>
+
+          <mat-checkbox (change)="step2Form.get('isMetaEO')?.setValue($event.checked);step2Form.get('isSkill')?.setValue(false)"
+            class="mt-3" formControlName="isMetaEO"> Is Meta EO</mat-checkbox>
+          <mat-checkbox (change)="step2Form.get('isMetaEO')?.setValue(false);step2Form.get('isSkill')?.setValue($event.checked)"
+            class="mt-3" formControlName="isSkill"> Skill Qualification</mat-checkbox>
+          <div class="self-end pt-12">
+            <app-button color="secondary" [disabled]="step2Form.invalid" text="Continue" size="sm"
+              (clicked)="stepper.next()"></app-button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step label="Revision and Date" [stepControl]="step3Form">
+        <form class="flex flex-col" [formGroup]="step3Form">
+          <div class="mt-3">
+            <app-label [for]="'effectiveDate'" text="Effective Date"></app-label>
+            <app-date formControlName="effectiveDate"></app-date>
+          </div>
+          <div class="mt-3">
+            <app-label [for]="'reason'" text="Reason" class="label required"></app-label>
+            <app-textarea [required]="true" type="text" [value]="step3Form.get('reason')?.value" formControlName="reason"
+              placeholder="Please enter Reasons for Revision here">
+            </app-textarea>
+            <app-input-error *ngIf="step3Form.get('reason')?.invalid || step3Form.get('reason')?.hasError('whitespaceOnly')" text="Reason is Required Or Contains WhiteSpaces">
+            </app-input-error>
+          </div>
+          <div class="flex flex-row justify-between pt-12" *ngIf="eo === undefined">
+            <div class="flex flex-row" >
+              <mat-checkbox formControlName="addNew"></mat-checkbox>
+              <span class="ml-1">Add New {{("Enabling Objective" | labelReplacement)| async}}</span>
+            </div>
+            <app-button [spinner]="showSpinner"
+              [disabled]="step2Form.invalid || step3Form.invalid || showSpinner" (clicked)="saveEO()" text="Save"
+              size="sm">
+            </app-button>
+          </div>
+
+          <div class="flex flex-row-reverse">
+            <app-button [spinner]="showSpinner" (clicked)="updateEO()"
+              *ngIf="eo !== undefined && !makeCopy && !changeCatSubTopic"
+              [disabled]="step2Form.invalid || step3Form.invalid || showSpinner" text="Edit" size="sm">
+            </app-button>
+            <app-button [spinner]="showSpinner" *ngIf="makeCopy && !changeCatSubTopic" (clicked)="copyEO()"
+              [disabled]="step2Form.invalid || step3Form.invalid || showSpinner" text="Copy" size="sm">
+            </app-button>
+            <app-button [spinner]="showSpinner" *ngIf="changeCatSubTopic" (clicked)="updateEO()"
+              [disabled]="step2Form.invalid || step3Form.invalid || showSpinner" text="Change" size="sm">
+            </app-button>
+          </div>
+
+
+        </form>
+
+      </mat-step>
+
+    </mat-stepper>
+  </ng-container>
+
+  <app-flypanel-eo-category *ngIf="addCategory" (refreshCategories)="populateCatData()" (closed)="closePanel()">
+  </app-flypanel-eo-category>
+
+  <app-flypanel-eo-sub-category *ngIf="addSubCategory" (closed)="closePanel()"></app-flypanel-eo-sub-category>
+
+  <app-flypanel-eo-topic *ngIf="addTopic" (refreshTopic)="populateTopicData()" (closed)="closePanel()">
+  </app-flypanel-eo-topic>
+</div>

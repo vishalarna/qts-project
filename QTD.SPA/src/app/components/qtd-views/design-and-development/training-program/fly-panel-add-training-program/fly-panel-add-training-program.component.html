@@ -1,0 +1,86 @@
+<!--Code for Add New Training Map Starts-->
+<div class="flex flex-col px-12 pb-12">
+
+    <!--Header Code Starts-->
+    <p class="w-21/24 font-bold text-lg text-gray-five mb-6 mt-5">
+        Add New Training Program
+    </p>
+    <!--Header Code Ends-->
+
+    <form [formGroup]="addTrainingProgramForm" (ngSubmit)="onSubmit()">
+        <!--Div for Program Type and Version Number Starts-->
+        <div class="flex mr-2">
+            <div class="flex flex-col w-1/2 mr-2">
+                <!--Code for program type starts-->
+                <span class="mt-5 font-normal text-sm">Program type</span>
+                <mat-form-field appearance="outline" class="text-sm mt-3 w-21">
+                    <mat-label class="text-sm">Select type</mat-label>
+                    <mat-select formControlName="programType" [(ngModel)]="forDatabase">
+                        <mat-option *ngFor="let d of training_map" [value]="d.value">{{d.title}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <app-input-error
+                    *ngIf="addTrainingProgramForm.controls.programType.errors?.['required'] && (addTrainingProgramForm.controls.programType.touched)"
+                    [text]="'Program Type is Required'"></app-input-error>
+            </div>
+            <!--Code for program type ends-->
+
+            <!--Code for version starts-->
+            <div class="flex flex-col w-1/2">
+                <span class="mt-5 font-normal text-sm mb-3">Version</span>
+                <app-textbox name="version" placeholder="Enter version number" formControlName="versionField">
+                </app-textbox>
+                <app-input-error class="mt-4"
+                    *ngIf="addTrainingProgramForm.controls.versionField.errors?.['required'] && (addTrainingProgramForm.controls.versionField.dirty)"
+                    [text]="'Version is Required'"></app-input-error>
+                <app-input-error class="mt-4" *ngIf="addTrainingProgramForm.controls.versionField.errors?.['pattern']"
+                    [text]="'Number is Required'"></app-input-error>
+            </div>
+            <!--Code for version ends-->
+        </div>
+        <!--Div for Program Type and Version Number Ends-->
+
+        <!--Div for start and end date starts-->
+        <div class="flex mr-2">
+            <div class="flex flex-col w-1/2 mr-2">
+                <!--Code for start date starts-->
+                <span class="mt-5 font-normal text-sm mb-2">Start date</span>
+                <app-date name="date" formControlName="startdate"></app-date>
+                <app-input-error class="mt-4"
+                    *ngIf="addTrainingProgramForm.controls.startdate.errors?.['required'] && (addTrainingProgramForm.controls.startdate.dirty)"
+                    [text]="'Start Date is Required'"></app-input-error>
+            </div>
+            <!--Code for start date ends-->
+
+            <!--Code for end date starts-->
+            <div class="flex flex-col w-1/2">
+                <span class="mt-5 font-normal text-sm mb-2">End date (optional)</span>
+                <app-date name="date" formControlName="enddate"></app-date>
+            </div>
+            <!--Code for end date ends-->
+        </div>`
+        <!--Div for start and end date ends-->
+
+        <!--Code For Cancel and Add Program Button Starts-->
+        <div class="flex flex-row justify-between mt-16">
+            <app-button type="button" color="grey" text="Cancel" size="sm" class="ml-1"
+                (clicked)="cancelButton($event)"></app-button>
+
+            <app-button color="secondary" size="sm" text="Add Program" variant="outlined" shape="rect" type="submit"
+                class="mr-3"></app-button>
+        </div>
+    </form>
+    <!--Code For Cancel and Add Program Button Ends-->
+
+    <!--Code For Sidebar Ends-->
+
+    <!--Code For Toggle Button Starts-->
+    <!--<div>
+      <button type="button" mat-button (click)="drawer.toggle()">
+        Toggle sidenav
+      </button>
+    </div>-->
+    <!--Code For Toggle Button Ends-->
+
+    <!--Code for Add New Training Map Ends-->
+</div>

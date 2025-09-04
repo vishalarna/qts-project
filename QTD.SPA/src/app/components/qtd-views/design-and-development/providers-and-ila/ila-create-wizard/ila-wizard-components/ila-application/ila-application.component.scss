@@ -1,0 +1,60 @@
+.form_field{
+  max-width: 250px;
+}
+
+// ::ng-deep .mat-checkbox .mat-checkbox-inner-container {
+//   width: 20px;
+//   height: 20px;
+// }
+
+app-icon{
+  color: gray;
+}
+
+mat-expansion-panel{
+  border: 0px !important;
+  background-color: inherit !important;
+  box-shadow: none !important;
+}
+
+.main{
+  min-width: 50% !important;
+}
+
+.styled-table {
+  border-collapse: collapse;
+  width: 90%;
+  margin: 25px 0;
+  font-size: 12px;
+  text-align: left;
+}
+
+.styled-table th, .styled-table td {
+  border: 1px solid #dddddd;
+  padding: 12px 15px;
+}
+
+.styled-table th {
+  background-color: #d0cccc;
+}
+
+.styled-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.styled-table tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.styled-table th, .styled-table td {
+  border-right: 1px solid #dddddd;
+}
+
+.styled-table th:last-child, .styled-table td:last-child {
+  border-right: none;
+}
+
+.no-data-found {
+  text-align: center;
+  font-size: 12px;
+}

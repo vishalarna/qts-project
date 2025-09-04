@@ -1,0 +1,62 @@
+<div class="flex flex-col px-12 py-12">
+    <div class="flex flex-row justify-between">
+        <h2 class="mb-5">{{("Instructor" | labelReplacement)| async}} History</h2>
+        <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+      </div>
+<!--     <h2 class="mb-5">Instructor History</h2>
+ -->    <div class="flex flex-row items-center border-b-0.8 border-gray-one mb-3">
+
+        <div class="flex flex-grow">
+            <app-icon icon="search"></app-icon>
+            <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+                (input)="filterData($event)" [(ngModel)]="clearSearch">
+            <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+        </div>
+
+    </div>
+    <app-data-loader *ngIf="appSpinner"></app-data-loader>
+
+    <div class="border-gray-one shadow-xs border-0.5 rounded">
+        <mat-table [dataSource]="dataSource" matSort *ngIf="dataSource">
+
+            <ng-container matColumnDef="num">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Instructor" | labelReplacement)| async}} Number </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.num}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="desc">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Description of change </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <div class="flex flex-col">
+                        <span>{{row.desc}}</span>
+                        <!-- <span class="mt-2">{{row.modifyDate | date:'medium' }}</span> -->
+                    </div>
+                </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="modifyDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Modified By </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <div class="flex flex-col">
+                        <span  class="text-qtd">{{row.modifyBy}}</span>
+                        <span class="mt-2">{{row.modifyDate | date:'medium' }}</span>
+                    </div>
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full m-2">No data matching the filter</td>
+            </tr>
+
+        </mat-table>
+
+        <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+        [attr.aria-label]="'Select page of ' + (('Instructor' | labelReplacement) | async) + 's'">
+        </mat-paginator>
+    </div>
+</div>

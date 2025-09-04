@@ -1,0 +1,1733 @@
+<!-- http://localhost:4200/ila -->
+
+<div class="h-26">
+  <div class="custom_class">
+    <div class="custom_class_1 w-10 h-10 bg-green-50 text-green-700 rounded-full text-center py-2">
+      <app-icon icon="chevron_left"></app-icon>
+    </div>
+    <span class="text-gray-500 font-normal ml-5">Back to Training Map</span>
+    <br />
+    <span class="font-semibold text-xl ml-12">1.0 Intro to PowerCo. LO Operation</span>
+  </div>
+</div>
+
+<mat-tab-group class="bg-gray-50 h-screen px-12 custom_class_2 font-medium "
+(selectedTabChange)="selectedTabValue($event)" #tabGroup>
+  <mat-tab label="PREREQUISITES" onclick="toggleTab('prerequisites')">     
+    
+    <p class="text-xl font-semibold px-12 mt-4 w-20">Prerequisites</p>
+    <app-button (click)="openFlyInPanel(addPrerequisitesPanel)" variant="text" type="button" 
+      text="Add New" icon="add" iconPosition="left" 
+      class="float-right text-green-one font-bold text-sm mr-5 custom_class_3"></app-button>    
+    <p class="px-12 text-xs font-normal text-gray-500">Showing {{ prerequisites_list_length }} prerequisites</p>    
+    
+    <app-button *ngIf="isPrerequisiteschecked" class="custom_class_5 rounded-b-md rounded px-3 h-8 items-center 
+    text-sm btn-icon-secondary float-right" variant="text" type="button" text="Remove Selected"
+        (clicked)="removePrerequisites($event)" >      
+    </app-button>
+ 
+    <div class="flex-row bg-white-one rounded-sm m-2 mx-12">
+      <table class="table w-full border text-left mt-5 hover">        
+        <thead>
+          <tr class="table-row text-xs text-gray-four">
+            <th class="table-cell border-gray-one font-normal">
+              <input type="checkbox" [checked]="isAllPrerequisitesCheckBoxChecked()"
+              (change)="checkAllPrerequisitesCheckBox($event)"/>
+            </th>
+            <th class="table-cell border-gray-one font-normal">#</th>
+            <th class="table-cell border-gray-one font-normal">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of prerequisites_list" class="table-row text-sm font-normal ">
+            <td class="table-cell align-middle border-b-0.8 border-gray-one"><input type="checkbox" value="{{item.id}}" [(ngModel)]="item.checked"  (change)="prerequisitesChange($event)"/></td>
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.id }}</td>
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.description }}</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+  </mat-tab>
+
+  <mat-tab label=" {{('ILA' | labelReplacement)| async}} DETAILS">
+    <div class="border-b-2 py-8">
+      <p class="text-xl font-semibold px-12 mt-4">{{("ILA" | labelReplacement)| async}} Details</p>
+      <button (click)="ShowILADetailsDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+       <app-icon *ngIf="isILADropdownVisible" icon="expand_less"></app-icon>
+       <app-icon *ngIf="!isILADropdownVisible" icon="expand_more" ></app-icon>
+      </button>
+      
+    <div class="bg-white-one ml-5 mr-4 rounded" *ngIf="isILADropdownVisible && isEdit">
+      <div class="block text-sm space-y-6 px-2 py-6">
+        <div class="flex flex-row justify-between">
+          <div class="w-11/12 mt-2 mr-6">
+            <label class="block text-gray-500" for="title_edit">Title</label>
+           <input [(ngModel)]="ILATitle" type="text" name="title_edit" class="w-full text-small rounded bg-white-one" disabled="true"/>        
+          </div>
+          <div class="w-1/3 mt-2 mr-5">
+            <label class="inline-block text-gray-500" for="number_edit">Number</label>
+             <input [(ngModel)]="ILANumber" type="text" name="number_edit" class="w-full rounded bg-white-one" disabled="true"/> 
+        </div>
+          <div class="w-1/3 mt-2">
+            <label class="inline-block text-gray-500" for="type_edit">Type</label>
+             <input [(ngModel)]="ILAType" type="text" name="type_edit" class="w-full rounded bg-white-one" disabled="true"/>      
+          </div>
+          <div class="w-2/4 mt-4">
+            <button class="flex flex-row px-4 h-9 items-center text-sm btn-icon-secondary ml-16" type="button" (click)="ShowSaveDropDown()">
+              <app-icon icon="edit_note"></app-icon>Edit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  
+    <div class="bg-white-one ml-5 mr-4 rounded" *ngIf="isILADropdownVisible && isSave">
+      <div class="block text-sm space-y-6 px-2 py-6">
+        <div class="flex flex-row justify-between">
+          <div class="w-custom mt-2 mr-8">
+            <label class="block text-gray-700" for="title_save">Title</label>
+            <input [(ngModel)]="ILATitle" type="text" name="title_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+          <div class="w-custom_1 mt-2 mr-5">
+            <label class="inline-block text-gray-500" for="number_save">Number</label>
+            <input [(ngModel)]="ILANumber" type="text" name="number_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+          <div class="w-9/12 mt-2">
+            <label class="inline-block text-gray-500" for="type_save">Type</label>
+            <div class="flex flex-col">
+              <div>
+                <input id="self" (change)="ChangeOption($event)" [(ngModel)]="checkbox1" type="checkbox" name="Self-paced" />
+                <label class="inline-block text-gray-700 ml-2 font-normal" for="Self-paced">Self-paced training</label>
+              </div>
+              <div>
+                <input id="optional" (change)="ChangeOption($event)" [(ngModel)]="checkbox2" type="checkbox" name="optional" />
+                <label class="inline-block text-gray-700 ml-2 font-normal" for="optional">Optional</label>
+              </div>
+            </div>
+          </div>
+          <div class="w-9/12 mt-4">
+            <button class="flex flex-row custom_class_18 px-4 h-9 items-center text-sm btn-icon-secondary" type="button" (click)="ShowEditDropDown()">Save</button>          
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+    
+    <div class="border-b-2 py-8">
+      <p class="font-bold text-xl px-12">CEH</p>
+      <button (click)="ShowCEHDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+        <app-icon *ngIf="isCEHDropdownVisible" icon="expand_less"></app-icon>
+        <app-icon *ngIf="!isCEHDropdownVisible" icon="expand_more" ></app-icon>
+      </button>
+ 
+    <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isCEHDropdownVisible && isCEHEdit">
+      <div class="block text-sm space-y-6 px-6 py-6">
+        <div class="flex flex-row justify-between">
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="standard_related_hours_edit">Standard Related Hours</label>
+            <input [(ngModel)]="standard_related_hours_details" type="text" name="standard_related_hours_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+          </div>
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="ceh_hours_edit">Total CEH Hours</label>
+            <input [(ngModel)]="ceh_hours" type="text" name="ceh_hours_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+          </div>
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="other_edit">Other</label>
+            <input [(ngModel)]="other" type="text" name="other_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+          </div>
+        </div>
+  
+        <div class="flex flex-row justify-between">
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="operating_topic_hours_edit">Operating Topics Hours</label>
+            <input  [(ngModel)]="operating_topic_hours_details" type="text" name="operating_topic_hours_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+          </div>
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="emerg_edit">PER-005 Emerg.Op.Hours</label>
+            <input [(ngModel)]="emerg" type="text" name="emerg_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+          </div>
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="total_training_hours_edit">Total training Hours</label>
+            <input [(ngModel)]="total_training_hours" type="text" name="total_training_hours_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+          </div>
+        </div>
+  
+        <div class="flex flex-row ">
+          <div class="w-56 mr-6">
+            <label class="block text-gray-500 font-normal" for="simulation_hours_edit">Simulation Hours</label>
+            <input [(ngModel)]="simulation_hours_details" type="text" name="simulation_hours_edit" class="bg-white-one w-full rounded" disabled="true"/>
+          </div>
+          <div class="w-56 ml-3">
+            <label class="block text-gray-500 font-normal" for="regional_hours_edit">Regional Hours</label>
+            <input [(ngModel)]="regional_hours" type="text" name="regional_hours_edit" class="bg-white-one w-full rounded" disabled="true"/>
+          </div>
+        </div>
+  
+        <div class="flex flex-row">
+          <div class="w-56 mr-6">
+            <label class="block text-gray-500 font-normal" for="professional_hours_edit">Professional Hours</label>
+            <input [(ngModel)]="professional_hours" type="text" name="professional_hours_edit" class="bg-white-one w-full rounded" disabled="true"/>
+          </div>
+          <div class="w-56 ml-3">
+            <label class="block text-gray-500 font-normal" for="regional_2_hours_edit">Regional 2 Hours</label>
+            <input [(ngModel)]="regional_2_hours" type="text" name="regional_2_hours_edit" class="bg-white-one w-full rounded" disabled="true"/>
+          </div>
+        </div>
+  
+        <button (click)="ShowCEHSaveDropDown()" class="flex flex-row px-5 h-9 items-center text-sm btn-icon-secondary ml-12 float-right custom_class_6" type="button">
+          <app-icon icon="edit_note"></app-icon>Edit
+         </button>
+      </div>
+    </div>
+   
+     <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isCEHDropdownVisible && isCEHSave">
+      <div class="block text-sm space-y-6 px-6 py-6">
+        <div class="flex flex-row justify-between">
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="standard_related_hours_save">Standard Related Hours</label>
+            <input [(ngModel)]="standard_related_hours_details" type="text" name="standard_related_hours_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="ceh_hours_save">Total CEH Hours</label>
+            <input [(ngModel)]="ceh_hours" type="text" name="ceh_hours_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="other_save">Other</label>
+            <input [(ngModel)]="other" type="text" name="other_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+        </div>
+  
+        <div class="flex flex-row justify-between">
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="operating_topic_hours_save">Operating Topics Hours</label>
+            <input [(ngModel)]="operating_topic_hours_details"  type="text" name="operating_topic_hours_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="emerg_save">PER-005 Emerg.Op.Hours</label>
+            <input [(ngModel)]="emerg" type="text" name="emerg_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+          <div class="w-9/12 mr-5">
+            <label class="block text-gray-500 font-normal" for="total_training_hours_save">Total training Hours</label>
+            <input [(ngModel)]="total_training_hours" type="text" name="total_training_hours_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+        </div>
+  
+        <div class="flex flex-row ">
+          <div class="w-56 mr-6">
+            <label class="block text-gray-500 font-normal" for="simulation_hours_save">Simulation Hours</label>
+            <input [(ngModel)]="simulation_hours_details" type="text" name="simulation_hours_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+          <div class="w-56 ml-3">
+            <label class="block text-gray-500 font-normal" for="regional_hours_save">Regional Hours</label>
+            <input [(ngModel)]="regional_hours" type="text" name="regional_hours_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+        </div>
+  
+        <div class="flex flex-row">
+          <div class="w-56 mr-6">
+            <label class="block text-gray-500 font-normal" for="professional_hours_save">Professional Hours</label>
+            <input [(ngModel)]="professional_hours" type="text" name="professional_hours_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+          <div class="w-56 ml-3">
+            <label class="block text-gray-500 font-normal" for="regional_2_hours_save">Regional 2 Hours</label>
+            <input [(ngModel)]="regional_2_hours" type="text" name="regional_2_hours_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+        </div>
+        <button (click)="ShowCEHEditDropDown()" class="flex flex-row px-5 h-9 items-center text-sm btn-icon-secondary ml-12 float-right custom_class_6" type="button">Save</button>
+      </div>
+    </div>
+  </div>
+  <div class="border-b-2 py-8">
+    <p class="font-bold text-xl px-12">Additional CEH HOURS</p>
+    <button (click)="ShowAdditionalCEHHoursDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+      <app-icon *ngIf="isAdditionalCEHHoursDropdownVisible" icon="expand_less"></app-icon>
+      <app-icon *ngIf="!isAdditionalCEHHoursDropdownVisible" icon="expand_more" ></app-icon>
+    </button>
+  </div>
+   
+  <div class="border-b-2 py-8">
+    <p class="font-bold text-xl px-12">Addresses a NERC Standard Training Requirement Ends</p>
+    <button (click)="ShowTrainingDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+      <app-icon *ngIf="isTrainingDropdownVisible" icon="expand_less"></app-icon>
+      <app-icon *ngIf="!isTrainingDropdownVisible" icon="expand_more" ></app-icon>
+    </button>
+  </div>
+    
+  <div class="border-b-2 py-8">
+    <p class="font-bold text-xl px-12">Additional CEH HOURS</p>
+    <button (click)="ShowAdditionalCEHDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+      <app-icon *ngIf="isAdditionalCEHDropdownVisible" icon="expand_less"></app-icon>
+      <app-icon *ngIf="!isAdditionalCEHDropdownVisible" icon="expand_more" ></app-icon>
+    </button>
+  </div>  
+  </mat-tab>
+
+  <mat-tab label="OBJECTIVES"
+   ngClass="text-green-one border-green-one border-b-2  font-medium pb-2 focus:outline-none">
+   <p class="text-xl font-semibold px-12 mt-4 w-20">Objectives</p>
+   <app-button variant="text" type="button" text="Add New" icon="add" iconPosition="left"
+     class="float-right text-green-one font-bold text-sm mr-5 custom_class_3"
+     (click)="openFlyInPanel(adObjectivesPanel)"></app-button>   
+   
+   <p class="px-12 text-xs font-normal text-gray-500">Showing {{objectivesLength}} {{("Enabling Objective" | labelReplacement)| async}}</p>
+   
+   <app-button *ngIf="isObjectivesChecked" class="custom_class_5 rounded-b-md rounded px-3 h-8 items-center 
+   text-sm btn-icon-secondary float-right" variant="text" type="button" text="Remove Selected"
+       (clicked)="removeObjective($event)" >      
+   </app-button>
+
+   <div class="flex-row bg-white-one rounded-sm m-2 mx-12">
+      <table class="table w-full border text-left mt-5 hover">        
+         <thead>
+             <tr class="table-row text-xs text-gray-four">                
+               <th class="table-cell border-gray-one font-normal">
+                 <input type="checkbox"  [checked]="isAllObjectivesCheckBoxChecked()"
+                 (change)="checkAllObjectivesCheckBox($event)"/>
+               </th>
+               <th class="table-cell border-gray-one font-normal">
+                 type
+               </th>
+               <th class="table-cell border-gray-one font-normal">
+                 #
+               </th>
+               <th class="table-cell border-gray-one font-normal">
+                 Description
+               </th> 
+             </tr>    
+         </thead>
+         
+         <tbody>
+             <tr *ngFor="let item of objectivesList" class="table-row text-sm font-normal hover:bg-gray-50">
+               <td class="table-cell align-middle border-b-0.8 border-gray-one">
+                 <input type="checkbox" value="{{item.id}}" [(ngModel)]="item.checked" 
+                 (change)="objectiveChange($event)"/>
+               </td>
+               <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                 {{item.type}}
+               </td>
+               <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                 {{item.id}}
+               </td>
+               <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                 {{item.description}}
+               </td>
+             </tr>
+         </tbody>         
+      </table>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{('Procedure' | labelReplacement)| async}}s" 
+    ngClass="text-green-one border-green-one border-b-2 font-medium pb-2 focus:outline-none">
+    <p class="text-xl font-semibold px-12 mt-4 w-20">{{("Procedure" | labelReplacement)| async}}s</p>
+    <app-button (click)="openFlyInPanel(addproceduresPanel)" variant="text" type="button" 
+      text="Add New" icon="add" iconPosition="left" 
+      class="float-right text-green-one font-bold text-sm mr-5 custom_class_3"></app-button>
+    
+     <p class="px-12 text-xs font-normal text-gray-500">Showing {{ procedure_list_length }} {{("Procedure" | labelReplacement)| async}}s</p>
+
+  
+    <app-button *ngIf="isProcedureCheck" class="custom_class_5 rounded-b-md rounded px-3 h-8 items-center 
+      text-sm btn-icon-secondary float-right" variant="text" type="button" text="Remove Selected"
+          (clicked)="removeProcedure($event)">      
+    </app-button>  
+  
+    <div class="flex-row bg-white-one rounded-b-md m-2 ml-4 mx-12">
+      <table class="table border w-full text-left mt-5">
+        <thead>
+          <tr class="table-row text-xs text-gray-four">
+            <th class="table-cell border-gray-one font-normal">
+              <input type="checkbox" [checked]="isAllProcedureCheckBoxChecked()"
+              (change)="checkAllProcedureCheckBox($event)" />
+            </th>
+            <th class="table-cell border-gray-one font-normal">Number</th>
+            <th class="table-cell border-gray-one font-normal">{{("Procedure" | labelReplacement)| async}}s Title</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of procedures_list" class="table-row text-sm font-normal">
+            <td class="table-cell align-middle border-b-0.8 border-gray-one"><input type="checkbox" value="{{item.number}}" [(ngModel)]="item.checked" (change)="proceduresChange($event)"/></td>
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.number }}</td>
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.procedure_title }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    
+  </mat-tab>
+
+  <mat-tab label="{{('Safety Hazard' | labelReplacement)| async}}s" 
+    ngClass="text-green-one border-green-one border-b-2 font-medium pb-2 focus:outline-none">  
+    <p class="text-xl font-semibold px-12 mt-4">S{{("Safety Hazard" | labelReplacement)| async}}s</p>
+    <app-button (click)="openFlyInPanel(addSafetyHazardPanel)" variant="text" 
+      type="button" text="Add New" icon="add" iconPosition="left" 
+      class="float-right text-green-one font-bold text-sm mr-5 custom_class_3"></app-button>    
+        
+    <p class="px-12 text-xs font-normal text-gray-500">Showing {{ safety_hazard_list_length }} {{("Safety Hazard" | labelReplacement)| async}}s</p>
+
+    <app-button *ngIf="isSafetyHazardCheck" class="custom_class_5 rounded-b-md rounded px-3 h-8 items-center 
+      text-sm btn-icon-secondary float-right" variant="text" type="button" text="Remove Selected"
+          (clicked)="removeSafetyHazard($event)">      
+    </app-button>  
+    
+    <div class="flex-row bg-white-one rounded-b-md m-2 ml-4 mx-12">
+      <table class="table border w-full text-left mt-5">
+        <thead>
+          <tr class="table-row text-xs text-gray-four">
+            <th class="table-cell border-gray-one font-normal">
+              <input type="checkbox" [checked]="isAllSafetyHazardCheckBoxChecked()"
+              (change)="checkAllSafetyHazardCheckBox($event)" />
+            </th>
+            <th class="table-cell border-gray-one font-normal">Number</th>
+            <th class="table-cell border-gray-one font-normal">{{("Procedure" | labelReplacement)| async}}s Title</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of safety_hazard_list" class="table-row text-sm font-normal">
+            <td class="table-cell align-middle border-b-0.8 border-gray-one"><input type="checkbox" value="{{item.number}}" [(ngModel)]="item.checked" (change)="safetyHazardChange($event)"/></td>
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.number }}</td>
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.procedure_title }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="TRAINING PLAN" 
+    ngClass="text-green-one border-green-one border-b-2 font-medium pb-2 focus:outline-none">
+    <div class="border-b-2 py-8">
+      <p class="font-bold text-xl px-12">Individual Learning Activity Information</p>
+      <button (click)="ShowIndividualDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+        <app-icon *ngIf="isIndividualDropdownVisible" icon="expand_less"></app-icon>
+        <app-icon *ngIf="!isIndividualDropdownVisible" icon="expand_more" ></app-icon>
+      </button>
+      
+      <div class="bg-white-one rounded m-2 ml-4 mx-12" *ngIf="isIndividualDropdownVisible">
+        <div class="block text-sm space-y-6 px-6 py-6">
+          <div class="w-9/12 mt-2 mr-5"> 
+            <div class="flex flex-row justify-between">
+              <div>
+                <input aria-label="classroom" type="checkbox" name="classroom" />
+                <label class="inline-block text-gray-700 ml-2 font-medium" for="classroom">Classroom</label>
+              </div>
+              <div>
+                <input aria-label="ojt_training" type="checkbox" name="ojt_training" />
+                <label class="inline-block text-gray-700 ml-2 font-medium" for="ojt_training">OJT Training</label>
+              </div>
+              <div>
+                <input aria-label="ots" type="checkbox" name="ots" />
+                <label class="inline-block text-gray-700 ml-2 font-medium" for="ots">Operator Training Simulation</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="w-9/12 mt-2 mr-5"> 
+            <div class="flex flex-row justify-between">
+              <div>
+                <input aria-label="workshop" type="checkbox" name="workshop" />
+                <label class="inline-block text-gray-700 ml-2 font-medium" for="workshop">Workshop/Seminar</label>
+              </div>
+              <div class="custom_class_7">
+                <input aria-label="self_study" type="checkbox" name="self_study" />
+                <label class="inline-block text-gray-700 ml-2 font-medium" for="self_study">Self Study</label>
+              </div>
+              <div class="custom_class_10">
+                <input aria-label="computer_based" type="checkbox" name="computer_based" />
+                <label class="inline-block text-gray-700 ml-2 font-medium" for="computer_based">Computer Based</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="w-9/12 mt-2 mr-5"> 
+            <div class="flex flex-row justify-between">
+              <div>
+                <input aria-label="conference" type="checkbox" name="conference" />
+                <label class="inline-block text-gray-700 ml-2 font-medium" for="conference">Conference</label>
+              </div>
+              <div class="custom_class_9">
+                <input aria-label="internet_based" type="checkbox" name="internet_based" />
+                <label class="inline-block text-gray-700 ml-2 font-medium" for="internet_based">Internet Based</label>
+              </div>
+              <div class="custom_class_8">
+                <input aria-label="other" type="checkbox" name="other" />
+                <label class="inline-block text-gray-700 ml-2 font-medium" for="other">Other</label>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <p class="font-normal text-gray-500 text-sm px-6">(Check all that apply)</p>
+        <button class="float-right px-12 h-9 items-center text-sm btn-icon-secondary ml-12 custom_class_11" type="button" (click)="ShowEditDropDown()">Save</button>
+      </div>
+    </div>    
+    <div class="border-b-2 py-8">
+      <p class="font-bold text-xl px-12">Target Audience</p>
+      <button (click)="ShowTargetDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+        <app-icon *ngIf="isTargetDropdownVisible" icon="expand_less"></app-icon>
+        <app-icon *ngIf="!isTargetDropdownVisible" icon="expand_more" ></app-icon>
+      </button>
+    </div>
+
+    <div class="border-b-2 py-8">
+      <p class="font-bold text-xl px-12">Training Plan</p>
+      <button (click)="ShowTrainingPlanDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+        <app-icon *ngIf="isTrainingPlanDropdownVisible" icon="expand_less"></app-icon>
+        <app-icon *ngIf="!isTrainingPlanDropdownVisible" icon="expand_more" ></app-icon>
+      </button>
+    </div>
+
+    <div class="border-b-2 py-8">
+      <p class="font-bold text-xl px-12">Evaluation Method</p>
+      <button (click)="ShowEvaluationMethodDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+        <app-icon *ngIf="isEvaluationMethodDropdownVisible" icon="expand_less"></app-icon>
+        <app-icon *ngIf="!isEvaluationMethodDropdownVisible" icon="expand_more" ></app-icon>
+      </button>
+    </div>
+  </mat-tab>
+
+  <mat-tab label="SEGMENTS" ngClass="text-green-one border-green-one border-b-2 font-medium pb-2 focus:outline-none">
+
+  </mat-tab>
+
+  <mat-tab label="RESOURCES" ngClass="text-green-one border-green-one border-b-2 font-medium pb-2 focus:outline-none">
+    <div class="bg-white-one rounded-sm mt-4 mr-8 ml-8 h-screen" *ngIf="!isPlayButtonClicked">    
+      <p  class="pt-6 font-medium text-2xl px-10">Title</p>
+      <p class="text-gray-400 text-base"><app-icon icon="add_box" class="text-gray-400 text-base pl-9"></app-icon> Start typing...</p>
+
+      <div class="custom_class_15 bg-green-50 ml-7 h-11 rounded-sm">
+        <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 mr-3 w-32 pr-4">
+          <p class="text-white-one py-1 px-1">Paragraph</p>
+          <app-button class="h-7 cutsom_class_12 text-white-one" variant="text" type="button" icon="expand_more"></app-button>
+        </div>
+
+        <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+          <app-button class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="format_list_bulleted"></app-button>
+        </div>
+
+        <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+          <app-button class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="format_list_numbered"></app-button>
+        </div>
+
+        <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+          <app-button class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="horizontal_rule"></app-button>
+        </div>
+
+        <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+          <app-button class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="photo_camera"></app-button>
+        </div>
+
+        <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+          <app-button (click)="OpenResourcePanel()" class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="play_circle_outline"></app-button>
+        </div>
+
+        <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+          <app-button class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="save"></app-button>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="bg-white-one rounded rounded-sm mt-4 mr-8 ml-8 min-h-screen" *ngIf="isPlayButtonClicked">
+      <div class="flex flex-row float-right justify-between items-center">
+        <button type="button" (click)="CloseResourcePanel()">
+          <app-icon icon="close"></app-icon>
+        </button>
+      </div>
+      
+      <div class="flex mt-5 w-full custom_class_16 px-3 min-h-screen">        
+        <div class="flex flex-col w-3/12">
+          <button class="flex flex-row text-sm font-medium space-x-6 focus:outline-none p-2 h-11 mb-4" (click)="toggleTabResource('welcome')" 
+          [ngClass]="{'bg-green-50 rounded rounded-sm w-full items-start h-11 p-2':activeTabResource == 'welcome'}">
+            <app-icon icon="video_camera_front" class="pr-4"></app-icon>Welcome</button>       
+      
+            <button class="flex flex-row text-sm font-medium space-x-6 focus:outline-none p-2 h-11 mb-4" (click)="toggleTabResource('real_life')" 
+            [ngClass]="{'bg-green-50 rounded rounded-sm w-full items-start h-11 p-2 text-xs':activeTabResource == 'real_life'}">
+              <app-icon icon="format_list_bulleted" class="mr-1"></app-icon>Providing real-life example</button>
+
+          <button class="flex flex-row text-sm font-medium space-x-6 focus:outline-none p-2 h-11 mb-4" (click)="toggleTabResource('rescource')" 
+          [ngClass]="{'bg-green-50 rounded rounded-sm w-full items-start h-11 p-2':activeTabResource == 'rescource'}">
+            <app-icon icon="menu_book" class="pr-4"></app-icon>Resources</button>
+
+          <button class="flex flex-row text-sm font-medium space-x-6 focus:outline-none p-2 h-11" (click)="toggleTabResource('assessment')" 
+          [ngClass]="{'bg-green-50 rounded rounded-sm w-full items-start h-11 p-2':activeTabResource == 'assessment'}">
+          <app-icon icon="assignment_turned_in" class="pr-4"></app-icon>Assessment</button>
+        </div>
+        
+        <div class="flex flex-col flex-wrap mr-2 mt-3 border-l-0.8 border-gray-300 absolute custom_class_17 min-h-screen">          
+          <div class="ml-3" *ngIf="activeTabResource == 'welcome'">
+            <div class="w-cutsom-2">
+              <div>
+                <iframe width="600" height="315" src="https://www.youtube.com/embed/8uIe0qY9qG8?modestbranding=1&amp;rel=0" title="Youtube Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+              </div>
+            </div>
+            
+            <div class="flex flex-row mt-4 ml-1">
+              <p class="font-bold text-xl">Identify acceptable and unacceptable ACE deviations </p>
+            </div>
+            <div class="flex flex-row mt-2 ml-1 text-gray-500 font-normal w-cutsom-2">
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
+              incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis 
+              nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+              Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
+              fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+              culpa qui officia deserunt mollit anim id est laborum</p>
+            </div>
+            <div class="flex flex-row mt-2 ml-1 text-gray-500 font-normal w-cutsom-2">
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
+                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis 
+                nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
+                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                culpa qui officia deserunt mollit anim id est laborum</p>
+            </div>
+            
+            <div class="flex mt-5" >
+              <div class="flex-col w-1/2">
+                <p class="font-bold text-xl">Resources</p>
+              </div>
+              <div class="flex-col w-1/2">
+                <p class="font-bold text-xl">Resources</p>
+              </div>
+            </div>
+          </div>        
+            
+          <div *ngIf="activeTabResource == 'real_life'">
+            <p>Providing Real Life Example</p>
+
+          </div>
+
+          <div *ngIf="activeTabResource == 'rescource'">
+            <p>Resources</p>
+
+          </div>
+
+          <div *ngIf="activeTabResource == 'assessment'">
+            <p>Assessment</p>
+          </div>
+        </div>      
+      </div>      
+    </div>
+  </mat-tab>
+
+  <mat-tab label="{{('ILA' | labelReplacement)| async}} APPLICATION" ngClass="text-green-one border-green-one border-b-2 font-medium pb-2 focus:outline-none">
+    <div class="border-b-2 py-8">
+      <p class="text-xl font-semibold px-12 mt-4">Course Details</p>
+      <button (click)="ShowCourseDetailsDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+       <app-icon *ngIf="isCourseDetailsDropdownVisible" icon="expand_less"></app-icon>
+       <app-icon *ngIf="!isCourseDetailsDropdownVisible" icon="expand_more" ></app-icon>
+      </button>
+
+     <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isCourseDetailsDropdownVisible && isCourseEdit">
+      <div class="block text-sm space-y-6 px-6 py-6">
+        <div class="flex flex-row justify-between">
+          <div class="w-9/12 mt-2 mr-5">
+            <label class="inline-block text-gray-500 font-normal" for="nerc_id_edit">NERC ID</label>
+            <input [(ngModel)]="nerc_id" type="text" name="nerc_id_edit" class="bg-white-one w-full rounded" disabled="true"/>
+          </div>
+          <div class="w-9/12 mt-2 mr-5">
+            <label class="inline-block text-gray-500 font-normal" for="course_title_edit">Title</label>
+            <input [(ngModel)]="title" type="text" name="course_title_edit" class="bg-white-one w-full rounded" disabled="true"/>
+          </div>
+          <div class="w-9/12 mt-2 mr-5">
+            <label class="inline-block text-gray-500 font-normal" for="course_number_edit">Number</label>
+            <input [(ngModel)]="number" type="text" name="course_number_edit" class="bg-white-one w-full rounded" disabled="true"/>
+          </div>
+          <div class="w-9/12 mt-2">
+            <label class="inline-block text-gray-500 font-normal" for="course_standard_related_hours_edit">Standard Related Hours</label>
+            <input [(ngModel)]="standard_related_hours" type="text" name="course_standard_related_hours_edit" class="bg-white-one w-full rounded" disabled="true"/>
+          </div>
+        </div>
+
+        <div class="flex flex-row">
+          <div class="w-52">
+            <label class="block text-gray-500 font-normal" for="course_operating_topic_hours_edit">Operating Topic Hours</label>
+            <input [(ngModel)]="operating_topic_hours" type="text" name="course_operating_topic_hours_edit" class="bg-white-one w-3/4 rounded" disabled="true"/>
+          </div>
+          <div class="w-52">
+            <label class="block text-gray-500 font-normal" for="course_simulation_hours_edit">Simulation Hours</label>
+            <input [(ngModel)]="simulation_hours" type="text" name="course_simulation_hours_edit" class="bg-white-one w-3/4 rounded" disabled="true"/>
+          </div>
+        </div>
+
+        <button class="custom_class_6 float-right px-8 h-9 items-center text-sm btn-icon-secondary ml-12" type="button" (click)="ShowCourseSaveDropDown()">
+          <app-icon icon="edit_note"></app-icon>Edit
+        </button>
+
+      </div>
+    </div>
+  
+    <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isCourseDetailsDropdownVisible && isCourseSave">
+      <div class="block text-sm space-y-6 px-6 py-6">
+        <div class="flex flex-row justify-between">
+          <div class="w-9/12 mt-2 mr-5">
+            <label class="block text-gray-500 font-normal" for="nerc_id_save">NERC ID</label>
+            <input [(ngModel)]="nerc_id" type="text" name="nerc_id_save" class="px-3 w-full border py-2 rounded" />
+          </div>
+          <div class="w-9/12 mt-2 mr-5">
+            <label class="inline-block text-gray-500 font-normal" for="course_title_save">Title</label>
+            <input [(ngModel)]="title" type="text" name="course_title_save" class="px-3 w-full border py-2 rounded" />
+          </div>
+          <div class="w-9/12 mt-2 mr-5">
+            <label class="inline-block text-gray-500 font-normal" for="course_number_save">Number</label>
+            <input [(ngModel)]="number" type="text" name="course_number_save" class="px-2 w-full border py-2 rounded" />
+          </div>
+          <div class="w-9/12 mt-2">
+            <label class="inline-block text-gray-500 font-normal" for="course_standard_related_hours_save">Standard Related Hours</label>
+            <input [(ngModel)]="standard_related_hours" type="text" name="course_standard_related_hours_save" class="px-3 w-full border py-2 rounded" />
+          </div>
+        </div>
+
+        <div class="flex flex-row ">
+          <div class="w-52 ">
+            <label class="block text-gray-500 font-normal" for="course_operating_topic_hours_save">Operating Topic Hours</label>
+            <input [(ngModel)]="operating_topic_hours" type="text" name="course_operating_topic_hours_save" class="px-3 w-3/4 border py-2 rounded"/>
+          </div>
+          <div class="w-52">
+            <label class="block text-gray-500 font-normal" for="course_simulation_hours_save">Simulation Hours</label>
+            <input [(ngModel)]="simulation_hours" type="text" name="course_simulation_hours_save"class="px-3 w-3/4 border py-2 rounded" />
+          </div>
+        </div>
+
+        <button class="custom_class_6 float-right px-10 h-9 items-center text-sm btn-icon-secondary ml-12" type="button" (click)="ShowCourseEditDropDown()">
+        Save</button>
+
+      </div>
+    </div>
+     </div>
+     <div class="border-b-2 py-8">
+      <p class="text-xl font-semibold px-12 mt-4">Application Details</p>
+      <button (click)="ShowAppDetailsDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+       <app-icon *ngIf="isAppDetailsDropdownVisible" icon="expand_less"></app-icon>
+       <app-icon *ngIf="!isAppDetailsDropdownVisible" icon="expand_more" ></app-icon>
+      </button>
+        
+        <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isAppDetailsDropdownVisible && isAppEdit">
+          <div class="block text-sm space-y-4 px-6 py-6">
+            <div class="flex flex-row ">
+              <div class="w-52 mt-2">
+                <label class="block text-gray-500 font-normal" for="application_start_date_edit">Start Date</label>
+                <input [(ngModel)]="start_date" type="text" name="application_start_date_edit" class="bg-white-one  rounded" disabled="true"/>
+              </div>
+              <div class="w-56 mt-2 mr-4">
+                <label class="inline-block text-gray-500 font-normal" for="application_pilot_edit">Pilot data attached, if applicable</label>
+                <input [(ngModel)]="applicable" type="text" name="application_pilot_edit" class="bg-white-one rounded" disabled="true"/>
+              </div>
+              <div class="w-56 mt-2 ml-3" >
+                <label class="inline-block text-gray-500 font-normal" for="application_assessment_edit">Assessment {{("Tool" | labelReplacement)| async}}s</label>
+                <ul *ngIf="default_value" class="font-normal">Written/Online Exam</ul>
+                <ul class="mb-2 font-normal" *ngFor="let i of assessment" >{{i}}</ul>
+              </div>
+              <button class="float-right px-8 h-9 items-center text-sm btn-icon-secondary ml-10" type="button" (click)="ShowAppSaveDropDown()">
+                Edit</button>
+            </div>
+          
+          </div>
+        </div>
+
+           <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isAppDetailsDropdownVisible && isAppSave">
+            <div class="block text-sm space-y-6 px-4 py-6">
+              <div class="flex flex-row justify-between">
+                <div class="w-9/12 mt-2 mr-2">
+                  <label class="block text-gray-500 font-normal" for="application_start_date_save">Start Date</label>
+                  <input [(ngModel)]="start_date"  type="text" name="application_start_date_save" class="border py-2 px-2 rounded" />
+                </div>
+                <div class="w-9/12 mt-2 mr-4">
+                  <label class="inline-block text-gray-500 font-normal" for="application_pilot_save">Pilot data attached, if applicable</label>
+                  <div class="flex flex-row">
+                    <div class="mr-5">
+                      <input type="checkbox" name="yes" [(ngModel)]="check1" (change)="OnlyOneCheckbox($event)" id="check1id"/>
+                      <label class="inline-block text-gray-700 font-normal" for="yes">Yes</label>
+                    </div>
+                    <div class="mr-5">
+                      <input type="checkbox" name="no" [(ngModel)]="check2" (change)="OnlyOneCheckbox($event)" id="check2id"/>
+                      <label class="inline-block text-gray-700 font-normal" for="no">No</label>
+                    </div>
+                    <div>
+                      <input type="checkbox" name="n/a" [(ngModel)]="check3" (change)="OnlyOneCheckbox($event)" id="check3id"/>
+                      <label class="inline-block text-gray-700 font-normal" for="n/a">N/A</label>
+                    </div>
+                  </div>
+              </div>
+               <div class="w-9/12 mt-2">
+                  <label class="inline-block text-gray-500 font-normal" for="application_assessment_save">Assessment {{("Tool" | labelReplacement)| async}}s</label>
+                   <div class="flex flex-col">
+                    <div *ngFor="let item of ila_checkbox">
+                      <input [(ngModel)]="item.isChecked" (change)="onSelectionChange()" type="checkbox" name="written"/>
+                      <label class="inline-block text-gray-700 ml-2 font-normal">{{item.label}}</label>
+                    </div>
+                   </div>
+               </div> 
+              <button class="float-right px-6 h-9 custom_class_19 items-center text-sm btn-icon-secondary ml-12" type="button" (click)="ShowAppEditDropDown()">
+                Save</button>
+            </div>
+          </div>
+          </div>
+ 
+     </div> 
+     
+    <div class="border-b-2 py-8">
+      <p class="text-xl font-semibold px-12 mt-4">Recognized Operator Training Topics</p>
+      <button (click)="ShowOperatorDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+        <app-icon *ngIf="isOperatorDropdownVisible" icon="expand_less"></app-icon>
+        <app-icon *ngIf="!isOperatorDropdownVisible" icon="expand_more" ></app-icon>
+      </button>
+    </div>    
+  </mat-tab>
+
+</mat-tab-group>  
+
+
+
+ <!--Div for color excluding header section-->
+<div class="bg-gray-50 h-screen">
+   <!--Sub Header ToolBar Starts-->
+   <div class="px-12 custom_class_2">
+    <div class="flex flex-row text-caption font-medium space-x-6 border-b">
+      <button  class="text-gray-four font-medium pb-2 focus:outline-none" (click)="toggleTab('prerequisites')" [ngClass]="{'text-green-one border-green-one border-b-2':activeTab == 'prerequisites'}">
+        PREREQUISITES</button>
+
+      <button class="text-gray-four font-medium pb-2 focus:outline-none" (click)="toggleTab('ila_details')" [ngClass]="{'text-green-one border-green-one border-b-2':activeTab == 'ila_details'}">
+        {{("ILA" | labelReplacement)| async}} DETAILS</button>
+
+      <button class="text-gray-four font-medium pb-2 focus:outline-none" (click)="toggleTab('objectives')" [ngClass]="{'text-green-one border-green-one border-b-2':activeTab == 'objectives'}">
+        OBJECTIVES</button>
+
+      <button class="text-gray-four font-medium pb-2 focus:outline-none" (click)="toggleTab('procedures')" [ngClass]="{'text-green-one border-green-one border-b-2':activeTab == 'procedures'}">
+        {{("Procedure" | labelReplacement)| async}}s</button>
+
+      <button class="text-gray-four font-medium pb-2 focus:outline-none" (click)="toggleTab('safety hazards')" [ngClass]="{'text-green-one border-green-one border-b-2':activeTab == 'safety hazards'}">
+        {{("Safety Hazard" | labelReplacement)| async}}s</button>
+
+      <button class="text-gray-four font-medium pb-2 focus:outline-none" (click)="toggleTab('training_plan')" [ngClass]="{'text-green-one border-green-one border-b-2':activeTab == 'training_plan'}">
+        TRAINING PLAN</button>
+
+      <button class="text-gray-four font-medium pb-2 focus:outline-none" (click)="toggleTab('segements')" [ngClass]="{'text-green-one border-green-one border-b-2': activeTab == 'segements'}">
+        SEGMENTS</button>
+
+      <button class="text-gray-four font-medium pb-2 focus:outline-none" (click)="toggleTab('resources')" [ngClass]="{'text-green-one border-green-one border-b-2': activeTab == 'resources'}">
+        RESOURCES</button>
+
+      <button class="text-gray-four font-medium pb-2 focus:outline-none" (click)="toggleTab('ila application')" [ngClass]="{'text-green-one border-green-one border-b-2':activeTab == 'ila application'}">
+        {{("ILA" | labelReplacement)| async}} APPLICATION</button>
+    </div>
+  </div>
+  <!--Sub Header ToolBar Ends-->
+
+
+  <!--Div for PREREQUISITES starts-->
+  <div *ngIf="activeTab == 'prerequisites'">
+
+    <!--Heading and Add New Button Starts-->
+    <p class="text-xl font-semibold px-12 mt-4 w-20">Prerequisites</p>
+    <app-button (click)="openFlyInPanel(addPrerequisitesPanel)" variant="text" type="button" text="Add New" icon="add" iconPosition="left" class="float-right text-green-one font-bold text-sm mr-5 custom_class_3"></app-button>
+    <!--Heading and Add New Button Ends-->
+
+    <!--Count Starts-->
+    <p class="px-12 text-xs font-normal text-gray-500">Showing {{ prerequisites_list_length }} prerequisites</p>
+    <!--Count Ends-->
+    
+    <app-button *ngIf="isPrerequisiteschecked" class="custom_class_5 rounded-b-md rounded px-3 h-8 items-center 
+    text-sm btn-icon-secondary float-right" variant="text" type="button" text="Remove Selected"
+        (clicked)="removePrerequisites($event)" >      
+    </app-button>
+
+    <!--Table Starts--> 
+    <div class="flex-row bg-white-one rounded-sm m-2 mx-12">
+      <table class="table w-full border text-left mt-5 hover">        
+        <thead>
+          <tr class="table-row text-xs text-gray-four">
+            <th class="table-cell border-gray-one font-normal">
+              <input type="checkbox" [checked]="isAllPrerequisitesCheckBoxChecked()"
+              (change)="checkAllPrerequisitesCheckBox($event)"/>
+            </th>
+            <th class="table-cell border-gray-one font-normal">#</th>
+            <th class="table-cell border-gray-one font-normal">Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of prerequisites_list" class="table-row text-sm font-normal ">
+            <td class="table-cell align-middle border-b-0.8 border-gray-one"><input type="checkbox" value="{{item.id}}" [(ngModel)]="item.checked"  (change)="prerequisitesChange($event)"/></td>
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.id }}</td>
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.description }}</td>
+          </tr>
+        </tbody>
+      </table>
+      </div> 
+    <!--Table Ends-->
+  </div>
+  <!--Div for PREREQUISITES Ends-->
+  <!-------------------------------------------------------------------------------------->
+
+
+
+ <!--Div for ILA DETAILS starts-->
+ <div *ngIf="activeTab == 'ila_details'">
+
+  <!--Details Section Starts-->
+  <div class="border-b-2 py-8">
+    <!--Heading and expand options Starts-->
+    <p class="text-xl font-semibold px-12 mt-4">{{("ILA" | labelReplacement)| async}} Details</p>
+    <button (click)="ShowILADetailsDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+     <app-icon *ngIf="isILADropdownVisible" icon="expand_less"></app-icon>
+     <app-icon *ngIf="!isILADropdownVisible" icon="expand_more" ></app-icon>
+    </button>
+    <!--Heading and expand options Ends-->
+
+    <!-- Edit Form Starts-->
+    <div class="bg-white-one ml-5 mr-4 rounded" *ngIf="isILADropdownVisible && isEdit">
+      <div class="block text-sm space-y-6 px-2 py-6">
+        <div class="flex flex-row justify-between">
+          <div class="w-11/12 mt-2 mr-4">
+            <label class="block text-gray-500" for="title_edit">Title</label>
+           <input [(ngModel)]="ILATitle" type="text" name="title_edit" class="w-11/12 text-small rounded bg-white-one" disabled="true"/>        
+          </div>
+          <div class="w-1/3 mt-2 mr-5">
+            <label class="inline-block text-gray-500" for="number_edit">Number</label>
+             <input [(ngModel)]="ILANumber" type="text" name="number_edit" class="w-full rounded bg-white-one" disabled="true"/> 
+        </div>
+          <div class="w-1/3 mt-2">
+            <label class="inline-block text-gray-500" for="type_edit">Type</label>
+             <input [(ngModel)]="ILAType" type="text" name="type_edit" class="w-full rounded bg-white-one" disabled="true"/>      
+          </div>
+          <div class="w-2/4 mt-4">
+            <button class="custom_class_21 flex flex-row px-4 h-9 items-center text-sm btn-icon-secondary ml-12" type="button" (click)="ShowSaveDropDown()">
+              <app-icon icon="edit_note"></app-icon>Edit
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Edit Form Ends-->
+
+    <!--Save Form Starts-->
+    <div class="bg-white-one ml-5 mr-4 rounded" *ngIf="isILADropdownVisible && isSave">
+      <div class="block text-sm space-y-6 px-2 py-6">
+        <div class="flex flex-row justify-between">
+          <div class="w-custom mt-2 mr-12">
+            <label class="block text-gray-700" for="title_save">Title</label>
+            <input [(ngModel)]="ILATitle" type="text" name="title_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+          <div class="w-custom_1 mt-2 mr-5">
+            <label class="inline-block text-gray-500" for="number_save">Number</label>
+            <input [(ngModel)]="ILANumber" type="text" name="number_save" class="px-2 border py-1 w-full rounded"/>
+          </div>
+          <div class="w-9/12 mt-2">
+            <label class="inline-block text-gray-500" for="type_save">Type</label>
+            <div class="flex flex-col">
+              <div>
+                <input id="self" (change)="ChangeOption($event)" [(ngModel)]="checkbox1" type="checkbox" name="Self-paced" />
+                <label class="inline-block text-gray-700 ml-2 font-normal" for="Self-paced">Self-paced training</label>
+              </div>
+              <div>
+                <input id="optional" (change)="ChangeOption($event)" [(ngModel)]="checkbox2" type="checkbox" name="optional" />
+                <label class="inline-block text-gray-700 ml-2 font-normal" for="optional">Optional</label>
+              </div>
+            </div>
+          </div>
+          <div class="w-9/12 mt-4">
+            <button class="flex flex-row custom_class_18 px-4 h-9 items-center text-sm btn-icon-secondary" type="button" (click)="ShowEditDropDown()">Save</button>          
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--Save Form Ends-->
+  </div>
+  <!--Details Section Ends-->
+
+  <!--CEHs Starts-->
+  <div class="border-b-2 py-8">
+    <p class="font-bold text-xl px-12">CEH</p>
+    <button (click)="ShowCEHDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+      <app-icon *ngIf="isCEHDropdownVisible" icon="expand_less"></app-icon>
+      <app-icon *ngIf="!isCEHDropdownVisible" icon="expand_more" ></app-icon>
+    </button>
+
+    <!--Edit Forms Starts-->
+    <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isCEHDropdownVisible && isCEHEdit">
+    <div class="block text-sm space-y-6 px-6 py-6">
+      <div class="flex flex-row justify-between">
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="standard_related_hours_edit">Standard Related Hours</label>
+          <input [(ngModel)]="standard_related_hours_details" type="text" name="standard_related_hours_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+        </div>
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="ceh_hours_edit">Total CEH Hours</label>
+          <input [(ngModel)]="ceh_hours" type="text" name="ceh_hours_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+        </div>
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="other_edit">Other</label>
+          <input [(ngModel)]="other" type="text" name="other_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+        </div>
+      </div>
+
+      <div class="flex flex-row justify-between">
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="operating_topic_hours_edit">Operating Topics Hours</label>
+          <input  [(ngModel)]="operating_topic_hours_details" type="text" name="operating_topic_hours_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+        </div>
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="emerg_edit">PER-005 Emerg.Op.Hours</label>
+          <input [(ngModel)]="emerg" type="text" name="emerg_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+        </div>
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="total_training_hours_edit">Total training Hours</label>
+          <input [(ngModel)]="total_training_hours" type="text" name="total_training_hours_edit" class="bg-white-one w-full rounded"  disabled="true"/>
+        </div>
+      </div>
+
+      <div class="flex flex-row ">
+        <div class="w-56 mr-6">
+          <label class="block text-gray-500 font-normal" for="simulation_hours_edit">Simulation Hours</label>
+          <input [(ngModel)]="simulation_hours_details" type="text" name="simulation_hours_edit" class="bg-white-one w-full rounded" disabled="true"/>
+        </div>
+        <div class="w-56 ml-12">
+          <label class="block text-gray-500 font-normal" for="regional_hours_edit">Regional Hours</label>
+          <input [(ngModel)]="regional_hours" type="text" name="regional_hours_edit" class="bg-white-one w-full rounded" disabled="true"/>
+        </div>
+      </div>
+
+      <div class="flex flex-row">
+        <div class="w-56 mr-6">
+          <label class="block text-gray-500 font-normal" for="professional_hours_edit">Professional Hours</label>
+          <input [(ngModel)]="professional_hours" type="text" name="professional_hours_edit" class="bg-white-one w-full rounded" disabled="true"/>
+        </div>
+        <div class="w-56 ml-12">
+          <label class="block text-gray-500 font-normal" for="regional_2_hours_edit">Regional 2 Hours</label>
+          <input [(ngModel)]="regional_2_hours" type="text" name="regional_2_hours_edit" class="bg-white-one w-full rounded" disabled="true"/>
+        </div>
+      </div>
+
+      <button (click)="ShowCEHSaveDropDown()" class="flex flex-row px-5 h-9 items-center text-sm btn-icon-secondary ml-12 float-right custom_class_6" type="button">
+        <app-icon icon="edit_note"></app-icon>Edit
+       </button>
+    </div>
+  </div>
+  <!--Edit Forms Ends-->
+
+   <!--Save Forms Starts-->
+   <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isCEHDropdownVisible && isCEHSave">
+    <div class="block text-sm space-y-6 px-6 py-6">
+      <div class="flex flex-row justify-between">
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="standard_related_hours_save">Standard Related Hours</label>
+          <input [(ngModel)]="standard_related_hours_details" type="text" name="standard_related_hours_save" class="px-2 border py-1 w-full rounded"/>
+        </div>
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="ceh_hours_save">Total CEH Hours</label>
+          <input [(ngModel)]="ceh_hours" type="text" name="ceh_hours_save" class="px-2 border py-1 w-full rounded"/>
+        </div>
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="other_save">Other</label>
+          <input [(ngModel)]="other" type="text" name="other_save" class="px-2 border py-1 w-full rounded"/>
+        </div>
+      </div>
+
+      <div class="flex flex-row justify-between">
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="operating_topic_hours_save">Operating Topics Hours</label>
+          <input [(ngModel)]="operating_topic_hours_details"  type="text" name="operating_topic_hours_save" class="px-2 border py-1 w-full rounded"/>
+        </div>
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="emerg_save">PER-005 Emerg.Op.Hours</label>
+          <input [(ngModel)]="emerg" type="text" name="emerg_save" class="px-2 border py-1 w-full rounded"/>
+        </div>
+        <div class="w-9/12 mr-5">
+          <label class="block text-gray-500 font-normal" for="total_training_hours_save">Total training Hours</label>
+          <input [(ngModel)]="total_training_hours" type="text" name="total_training_hours_save" class="px-2 border py-1 w-full rounded"/>
+        </div>
+      </div>
+
+      <div class="flex flex-row ">
+        <div class="w-56 mr-6">
+          <label class="block text-gray-500 font-normal" for="simulation_hours_save">Simulation Hours</label>
+          <input [(ngModel)]="simulation_hours_details" type="text" name="simulation_hours_save" class="px-2 border py-1 w-full rounded"/>
+        </div>
+        <div class="w-56 ml-12">
+          <label class="block text-gray-500 font-normal" for="regional_hours_save">Regional Hours</label>
+          <input [(ngModel)]="regional_hours" type="text" name="regional_hours_save" class="px-2 border py-1 w-full rounded"/>
+        </div>
+      </div>
+
+      <div class="flex flex-row">
+        <div class="w-56 mr-6">
+          <label class="block text-gray-500 font-normal" for="professional_hours_save">Professional Hours</label>
+          <input [(ngModel)]="professional_hours" type="text" name="professional_hours_save" class="px-2 border py-1 w-full rounded"/>
+        </div>
+        <div class="w-56 ml-12">
+          <label class="block text-gray-500 font-normal" for="regional_2_hours_save">Regional 2 Hours</label>
+          <input [(ngModel)]="regional_2_hours" type="text" name="regional_2_hours_save" class="px-2 border py-1 w-full rounded"/>
+        </div>
+      </div>
+      <button (click)="ShowCEHEditDropDown()" class="flex flex-row px-5 h-9 items-center text-sm btn-icon-secondary ml-12 float-right custom_class_6" type="button">Save</button>
+    </div>
+  </div>
+  <!--Save Forms Ends-->
+</div>
+  <!--CEHs Ends-->
+
+  <!--Additional CEHs Starts-->
+  <div class="border-b-2 py-8">
+    <p class="font-bold text-xl px-12">Additional CEH HOURS</p>
+    <button (click)="ShowAdditionalCEHHoursDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+      <app-icon *ngIf="isAdditionalCEHHoursDropdownVisible" icon="expand_less"></app-icon>
+      <app-icon *ngIf="!isAdditionalCEHHoursDropdownVisible" icon="expand_more" ></app-icon>
+    </button>
+  </div>
+  <!--Additional CEHs Ends-->
+
+  <!--Addresses a NERC Standard Training Requirement Starts-->
+  <div class="border-b-2 py-8">
+    <p class="font-bold text-xl px-12">Addresses a NERC Standard Training Requirement Ends</p>
+    <button (click)="ShowTrainingDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+      <app-icon *ngIf="isTrainingDropdownVisible" icon="expand_less"></app-icon>
+      <app-icon *ngIf="!isTrainingDropdownVisible" icon="expand_more" ></app-icon>
+    </button>
+  </div>
+  <!--Addresses a NERC Standard Training Requirement Ends-->
+
+  <!--Additional CEHs Starts-->
+  <div class="border-b-2 py-8">
+    <p class="font-bold text-xl px-12">Additional CEH HOURS</p>
+    <button (click)="ShowAdditionalCEHDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+      <app-icon *ngIf="isAdditionalCEHDropdownVisible" icon="expand_less"></app-icon>
+      <app-icon *ngIf="!isAdditionalCEHDropdownVisible" icon="expand_more" ></app-icon>
+    </button>
+  </div>
+  <!--Additional CEHs Ends-->
+</div>
+<!--Div for  ILA DETAILS Ends-->
+<!-------------------------------------------------------------------------------------->
+
+
+  <div *ngIf="activeTab == 'objectives'">
+
+    <p class="text-xl font-semibold px-12 mt-4 w-20">Objectives</p>
+    <app-button variant="text" type="button" text="Add New" icon="add" iconPosition="left"
+      class="float-right text-green-one font-bold text-sm mr-5 custom_class_3"
+      (click)="openFlyInPanel(adObjectivesPanel)"></app-button>   
+    
+    <p class="px-12 text-xs font-normal text-gray-500">Showing {{objectivesLength}} {{("Enabling Objective" | labelReplacement)| async}}</p>
+    
+    <app-button *ngIf="isObjectivesChecked" class="custom_class_5 rounded-b-md rounded px-3 h-8 items-center 
+    text-sm btn-icon-secondary float-right" variant="text" type="button" text="Remove Selected"
+        (clicked)="removeObjective($event)" >      
+    </app-button>
+
+    <div class="flex-row bg-white-one rounded-sm m-2 mx-12">
+       <table class="table w-full border text-left mt-5 hover">        
+          <thead>
+              <tr class="table-row text-xs text-gray-four">                
+                <th class="table-cell border-gray-one font-normal">
+                  <input type="checkbox"  [checked]="isAllObjectivesCheckBoxChecked()"
+                  (change)="checkAllObjectivesCheckBox($event)"/>
+                </th>
+                <th class="table-cell border-gray-one font-normal">
+                  type
+                </th>
+                <th class="table-cell border-gray-one font-normal">
+                  #
+                </th>
+                <th class="table-cell border-gray-one font-normal">
+                  Description
+                </th> 
+              </tr>    
+          </thead>
+          
+          <tbody>
+              <tr *ngFor="let item of objectivesList" class="table-row text-sm font-normal hover:bg-gray-50">
+                <td class="table-cell align-middle border-b-0.8 border-gray-one">
+                  <input type="checkbox" value="{{item.id}}" [(ngModel)]="item.checked" 
+                  (change)="objectiveChange($event)"/>
+                </td>
+                <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                  {{item.type}}
+                </td>
+                <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                  {{item.id}}
+                </td>
+                <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                  {{item.description}}
+                </td>
+              </tr>
+          </tbody>         
+       </table>
+   </div>
+     <!--Table Ends-->
+  </div>
+  <!--Div for OBJECTIVES Ends-->
+ <!-------------------------------------------------------------------------------------->
+
+ 
+  <!--Div for PROCEDURES starts-->
+  <div *ngIf="activeTab == 'procedures'">
+
+    <!--Heading and Add New Button Starts-->
+    <p class="text-xl font-semibold px-12 mt-4 w-20">{{("Procedure" | labelReplacement)| async}}s</p>
+    <app-button (click)="openFlyInPanel(addproceduresPanel)" variant="text" type="button" text="Add New" icon="add" iconPosition="left" class="float-right text-green-one font-bold text-sm mr-5 custom_class_3"></app-button>
+    <!--Heading and Add New Button Ends-->
+  
+     <!--Count Starts-->
+     <p class="px-12 text-xs font-normal text-gray-500">Showing {{ procedure_list_length }} {{("Procedure" | labelReplacement)| async}}s</p>
+    <!--Count Ends-->
+  
+    <app-button *ngIf="isProcedureCheck" class="custom_class_5 rounded-b-md rounded px-3 h-8 items-center 
+      text-sm btn-icon-secondary float-right" variant="text" type="button" text="Remove Selected"
+          (clicked)="removeProcedure($event)">      
+    </app-button>  
+  
+    <!--Table Starts-->
+    <div class="flex-row bg-white-one rounded-b-md m-2 ml-4 mx-12">
+      <table class="table border w-full text-left mt-5">
+        <thead>
+          <tr class="table-row text-xs text-gray-four">
+            <th class="table-cell border-gray-one font-normal">
+              <input type="checkbox" [checked]="isAllProcedureCheckBoxChecked()"
+              (change)="checkAllProcedureCheckBox($event)" />
+            </th>
+            <th class="table-cell border-gray-one font-normal">Number</th>
+            <th class="table-cell border-gray-one font-normal">{{("Procedure" | labelReplacement)| async}}s Title</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of procedures_list" class="table-row text-sm font-normal">
+            <td class="table-cell align-middle border-b-0.8 border-gray-one"><input type="checkbox" value="{{item.number}}" [(ngModel)]="item.checked" (change)="proceduresChange($event)"/></td>
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.number }}</td>
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.procedure_title }}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!--Table Ends-->
+  </div>
+  <!--Div for PROCEDURES Ends-->
+  <!-------------------------------------------------------------------------------------->
+  
+  
+  <!--Div for SAFETY HAZARD starts-->
+  <div *ngIf="activeTab == 'safety hazards'">
+  
+    <!--Heading and Add New Button Starts-->
+    <p class="text-xl font-semibold px-12 mt-4">{{("Safety Hazard" | labelReplacement)| async}}s</p>
+    <app-button (click)="openFlyInPanel(addSafetyHazardPanel)" variant="text" type="button" text="Add New" icon="add" iconPosition="left" class="float-right text-green-one font-bold text-sm mr-5 custom_class_3"></app-button>
+    <!--Heading and Add New Button Ends-->
+  
+      <!--Count Starts-->
+      <p class="px-12 text-xs font-normal text-gray-500">Showing {{ safety_hazard_list_length }} {{("Safety Hazard" | labelReplacement)| async}}s</p>
+      <!--Count Ends-->
+  
+      <app-button *ngIf="isSafetyHazardCheck" class="custom_class_5 rounded-b-md rounded px-3 h-8 items-center 
+        text-sm btn-icon-secondary float-right" variant="text" type="button" text="Remove Selected"
+            (clicked)="removeSafetyHazard($event)">      
+      </app-button>  
+    
+  
+      <!--Table Starts-->
+      <div class="flex-row bg-white-one rounded-b-md m-2 ml-4 mx-12">
+        <table class="table border w-full text-left mt-5">
+          <thead>
+            <tr class="table-row text-xs text-gray-four">
+              <th class="table-cell border-gray-one font-normal">
+                <input type="checkbox" [checked]="isAllSafetyHazardCheckBoxChecked()"
+                (change)="checkAllSafetyHazardCheckBox($event)" />
+              </th>
+              <th class="table-cell border-gray-one font-normal">Number</th>
+              <th class="table-cell border-gray-one font-normal">{{("Procedure" | labelReplacement)| async}}s Title</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of safety_hazard_list" class="table-row text-sm font-normal">
+              <td class="table-cell align-middle border-b-0.8 border-gray-one"><input type="checkbox" value="{{item.number}}" [(ngModel)]="item.checked" (change)="safetyHazardChange($event)"/></td>
+              <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.number }}</td>
+              <td class="table-cell align-middle border-b-0.8 border-gray-one">{{ item.procedure_title }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <!--Table Ends-->
+  </div>
+  <!--Div for SAFETY HAZARD Ends-->
+  <!-------------------------------------------------------------------------------------->
+  
+  
+    <!--Div for TRAINING PLAN starts-->
+    <div *ngIf="activeTab == 'training_plan'">
+  
+      <!--Individual Learning Activity Information Starts-->
+      <div class="border-b-2 py-8">
+        <p class="font-bold text-xl px-12">Individual Learning Activity Information</p>
+        <button (click)="ShowIndividualDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+          <app-icon *ngIf="isIndividualDropdownVisible" icon="expand_less"></app-icon>
+          <app-icon *ngIf="!isIndividualDropdownVisible" icon="expand_more" ></app-icon>
+        </button>
+  
+        <!--Form Starts-->
+        <div class="bg-white-one rounded m-2 ml-4 mx-12" *ngIf="isIndividualDropdownVisible">
+          <div class="block text-sm space-y-6 px-6 py-6">
+              <div class="w-9/12 mt-2 mr-5"> 
+                <div class="flex flex-row justify-between">
+                <div>
+                  <input aria-label="classroom" type="checkbox" name="classroom" />
+                  <label class="inline-block text-gray-700 ml-2 font-medium" for="classroom">Classroom</label>
+                </div>
+                <div>
+                  <input aria-label="ojt_training" type="checkbox" name="ojt_training" />
+                  <label class="inline-block text-gray-700 ml-2 font-medium" for="ojt_training">OJT Training</label>
+                </div>
+                <div>
+                  <input aria-label="ots" type="checkbox" name="ots" />
+                  <label class="inline-block text-gray-700 ml-2 font-medium" for="ots">Operator Training Simulation</label>
+                </div>
+              </div>
+            </div>
+  
+            <div class="w-9/12 mt-2 mr-5"> 
+              <div class="flex flex-row justify-between">
+               <div>
+                 <input aria-label="workshop" type="checkbox" name="workshop" />
+                 <label class="inline-block text-gray-700 ml-2 font-medium" for="workshop">Workshop/Seminar</label>
+               </div>
+               <div class="custom_class_7">
+                 <input aria-label="self_study" type="checkbox" name="self_study" />
+                 <label class="inline-block text-gray-700 ml-2 font-medium" for="self_study">Self Study</label>
+               </div>
+               <div class="custom_class_10">
+                 <input aria-label="computer_based" type="checkbox" name="computer_based" />
+                 <label class="inline-block text-gray-700 ml-2 font-medium" for="computer_based">Computer Based</label>
+               </div>
+             </div>
+           </div>
+  
+           <div class="w-9/12 mt-2 mr-5"> 
+            <div class="flex flex-row justify-between">
+               <div>
+                 <input aria-label="conference" type="checkbox" name="conference" />
+                 <label class="inline-block text-gray-700 ml-2 font-medium" for="conference">Conference</label>
+               </div>
+               <div class="custom_class_9">
+                 <input aria-label="internet_based" type="checkbox" name="internet_based" />
+                 <label class="inline-block text-gray-700 ml-2 font-medium" for="internet_based">Internet Based</label>
+               </div>
+               <div class="custom_class_8">
+                 <input aria-label="other" type="checkbox" name="other" />
+                 <label class="inline-block text-gray-700 ml-2 font-medium" for="other">Other</label>
+               </div>
+             </div>
+           </div>
+  
+          </div>
+  
+          <p class="font-normal text-gray-500 text-sm px-6">(Check all that apply)</p>
+          <button class="float-right px-12 h-9 items-center text-sm btn-icon-secondary ml-12 custom_class_11" type="button" (click)="ShowEditDropDown()">Save</button>
+        </div>
+        <!--Form Ends-->
+    </div>
+      <!--Individual Learning Activity Information Ends-->
+  
+       <!--Target Audience Starts-->
+       <div class="border-b-2 py-8">
+        <p class="font-bold text-xl px-12">Target Audience</p>
+        <button (click)="ShowTargetDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+          <app-icon *ngIf="isTargetDropdownVisible" icon="expand_less"></app-icon>
+          <app-icon *ngIf="!isTargetDropdownVisible" icon="expand_more" ></app-icon>
+        </button>
+    </div>
+      <!--Target Audience Ends-->
+  
+       <!--Training Plan Starts-->
+       <div class="border-b-2 py-8">
+        <p class="font-bold text-xl px-12">Training Plan</p>
+        <button (click)="ShowTrainingPlanDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+          <app-icon *ngIf="isTrainingPlanDropdownVisible" icon="expand_less"></app-icon>
+          <app-icon *ngIf="!isTrainingPlanDropdownVisible" icon="expand_more" ></app-icon>
+        </button>
+    </div>
+      <!--Training Plan Ends-->
+  
+        <!--Evaluation Method Starts-->
+        <div class="border-b-2 py-8">
+          <p class="font-bold text-xl px-12">Evaluation Method</p>
+          <button (click)="ShowEvaluationMethodDropDown()" class=" focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+            <app-icon *ngIf="isEvaluationMethodDropdownVisible" icon="expand_less"></app-icon>
+            <app-icon *ngIf="!isEvaluationMethodDropdownVisible" icon="expand_more" ></app-icon>
+          </button>
+      </div>
+        <!--Evaluation Method Ends-->
+  
+    </div>
+    <!--Div for TRAINING PLAN Ends-->
+  <!-------------------------------------------------------------------------------------->
+  
+  
+    <!--Div for SEGMENTS starts-->
+    <div *ngIf="activeTab == 'segements'">
+    </div>
+    <!--Div for SEGMENTS Ends-->
+  <!-------------------------------------------------------------------------------------->
+  
+  
+    <!--Div for RESOURCES starts-->
+    <div *ngIf="activeTab == 'resources'">
+      <div class="bg-white-one rounded-sm mt-4 mr-8 ml-8 h-screen" *ngIf="!isPlayButtonClicked">
+        <!--Title and subtitle starts here-->
+        <p  class="pt-6 font-medium text-2xl px-10">Title</p>
+        <p class="text-gray-400 text-base"><app-icon icon="add_box" class="text-gray-400 text-base pl-9"></app-icon> Start typing...</p>
+        <!--Title and subtitle ends here-->
+  
+        <!--Div starts here-->
+        <div class="custom_class_15 bg-green-50 ml-7 h-11 rounded-sm">
+          <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 mr-3 w-32 pr-4">
+            <p class="text-white-one py-1 px-1">Paragraph</p>
+            <app-button class="h-7 cutsom_class_12 text-white-one" variant="text" type="button" icon="expand_more"></app-button>
+          </div>
+  
+          <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+            <app-button class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="format_list_bulleted"></app-button>
+          </div>
+  
+          <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+            <app-button class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="format_list_numbered"></app-button>
+          </div>
+  
+          <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+            <app-button class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="horizontal_rule"></app-button>
+          </div>
+  
+          <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+            <app-button class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="photo_camera"></app-button>
+          </div>
+  
+          <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+            <app-button (click)="OpenResourcePanel()" class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="play_circle_outline"></app-button>
+          </div>
+  
+          <div class="rounded bg-green-600 h-7 text-sm float-left mt-2 ml-2 w-7 pr-4">
+            <app-button class="h-7 cutsom_class_14 text-white-one items-center" variant="text" type="button" icon="save"></app-button>
+          </div>
+        </div>
+        <!--Div ends here-->
+  
+      </div>
+  
+      <!--Div for Play Button Starts Here-->
+      <div class="bg-white-one rounded rounded-sm mt-4 mr-8 ml-8 min-h-screen" *ngIf="isPlayButtonClicked">
+        <!--Close Button Starts-->
+        <div class="flex flex-row float-right justify-between items-center">
+          <button type="button" (click)="CloseResourcePanel()">
+            <app-icon icon="close"></app-icon>
+          </button>
+        </div>
+        <!--Close Button Starts-->
+  
+        <!--2 columns Start-->
+        <div class="flex mt-5 w-full custom_class_16 px-3 min-h-screen">
+          <!--Col 1 starts-->
+          <div class="flex flex-col w-3/12">
+            <button class="flex flex-row text-sm font-medium space-x-6 focus:outline-none p-2 h-11 mb-4" (click)="toggleTabResource('welcome')" 
+            [ngClass]="{'bg-green-50 rounded rounded-sm w-full items-start h-11 p-2':activeTabResource == 'welcome'}">
+              <app-icon icon="video_camera_front" class="pr-4"></app-icon>Welcome</button>       
+        
+            <button class="flex flex-row text-sm font-medium space-x-6 focus:outline-none p-2 h-11 mb-4" (click)="toggleTabResource('real_life')" 
+            [ngClass]="{'bg-green-50 rounded rounded-sm w-full items-start h-11 p-2':activeTabResource == 'real_life'}">
+              <app-icon icon="format_list_bulleted" class="pr-4"></app-icon>Providing real-life examples</button>
+  
+            <button class="flex flex-row text-sm font-medium space-x-6 focus:outline-none p-2 h-11 mb-4" (click)="toggleTabResource('rescource')" 
+            [ngClass]="{'bg-green-50 rounded rounded-sm w-full items-start h-11 p-2':activeTabResource == 'rescource'}">
+              <app-icon icon="menu_book" class="pr-4"></app-icon>Resources</button>
+  
+            <button class="flex flex-row text-sm font-medium space-x-6 focus:outline-none p-2 h-11" (click)="toggleTabResource('assessment')" 
+            [ngClass]="{'bg-green-50 rounded rounded-sm w-full items-start h-11 p-2':activeTabResource == 'assessment'}">
+            <app-icon icon="assignment_turned_in" class="pr-4"></app-icon>Assessment</button>
+          </div>
+          <!--Col 1 ends-->
+  
+          <!--Col 2 starts-->
+          <div class="flex flex-col flex-wrap mr-2 mt-3 border-l-0.8 border-gray-300 absolute custom_class_17 min-h-screen">
+            <!--Div for welcome starts-->
+            <div class="ml-3" *ngIf="activeTabResource == 'welcome'">
+  
+              <!--Div for video starts-->
+              <div class="w-696">
+                <div>
+                  <iframe width="650" height="315" src="https://www.youtube.com/embed/8uIe0qY9qG8?modestbranding=1&amp;rel=0" title="Youtube Video" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                </div>
+                <!-- <div class="ml-4">
+                  <app-button (click)="ChangeIcon()" *ngIf="changePlay" class="btn-secondary w-20 h-15 border border-b-2" icon="play_circle" variant="text"></app-button> 
+                  <app-button (click)="ChangeIcon()" *ngIf="changePause" class="btn-secondary w-20 h-15 border border-b-2" icon="pause_circle" variant="text"></app-button>
+                </div> -->
+              </div>
+              <!--Div for video ends-->
+  
+              <!--Div for heading and paragraphs starts-->
+              <div class="flex flex-row mt-4 ml-1">
+                <p class="font-bold text-xl">Identify acceptable and unacceptable ACE deviations </p>
+              </div>
+              <div class="flex flex-row mt-2 ml-1 text-gray-500 font-normal w-cutsom-3">
+              <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
+                incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis 
+                nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
+                fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                culpa qui officia deserunt mollit anim id est laborum</p>
+              </div>
+              <div class="flex flex-row mt-2 ml-1 text-gray-500 font-normal w-cutsom-3">
+                <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor 
+                  incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis 
+                  nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. 
+                  Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu 
+                  fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in 
+                  culpa qui officia deserunt mollit anim id est laborum</p>
+              </div>
+              <!--Div for heading and paragraphs ends-->
+              
+              <!--Div for resources starts-->
+              <div class="flex mt-5" >
+                <div class="flex-col w-1/2">
+                  <p class="font-bold text-xl">Resources</p>
+                </div>
+                <div class="flex-col w-1/2">
+                  <p class="font-bold text-xl">Resources</p>
+                </div>
+              </div>
+              <!--Div for resources ends-->
+            </div>
+            <!--Div for welcome ends-->
+  
+            <div *ngIf="activeTabResource == 'real_life'">
+              <p>Providing Real Life Example</p>
+  
+            </div>
+  
+            <div *ngIf="activeTabResource == 'rescource'">
+              <p>Resources</p>
+  
+            </div>
+  
+            <div *ngIf="activeTabResource == 'assessment'">
+              <p>Assessment</p>
+  
+            </div>
+  
+          </div>
+          <!--Col 2 ends-->
+  
+        </div>
+        <!--2 columns Ends-->
+      </div>
+      <!--Div for Play Button Ends Here-->  
+    </div>
+    <!--Div for RESOURCES Ends-->
+  <!-------------------------------------------------------------------------------------->
+  
+  
+    <!--Div for ILA APPLICATION starts-->
+    <div *ngIf="activeTab == 'ila application'">
+      <!--Course Details Starts-->
+      <div class="border-b-2 py-8">
+        <p class="text-xl font-semibold px-12 mt-4">Course Details</p>
+        <button (click)="ShowCourseDetailsDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+         <app-icon *ngIf="isCourseDetailsDropdownVisible" icon="expand_less"></app-icon>
+         <app-icon *ngIf="!isCourseDetailsDropdownVisible" icon="expand_more" ></app-icon>
+        </button>
+    
+        <!-- Edit Form Starts-->
+        <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isCourseDetailsDropdownVisible && isCourseEdit">
+          <div class="block text-sm space-y-6 px-6 py-6">
+            <div class="flex flex-row justify-between">
+              <div class="w-9/12 mt-2 mr-5">
+                <label class="block text-gray-500" for="nerc_id_edit">NERC ID</label>
+                <input [(ngModel)]="nerc_id" type="text" name="nerc_id_edit" class="bg-white-one w-full rounded" disabled="true"/>
+              </div>
+              <div class="w-9/12 mt-2 mr-5">
+                <label class="inline-block text-gray-500" for="course_title_edit">Title</label>
+                <input [(ngModel)]="title" type="text" name="course_title_edit" class="bg-white-one w-full rounded" disabled="true"/>
+              </div>
+              <div class="w-9/12 mt-2 mr-5">
+                <label class="inline-block text-gray-500" for="course_number_edit">Number</label>
+                <input [(ngModel)]="number" type="text" name="course_number_edit" class="bg-white-one w-full rounded" disabled="true"/>
+              </div>
+              <div class="w-9/12 mt-2 mr-5">
+                <label class="inline-block text-gray-500" for="course_standard_related_hours_edit">Standard Related Hours</label>
+                <input [(ngModel)]="standard_related_hours" type="text" name="course_standard_related_hours_edit" class="bg-white-one w-full rounded" disabled="true"/>
+              </div>
+            </div>
+    
+            <div class="flex flex-row ">
+              <div class="w-56">
+                <label class="block text-gray-500 font-normal" for="course_operating_topic_hours_edit">Operating Topic Hours</label>
+                <input [(ngModel)]="operating_topic_hours" type="text" name="course_operating_topic_hours_edit" class="bg-white-one w-3/4 rounded" disabled="true"/>
+              </div>
+              <div class="w-56">
+                <label class="block text-gray-500 font-normal" for="course_simulation_hours_edit">Simulation Hours</label>
+                <input [(ngModel)]="simulation_hours" type="text" name="course_simulation_hours_edit" class="bg-white-one w-3/4 rounded" disabled="true"/>
+              </div>
+            </div>
+    
+            <button class="custom_class_6 float-right px-8 h-9 items-center text-sm btn-icon-secondary ml-12" type="button" (click)="ShowCourseSaveDropDown()">
+              <app-icon icon="edit_note"></app-icon>Edit
+            </button>
+    
+          </div>
+        </div>
+        <!--Edit Form Ends-->
+    
+        <!--Save Form Starts-->
+        <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isCourseDetailsDropdownVisible && isCourseSave">
+          <div class="block text-sm space-y-6 px-6 py-6">
+            <div class="flex flex-row justify-between">
+              <div class="w-9/12 mt-2 mr-5">
+                <label class="block text-gray-500" for="nerc_id_save">NERC ID</label>
+                <input [(ngModel)]="nerc_id" type="text" name="nerc_id_save" class="px-3 w-full border py-2 rounded" />
+              </div>
+              <div class="w-9/12 mt-2 mr-5">
+                <label class="inline-block text-gray-500" for="course_title_save">Title</label>
+                <input [(ngModel)]="title" type="text" name="course_title_save" class="px-3 w-full border py-2 rounded" />
+              </div>
+              <div class="w-9/12 mt-2 mr-5">
+                <label class="inline-block text-gray-500" for="course_number_save">Number</label>
+                <input [(ngModel)]="number" type="text" name="course_number_save" class="px-2 w-full border py-2 rounded" />
+              </div>
+              <div class="w-9/12 mt-2 mr-5">
+                <label class="inline-block text-gray-500" for="course_standard_related_hours_save">Standard Related Hours</label>
+                <input [(ngModel)]="standard_related_hours" type="text" name="course_standard_related_hours_save" class="px-3 w-full border py-2 rounded" />
+              </div>
+            </div>
+    
+            <div class="flex flex-row ">
+              <div class="w-56 ">
+                <label class="block text-gray-500 font-normal" for="course_operating_topic_hours_save">Operating Topic Hours</label>
+                <input [(ngModel)]="operating_topic_hours" type="text" name="course_operating_topic_hours_save" class="px-3 w-3/4 border py-2 rounded"/>
+              </div>
+              <div class="w-56">
+                <label class="block text-gray-500 font-normal" for="course_simulation_hours_save">Simulation Hours</label>
+                <input [(ngModel)]="simulation_hours" type="text" name="course_simulation_hours_save"class="px-3 w-3/4 border py-2 rounded" />
+              </div>
+            </div>
+    
+            <button class="custom_class_6 float-right px-10 h-9 items-center text-sm btn-icon-secondary ml-12" type="button" (click)="ShowCourseEditDropDown()">
+            Save</button>
+    
+          </div>
+        </div>
+        <!--Save Form Ends-->
+       </div>
+      <!--Course Details Ends-->
+
+
+      <!--Application Details Starts-->
+      <div class="border-b-2 py-8">
+        <p class="text-xl font-semibold px-12 mt-4">Application Details</p>
+        <button (click)="ShowAppDetailsDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+         <app-icon *ngIf="isAppDetailsDropdownVisible" icon="expand_less"></app-icon>
+         <app-icon *ngIf="!isAppDetailsDropdownVisible" icon="expand_more" ></app-icon>
+        </button>
+    
+         <!-- Edit Form Starts-->
+         <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isAppDetailsDropdownVisible && isAppEdit">
+          <div class="block text-sm space-y-4 px-6 py-6">
+            <div class="flex flex-row ">
+              <div class="w-56 mt-2">
+                <label class="block text-gray-500" for="application_start_date_edit">Start Date</label>
+                <input [(ngModel)]="start_date" type="text" name="application_start_date_edit" class="bg-white-one  rounded" disabled="true"/>
+              </div>
+              <div class="w-56 mt-2 mr-5">
+                <label class="inline-block text-gray-500" for="application_pilot_edit">Pilot data attached, if applicable</label>
+                <input [(ngModel)]="applicable" type="text" name="application_pilot_edit" class="bg-white-one rounded" disabled="true"/>
+              </div>
+              <div class="w-56 mt-2" >
+                <label class="inline-block text-gray-500" for="application_assessment_edit">Assessment {{("Tool" | labelReplacement)| async}}s</label>
+                <ul *ngIf="default_value">Written/Online Exam</ul>
+                <ul class="mb-2" *ngFor="let i of assessment" >{{i}}</ul>
+              </div>
+              <button class="custom_class_13 float-right px-8 h-9 items-center text-sm btn-icon-secondary ml-12" type="button" (click)="ShowAppSaveDropDown()">
+                <app-icon icon="edit_note"></app-icon>Edit
+              </button>
+            </div>
+           
+          </div>
+        </div>
+        <!--Edit Form Ends-->
+    
+    
+           <!-- Save Form Starts-->
+           <div class="bg-white-one m-2 ml-4 mx-12 rounded" *ngIf="isAppDetailsDropdownVisible && isAppSave">
+            <div class="block text-sm space-y-6 px-6 py-6">
+              <div class="flex flex-row justify-between">
+                <div class="w-9/12 mt-2 mr-2">
+                  <label class="block text-gray-500" for="application_start_date_save">Start Date</label>
+                  <input [(ngModel)]="start_date"  type="text" name="application_start_date_save" class="border py-2 px-2 rounded" />
+                </div>
+                <div class="w-9/12 mt-2 mr-5">
+                  <label class="inline-block text-gray-500" for="application_pilot_save">Pilot data attached, if applicable</label>
+                  <div class="flex flex-row">
+                    <div class="mr-5">
+                      <input type="checkbox" name="yes" [(ngModel)]="check1" (change)="OnlyOneCheckbox($event)" id="check1id"/>
+                      <label class="inline-block text-gray-700" for="yes">Yes</label>
+                    </div>
+                    <div class="mr-5">
+                      <input type="checkbox" name="no" [(ngModel)]="check2" (change)="OnlyOneCheckbox($event)" id="check2id"/>
+                      <label class="inline-block text-gray-700" for="no">No</label>
+                    </div>
+                    <div>
+                      <input type="checkbox" name="n/a" [(ngModel)]="check3" (change)="OnlyOneCheckbox($event)" id="check3id"/>
+                      <label class="inline-block text-gray-700" for="n/a">N/A</label>
+                    </div>
+                  </div>
+              </div>
+               <div class="w-9/12 mt-2 mr-5">
+                  <label class="inline-block text-gray-500" for="application_assessment_save">Assessment {{("Tool" | labelReplacement)| async}}s</label>
+                   <div class="flex flex-col">
+                    <div *ngFor="let item of ila_checkbox">
+                      <input [(ngModel)]="item.isChecked" (change)="onSelectionChange()" type="checkbox" name="written"/>
+                      <label class="inline-block text-gray-700 ml-2 ">{{item.label}}</label>
+                    </div>
+                   </div>
+               </div> 
+              <button class="float-right px-10 h-9 custom_class_19 items-center text-sm btn-icon-secondary ml-12" type="button" (click)="ShowAppEditDropDown()">
+                Save</button>
+            </div>
+          </div>
+          </div>
+          <!--Save Form Ends-->
+    
+       </div> 
+       <!--Application Details Ends-->
+
+      <!--Recognized Operator Training Topics Starts-->
+      <div class="border-b-2 py-8">
+        <p class="text-xl font-semibold px-12 mt-4">Recognized Operator Training Topics</p>
+        <button (click)="ShowOperatorDropDown()" class="focus:outline-none p-0 m-0 float-right mr-5 custom_class_3 text-gray-700" type="button">
+          <app-icon *ngIf="isOperatorDropdownVisible" icon="expand_less"></app-icon>
+          <app-icon *ngIf="!isOperatorDropdownVisible" icon="expand_more" ></app-icon>
+        </button>
+        </div> 
+        <!--Recognized Operator Training Topics Ends-->
+      </div>
+<!--Div for ILA APPLICATION Ends-->
+<!-------------------------------------------------------------------------------------->
+
+</div>
+
+<!--fly in for prerequisites-->
+<ng-template #addPrerequisitesPanel>
+  <app-prerequisites >
+  </app-prerequisites>
+</ng-template>
+
+<!--fly in for objectives -->
+<ng-template #adObjectivesPanel>
+  <app-objectives></app-objectives>
+</ng-template>
+
+<!--fly in for safety hazards-->
+<ng-template #addSafetyHazardPanel>
+  <!-- <app-safety-hazard >
+  </app-safety-hazard> -->
+</ng-template>
+
+<!--fly in for procedures-->
+<ng-template #addproceduresPanel>
+  <app-procedures >
+  </app-procedures>
+</ng-template>
+
+

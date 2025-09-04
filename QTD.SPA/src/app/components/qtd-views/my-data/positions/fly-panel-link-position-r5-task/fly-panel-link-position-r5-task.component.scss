@@ -1,0 +1,125 @@
+
+.selected-tasks-list {
+    padding: 0;
+    border-radius: 0.25rem;
+    border: 0.5px solid #E1E5E4;
+    background: #FFF;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.10);
+}
+
+.selected-task-header {
+    padding: 1.25rem;
+    border-bottom: 1px solid #E1E5E4;
+}
+
+:host ::ng-deep .selected-tasks-list .mat-header-cell:first-child,
+:host ::ng-deep .selected-tasks-list .mat-cell:first-child {
+    flex: 1 1 20%;
+}
+
+:host ::ng-deep .selected-tasks-list .mat-header-cell:nth-child(2),
+:host ::ng-deep .selected-tasks-list .mat-cell:nth-child(2) {
+    flex: 1 1 80%;
+}
+
+:host ::ng-deep .selected-tasks-list .mat-cell {
+    padding: 1rem;
+}
+
+:host ::ng-deep .selected-tasks-list * {
+    color: #7A807E;
+    font-size: 0.875rem;
+    font-style: italic;
+    font-weight: 400;
+    line-height: 143%;
+    letter-spacing: 0.00938rem;
+}
+.r5-marking-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #f5f5f5;
+    padding: 0.875rem 1rem;
+    border-radius: 4px;
+    margin: 1rem 0rem;
+  }
+  .selected-count {
+    color: #4d4d4d;
+    font-weight: 600;
+  }
+
+  .marking-instructions-all {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 1.875rem;
+   
+  }
+  .marking-instructions-all > span {
+    color: #000;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 166%; /* 19.92px */
+    letter-spacing: 0.4px;
+  }
+  
+  
+  .impacted-tasks-list{
+      margin-top: 1.125rem;
+      box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.10);
+      border-radius: 4px;
+      border: 0.5px solid #E1E5E4;
+      overflow: hidden;
+  }
+  
+  :host ::ng-deep .impacted-tasks-list .mat-header-cell:first-child,
+  :host ::ng-deep .impacted-tasks-list .mat-cell:first-child {
+      flex: 1 1 20%;
+    }
+    :host ::ng-deep .impacted-tasks-list .mat-header-cell:nth-child(2),
+    :host ::ng-deep .impacted-tasks-list .mat-cell:nth-child(2) {
+      flex: 1 1 60%;
+    }
+    :host ::ng-deep .impacted-tasks-list .mat-cell {
+      padding: 1rem;
+    }
+  
+    .impacted-task-reason {
+      margin-top: 2.68rem;
+      font-size: 14px;
+      line-height: 166%; /* 23.24px */
+      letter-spacing: 0.4px;
+    }
+    .impacted-task-reason > h3{
+      color: #5C9B31;
+      font-weight: 600;
+     
+    }
+    .impacted-task-reason > p{
+      color: #000;
+      font-weight: 400;
+    }
+
+    .flypanel-outer-wrapper{
+      bottom: 0;
+      display:block;
+      height:100vh;
+      position:fixed;
+      right:0;
+      top:0;
+      width: 100vw;
+      z-index: 10;
+    }
+
+    .flypanel {
+      background-color: #fff;
+      position: absolute;
+      right: 0;
+      width: 50%;
+      top: 0;
+      bottom: 0;
+      min-height: 100vh;
+      overflow: auto;
+      z-index: 1;
+      left: auto;
+  }

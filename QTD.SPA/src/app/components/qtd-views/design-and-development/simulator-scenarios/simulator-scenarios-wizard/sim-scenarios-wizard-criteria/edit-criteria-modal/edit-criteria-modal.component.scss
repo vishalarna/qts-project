@@ -1,0 +1,10 @@
+.mat-dialog-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+  }
+  
+  .mat-dialog-actions .share_button:first-child {
+    margin-right: 10px;
+  }
+  

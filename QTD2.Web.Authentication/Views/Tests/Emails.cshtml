@@ -1,0 +1,27 @@
+﻿
+@{
+    ViewData["Title"] = "Index";
+}
+
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+
+<p>
+    @ViewBag.Hello
+</p>
+
+<br/>
+
+<p>
+    @Localizer["Hello"]
+</p>
+
+<br />
+
+<form asp-controller="Emails" asp-action="SendEmail" method="post">
+    <select name="method">
+        <option value="Send2FANotification">2FA</option>
+    </select>
+
+    <input type="submit" />
+</form>

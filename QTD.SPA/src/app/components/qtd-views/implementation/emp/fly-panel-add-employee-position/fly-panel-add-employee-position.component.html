@@ -1,0 +1,131 @@
+<ng-container>
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-bold text-gray-900">
+      <!-- {{oldProcedure ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+      <ng-container *ngIf="mode==='Add'">
+        Link {{("Position" | labelReplacement)| async}}s
+      </ng-container>
+      <ng-container *ngIf="mode==='Edit'">
+        Edit {{("Position" | labelReplacement)| async}}s
+      </ng-container>
+    </p>
+    <app-button (click)="closedefinition()" ButtonType='icon' icon="close"></app-button>
+  </div>
+
+  <div class="ml-12">
+    <app-button variant="text" iconPosition="left" icon="add"
+                text="Add New {{('Position' | labelReplacement)| async}}" class="mb-4"
+                (click)="openFlyInPanel(addposition)"></app-button>
+  </div>
+
+
+  <form [formGroup]="positionempLinkForm">
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 33vw;" *ngIf="mode==='Add'">
+        <app-label required [for]="'position'" text="{{('Position'| labelReplacement)| async}}"
+                   class="mt-6 float-left label required">
+        </app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select #posSelect="matSelect"  (selectionChange)="getTrainingProgramVersion()" formControlName="position"  (click)="filterData()"
+                      placeholder="Select {{('Position' | labelReplacement)| async}}">
+          <input matInput class="pt-3 pb-3 pl-3 w-100" type="text"  formControlName="searchTxt" (keyup)="positionSearch()" placeholder="Enter Text to Search">
+            <mat-option *ngFor="let i of psoitionList" [value]="i.id" [hidden]="!i.active">
+              {{i.positionTitle}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 33vw;" *ngIf="mode==='Edit'">
+        <app-label required [for]="'positionTitle'" text="{{('Position'| labelReplacement)| async}}"
+                   class="mt-6 float-left label required">
+        </app-label>
+        <!-- <mat-form-field appearance="outline" class="text-sm dropdown w-full"> -->
+        <app-textbox formControlName="positionTitle" [disabled]="mode==='Edit'">
+
+        </app-textbox>
+        <!-- </mat-form-field> -->
+      </div>
+      <div class="flex flex-col float-left pr-4 mb-6 mt-3 pt-1" style="width: 33vw;">
+        <app-label [for]="'startDate'" [text]="'Start Date '" class="label required"></app-label>
+        <app-date formControlName="startDate" placeholder="Select Date">
+        </app-date>
+        <app-input-error *ngIf="positionempLinkForm.get('startDate')?.invalid" text="Start Date Is Required">
+        </app-input-error>
+      </div>
+    </div>
+
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 33vw;">
+        <app-label [for]="'posQualtDate'"
+                   text="{{('Position'| labelReplacement)| async}} Qualification Date"></app-label>
+        <app-date formControlName="posQualtDate" [minDate] = "positionempLinkForm.get('startDate')?.value" placeholder="Select Date">
+        </app-date>
+      </div>
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 33vw;">
+        <app-label [for]="'endtDate'" [text]="'End Date '"></app-label>
+        <app-date formControlName="endtDate" [minDate] = "positionempLinkForm.get('startDate')?.value" placeholder="Select Date">
+        </app-date>
+      </div>
+    </div>
+
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 33vw;">
+        <app-label [for]="'managaerName'" [text]="'Manager/Supervisor'"></app-label>
+        <app-textbox type="text" formControlName="managaerName" [placeholder]="'Enter Manager/Supervisor Name'">
+        </app-textbox>
+      </div>
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 33vw;">
+        <app-label [for]="'version'" [text]="'Training Program Version'"></app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select formControlName="version" placeholder="Select Training Program Version">
+            <mat-option *ngFor="let i of tpVersion;
+            " [value]="i.tpVersionNo">
+              {{i.tpVersionNo}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field>
+        <!--  <app-textbox type="text" formControlName="version" [placeholder]="'Enter Training Program Version'">
+         </app-textbox> -->
+
+      </div>
+    </div>
+    <div class="flex flex-row px-12">
+      <mat-checkbox formControlName="Trainee" (click)="this.positionempLinkForm.get('disclaimer').setValue(false)">
+        Trainee
+        <app-icon icon="help_outline"
+                  matTooltip="Selecting this Trainee checkbox indicates that the {{('Employee' | labelReplacement)| async}} is completing Intial Training for the given {{('Position' | labelReplacement)| async}}. The {{('Employee' | labelReplacement)| async}} has not been qualified to perform job duties independently."></app-icon>
+      </mat-checkbox>
+
+    </div>
+    <div class="flex flex-col px-12">
+      <mat-checkbox formControlName="disclaimer" (click)="this.positionempLinkForm.get('Trainee').setValue(false)">
+       <span> It has been verified that the {{("Employee" | labelReplacement)| async}} has completed the initial training program for the listed {{("Position" | labelReplacement)| async}}s
+         . This includes the completion of all courses, OJT, and documentation of all {{("Position" | labelReplacement)| async}} related {{("Task" | labelReplacement)| async}} Qualification and oral/written assessments (if applicable).
+        <br>The {{("Employee" | labelReplacement)| async}} is no longer a trainee for the selected {{("Position" | labelReplacement)| async}}.</span>
+      </mat-checkbox>
+    </div>
+    <!-- <div class="px-12 mt-8 float-left py-3" *ngIf="mode==='Add'">
+      <mat-checkbox formControlName="AddAnother" name="AddAnotherInstructorCategory">
+        Add Another Position
+      </mat-checkbox>
+    </div> -->
+    <div class="px-12 mt-8 float-right py-3" *ngIf="mode ==='Add'">
+      <app-button [spinner]="showSpinner" [disabled]="positionempLinkForm.invalid || showSpinner || dateError"
+                  type="button" size="sm" text="Save" (click)="LinkPositiontoEmployee()">
+      </app-button>
+    </div>
+    <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='Edit'">
+      <app-button [spinner]="showSpinner" [disabled]="showSpinner || dateError || positionempLinkForm.invalid" type="button" size="sm" text="Update"
+                  (click)="UpdateLinkPositiontoEmployee()">
+      </app-button>
+    </div>
+
+
+  </form>
+</ng-container>
+
+<ng-template #addposition>
+  <app-fly-panel-add-position (closed)="flyPanelSrvc.close()">
+
+  </app-fly-panel-add-position>
+</ng-template>

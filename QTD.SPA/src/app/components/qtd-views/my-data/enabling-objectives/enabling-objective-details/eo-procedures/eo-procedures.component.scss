@@ -1,0 +1,13 @@
+.mat-column-id,
+.mat-column-number{
+  flex: 0 0 100px;
+}
+
+.mat-column-description{
+  flex: 0 0 60%;
+}
+
+.inactiveRow > mat-cell{
+  color: darkgray !important;
+  font-style: italic !important;
+}

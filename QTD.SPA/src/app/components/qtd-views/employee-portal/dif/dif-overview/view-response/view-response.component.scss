@@ -1,0 +1,96 @@
+:host ::ng-deep .dif-survey-header .header-back-button span mat-icon {
+  font-size: 30px;
+  position: relative;
+  bottom: 2px;
+  right: 5px;
+  color: #278f6d;
+}
+
+app-button.header-back-button {
+  background-color: rgba(39, 143, 109, 0.11);
+  border-radius: 50%;
+}
+
+.dif-survey-header {
+  padding: 1.12rem 1.5rem;
+  background-color: white;
+  box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+  justify-content: space-between;
+}
+.center-wrap {
+  max-width: 80rem;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.edit-dif-survey-date {
+  margin-left: auto;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #979797;
+}
+.edit-dif-survey-date .survey-date {
+  color: #000000;
+  padding-left: 15px;
+}
+.mat-toolbar-single-row {
+  height: auto !important;
+}
+mat-cell:first-of-type,
+mat-header-cell:first-of-type {
+  max-width: 100px;
+  width: 100%;
+}
+mat-cell:nth-child(2),
+mat-header-cell:nth-child(2) {
+  flex-grow: 1;
+  padding-right: 20px;
+}
+.survey-difficulty,
+.survey-importance,
+.survey-frequency {
+  max-width: 150px;
+  text-align: center;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.survey-textarea-dis {
+  flex: 1 1 100%;
+  background: #fffdde;
+  border: 1px solid #e1e5e4;
+  border-radius: 4px;
+  padding: 20px;
+  margin: 15px 31px 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: #67748e;
+  font-weight: 400;
+  min-height: 88px;
+}
+mat-row {
+  flex-wrap: wrap;
+  padding-top: 24px;
+  height: fit-content;
+}
+.comments-header {
+  display: none;
+}
+.mat-table {
+  max-height: fit-content;
+  margin-top: 30px;
+}
+.comment-section {
+  margin-top: 20px;
+  padding: 20px; /* Add padding to all sides */
+}
+.comment-label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+.step-controls-section {
+  margin-top: 10px;
+}

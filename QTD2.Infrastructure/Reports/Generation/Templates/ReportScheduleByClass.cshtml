@@ -1,0 +1,110 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    table td {
+        padding: 0.25rem !important;
+    }
+</style>
+<table id="content-table" class="table" style="border-collapse:separate;width:100%;border-spacing:0;">
+    <tr>
+        <td colspan="13" style=" border:none;vertical-align: middle; text-align: center;">
+            <div class="repeatedReportHeader" style="display: -webkit-box; -webkit-box-pack: justify;display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #020378; margin: 0 0 10px 0;">
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center; "><b>@Model.Title </b></div>
+                <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.ClassSchedules.Count() > 0)
+    {
+        <tr style="">
+            <th rowspan="2" style=" border: 2px solid #000000; text-align: left;padding:5px;left:0;border-right:0;">
+                Class Start Date
+            </th>
+            <th rowspan="2" style="border: 2px solid #000000; text-align: left; padding: 5px; border-right: 0; ">
+                Class End Date
+            </th>
+            <th rowspan="2" style="border: 2px solid #000000; text-align: left; padding: 5px; border-right: 0; ">
+                Provider Name
+            </th>
+            <th rowspan="2" style="border: 2px solid #000000; text-align: left; padding: 5px; border-right: 0; ">
+                @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Number
+            </th>
+            <th rowspan="2" style="border: 2px solid #000000; text-align: left; padding: 5px; border-right: 0; ">
+                @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title
+            </th>
+            <th colspan="2" style="border: 2px solid #000000; text-align: left; padding: 5px; border-right: 0;border-bottom:0 ">
+                @("Instructor".ReplaceLabel(Model.ClientSettings_LabelReplacements))
+            </th>
+            <th colspan="3" style="border: 2px solid #000000; text-align: left; padding: 5px; border-bottom: 0 ">
+                @("Location".ReplaceLabel(Model.ClientSettings_LabelReplacements))
+            </th>
+        </tr>
+
+        <tr>
+            <th style=" border: 2px solid #000000;border-right:0;">
+                Total CEHs
+            </th>
+            <th style="border: 2px solid #000000; border-right: 0;">
+                STDs
+            </th>
+            <th style="border: 2px solid #000000; border-right: 0;">
+                Sim
+            </th>
+            <th style="border: 2px solid #000000; border-right: 0;">
+                EOPs
+            </th>
+            <th style="border: 2px solid #000000;">
+                Reg
+            </th>
+        </tr>
+        @foreach (var schedule in Model.ClassSchedules)
+        {
+            @{
+                var nercCertLink = (schedule.ILA == null ? null : schedule.ILA.ILACertificationLinks.Where(r => r.Certification.CertifyingBodyId == 1).FirstOrDefault());
+                var standardSubLink = (nercCertLink == null ? null : nercCertLink.ILACertificationSubRequirementLink.Where(r => r.CertificationSubRequirement.ReqName == "Standards").FirstOrDefault());
+                var simSubLink = (nercCertLink == null ? null : nercCertLink.ILACertificationSubRequirementLink.Where(r => r.CertificationSubRequirement.ReqName == "Simulations").FirstOrDefault());
+                var emergencyCertLink = (schedule.ILA == null ? null : schedule.ILA.ILACertificationLinks.Where(r => r.Certification.InternalIdentifier == "Emergency Response").FirstOrDefault());
+                var regCertLink = (schedule.ILA == null ? null : schedule.ILA.ILACertificationLinks.Where(r => r.Certification.InternalIdentifier == "Reg").FirstOrDefault());
+            }
+
+            <tr>
+                <td rowspan="3" style=" border: none !important;vertical-align:top;">@schedule.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</td>
+                <td rowspan="3" style=" border: none !important;vertical-align:top;">@schedule.EndDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</td>
+                <td rowspan="3" style=" border: none !important;vertical-align:top;">@(schedule.ILA == null ? null : schedule.ILA.Provider != null ? schedule.ILA.Provider.Name : "")</td>
+                <td rowspan="3" style=" border: none !important;vertical-align:top;">@(schedule.ILA != null ? schedule.ILA.Number : "")</td>
+                <td rowspan="3" style=" border: none !important;vertical-align:top;">@(schedule.ILA != null ? schedule.ILA.Description : "")</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="border:none;border-bottom: 1px solid #000000;">@(schedule.Instructor != null ? schedule.Instructor.InstructorName : "")</td>
+                <td colspan="3" style="border:none;border-bottom: 1px solid #000000;">@(schedule.Location != null ? schedule.Location.LocName : "")</td>
+            </tr>
+            <tr>
+                <td>@(schedule.ILA == null ? "0" : schedule.ILA.TotalTrainingHours.HasValue ? schedule.ILA.TotalTrainingHours.ToString() : "0")</td>
+                @*<td>@(nercCertLink == null ? 0 : nercCertLink.CEHHours.GetValueOrDefault())</td>*@
+                <td>@(standardSubLink == null ? 0 : standardSubLink.ReqHour)</td>
+                <td>@(simSubLink == null ? 0 : simSubLink.ReqHour)</td>
+                <td>@(emergencyCertLink == null ? 0 : emergencyCertLink.CEHHours.GetValueOrDefault())</td>
+                <td>@(regCertLink == null ? 0 : regCertLink.CEHHours.GetValueOrDefault())</td>
+            </tr>
+            <tr style="border-bottom: 1px solid #000000;"><td colspan="13" style="border:none"></td></tr>
+        }
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>

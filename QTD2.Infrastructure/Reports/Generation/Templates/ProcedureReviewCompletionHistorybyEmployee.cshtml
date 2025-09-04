@@ -1,0 +1,270 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+@{
+    var procedureReviewEmpData = Model.ProcedureReviewEmployees.GroupBy(p => p.EmployeeId).Select(group => new
+    {
+        EmployeeId = group.Key,
+        ProcedureReviewsEmps = group.OrderByDescending(p => p.CompletedDate).ToList()
+    }).ToList();
+}
+
+<table id="content-table" class="table landscape-report" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0;padding-left:0">
+            <div class="repeatedReportHeader" style="display: flex; display: -webkit-box; -webkit-box-pack: justify; align-items: center; justify-content: space-between; border-bottom: 3px solid #020378; margin: 0 0 10px 0; ">
+
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+
+                <div style="text-align: center; ">
+                    <b style="font-size: 1.5rem; color: #0000a6;">@Model.Title </b>
+                </div>
+                <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+
+    @if (procedureReviewEmpData.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{ int j = 1;}
+
+                @foreach (var procedureReviewEmp in procedureReviewEmpData)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            <tr>
+                                <td colspan="18" style="border: none !important; font-size: 1rem; padding: 10px">
+                                    <b>@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b>
+                                    <span style="font-size:0.8rem;margin-left:5px">@procedureReviewEmp.ProcedureReviewsEmps.First().Employee?.Person?.FirstName   @procedureReviewEmp.ProcedureReviewsEmps.First().Employee?.Person?.LastName</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                {
+                                    var posList = procedureReviewEmp.ProcedureReviewsEmps.First().Employee?.EmployeePositions?
+                                                  .Where(empPos => empPos.Active).Select(empPos => empPos.Position?.PositionTitle).ToList();
+
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding: 10px">
+                                        <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@(new RawString(string.Join(" , ", posList)))</span>
+                                    </td>
+                                }
+                            </tr>
+                            <tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                                {
+                                    var orgList = procedureReviewEmp.ProcedureReviewsEmps.First().Employee?.EmployeeOrganizations?
+                                                .Select(empPos => empPos.Organization?.Name).ToList();
+
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding: 10px">
+                                        <b>Organizations:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@(new RawString(string.Join(" , ", orgList)))</span>
+                                    </td>
+                                }
+                            </tr>
+
+                            <tr>
+                                <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                                    <table class="table">
+                                        <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                            @if (Model.DisplayColumns.Contains("Issuing Authority"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;">
+                                                    Issuing Authority
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Procedure Number"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding:    5px;">
+                                                    @("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Procedure Title"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding:           5px;">
+                                                    @("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Procedure Review Title"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding:                 5px;">
+                                                    @("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Review Title
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Release Date"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; dding:                        5px;">
+                                                    Release Date
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Completed Date"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; dding:                              5px;">
+                                                    Completed Date
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Status"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; dding:                                    5px;">
+                                                    Status
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Procedure Review Response"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; dding:                                    5px;">
+                                                    Response
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Comments"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; dding:                                    5px;">
+                                                    Comments
+                                                </th>
+                                            }
+                                        </tr>
+
+                                        @foreach(var procReviewEmp in procedureReviewEmp.ProcedureReviewsEmps)
+                                        {
+                                            <tr style="border-bottom: 1px solid #000;padding:10px">
+                                                @if (Model.DisplayColumns.Contains("Issuing Authority"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                        @procReviewEmp?.ProcedureReview?.Procedure?.Procedure_IssuingAuthority?.Title
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Procedure Number"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                        @procReviewEmp?.ProcedureReview?.Procedure?.Number
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Procedure Title"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                        @procReviewEmp?.ProcedureReview?.Procedure?.Title
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Procedure Review Title"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                        @procReviewEmp?.ProcedureReview?.ProcedureReviewTitle
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Release Date"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                        @procReviewEmp?.ProcedureReview?.StartDateTime.ToShortDateString()
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Completed Date"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                        @procReviewEmp?.CompletedDate?.ToShortDateString()
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Status"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                        @procReviewEmp?.getStatus()
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Procedure Review Response"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                        @procReviewEmp?.ProcedureReviewResponse?.ToString() 
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Comments"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                                        @procReviewEmp?.Comments
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr></tr>
+                        </table>
+                    </div>
+                    @if (!procedureReviewEmp.Equals(procedureReviewEmpData.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{j++;}
+                }
+
+            </td>
+        </tr>
+
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= procedureReviewEmpData.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

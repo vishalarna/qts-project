@@ -1,0 +1,50 @@
+[
+  {
+    "ClassScheduleId": 1,
+    "StudentEvaluationId": 1,
+    "EmployeeId": 1,
+    "IsCompleted": true,
+    "IsStarted": true,
+    "IsReleased": false,
+    "IsRecalled": false,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ClassScheduleId": 2,
+    "StudentEvaluationId": 2,
+    "EmployeeId": 2,
+    "IsCompleted": false,
+    "IsStarted": true,
+    "IsReleased": false,
+    "IsRecalled": false,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ClassScheduleId": 3,
+    "StudentEvaluationId": 3,
+    "EmployeeId": 3,
+    "IsCompleted": true,
+    "IsStarted": false,
+    "IsReleased": true,
+    "IsRecalled": true,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ClassScheduleId": 4,
+    "StudentEvaluationId": 4,
+    "EmployeeId": 4,
+    "IsCompleted": false,
+    "IsStarted": false,
+    "IsReleased": true,
+    "IsRecalled": true,
+    "Deleted": false,
+    "Active": true
+  }
+
+
+
+
+]

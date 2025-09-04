@@ -1,0 +1,412 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 5px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table landscape-report" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.CertificationFulfillmentStatuses.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0 !important;" class="strip-container">
+                @{int j = 1;}
+                @foreach (var empGroup in Model.CertificationFulfillmentStatuses.GroupBy(c => c.EmployeeId).OrderBy(g => g.First().EmployeeLastName))
+                {
+                    var certStatuses = empGroup.ToList();
+                    var certStatus = certStatuses.FirstOrDefault(c => Model.NercCertificationIds.Contains(c.CertificationId)) ?? certStatuses.First();
+                    var allFulfillments = certStatuses.SelectMany(c => c.FulfillmentRecords).Where(fr => fr.IsComplete).ToList();
+                    <div class="@(j != 1 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            <tr>
+                                <td style=" border: none !important;">
+                                    <div style="display: -webkit-box;border:none!important; display: flex; color: #b22727;font-size:18px">
+                                        @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                        {
+                                            <div style=" border: none !important; font-size: 1rem;">
+                                                <b>@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b>
+                                                <b style="margin-left:1.4rem">@certStatus.EmployeeLastName , @certStatus.EmployeeFirstName</b>
+                                            </div>
+                                        }
+
+                                        <div style=" border: none !important; font-size: 1rem;">
+                                            <b style="margin-left: .2rem;">(@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements))  # :</b>
+                                            <b style="margin-left:5px">@certStatus.Employee?.EmployeeNumber)</b>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                {
+                                    var posList = certStatus.Employee?.EmployeePositions?.Where(ep=>ep.Active).Select(empPos => empPos.Position?.PositionTitle).ToList();
+
+                                    <td colspan="12" style="border: none !important; font-size:1rem;">
+                                        <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b>
+                                        <span style="font-size: 1rem;; margin-left: 5px"><b>@(new RawString(string.Join(",", posList)))</b></span>
+                                    </td>
+                                }
+                            </tr>
+                            <tr>
+                                <td style="border: none !important;" colspan="12">
+                                    <div style="display: -webkit-box; display: flex; border: none !important; font-size: 1rem; -webkit-box-pack: justify; justify-content: space-between">
+                                        @if (Model.DisplayColumns.Where(r => r == "Cert Area").Count() > 0)
+                                        {
+                                            <div style=" border: none !important; font-size: 1rem;">
+                                                <b>Cert Area: </b>
+                                                <b style="margin-left:5px">@certStatus.CertificationAcronym</b>
+                                            </div>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Cert #").Count() > 0)
+                                        {
+                                            <div style=" border: none !important; font-size: 1rem;">
+                                                <b>NERC Cert # : </b>
+                                                <b style="margin-left:5px">@certStatus.CertificationNumber</b>
+                                            </div>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Recertification Date").Count() > 0)
+                                        {
+                                            <div style=" border: none !important; font-size: 1rem;">
+                                                <b>Recert date : </b>
+                                                <b style="margin-left:5px">@certStatus?.RenewalDate?.ToShortDateString()</b>
+                                            </div>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Expiration Date").Count() > 0)
+                                        {
+                                            <div style=" border: none !important; font-size: 1rem;">
+                                                <b>Exp Date : </b>
+                                                <b style="margin-left:5px">@certStatus?.ExpirationDate?.ToShortDateString()</b>
+                                            </div>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                            @{
+                                var regCertNumber = Model.CertificationFulfillmentStatuses.FirstOrDefault(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus.EmployeeId)?
+                                                    .CertificationNumber;
+                                var reg2CertNumber = Model.CertificationFulfillmentStatuses.FirstOrDefault(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus.EmployeeId)?
+                                                    .CertificationNumber;
+                            }
+                            <tr>
+                                <td style="display: -webkit-box; display: flex; border: none !important; font-size: 1rem; -webkit-box-pack: justify; justify-content: space-between" colspan="12">
+                                    <div>
+                                        <b>Reg Cert# : </b>
+                                        <b style="margin-left:5px">@regCertNumber</b>
+                                    </div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="display: -webkit-box; display: flex; border: none !important; font-size: 1rem; -webkit-box-pack: justify; justify-content: space-between" colspan="12">
+                                    <div>
+                                        <b>Reg2 Cert# : </b>
+                                        <b style="margin-left:5px">@reg2CertNumber</b>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse;">
+                                @if (Model.DisplayColumns.Where(r => r == "ILA #").Count() > 0)
+                                {
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align:bottom; padding: 5px;" rowspan="2">
+                                        Provider ID /  @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #
+                                    </th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                {
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align:bottom; padding: 5px;" rowspan="2">
+                                        Individual Learning Activity Title
+                                    </th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Completed Date").Count() > 0)
+                                {
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align:bottom; padding: 5px;" rowspan="2">
+                                        Completed
+                                    </th>
+                                }
+                                <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 1px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" colspan="3">
+                                    NERC CEHs
+                                </th>
+                                <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 1px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" colspan="2">
+                                    per-005
+                                </th>
+                                <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 1px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">
+                                    Reg
+                                </th>
+                                <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-right: 1px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">
+                                    Reg2
+                                </th>
+                                <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">
+                                    Other
+                                </th>
+                            </tr>
+
+                            <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse;">
+                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; text-align: center; vertical-align: bottom; padding: 5px;">
+                                    Total CEHs
+                                </th>
+                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; text-align: center; vertical-align: bottom; padding: 5px;">
+                                    NERC Standards
+                                </th>
+                                <th style="border-bottom: 2px solid #000; text-align: center; border-right: 1px solid #000; vertical-align: bottom; padding: 5px;">
+                                    Sim Hrs
+                                </th>
+                                <th style="border-bottom: 2px solid #000; text-align: center; border-right: 1px solid #000; vertical-align: bottom; padding: 5px;">
+                                    EOP Hrs
+                                </th>
+                                <th style="border-bottom: 2px solid #000; text-align: center; border-right: 1px solid #000; vertical-align: bottom; padding: 5px;">
+                                    Include Simul.
+                                </th>
+                            </tr>
+
+                            @{
+                                var cehListComp = new List<double>();
+                                var nercListComp = new List<double>();
+                                var simListComp = new List<double>();
+                                var eopHoursComp = new List<double>();
+                                var regCEHAwardedComp = new List<double>();
+                                var reg2CEHAwardedComp = new List<double>();
+                                var otherCEHAwardedComp = new List<double>();
+                            }
+                            @foreach (var fulfillRecord in allFulfillments.GroupBy(fr => new { fr.ILAId, fr.ClassCompletionDate }).Select(g => g.First()).Where(fr => fr.IsComplete
+                                && fr.ClassCompletionDate.HasValue
+                                && certStatus.RenewalDate.HasValue
+                                && certStatus.ExpirationDate.HasValue
+                                && DateOnly.FromDateTime(fr.ClassCompletionDate.Value) >= certStatus.RenewalDate.Value
+                                && DateOnly.FromDateTime(fr.ClassCompletionDate.Value) <= certStatus.ExpirationDate.Value).ToList())
+                            {
+                                <tr style="border-bottom: 1px solid #000">
+                                    @if (Model.DisplayColumns.Where(r => r == "ILA #").Count() > 0)
+                                    {
+                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                            @($"{fulfillRecord?.ILAProviderNumber} / {fulfillRecord?.ILANumber}")
+                                        </td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                    {
+                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                            @fulfillRecord?.ILAName
+                                        </td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Completed Date").Count() > 0)
+                                    {
+                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                            @fulfillRecord?.ClassCompletionDate?.ToShortDateString()
+                                        </td>
+                                    }
+
+                                    @{
+                                        if (fulfillRecord.CEHAwarded > 0) cehListComp.Add(fulfillRecord.CEHAwarded);
+                                        var nercStd = fulfillRecord.CertificationFulfillmentSubRequirements.Where(subReq => subReq.CertificationSubRequirementName == "Standards").Sum(subReq => subReq.Hours);
+                                        var simHrs = fulfillRecord.CertificationFulfillmentSubRequirements.Where(subReq => subReq.CertificationSubRequirementName == "Simulations").Sum(subReq => subReq.Hours);
+                                        @if (fulfillRecord.CEHAwarded > 0)
+                                        {
+                                            if (nercStd > 0) nercListComp.Add(nercStd);
+                                            if (simHrs > 0) simListComp.Add(simHrs);
+                                        }
+                                        else
+                                        {
+                                            nercListComp.Add(0);
+                                            simListComp.Add(0);
+                                        }
+                                        var eopHrs = Model.CertificationFulfillmentStatuses
+                                        .Where(record => record.CertificationId == Model.EmergencyResponseCertificationId && record.EmployeeId == certStatus.EmployeeId)
+                                        .SelectMany(record => record.FulfillmentRecords)
+                                        .FirstOrDefault(x => x.ILAId == fulfillRecord.ILAId && x.CEHAwarded > 0)
+                                        ?.CEHAwarded ?? 0;
+                                        
+                                        if (eopHrs > 0) eopHoursComp.Add(eopHrs);
+                                        var regCEHAwarded = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords)
+                                                             .Where(fr => fr.ILAId == fulfillRecord.ILAId).Sum(fr => fr.CEHAwarded);
+                                        if (regCEHAwarded > 0) regCEHAwardedComp.Add(regCEHAwarded);
+                                        var reg2CEHAwarded = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords)
+                                                            .Where(fr => fr.ILAId == fulfillRecord.ILAId).Sum(fr => fr.CEHAwarded);
+                                        if (reg2CEHAwarded > 0) reg2CEHAwardedComp.Add(reg2CEHAwarded);
+                                        var otherCEHAwarded = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.OtherCertificationId && cfs.EmployeeId == certStatus.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords)
+                                                            .Where(fr => fr.ILAId == fulfillRecord.ILAId).Sum(fr => fr.CEHAwarded);
+                                        if (otherCEHAwarded > 0) otherCEHAwardedComp.Add(otherCEHAwarded);
+
+                                    }
+
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        @fulfillRecord?.CEHAwarded
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        @(fulfillRecord.CEHAwarded > 0 ? nercStd : 0)
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        @(fulfillRecord.CEHAwarded > 0 ? simHrs : 0)
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        @eopHrs
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        <input type="checkbox" disabled checked="@fulfillRecord.IsIncludeSimulation" />
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        @regCEHAwarded
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        @reg2CEHAwarded
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        @otherCEHAwarded
+                                    </td>
+                                </tr>
+                            }
+
+                            <tr>
+                                <td colspan="2" style="border: 0; padding: 4px;"></td>
+                                <td colspan="1" style="border: 0;text-align:center; padding: 8px;"><b>Total Completed**:</b></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(cehListComp.Sum())</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(nercListComp.Sum())</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(simListComp.Sum())</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(eopHoursComp.Sum())</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;"></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(regCEHAwardedComp.Sum())</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(reg2CEHAwardedComp.Sum())</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(otherCEHAwardedComp.Sum())</td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2" style="border: 0; padding: 4px;"></td>
+                                <td colspan="1" style="border: 0;text-align:center; padding: 8px;"><b>Roll-over Hours :</b></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@certStatus.RolloverHours</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;"></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;"></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;"></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;"></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;"></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;"></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;"></td>
+                            </tr>
+
+                            @{
+                                var nercStand = certStatus.SubRequirements.Where(subReq => subReq.CertificationSubRequirementName == "Standards")
+                                    .Sum(x => x.RequiredHours);
+                                var totalSim = certStatus.SubRequirements.Where(subReq => subReq.CertificationSubRequirementName == "Simulations")
+                                    .Sum(x => x.RequiredHours);
+                                var eopHours = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.EmergencyResponseCertificationId && cfs.EmployeeId == certStatus.EmployeeId)
+                                              .Sum(cfs => cfs.RequiredHours);
+                                var regRequiredHours = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus.EmployeeId)
+                                                                                    .Sum(cfs => cfs.RequiredHours);
+                                var reg2RequiredHours = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus.EmployeeId)
+                                    .Sum(cfs => cfs.RequiredHours);
+                                var otherRequiredHours = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.OtherCertificationId && cfs.EmployeeId == certStatus.EmployeeId)
+                                    .Sum(cfs => cfs.RequiredHours);
+                            }
+                            <tr>
+                                <td colspan="2" style="border: 0; padding: 4px;"></td>
+                                <td colspan="1" style="border: 0;text-align:center; padding: 8px;"><b>Total Required:***</b></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@certStatus.RequiredHours</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@nercStand</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@totalSim</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@eopHours</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;"></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@regRequiredHours</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@reg2RequiredHours</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@otherRequiredHours</td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2" style="border: 0; padding: 4px;"></td>
+                                <td colspan="1" style="border: 0;text-align:center; padding: 8px;"><b>Still Required :</b></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(Math.Max(certStatus.RequiredHours - (cehListComp.Sum() + certStatus.RolloverHours), 0))</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(Math.Max(nercStand - nercListComp.Sum(),0))</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(Math.Max(totalSim - simListComp.Sum(),0))</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(Math.Max(eopHours - eopHoursComp.Sum(),0))</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;"></td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(Math.Max(regRequiredHours - regCEHAwardedComp.Sum(),0))</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(Math.Max(reg2RequiredHours - reg2CEHAwardedComp.Sum(),0))</td>
+                                <td style="border: 0; text-align: center; padding: 4px; font-weight: bold;">@(Math.Max(otherRequiredHours - otherCEHAwardedComp.Sum(),0))</td>
+                            </tr>
+
+                        </table>
+                    </div>
+                    @if (j != Model.CertificationFulfillmentStatuses.GroupBy(c => c.EmployeeId).Count())
+                    {
+                        <div style="page-break-after:always"></div>
+                    }
+                    @{j++;}
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.CertificationFulfillmentStatuses.GroupBy(c => c.EmployeeId).Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

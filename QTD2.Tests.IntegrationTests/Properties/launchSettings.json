@@ -1,0 +1,10 @@
+{
+  "profiles": {
+    "QTD2.Tests.IntegrationTests": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "integrationtesting"
+      }
+    }
+  }
+}

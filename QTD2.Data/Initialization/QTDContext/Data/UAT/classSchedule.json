@@ -1,0 +1,124 @@
+[
+  {
+    "IsRecurring": true,
+    "ProviderID": 2,
+    "InstructorId": 1,
+    "LocationId": 1,
+    "ILAID": 2,
+    "StartDateTime": "2022-07-01",
+    "EndDateTime": "2022-08-01",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "IsRecurring": false,
+    "ProviderID": 2,
+    "InstructorId": 2,
+    "LocationId": 2,
+    "ILAID": 4,
+    "StartDateTime": "2023-03-01",
+    "EndDateTime": "2023-04-01",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "IsRecurring": false,
+    "ProviderID": 3,
+    "InstructorId": 3,
+    "LocationId": 3,
+    "ILAID": 5,
+    "StartDateTime": "2023-02-01",
+    "EndDateTime": "2023-03-01",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "IsRecurring": true,
+    "ProviderID": 4,
+    "InstructorId": 4,
+    "LocationId": 4,
+    "ILAID": 3,
+    "StartDateTime": "2023-01-06",
+    "EndDateTime": "2023-02-06",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "IsRecurring": false,
+    "ProviderID": 3,
+    "InstructorId": 5,
+    "LocationId": 5,
+    "ILAID": 1,
+    "StartDateTime": "2019-04-09",
+    "EndDateTime": "2019-04-09",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "IsRecurring": false,
+    "ProviderID": 2,
+    "InstructorId": 3,
+    "LocationId": 3,
+    "ILAID": 2,
+    "StartDateTime": "2019-01-01",
+    "EndDateTime": "2019-04-09",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "IsRecurring": false,
+    "ProviderID": 3,
+    "InstructorId": 5,
+    "LocationId": 5,
+    "ILAID": 6,
+    "StartDateTime": "2019-01-01",
+    "EndDateTime": "2019-04-09",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "IsRecurring": false,
+    "ProviderID": 4,
+    "InstructorId": 2,
+    "LocationId": 2,
+    "ILAID": 1,
+    "StartDateTime": "2019-01-01",
+    "EndDateTime": "2019-04-09",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "IsRecurring": false,
+    "ProviderID": 5,
+    "InstructorId": 1,
+    "LocationId": 1,
+    "ILAID": 4,
+    "StartDateTime": "2019-01-01",
+    "EndDateTime": "2019-04-09",
+    "Deleted": true,
+    "Active": true
+  },
+  {
+    "IsRecurring": false,
+    "ProviderID": 2,
+    "InstructorId": 4,
+    "LocationId": 4,
+    "ILAID": 3,
+    "StartDateTime": "2019-01-01",
+    "EndDateTime": "2019-04-09",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "IsRecurring": false,
+    "ProviderID": 1,
+    "InstructorId": 5,
+    "LocationId": 3,
+    "ILAID": 2,
+    "StartDateTime": "2023-08-18",
+    "EndDateTime": "2027-09-22",
+    "Deleted": false,
+    "Active": true
+  }
+
+]

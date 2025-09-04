@@ -1,0 +1,117 @@
+<!-- <div class="main_container">
+  <div class="table w-screen h-max gap-4">
+    <div class="table-row">
+      <h1 class="table-cell font-bold float-left">Publish ILA</h1>
+      <app-button class="float-right top_button table-cell border-none focus:border-none" type="button"
+        ButtonType='icon' icon='close' [mat-dialog-close]="true">
+      </app-button>
+    </div>
+  </div>
+  <div class="w-screen pr-3 form_container">
+    <form #posContainer class="w-full mt-3 ml-3">
+      <div>
+        <div style="color:black;">
+          <mat-checkbox class="mb-2">Publish to my EMP only for Preview/Review</mat-checkbox>
+          <div>
+            <mat-checkbox #publishToSelectedPersonnel>Publish to selected personnel for Review</mat-checkbox>
+          </div>
+          <h4 class="font-semibold text-gray-400">Select Personnel</h4>
+          <select [disabled]="!publishToSelectedPersonnel.checked" id="Personnel_Selection" name="Personnel Selection"
+            class="appearance-none rounded border w-full px-4 py-3 text-gray-400">
+            <option [value]='undefined'>Lauren Broox</option>
+          </select>
+          <mat-checkbox #publishForAllEmployees [checked]="true" (change)="togglePublishToAll()"
+            class="flex flex-row mt-4">
+            Publish for all Employees designated to ILA Positions
+          </mat-checkbox>
+          <ul class="mt-2">
+            <li>
+              <mat-checkbox [disabled]="!publishForAllEmployees.checked" class="ml-3">Make Available Immediately
+              </mat-checkbox>
+            </li>
+            <li>
+              <mat-checkbox [disabled]="!publishForAllEmployees.checked" class="ml-3">Select Release Date</mat-checkbox>
+              <div class="flex flex-col ml-5">
+                <app-date [disabled]="!publishForAllEmployees.checked" class="form_field text-xs"
+                  placeholder="Select Date"></app-date>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </form>
+    <div class="text-xs ml-4 mt-4">
+      <h4 style="color:  rgb(92, 155, 49);"><i>Selected Positions</i></h4>
+    </div>
+    <div class="text-xs ml-5" style="color: gray;">
+      <h4><i>Senior System Operator</i></h4>
+      <h4><i>System Operator</i></h4>
+      <h4><i>Operations Engineer</i></h4>
+    </div>
+  </div>
+  <div class="float-right mt-3 w-30">
+    <app-button class="share_button" variant="contained" color="secondary" text="Publish"
+      (clicked)="goToProvidersAndIla()"></app-button>
+  </div>
+</div>
+ -->
+
+<ng-template #publishILA>
+  <!-- <mat-dialog-content>
+    <div class="flex flex-row justify-between items-center mb-8">
+      <p class="text-xl font-semibold text-gray-900">Publish ILA</p>
+      <app-button ButtonType='icon' class="mt--4" icon="close" (clicked)="publish(publishILA,'cancel')"></app-button>
+    </div>
+
+    <p class="mt-8">You are selecting to publish the ILA and make it available for Employees to Complete. When Employees
+      begin to complete the ILA you will not be able to make edits to the sequence or Trainee Evaluations. Are you sure
+      you want to continue?</p>
+  </mat-dialog-content>
+  <mat-dialog-actions align="end">
+
+    <app-button type="button" text="Yes" color="primary" size="sm" class="mr-2" (clicked)="publish(publishILA,'save')">
+    </app-button>
+  </mat-dialog-actions> -->
+
+  <!-- <app-qtd-dialogue [header]="header"
+    [description]="description"
+    [cancelText]="cancelText"
+    [confirmText]="confirmText"
+    (confirmed)="publish(publishILA,'save')">
+  </app-qtd-dialogue> -->
+
+</ng-template>
+
+
+<mat-dialog-content >
+  <!-- header starts here -->
+  <div class="flex flex-row justify-between items-center mt-2 mb-4" >
+      <p mat-dialog-title textContent="Publish {{('ILA' | labelReplacement)| async}}"></p>
+    <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+     <app-button  ButtonType='icon' class="mt--4" icon="close" mat-dialog-close="true"></app-button>
+ </div>
+
+
+ <div class="w-screen pr-3 form_container">
+  <form [formGroup]="publishForm" #posContainer class="w-full flex flex-col mt-3 ml-3">
+    <span class="mb-4">{{description}}</span>
+    <label for="date">Effective Date</label>
+    <app-date formControlName="date"></app-date>
+    <app-input-error class="mb-3" *ngIf="publishForm.get('date')?.hasError('required')"></app-input-error>
+    <label >Reason</label>
+    <app-textarea formControlName="reason"></app-textarea>
+  </form>
+</div>
+<!--  <app-textbox [(ngModel)]="description" [disabled]="true"></app-textbox> -->
+
+<!-- header ends here -->
+</mat-dialog-content>
+<mat-dialog-actions class="flex flex-row justify-end">
+  <!-- (clicked)="confirm()"
+  (clicked)="cancel()" -->
+
+  <app-button size="sm" [spinner]="publishSpinner"
+  [disabled]="publishForm.invalid || publishSpinner" class="share_button" variant="contained" color="secondary" text="Publish"
+  (clicked)="goToProvidersAndIla()"></app-button>
+</mat-dialog-actions>
+

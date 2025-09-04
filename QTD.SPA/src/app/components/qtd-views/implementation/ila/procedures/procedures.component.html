@@ -1,0 +1,120 @@
+<!--<div class="fixed h-screen w-full">-->
+  <div class="fixed right-0 h-screen w-12/24" position="end">
+    <div class="bg-white-one shadow-md py-2 h-screen w-full overflow-x-hidden overflow-y-scroll">
+      <!-- header starts here -->
+      <div class="flex flex-row justify-between items-center px-12 mt-5">
+        <p class="text-xl font-bold text-gray-900">{{("Procedure" | labelReplacement)| async}}s</p>
+        <button type="button" (click)="flyPanelSrvc.close()">
+          <app-icon icon="close"></app-icon>
+        </button>
+      </div>
+      <!-- header ends here -->
+  
+      <!-- search starts here -->
+      <div class="flex flex-row items-center pt-8 pb-2 border-b-0.8 mx-12 border-gray-one">
+        <app-icon class="text-gray-four" icon="search"></app-icon>
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"/>
+      </div>
+      <!-- search ends -->
+  
+      <div class="flex flex-col">
+        <!--count checkboxes and link to task button starts-->
+        <div class="flex flex-row space-x-4 float-left mt-12 ml-5 text-gray-four text-xs" *ngIf="CategorySortCheck || SubCategorySortCheck">
+          <p>{{ countCheckBoxes + countSubCheckBoxes }} {{("Procedure" | labelReplacement)| async}}(s) selected</p>
+          <button class="btn-icon-secondary custom_class">
+            <app-icon icon="link"></app-icon>Link to task
+          </button>
+        </div>
+        <!--count checkboxes and link to task button ends-->
+  
+        <!--sort a to z starts-->
+        <div class="flex flex-row space-x-12 float-left mt-10 ml-5 text-gray-four text-xs" *ngIf="!CategorySortCheck && !SubCategorySortCheck">
+          <p>Sort Category A - Z<app-icon icon="expand_more" class="ml-2"></app-icon></p>
+        </div>
+        <!--sort a to z ends-->
+  
+        <!-- Material Accordian starts -->
+        <div class="flex-col pt-6 items-center pb-3">
+          <mat-accordion [multi]="true">
+            <mat-expansion-panel *ngFor="let item of pro_category" [expanded]="true">
+  
+              <!--Categories and their Topics start-->
+              <mat-expansion-panel-header>
+                <mat-panel-title class="justify-between">
+                  <p>{{ item.description }} ({{ item.count }})</p>
+                </mat-panel-title>
+              </mat-expansion-panel-header>
+              
+  
+              <div *ngFor="let item2 of pro_category_topics">
+                <mat-panel-title class="justify-between mt-2" *ngIf="item2.category_id === item.id">
+                  <div class="flex flex-nowrap">
+                    <input type="checkbox" class="mr-3 bg-green-30" [(ngModel)]="item2.checked" (change)="countCheckBox($event)"/>
+                  <div class="flex flex-col">
+                    <p class="text-gray-900">{{ item2.description }}</p>
+                    <p class="text-xs items-center text-gray-four">edited by Daniela </p>
+                  </div>
+                  </div>
+                 
+                  <div class="flex flex-row items-center text-gray-four btn-group">
+                    <button mat-icon-button [matMenuTriggerFor]="menu">
+                        <app-icon icon="more_vert"></app-icon>
+                    </button>
+                    <mat-menu #menu="matMenu">
+                        <button mat-menu-item>Edit</button>
+                        <button mat-menu-item>Delete</button>
+                    </mat-menu>
+                </div>
+                </mat-panel-title>
+              </div>
+               <!--Categories and their Topics end-->
+  
+              <!--Sub Categories and their Topics start-->
+              <div *ngFor="let subCat of pro_subcategory">
+                <mat-expansion-panel *ngIf="item.id === subCat.category_id" [expanded]="true">
+  
+                  <mat-expansion-panel-header>
+                    <mat-panel-title class="justify-between">
+                      <p>{{ subCat.description }} ({{subCat.count}})</p>
+                    </mat-panel-title>
+                  </mat-expansion-panel-header>
+  
+                  <div *ngFor="let topic of pro_subtopics">
+                    <mat-panel-title class="justify-between" *ngIf="topic.subcategory_id === subCat.id">
+                      <div class="flex flex-nowrap">
+                        <input type="checkbox" class="mr-3 bg-green-30" [(ngModel)]="topic.checked" (change)="countSubCategoryCheckBox($event)" />
+                        <div class="flex flex-col">
+                          <p class="text-gray-900">{{ topic.description }}</p>
+                          <p class="text-xs items-center text-gray-four">edited by Daniela </p>
+                        </div>
+                      </div>
+                      <div class="flex flex-row items-center text-gray-four btn-group">
+                        <button mat-icon-button [matMenuTriggerFor]="menu">
+                            <app-icon icon="more_vert"></app-icon>
+                        </button>
+                        <mat-menu #menu="matMenu">
+                            <button mat-menu-item>Edit</button>
+                            <button mat-menu-item>Delete</button>
+                        </mat-menu>
+                    </div>
+                    </mat-panel-title>
+                  </div>
+                </mat-expansion-panel>
+              </div>
+              <!--Sub Categories and their Topics end-->
+  
+            </mat-expansion-panel>
+          </mat-accordion>
+  
+        </div>
+        <!-- Material Accordian ends -->
+      </div>
+    </div>
+  
+    <!-- <div class="">
+      <button type="button" mat-button (click)="drawer.toggle()">
+        Toggle sidenav
+      </button>
+    </div>-->
+  </div>
+  

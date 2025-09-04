@@ -1,0 +1,55 @@
+﻿@model AuthenticationViewModel
+@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+<body class="min-h-screen bg-gray-100 text-gray-800 antialiased">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div asp-validation-summary="All" class=" alert alert-danger" role="alert"></div>
+    }
+    @if (@ViewData.ContainsKey("Message") && !string.IsNullOrWhiteSpace(ViewData["Message"].ToString()))
+    {
+        <div class="alert alert-success" role="alert">
+            <i class="fa fa-check"></i>
+            @ViewData["Message"]
+        </div>
+    }
+
+    <div class="relative pt-28 sm:w-2/6 mx-auto">
+
+        <!-- Forms card starts here -->
+        <div class="bg-white shadow-md rounded px-12 py-12 ">
+            <h1 class="text-2xl font-semibold text-gray-900">@Localizer["AuthViewHeader"]</h1>
+
+            <!-- form starts here -->
+            <form class="block text-sm" asp-action="Authentication" asp-controller="Login" method="post">
+                @Html.HiddenFor(@model => model.UserName)
+
+                <p class="block text-gray-700 font-medium mt-4">@Localizer["2FAInstructions"]<span class="text-gray-900">ro....@@qts.com</span></p>
+
+                <div class="mt-12">
+                    <label class="inline-block text-gray-700 font-medium">@Localizer["VerificationCode"]</label>
+                    <input asp-for="VerificationCode" type="password" placeholder="Enter verification code" class="text-base border w-full h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded">
+                </div>
+
+                <div class="inline-flex items-center mt-6">
+                    <input type="checkbox" class="h-3 w-3 rounded-sm text-green-800 form-checkbox focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50">
+                    <span class="text-gray-500 ml-2">@Localizer["2FADon'tAsk"]</span>
+                </div>
+
+                <button name="submitaction" type="submit" class="btn-primary mt-6" value="verify">@Localizer["Verify"]</button>
+                <button name="submitaction" type="submit" class="btn-secondary mt-2" value="resend">@Localizer["ResendCode"]</button>
+
+                <a asp-action="AuthenticationHelp" asp-controller="Login" class="hover:underline text-green-800 mt-12 text-center block">Sign in another way?</a>
+
+            </form>
+            <!-- form ends here -->
+        </div>
+        <!-- Forms card ends here -->
+        <!-- privacy terms starts here-->
+        <div class="mt-6 text-xs text-gray-500 text-center">
+            <a href="">Privacy and terms</a>
+        </div>
+        <!-- privacy and terms ends here -->
+
+    </div>
+</body>

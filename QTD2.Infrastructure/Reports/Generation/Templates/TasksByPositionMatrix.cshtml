@@ -1,0 +1,133 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+@using System.Text.RegularExpressions
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    tr.open-border-table-row td {
+        border-bottom: 1px solid black;
+        padding: 12px 4px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .expired-row {
+        color: gray;
+        font-style: italic;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+</style>
+
+
+<table id="content-table" class="table landscape-report">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.MatrixTasks.Count() > 0 && Model.Positions.Count() > 0)
+    {
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+                <table style="width:100%;border-collapse: collapse;">
+                    <thead>
+                        <tr class="open-border-table-row">
+                            <th style="border: 1px solid #000; border-left:0px; text-align: center;width:10%">
+                                @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #
+                            </th>
+                            <th style="border: 1px solid #000;  text-align: center;width:40%">
+                                @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Statement
+                            </th>
+                            @foreach (var pos in Model.Positions)
+                            {
+                                <th style="border: 1px solid #000; border-right:0px; text-align: center;width:@(50/Model.Positions.Count())%">
+                                    @pos.PositionAbbreviation
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var task in Model.MatrixTasks.OrderBy(t => t.Number, new AlphaNumericSortHelper()))
+                        {
+                            <tr class="open-border-table-row @(task.Active ? "" : "expired-row")">
+                                <td style="border: 1px solid #000;border-left:0px;  text-align: center;">@(task.IsReliability ? "*" : " ") @task.Number</td>
+                                <td style="border: 1px solid #000; text-align: center;">
+                                    @if (task.IsMeta)
+                                    {
+                                        <span style="color: green;"> (META)</span>
+                                    }
+                                    @task.Description
+                                </td>
+                                @foreach (var pos in Model.Positions)
+                                {
+                                    <td style="border: 1px solid #000;border-right:0px; text-align: center;">
+                                        @(task.HasPosition(pos.Id) ? "X" : "")
+                                    </td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+                <div class="customized-footer" style="margin:0;padding:0;">*R-R is Reliability Related</div>
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,86 @@
+<div class="flex flex-col">
+  <div class="flex flex-row flex-wrap mt-3 px-4 justify-between">
+    <p class="font-bold text-lg">{{("Safety Hazard" | labelReplacement)| async}}s Description</p>
+    <app-button class="pr-16" (clicked)="edit = true;description = shDescription" [disabled]="!isActive || edit" variant="text" text="Edit"></app-button>
+  </div>
+
+  <div class="flex flex-row container bg-white rounded m-3 p-3 shadow-sm w-11/12 mb-4">
+
+    <img class="w-auto rounded" [src]="shImage">
+    <div style="white-space: pre-wrap" *ngIf="!edit" class="ml-2 " [innerHTML]="shDescription"></div>
+    <div *ngIf="edit" class="flex flex-col w-full">
+    <!--   <app-textarea  placeholder="Enter Description"></app-textarea> -->
+      <ckeditor #ckeditor  [editor]="Editor" placeholder="Enter Description"  [(ngModel)]="description" ></ckeditor>
+      <div class="flex flex-row justify-between">
+        <app-button variant="text" text="Cancel" (clicked)="edit = false"></app-button>
+        <app-button variant = "text" text="Save" (clicked)="updateDescription()"></app-button>
+      </div>
+    </div>
+  </div>
+  <app-data-loader *ngIf="safetyHazardSets === undefined"></app-data-loader>
+  <div *ngIf="safetyHazardSets !== undefined">
+    <div class="flex flex-row flex-wrap mt-3">
+      <div class="flex flex-col px-4">
+        <p class="font-bold text-lg">{{("Safety Hazard" | labelReplacement)| async}}s Sets</p>
+        <p class="text-xs text-gray-four ">Showing {{safetyHazardSets.length}} Hazard Set</p>
+      </div>
+      <app-button class="mt-1" [disabled]="!isActive" (clicked)="openSHSetFlyPanel(AddShSet)" variant="text" icon="add"
+        iconPosition="left" text="Add New {{('Safety Hazard' | labelReplacement)| async}}s Set"></app-button>
+    </div>
+
+
+    <div class="flex flex-col container bg-white rounded m-3 p-3 shadow-sm w-11/12 mb-4">
+      <div *ngFor="let shSet of safetyHazardSets,index as i">
+        <hr class="mt-2 mb-2">
+        <div class="flex flex-row flex-wrap mt-3 justify-between">
+          <p class="font-bold text-lg">Hazard Set {{i+1}}</p>
+          <app-button [disabled]="!isActive" (clicked)="opeSHPanelInEdit(AddShSet,shSet)" variant="text" icon="edit" iconPosition="left"
+            text="Edit"></app-button>
+        </div>
+        <hr *ngIf="shSet.safetyHzAbatementImage !== undefined && shSet.safetyHzAbatementImage !== null && shSet.safetyHzAbatementImage !== '' ||
+            shSet.safetyHzAbatementText !== undefined && shSet.safetyHzAbatementText !== null && shSet.safetyHzAbatementText !== ''" class="mt-2 mb-2">
+        <p *ngIf="shSet.safetyHzAbatementImage !== undefined && shSet.safetyHzAbatementImage !== null && shSet.safetyHzAbatementImage !== '' ||
+            shSet.safetyHzAbatementText !== undefined && shSet.safetyHzAbatementText !== null && shSet.safetyHzAbatementText !== ''" class="font-bold text-lg">Abatement</p>
+        <div
+          *ngIf="shSet.safetyHzAbatementImage !== undefined && shSet.safetyHzAbatementImage !== null && shSet.safetyHzAbatementImage !== '' ||
+          shSet.safetyHzAbatementText !== undefined && shSet.safetyHzAbatementText !== null && shSet.safetyHzAbatementText !== ''"
+          class="flex flex-row">
+          <img class="w-auto rounded" [src]="shSet.safetyHzAbatementImage">
+          <div class="ml-2" [innerHtml]="shSet.safetyHzAbatementText">
+          </div>
+        </div>
+        <hr *ngIf="shSet.safetyHzControlsImage !== undefined && shSet.safetyHzControlsImage !== null && shSet.safetyHzControlsImage !== '' ||
+            shSet.safetyHzControlsText !== undefined && shSet.safetyHzControlsText !== null && shSet.safetyHzControlsText !== ''" class="mt-3 mb-4">
+        <p *ngIf="shSet.safetyHzControlsImage !== undefined && shSet.safetyHzControlsImage !== null && shSet.safetyHzControlsImage !== '' ||
+            shSet.safetyHzControlsText !== undefined && shSet.safetyHzControlsText !== null && shSet.safetyHzControlsText !== ''" class="font-bold text-lg">Controls</p>
+        <div
+          *ngIf="shSet.safetyHzControlsImage !== undefined && shSet.safetyHzControlsImage !== null && shSet.safetyHzControlsImage !== '' ||
+          shSet.safetyHzControlsText !== undefined && shSet.safetyHzControlsText !== null && shSet.safetyHzControlsText !== ''" class="flex flex-row">
+          <img class="w-auto rounded" [src]="shSet.safetyHzControlsImage">
+          <div class="ml-2 " [innerHtml]="shSet.safetyHzControlsText">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="flex flex-col px-4">
+      <p class="font-bold text-lg">{{("Tool" | labelReplacement)| async}}s</p>
+    </div>
+    <div class="flex flex-col container bg-white rounded m-3 p-3 shadow-sm w-11/12 mb-4">
+      <div>
+        <div class="flex flex-wrap pt-6 pb-8 text-sm gap-3">
+          <div *ngFor="let tool of shTools">
+            <p class="border border-gray-five py-2 px-3 rounded-full">
+              {{tool.name}}
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<ng-template #AddShSet>
+  <app-fly-panel-add-sh-set (refresh)="refreshData()" [shSet]="shSet"></app-fly-panel-add-sh-set>
+</ng-template>

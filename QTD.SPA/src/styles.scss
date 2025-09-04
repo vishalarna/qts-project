@@ -1,0 +1,839 @@
+// Custom Theming for Angular Material
+// For more information: https://material.angular.io/guide/theming
+@use '@angular/material' as mat;
+// Plus imports for other components in your app.
+
+// Include the common styles for Angular Material. We include this here so that you only
+// have to load a single css file for Angular Material in your app.
+// Be sure that you only ever include this mixin once!
+// TODO(v15): As of v15 mat.legacy-core no longer includes default typography styles.
+//  The following line adds:
+//    1. Default typography styles for all components
+//    2. Styles for typography hierarchy classes (e.g. .mat-headline-1)
+//  If you specify typography styles for the components you use elsewhere, you should delete this line.
+//  If you don't need the default component typographies but still want the hierarchy styles,
+//  you can delete this line and instead use:
+//    `@include mat.legacy-typography-hierarchy(mat.define-legacy-typography-config());`
+@include mat.all-legacy-component-typographies();
+@include mat.legacy-core();
+
+// Define the palettes for your theme using the Material Design palettes available in palette.scss
+// (imported above). For each palette, you can optionally specify a default, lighter, and darker
+// hue. Available color palettes: https://material.io/design/color/
+$QTD2SPA-primary: mat.define-palette(mat.$indigo-palette);
+$QTD2SPA-accent: mat.define-palette(mat.$pink-palette, A200, A100, A400);
+
+// The warn palette is optional (defaults to red).
+$QTD2SPA-warn: mat.define-palette(mat.$red-palette);
+
+// Create the theme object. A theme consists of configurations for individual
+// theming systems such as "color" or "typography".
+$QTD2SPA-theme: mat.define-light-theme((color: (primary: $QTD2SPA-primary,
+        accent: $QTD2SPA-accent,
+        warn: $QTD2SPA-warn,
+      ),
+    ));
+
+// Include theme styles for core and each component used in your app.
+// Alternatively, you can import and @include the theme mixins for each component
+// that you are using.
+@include mat.all-legacy-component-themes($QTD2SPA-theme);
+
+/* Importing Bootstrap SCSS file. */
+//@import "~bootstrap/scss/bootstrap";
+/* You can add global styles to this file, and also import other style files */
+@import url("./assets/bootstrap/dist/css/bootstrap.min.css");
+@import url("./assets/font-awesome/css/all.min.css");
+// @import url("./assets/css/site.css");
+@import url("./assets/css/styles.css");
+
+@import url("../node_modules/datatables.net-dt/css/jquery.dataTables.min.css");
+@import url("https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined");
+@import "../node_modules/angular-calendar/css/angular-calendar.css";
+$qtd-primary: rgb(92, 155, 49);
+
+body {
+  overflow-y: scroll;
+  font-family: Roboto-Regular;
+}
+
+
+@font-face {
+  font-family: Roboto-Regular;
+  src: url(.././src/assets/fonts/Roboto-Regular.ttf);
+}
+
+@font-face {
+  font-family: Roboto-Medium;
+  src: url(.././src/assets/fonts/Roboto-Medium.ttf);
+}
+
+
+.dropdown-toggle::after {
+  content: none !important;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.footer {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 30%;
+  // background-color: yellowgreen;
+  color: black;
+  text-align: right;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+.mat-tab-body-wrapper {
+  margin-top: 20px !important;
+}
+
+.leader-line {
+  z-index: 999;
+}
+
+.card-box {
+  width: 370px;
+  min-height: 200px;
+  // height: 300px;
+  border: dashed 2px #000000;
+  color: rgba(0, 0, 0, 0.87);
+  cursor: move !important;
+
+  background: #fff;
+  border-radius: 4px;
+  position: relative;
+  transition: box-shadow 200ms cubic-bezier(0, 0, 0.2, 1);
+  box-shadow: 0 3px 1px -2px rgba(0, 0, 0, 0.2), 0 2px 2px 0 rgba(0, 0, 0, 0.14),
+    0 1px 5px 0 rgba(0, 0, 0, 0.12);
+}
+
+.card-box:active {
+  box-shadow: 0 5px 5px -3px rgba(0, 0, 0, 0.2),
+    0 8px 10px 1px rgba(0, 0, 0, 0.14), 0 3px 14px 2px rgba(0, 0, 0, 0.12);
+}
+
+.app-toolbar-sticky {
+  position: sticky;
+  position: -webkit-sticky;
+  /* For macOS/iOS Safari */
+  top: 0;
+  /* Sets the sticky toolbar to be on top */
+  z-index: 1000;
+  /* Ensure that your app's content doesn't overlap the toolbar */
+}
+
+.mat-checkbox-checked .mat-checkbox-background,
+.mat-checkbox-indeterminate .mat-checkbox-background {
+  background-color: $qtd-primary !important;
+}
+
+.mat-pseudo-checkbox-checked,
+.mat-pseudo-checkbox-indeterminate {
+  background-color: $qtd-primary !important;
+}
+
+.mat-ink-bar {
+  background-color: $qtd-primary !important;
+}
+
+.mat-tab-label-active {
+  color: black !important;
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+}
+
+.w-79 {
+  width: 30rem;
+}
+
+.custom_width {
+  width: 29rem !important;
+}
+
+.mt--4 {
+  margin-top: -0.4rem;
+}
+
+.mat-radio-button.mat-accent .mat-radio-ripple .mat-ripple-element {
+  opacity: 0 !important;
+  /*click effect color change*/
+  background-color: $qtd-primary !important;
+}
+
+.mat-radio-button.mat-accent .mat-radio-inner-circle {
+  background-color: $qtd-primary !important;
+  /*inner circle color change*/
+}
+
+.mat-radio-button.mat-accent.mat-radio-checked .mat-radio-outer-circle {
+  border-color: $qtd-primary !important;
+  /*outer ring color change*/
+}
+
+// .mat-radio-button ~ .mat-radio-button {
+//   margin-left: 16px;
+// }
+
+.mat-toolbar-single-row {
+  height: 7rem;
+}
+
+.mat-toolbar-single-row {
+  height: 7rem !important;
+}
+
+.width-seq {
+  width: 44%;
+}
+
+.mat-button-toggle-group {
+  height: 32px;
+  align-items: center;
+}
+
+.mat-button-toggle-checked {
+  color: $qtd-primary !important;
+  background-color: rgba(92, 155, 49, 0.1) !important;
+}
+
+.mat-step-header .mat-step-icon-selected {
+  background-color: white;
+  color: black;
+  border: 1px solid $qtd-primary !important;
+
+  +.mat-step-label {
+    color: $qtd-primary !important;
+  }
+}
+
+.mat-step-header .mat-step-icon-state-edit,
+.mat-step-header .mat-step-icon-state-done {
+  background-color: $qtd-primary !important;
+  color: white;
+
+  +.mat-step-label {
+    color: $qtd-primary !important;
+  }
+}
+
+.mat-stepper-horizontal,
+.mat-stepper-vertical {
+  background-color: transparent;
+}
+
+.qtd__menu+* .cdk-overlay-pane>div.mat-menu-panel>div.mat-menu-content :hover {
+  background-color: $qtd-primary !important;
+  color: white;
+}
+
+.active_menu {
+  background-color: $qtd-primary !important;
+  color: white !important;
+}
+
+.active_menu_blue {
+  background-color: #345989;
+  color: white;
+}
+
+// Material Flat Tree CSS Start
+.qtd-tree-invisible {
+  display: none;
+}
+
+.qtd-tree ul,
+.qtd-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+/*
+     * This padding sets alignment of the nested nodes.
+     */
+.qtd-tree .mat-nested-tree-node div[role="group"] {
+  padding-left: 20px;
+}
+
+/*
+     * Padding for leaf nodes.
+     * Leaf nodes need to have padding so as to align with other non-leaf nodes
+     * under the same parent.
+     */
+.qtd-tree div[role="group"]>.mat-tree-node {
+  padding-left: 20px;
+}
+
+// Material Flat Tree CSS End
+
+.inActiveItem {
+  color: darkgrey !important;
+  font-style: italic !important;
+}
+
+.sb-show-main.sb-main-padded {
+  background: #fcfcfc;
+  padding: 0;
+}
+
+.qtd-meta-box {
+  color: $qtd-primary;
+  background-color: rgba($qtd-primary, $alpha: 0.2);
+  border-radius: 2px;
+}
+
+.linkText {
+  color: #5C9B31;
+}
+
+.mat-checkbox-layout {
+  white-space: normal !important;
+  vertical-align: middle !important;
+}
+
+.mat-checkbox-inner-container {
+  // margin-top: 4px;
+  margin: 4px 8px auto 0 !important;
+}
+
+// .mat-checkbox-label {
+//   margin-top: 6%;
+// }
+
+.switch-box .custom-switch .custom-control-label::after {
+  width: 20px;
+  height: 20px;
+  border-radius: 100%;
+  top: 7px;
+
+}
+
+.switch-box .custom-switch .custom-control-label::before {
+  left: -2.25rem;
+  width: 46px;
+  pointer-events: all;
+  border-radius: 50px;
+  height: 26px;
+}
+
+.switch-box .custom-switch .custom-control-input:checked~.custom-control-label::after {
+  transform: translateX(1.25rem);
+}
+
+.switch-box .custom-control-input:checked~.custom-control-label::before {
+  color: #fff;
+  border-color: #ddd;
+  background-color: transparent;
+  background-color: #5c9b31;
+}
+
+.md-chip {
+  clear: left;
+}
+
+.tag-inputwrap .mat-chip-list-wrapper {
+  display: flex;
+  width: 100%;
+  padding: 0.375rem 0.75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  color: #495057;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid #ced4da;
+  border-radius: 0.25rem;
+  transition: border-color .15s ease-in-out, box-shadow .15s ease-in-out;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 143%;
+  text-align: center;
+  letter-spacing: 0.15px;
+  color: #5C9B31;
+  margin: 0;
+}
+
+.tag-inputwrap .mat-form-field {
+  width: 100%;
+}
+
+.tag-inputwrap form.ng-untouched.ng-pristine {
+  width: 80%;
+}
+
+.tag-inputwrap mat-chip.mat-chip.mat-focus-indicator.mat-primary {
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 143%;
+  text-align: center;
+  letter-spacing: 0.15px;
+  color: #5C9B31;
+  border-radius: 0;
+  background: #F5FAFF;
+  border-radius: 4px;
+  margin: 2px 6px 2px 0;
+}
+
+.tag-inputwrap mat-icon {
+  color: #5C9B31;
+}
+
+.tag-inputwrap input {
+  text-align: left;
+}
+
+.tag-inputwrap .mat-form-field-appearance-legacy .mat-form-field-infix {
+  padding: 0;
+  margin: 0;
+}
+
+
+
+.template-bottom {
+  gap: 1em;
+  align-items: center;
+  font-style: normal;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 143%;
+  letter-spacing: 0.15px;
+  color: #000D09;
+}
+
+.row.template-bottomform {
+  width: 100%;
+  margin: auto;
+  margin: 30px 0 30px 0;
+}
+
+.template-bottom input {
+  width: 5em;
+  font-size: 14px;
+  line-height: 143%;
+  color: #7A807E;
+}
+
+.template-bottom select.form-control {
+  width: 129px;
+  font-size: 14px;
+  line-height: 143%;
+  color: #7A807E;
+}
+
+.template-bottomform {
+  margin: 52px 0 0;
+}
+
+.textarea-certificate textarea {
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 143%;
+  letter-spacing: 0.15px;
+  color: #7A807E;
+  height: 205px;
+  border: 1px solid #E1E5E4 !important;
+  border-radius: 4px !important;
+}
+
+.flex-col i.fa-solid.fa-chevron-right {
+  float: right;
+  color: #b9bdbd;
+  font-size: 14px;
+  position: relative;
+  top: 4px;
+}
+
+.flex-col .data-panel-selected i.fa-solid.fa-chevron-right {
+  color: #fff;
+}
+
+.section-header {
+  font-size: 14px;
+  font-family: Roboto-Medium;
+  line-height: 20px;
+  letter-spacing: 0.15000000596046448px;
+  text-align: left;
+}
+
+.btn-label {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0em;
+  text-align: left;
+  color: #7A807E;
+}
+
+.data-panel {
+  background: #F8F9F9;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 95%;
+  color: #000D09;
+  font-size: 16px;
+  font-family: Roboto-Medium;
+  padding: 13px 27px;
+  line-height: 140%;
+  margin: 0px 0 10px;
+  transition: ease-in-out 0.2s;
+  cursor: pointer;
+}
+
+.data-panel-selected {
+  background: #5c9b31;
+  color: #fff;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 95%;
+  font-size: 16px;
+  font-family: Roboto-Medium;
+  padding: 13px 27px;
+  line-height: 140%;
+  margin: 0px 0 10px;
+  cursor: pointer;
+}
+
+.row {
+  width: 100%;
+}
+
+.btn-outline-secondary:hover {
+  background-color: #fff;
+}
+
+.table-data-wrap table,
+.table-data-wrap,
+.table-data-wrap .dataTables_scrollHeadInner {
+  width: 100% !important;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+  width: 100% !important;
+  height: 67px;
+  border-radius: 0 !important;
+  border: 0.5px solid #E1E5E4 !important;
+  color: #000;
+  border-width: 0 0 0.5px 0 !important;
+  font-size: 14px;
+}
+
+input:focus-visible {
+  border: 0;
+  outline: 0 !important;
+}
+
+.table-data-wrap .dataTables_scrollBody {
+  border: 0 !important;
+}
+
+.table-data-wrap thead tr td,
+.table-data-wrap thead tr th {
+  border-bottom: 0.5px solid #E1E5E4 !important;
+  position: relative;
+  z-index: 5;
+}
+
+.sidenav {
+  height: 100%;
+  width: 16.5em;
+  position: fixed;
+  z-index: 1;
+  top: 0;
+  right: 0;
+  background-color: white;
+  overflow-x: hidden;
+  transition: 0.5s;
+  box-shadow: 0 0 0.2rem 0rem #585656;
+}
+
+.table-data-wrap thead tr {
+  position: relative;
+  z-index: 5;
+}
+
+.table-data-wrap {
+  margin-top: 13px;
+  border: 0.5px solid #E1E5E4 !important;
+}
+
+.table-data-wrap .dataTables_wrapper label {
+  width: 100% !important;
+  color: #fff;
+  text-align: left;
+  font-size: 0;
+}
+
+.table-data-wrap .dataTables_wrapper {
+  width: 100% !important;
+}
+
+div.dataTables_filter {
+  width: 100% !important;
+}
+
+.img-wrap {
+  width: 32px;
+  height: 32px;
+  border-radius: 100%;
+  overflow: hidden;
+  position: relative;
+}
+
+.img-wrap img {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  object-fit: contain;
+  width: 100%;
+  height: 100%;
+}
+
+.table-data-wrap td,
+.table-data-wrap th {
+  vertical-align: middle;
+}
+
+.table-data-wrap tbody td,
+.table-data-wrap thead th {
+  height: 40px;
+  padding: 10px 18px !important;
+}
+
+.flex-datatwrap {
+  align-items: center;
+}
+
+.table-data-wrap .dataTables_scrollBody table.dataTable thead {
+  display: none;
+}
+
+.table-data-wrap .dataTables_wrapper label input[type="search"] {
+  width: 100%;
+  box-sizing: border-box;
+  border: 2px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+  background-color: white;
+  background-image: url(../src/assets/img/search-interface-symbol.png);
+  background-position: bottom 1.6em left 0.9em;
+  background-repeat: no-repeat;
+  padding: 12px 20px 12px 40px;
+  background-size: 14px;
+  opacity: 0.7;
+  margin-top: -20px;
+}
+
+.manager-table .mat-cell,
+.manager-table .mat-footer-cell {
+  color: rgba(0, 0, 0, 0.87);
+  height: 60px;
+}
+
+.manager-table tr td.mat-cell {
+  height: auto !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mat-tab-group {
+  max-width: 98% !important;
+  margin: auto !important;
+}
+
+
+.customize-dashboard-panels .mat-content {
+  overflow: visible !important;
+}
+
+.customize-dashboard-panels #acc0 {
+  position: relative !important;
+}
+
+.customize-dashboard-panels #acc0 .mat-expansion-indicator {
+  position: absolute !important;
+  left: 27% !important;
+  border-color: #525252 !important;
+}
+
+.customize-dashboard-panels #acc1 {
+  position: relative !important;
+}
+
+.customize-dashboard-panels #acc1 .mat-expansion-indicator {
+  position: absolute !important;
+  left: 41% !important;
+  border-color: #525252 !important;
+}
+
+.design-general .mat-option:hover:not(.mat-option-disabled),
+.mat-option:focus:not(.mat-option-disabled) {
+  background: #5C9B31;
+  color: #fff;
+}
+
+.design-general .mat-form-field-flex.ng-tns-c82-0 {
+  border: 1px solid #E1E5E4;
+  border-radius: 4px !important;
+  width: 168px;
+  height: 38px;
+  padding: 0px !important;
+  background: #fff;
+}
+
+.design-general .mat-form-field-underline.ng-tns-c82-0.ng-star-inserted {
+  display: none !important;
+}
+
+.bg-green-hover {
+  background: rgba(92, 155, 49, 0.2);
+  opacity: 0.5;
+  border-radius: 40px;
+  height: 40px;
+  width: 40px;
+  padding-left: 8px;
+  padding-top: 6px;
+}
+
+span.cal-event-title.ng-star-inserted {
+  color: #5c9b31;
+}
+
+.cal-month-view .cal-open-day-events {
+  background-color: #f8faf7b8;
+}
+
+.cal-event-title.ng-star-inserted p {
+  margin-top: -2.8%;
+  color: rgb(153 159 156);
+}
+
+.cal-event-title.ng-star-inserted h1 {
+  font-size: large;
+  font-weight: 500;
+}
+
+// .mat-checkbox-frame {
+//   border-width: 0.1rem !important;
+//   border-color: lightgray;
+//   border-radius: 20% !important;
+// }
+.btn-primary.disabled,
+.btn-primary:disabled {
+  color: #fff;
+  background-color: grey;
+  border-color: grey
+}
+
+.btn-blueBorder.disabled,
+.btn-blueBorder:disabled {
+  color: #fff;
+  background-color: grey;
+  border-color: grey
+}
+
+.btn-blue {
+  background-color: #456FA5;
+  color: white;
+}
+
+.btn-blueBorder {
+  background-color: white;
+  border: #456FA5 solid 2px;
+  color: #456FA5;
+}
+
+.btn-blue.disabled,
+.btn-blue:disabled {
+  color: #fff;
+  background-color: grey;
+  border-color: grey
+}
+
+.input input[type=text] {
+  width: 30%;
+  padding: 3px 20px;
+  display: inline-block;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.manager-table mat-cell.mat-column-Employee {
+  width: 500px !important;
+  max-width: 500px !important;
+}
+
+.time-picker-component .mat-form-field-infix {
+  display: inherit;
+}
+
+button.approval-table {
+  background-color: #eef7ff !important;
+  color: #6da1d0 !important;
+  border: 0;
+}
+
+button.waiting-table {
+  background-color: #fff9e8 !important;
+  color: #ffd97f !important;
+  border: 0;
+}
+
+.table-header-cell div,
+.table-header-cell {
+  color: #7A807E !important;
+  font-family: Roboto;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 400 !important;
+  line-height: 166%;
+  letter-spacing: 0.4px;
+}
+
+.filter-form-wrapper .mat-form-field-appearance-outline .mat-select-arrow-wrapper {
+  transform: translateY(0%);
+}
+
+.filter-form-wrapper .mat-select {
+  position: relative;
+  top: -3px;
+}
+
+.filter-form-wrapper .mat-form-field-appearance-outline .mat-form-field-wrapper {
+  padding: 0;
+}
+
+table.inner-html-dialog-table {
+  width: 100%;
+  border-collapse: collapse;
+  border: 1px solid black;
+}
+
+table.inner-html-dialog-table th, 
+table.inner-html-dialog-table td {
+  border: 1px solid black;
+  padding: 8px;
+  text-align: left;
+}

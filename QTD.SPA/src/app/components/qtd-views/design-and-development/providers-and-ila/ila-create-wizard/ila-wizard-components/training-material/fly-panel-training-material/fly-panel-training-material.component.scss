@@ -1,0 +1,28 @@
+.panel-heading {
+    font-weight: 600;
+    font-size: 18px;
+    line-height: 143%;
+    color: #4d4d4d;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .design-general{
+    padding: 2em 0 0
+  }
+  .design-general .label-padding{
+    padding: 1em 0;
+  }
+  .label-padding  .company-text label{
+    margin: 0;
+  }
+  input{
+    margin-top:0px;
+  }
+.custom-btn{
+  float: right;
+  flex-wrap: wrap;
+  align-items: center;
+  min-height: 2.5rem;
+  justify-content: center;
+  max-width: fit-content;
+}

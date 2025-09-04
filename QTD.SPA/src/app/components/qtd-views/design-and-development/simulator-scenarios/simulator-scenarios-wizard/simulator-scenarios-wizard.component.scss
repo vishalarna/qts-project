@@ -1,0 +1,128 @@
+:host ::ng-deep .scenario-wizard-header .review-back-button span mat-icon {
+  font-size: 30px;
+  position: relative;
+  bottom: 2px;
+  right: 5px;
+  color: #278f6d;
+}
+
+app-button.review-back-button {
+  background-color: rgba(39, 143, 109, 0.11);
+  border-radius: 50%;
+}
+
+.scenario-wizard-header {
+  padding: 1.12rem 1.5rem;
+  background-color: white;
+  box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+  justify-content: space-between;
+  .scenario-wizard-heading {
+    color: #7a807e;
+    font-size: 1.25rem;
+    font-weight: 400;
+    flex: 1 1 78%;
+    line-height: 160%;
+    h3 > span {
+      color: #000d09;
+      font-weight: 500;
+    }
+  }
+  .edit-review-heading {
+    flex: 1 1 78%;
+    color: #000d09;
+    font-size: 1.125rem;
+    font-weight: 500;
+    line-height: 160%; /* 1.8rem */
+    letter-spacing: 0.00938rem;
+    display: flex;
+    flex-direction: column;
+    h4 {
+      color: #7a807e;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 143%; /* 1.25125rem */
+      span {
+        color: #000d09;
+      }
+    }
+  }
+}
+:host ::ng-deep .scenario-wizard-header {
+  .header-button {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 143%;
+    letter-spacing: 0.00938rem;
+  }
+  .review-cancel-button {
+    color: #a1b2ad !important;
+    padding: 0.75rem;
+  }
+  .wizard-continue-button {
+    color: #fff;
+    padding: 0.75rem 1.87rem;
+  }
+  .review-share-button {
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+  }
+}
+.scenario-wizard-container {
+  background-color: #fcfcfc;
+  padding: 4rem 7.38rem;
+}
+:host ::ng-deep .scenario-wizard-stepper .mat-step-header {
+  .mat-step-icon {
+    margin-bottom: 0.69rem;
+    width: 28px;
+    height: 28px;
+  }
+  .mat-step-label {
+    color: #5c9b31;
+    font-size: 0.75rem;
+    font-weight: 500;
+    line-height: 166%; /* 1.245rem */
+    letter-spacing: 0.025rem;
+    .mat-step-optional {
+      display: none;
+    }
+  }
+}
+:host
+  ::ng-deep
+  .scenario-wizard-stepper
+  .mat-step-header[aria-disabled="true"] {
+  .mat-step-icon {
+    background: #e3e4e4;
+    border: 1px solid #a1b2ad;
+    color: #a1b2ad;
+  }
+  .mat-step-label {
+    color: #a1b2ad;
+  }
+}
+
+:host::ng-deep button.disabled-pointer:disabled {
+  cursor: default;
+  opacity: 0.65 !important;
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+}
+
+.overview-spinner {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+
+::ng-deep .collaborator-dialog .mat-dialog-container{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  .mat-dialog-content {
+    max-height: unset;
+  }
+}

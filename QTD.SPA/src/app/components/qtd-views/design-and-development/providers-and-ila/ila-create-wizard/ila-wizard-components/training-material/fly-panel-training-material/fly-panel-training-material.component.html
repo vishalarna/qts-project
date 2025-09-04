@@ -1,0 +1,49 @@
+<div class="row m-0">
+  <div class="flex flex-col bg-white p-4 pl-0" style="width: 100%">
+    <div class="panel-heading d-flex">
+      <span>Add New {{("ILA" | labelReplacement)| async}} Resource</span>
+      <app-button
+        (click)="flyPanelSrvc.close()"
+        ButtonType="icon"
+        icon="close" customClasses="save-button"
+      ></app-button>
+    </div>
+    <div style="width: 100%" class="flex flex-col design-general">
+      <form class=" flex-row border-gray-one pt-0 pb-4 rounded-sm"
+        [formGroup]="trainingMaterialForm" >
+        <div class="pr-3 label-padding">
+          <app-label text="Title" class="text-gray-300 company-text"></app-label>
+          <app-textbox formControlName="title" placeholder="Enter Title"></app-textbox>
+        </div>
+        <div class="pr-3 label-padding">
+          <app-label text="Comments" class="text-gray-300 company-text"></app-label>
+          <app-textarea formControlName="comments" placeholder="Enter Comments" [value]="this.trainingMaterialForm.get('comments')?.value"></app-textarea>
+        </div>
+        <div class="custom-btn">
+        <app-button *ngIf="!isEditILAResource"
+          type="submit"
+          [disabled]="trainingMaterialForm.invalid"
+          color="primary"
+          (clicked)="saveClick($event)"
+          size="md"
+          text="Save"
+          class="save-btn mr-2"
+          customClasses="disabled-pointer"  
+          align
+        ></app-button>
+        <app-button *ngIf="isEditILAResource"
+          type="submit"
+          [disabled]="trainingMaterialForm.invalid"
+          color="primary"
+          (clicked)="updateClick($event)"
+          size="md"
+          text="Update"
+          class="save-btn mr-2"
+          customClasses="disabled-pointer"  
+          align
+        ></app-button>
+    </div>
+      </form>
+    </div>
+  </div>
+</div>

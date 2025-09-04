@@ -1,0 +1,93 @@
+<ng-container *ngIf="!showReasonModal">
+    <mat-dialog-content>
+
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p mat-dialog-title [textContent]="header"></p>
+            <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+            <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+
+        </div>
+        <hr class="mt-1 mb-8">
+        <!--  <app-textbox [(ngModel)]="description" [disabled]="true"></app-textbox> -->
+        <div *ngIf="reasonName" class="flex flex-row">
+            <textarea cdkTextareaAutosize rows="10" [disabled]="true" style="background-color: white;resize: none;border: none;width: 50%;min-height: fit-content;max-height: fit-content ;overflow: hidden;white-space: nowrap;" [textContent]="description"></textarea>
+            <span class="font-bold" [textContent]="reasonName"></span>
+
+        </div>
+
+        <textarea *ngIf="!reasonName" cdkTextareaAutosize [disabled]="true" style="background-color: white;resize: none;border: none;width: 100%;min-height: fit-content;overflow: hidden;" [textContent]="description"></textarea>
+       <!-- <p class="mt-3">Organizational Manager(s)  Lauren Brox, Cody Fisher</p> -->
+       <div *ngFor="let emp of tempsrc">
+<!--         <mat-chip>{{emp.employee.person.firstName}} - {{emp.employee.person.lastName}}</mat-chip><br><br>
+-->
+
+      <!--   <mat-chip>{{emp}}</mat-chip> -->
+        </div>
+
+        <div class="flex flex-row justify-between">
+            <p class="mt-3">Organizational Manager(s)</p>
+            <div style="margin-top: 1rem;" *ngIf="orgManagerArray.length > 0">{{orgManagerArray.join(', ')}}</div>
+            <div style="margin-top: 1rem;" *ngIf="orgManagerArray.length === 0">None</div>
+        </div>
+       <div class="flex flex-row justify-between">
+       <p class="mt-3">Total  linked to Organization</p>
+       <div style="margin-top: 1rem;">{{tempsrc.length}}</div>
+      </div>
+      <div *ngIf="tempsrc.length > 0">
+        <mat-chip-list>
+            <div *ngFor="let emp of tempsrc">
+                <mat-chip>{{emp}}</mat-chip>
+              </div>
+
+            <!-- <mat-chip>Two fish</mat-chip>
+            <mat-chip>Primary fish</mat-chip>
+            <mat-chip>Accent fish</mat-chip> -->
+          </mat-chip-list>
+          <p class="mt-2">Deleting the Organization will remove the links to the {{("Employee" | labelReplacement)| async}}(s) and Manager(s).</p>
+      </div>
+
+
+        <p class="mt-3">Are you sure you want to continue?</p>
+        <!-- header ends here -->
+    </mat-dialog-content>
+
+
+    <mat-dialog-actions class="flex flex-row justify-end">
+        <!-- (clicked)="confirm()"
+        (clicked)="cancel()" -->
+        <app-button type="button" (clicked)="closeDialog()" [text]="cancelText" color="grey" size="sm" class="mr-2">
+        </app-button>
+        <app-button type="button" (clicked)="onConfirm($event)" [text]="confirmText" color="secondary" size="sm"
+            class="mr-2" [mat-dialog-close]="!showEffectiveDateAndReason"></app-button>
+    </mat-dialog-actions>
+</ng-container>
+
+<ng-container *ngIf="showReasonModal">
+    <mat-dialog-content>
+
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p mat-dialog-title [textContent]="header"></p>
+            <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+        </div>
+        <hr class="mt-1 mb-4">
+        <p  class="mb-4 text-sm" [textContent]="reasonDescription"></p>
+        <hr *ngIf="reasonDescription" class="mt-1 mb-8">
+        <div class="flex flex-col">
+            <app-label style="color: #7A807E;" text="Effective Date"></app-label>
+            <app-date [(ngModel)]="effectiveDate"></app-date>
+            <app-label style="color: #7A807E;" text="Note/Reason" class="mt-2"></app-label>
+            <app-textarea [(ngModel)]="reason"></app-textarea>
+        </div>
+        <p>rdf</p>
+        <!-- header ends here -->
+    </mat-dialog-content>
+
+
+    <mat-dialog-actions class="flex flex-row justify-end">
+
+        <app-button type="button" (clicked)="onSaveReason($event)" text="Save" color="primary" size="sm" class="mr-2">
+        </app-button>
+    </mat-dialog-actions>
+</ng-container>

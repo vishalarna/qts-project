@@ -1,0 +1,54 @@
+<form class="step-container" [formGroup]="createMetaILATestForm">
+    <div class="mat-step-section with-bottom-border">
+      <div class="step-header-section">
+        <h2 class="step-main-header">Test Information</h2>
+        <p class="step-header-caption">Enter a title for this assessment</p>
+      </div>
+      <div class="step-controls-section">
+        <div class="step-control-container">
+          <div class="step-control-label">Title<span class="required-label">*</span></div>
+          <div class="step-control">
+            <app-textbox type="text" formControlName="title"  (input)="titleChange()" [placeholder]="'Enter Title'"></app-textbox>
+          </div>
+        </div>
+        <div class="step-control-container">
+          <div class="step-control-label">{{("Instruction" | labelReplacement)| async}}s (Optional)</div>
+          <div class="step-control">
+            <app-textarea type="text" [value]="createMetaILATestForm.get('instructions').value" formControlName="instructions"  (input)="instructionChange()" placeholder="'Enter' {{('Instruction' | labelReplacement)| async}}s"></app-textarea>
+          </div>
+        </div>
+        <div class="step-control-container">
+          <div class="step-control-label">Time limit (Optional)</div>
+          <div class="step-control time-control">
+            <app-textbox type="text" formControlName="TimeLimitHours" (input)="timeLimitHoursChange()" [name]="'TimeLimit'" (keypress)="inputChange($event)"></app-textbox>
+            <app-textbox type="text" formControlName="TimeLimitMins" (input)="timeLimitMinsChange()" [name]="'TimeLimit'" (keypress)="inputChange($event)"></app-textbox>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mat-step-section">
+      <div class="step-header-section">
+        <h2 class="step-main-header ">Test Type<span class="required-label">*</span></h2>
+        <p class="step-header-caption">Select the type of test</p>
+      </div>
+      <div class="step-controls-section">
+        <div class="step-control-container">
+            <mat-radio-group formControlName="testType" (change)="testTypeChange()">
+              <div *ngFor="let testType of testTypes; index as i">
+                <mat-radio-button [value]="testType.id"  class=" flex-row flex flex-wrap" [disabled] = "testType.description != testTypeDescription" >
+                  {{testType.description}}
+                </mat-radio-button>
+              </div>
+            </mat-radio-group>
+        </div>
+        <div class="step-control-container">
+          <div class="step-control-label">{{("Position" | labelReplacement)| async}}</div>
+          <div class="step-control">
+            <mat-select formControlName="position" (selectionChange)="positionChange()"  placeholder="Select {{('Position' | labelReplacement)| async}}" class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                <mat-option *ngFor="let position of positions"   [value]="position.id">{{position.positionTitle}}</mat-option>
+              </mat-select>
+          </div>
+        </div>
+      </div>
+    </div>
+</form>

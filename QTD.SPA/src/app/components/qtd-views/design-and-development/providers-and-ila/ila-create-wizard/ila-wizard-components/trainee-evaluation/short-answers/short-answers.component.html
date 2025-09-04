@@ -1,0 +1,73 @@
+<form [formGroup]="shortAnswerForm">
+  <!--Question Box Starts Here-->
+  <div class="ml-12 mr-12 mt-2">
+    <mat-label class="font-medium text-sm">Question</mat-label>
+    <ckeditor formControlName='question' [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+    <app-input-error *ngIf="shortAnswerForm.get('question')?.invalid" text="Please Enter Question Description">
+    </app-input-error>
+  </div>
+  <!--Question Box Ends Here-->
+
+  <!--Acceptable Answers Start-->
+  <div class="flex flex-col ml-12 mr-12 mt-12" *ngFor="let i of short_answer; let j=index">
+
+    <mat-label class="font-medium text-sm">Acceptable Responses {{j+1}}</mat-label>
+    <ckeditor formControlName="acceptedRes{{j}}" [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+    <mat-checkbox formControlName="caseSensitive{{j}}" [checked]="true" class="font-medium"><span class="ml-2 mt-2">
+        Case sensitive </span></mat-checkbox>
+    <app-input-error *ngIf="shortAnswerForm.get('acceptedRes' + j)?.invalid"
+      text="Please enter description for acceptable responses"></app-input-error>
+  </div>
+
+  <div class="flex flex-col ml-12 mr-12 mt-8">
+    <app-button variant="text" text="Add more acceptable responses" (clicked)="OnAddResponses()" iconPosition="left"
+      icon="add"></app-button>
+    <app-button *ngIf="short_answer.length > 3" variant="text" text="Remove an acceptable response"
+      (clicked)="onRemoveResponse()" iconPosition="left" icon="delete"></app-button>
+  </div>
+
+  <!--Acceptable Answers End-->
+
+  <!--Grading Starts-->
+  <div class="ml-12 mr-12 mt-8">
+    <mat-label class="font-medium text-sm">Grading Short Answer Test Item</mat-label>
+    <div class="flex flex-col mt-3">
+      <mat-checkbox (change)="addToSelection($event,1)" class="mr-2">Require all Acceptable Responses to pass
+      </mat-checkbox>
+      <mat-checkbox (change)="addToSelection($event,2)" class="mr-2">Require selected Acceptable Responses to pass
+      </mat-checkbox>
+      <app-input-error *ngIf="selection.selected.length < 1" text="Please Select At leaset one option">
+      </app-input-error>
+    </div>
+
+
+    <!--Number of students start-->
+    <div class="flex flex-col ml-9 mb-8">
+      <div class="border w-28 h-16 rounded">
+        <p class="float-left text-base mt-2 align-center ml-2">{{default_number}}</p>
+        <div class="float-right flex flex-col mt--2">
+          <app-button ButtonType="icon" icon="expand_less" (click)="IncreaseNumber()"></app-button>
+          <app-button ButtonType="icon" icon="expand_more" (click)="DecreaseNumber()"></app-button>
+        </div>
+      </div>
+    </div>
+    <!--Number of students ends-->
+
+  </div>
+  <!--Grading Ends-->
+</form>
+<!--Save Button Starts-->
+<div class="flex flex-row float-right mr-12 mt-16">
+  <div *ngIf="!update && showSaveButton" class="flex flex-row float-right mr-12 mt-16">
+    <app-button [spinner]="saveSpinner"
+      [disabled]="shortAnswerForm.invalid || selection.selected.length < 1 || saveSpinner || saveAndAddSpinner"
+      class="mr-2" type="button" size="sm" (clicked)="saveTestItem(false)" color="primary" text="Save"></app-button>
+    <app-button [spinner]="saveAndAddSpinner"
+      [disabled]="shortAnswerForm.invalid || selection.selected.length < 1 || saveSpinner || saveAndAddSpinner"
+      (clicked)="saveTestItem(true)" type="button" size="sm" color="secondary" text="Save & Add New"></app-button>
+  </div>
+  <app-button *ngIf="update && showSaveButton" [spinner]="false"
+    [disabled]="shortAnswerForm.invalid || selection.selected.length < 1" (clicked)="updateTestItem()" type="button"
+    size="sm" color="secondary" text="Update"></app-button>
+</div>
+<!--Save Button Ends-->

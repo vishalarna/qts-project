@@ -1,0 +1,51 @@
+.type-select {
+  padding: 0;
+}
+.mb-0 {
+  margin-bottom: 0;
+}
+.header-spacing {
+  padding: 1.5rem 1.5rem 1.5rem 3rem;
+}
+.container-spacing {
+  padding: 1.5rem 1.5rem 1.5rem 3rem;
+}
+
+p.medium-font-weight {
+  font-weight: 500;
+  padding: 0rem 0rem 1rem 3rem;
+}
+
+h3 {
+  font-weight: bold;
+  margin-bottom: 0;
+  font-size: 1.5em;
+  padding-left: 3rem;
+}
+
+h4.action-items-title {
+  font-weight: normal;
+  margin-top: 0;
+  color: gray;
+  font-size: 1.2em;
+  padding: 1rem 2rem 0rem 5rem;
+}
+
+p.action-item-name {
+  margin-left: 20px;
+  margin-top: 0;
+  margin-bottom: 10px;
+  color: #333;
+  padding: 0rem 2rem 0rem 5rem;
+}
+
+div {
+  margin-bottom: 20px;
+}
+
+.overview-spinner {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

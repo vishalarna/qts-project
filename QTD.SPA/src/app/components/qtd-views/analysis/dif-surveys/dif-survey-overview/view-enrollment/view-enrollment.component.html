@@ -1,0 +1,172 @@
+<mat-toolbar
+  class="app-toolbar-sticky flex align-items-center dif-survey-header pr-5"
+>
+  <div class="flex items-center">
+    <app-button
+      type="button"
+      ButtonType="icon"
+      icon="keyboard_arrow_left"
+      class="header-back-button"
+      (click)="goBack()"
+    ></app-button>
+    <div class="edit-dif-survey-heading ml-4">
+      <h3>{{difSurvey.surveyTitle}}</h3>
+    </div>
+  </div>
+  <div class="d-flex justify-content-center align-items-center survey-date-range">
+    <mat-icon class="mr-2">calendar_today</mat-icon>
+    {{difSurvey.startDate | date:'dd MMM yyyy'}} - {{difSurvey.dueDate | date:'dd MMM yyyy'}}
+  </div>
+</mat-toolbar>
+<div class="main-enrollment-div">
+  <div class="flex flex-row justify-content-between px-5 chart-div">
+    <ng-container *ngIf="!hideChart" >
+      <div class="d-flex align-items-center justify-content-center">
+        <div class="justify-content">
+          <p class="font-bold text-lg">View Enrollments</p>
+          <p style="font-weight: 500;">Total Enrollments for the survey :<span class="font-bold"> {{enrollmentDataSource.data.length}} </span></p>
+        </div>
+      </div>
+      <div class="flex flex-row rounded">
+        <div style="display: flex" class="justify-content-center align-items-center">
+          <canvas *ngIf="!hideChart && !isLoading && (enrollmentDataSource.data.length > 0)" #pie baseChart [type]="'pie'" [data]="pieChartData" [options]="pieChartOptions">
+          </canvas>
+          <span class="p-4" *ngIf="!isLoading && (enrollmentDataSource.data.length == 0)"> No Data for Pie Chart</span>
+          <div class="pl-5">
+            <div class="flex mb-4">
+              <div class="progress progress-not" ></div>
+              <div class="pl-3">
+                <p class="font-bold text-lg">{{getPercentage(0)}}</p>
+                <p class="mb-0">Not started</p>
+              </div>
+            </div>
+            <div class="flex mb-4">
+              <div class="progress progress-in" ></div>
+              <div class="pl-3">
+                <p class="font-bold text-lg">{{getPercentage(1)}}</p>
+                <p class="mb-0">In progress</p>
+              </div>
+            </div>
+            <div class="flex mb-4">
+              <div class="progress progress-completed"></div>
+              <div class="pl-3">
+                <p class="font-bold text-lg">{{getPercentage(2)}}</p>
+                <p class="mb-0">Completed</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </ng-container>
+    <div class="view-results-div">
+      <app-button text="View Results" size="sm" color="secondary" (clicked)="viewResults()" ></app-button>
+    </div>
+  </div> 
+  <div class="d-flex align-items-center mx-5 add-employee-btn">
+    <app-button [disabled]="this.selection.selected.length == 0" style="margin-right: 10px;" text="Remove {{('Employee'| labelReplacement)| async}}(s)" size="sm" color="secondary" (clicked)="removeItemsModal(unlinkEmployees)"></app-button>
+    <app-button text="Enroll {{('Employee' | labelReplacement)| async}}" size="sm" color="secondary"  [disabled]="surveyStatus==='Closed'" (clicked)="openFlyInPanelAddEmployees(addEmployeePanel)"></app-button>
+  </div>
+  <div class="flex-row bg-white-one mt-1 mx-5 rounded-b-md mat-elevation-z8 enrollment-list-data">   
+    <mat-table  style="border-top: 0.8px solid #e1e5e4" [dataSource]="enrollmentDataSource" matSort>
+      <ng-container matColumnDef="checkBox">
+        <mat-header-cell *matHeaderCellDef style="max-width: 100px">
+          <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" style="max-width: 100px">
+          <mat-checkbox [disabled]="row.status.toUpperCase() === 'COMPLETED'" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" 
+          [checked]="row.status.toUpperCase() !== 'COMPLETED' && selection.isSelected(row)"></mat-checkbox>
+        </mat-cell>
+      </ng-container>
+    <ng-container matColumnDef="empFirstName">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{("Employee" | labelReplacement)| async}} Name
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" class="employee-cell">
+        <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 mb-2" [src]="row.empImage" onerror="this.src='assets/img/ImageNotFound.jpg'" />
+        <div>
+          <div class="font-bold  mb-1 employee-name">{{ row.empFirstName }} {{ row.empLastName }}</div>
+          <div class="text-gray-500">{{ row.empUserName }}</div>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="positions">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{("Position" | labelReplacement)| async}}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.positions}}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="organizations">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        Organization
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row"> 
+        {{row.organizations}}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="releasedDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        Released Date
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row"> 
+        {{row.releasedDate ? (row.releasedDate | dateFormat | async) : 'N/A'}}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="completedDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        Completed Date
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.completedDate ? (row.completedDate | dateFormat | async) : 'N/A'}}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        Status
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" class="status-cell">
+        <span [ngClass]="{ 'not-started': row.status.toUpperCase() === 'NOT STARTED', 'in-progress': row.status.toUpperCase() === 'IN PROGRESS', 'completed': row.status.toUpperCase() === 'COMPLETED' }">
+          {{ row.status | uppercase }}
+        </span>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="action">
+      <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="flex flex-row items-center text-gray-four btn-group">
+          <button mat-icon-button [matMenuTriggerFor]="menu">
+            <app-icon icon="more_vert"></app-icon>
+          </button>
+          <mat-menu #menu="matMenu">
+            <label mat-menu-item translate [disabled]="row.status.toUpperCase() === 'COMPLETED'" (click)="removeItemsModal(unlinkEmployees,row)"> Remove {{("Employee" | labelReplacement)| async}} </label>
+          </mat-menu>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <app-button text="View Results" size="sm" color="secondary"></app-button>
+
+    <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: tableColumns" [ngClass]="{'completed-row': row.status.toUpperCase() === 'COMPLETED'}"></mat-row>
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center" *matNoDataRow>
+      <td class="mat-cell w-full">No Data</td>
+    </tr>
+    </mat-table>
+  </div>
+</div>
+<ng-template #addEmployeePanel>
+  <app-fly-panel-dif-survey-employees [alreadyLinkedEmployees]="difSurvey.employees" [difSurveyId]="difSurvey.id" (updatedEmployees)="updateEmployeesList($event)"> </app-fly-panel-dif-survey-employees>
+</ng-template>
+<ng-template #unlinkEmployees>
+  <app-qtd-dialogue
+    [header]="unlinkHeader"
+    [isHTML]="true"
+    [isQuestion]="true"
+    [description]="unlinkDescription"
+    cancelText="No"
+    confirmText="Yes"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="removeEmployeeAsync()"
+  >
+  </app-qtd-dialogue>

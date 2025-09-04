@@ -1,0 +1,280 @@
+<app-header breadcrumbs="Requests For Public Courses"></app-header>
+
+
+<div class="flex flex-col justify-center">
+    <div *ngIf="showLoader" class="loader-class">
+        <app-spinner></app-spinner>
+    </div>
+    <div *ngIf="!showLoader" class="flex flex-row justify-center w-100">
+        <span *ngIf="publicCourseDataSource.data.length==0"
+            class="bg-white rounded m-3 py-3 px-3 mx-4 d-flex justify-center shadow-sm w-100 text-2xl ">No Data
+            Available</span>
+        <div *ngIf="publicCourseDataSource.data.length>0" class="bg-white rounded m-3 py-3 px-3 mx-4 shadow-sm w-100">
+            <mat-table [dataSource]="publicCourseDataSource" #publicCourseSort="matSort" matSort
+                [multiTemplateDataRows]="true">
+                <ng-container matColumnDef="expandClassSchedule">
+                    <mat-header-cell *matHeaderCellDef style="max-width: 100px" mat-sort-header>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row;" style="max-width: 100px">
+                        <app-button variant="text"
+                            [icon]="expandedClassScheduleElement === row ? 'expand_less' : 'expand_more'"
+                            (clicked)="getExpandedClassScheduleElement(row); $event.stopPropagation()">
+                        </app-button>
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="ilaNumber">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        <div class="text-gray-400 text-sm font-weight-normal">Course Number</div>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">{{row.ilaNumber}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="ilaTitle">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        <div class="text-gray-400 text-sm font-weight-normal">Course Name</div>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">{{row.ilaTitle}}</mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="expandedClassScheduleDetail">
+                    <mat-cell *matCellDef="let row" [attr.colspan]="courseColumnsToDisplay"
+                        [class.sub-table-cell]="true" class="py-0">
+                        <div style="width: 100%">
+                            <div class="pl-3">
+                                <ng-container class="mt-4"
+                                    *ngTemplateOutlet="expandedClassScheduleTable"></ng-container>
+                            </div>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+
+                <mat-header-row *matHeaderRowDef="courseColumnsToDisplay"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: courseColumnsToDisplay"></mat-row>
+                <mat-row [ngStyle]="{ display: expandedClassScheduleElement === row ? 'block' : 'none' }"
+                    *matRowDef="let row; columns: ['expandedClassScheduleDetail']"
+                    class="overview-detail-row"></mat-row>
+
+            </mat-table>
+        </div>
+    </div>
+</div>
+
+<ng-template #expandedClassScheduleTable>
+    <app-data-loader *ngIf="!expandedClassScheduleElement"></app-data-loader>
+    <mat-table #scheduleSort="matSort" matSort *ngIf="expandedClassScheduleElement"
+        [dataSource]="publicClassScheduleDataSource" class="w-full" [multiTemplateDataRows]="true">
+        <ng-container matColumnDef="expandRequests">
+            <mat-header-cell *matHeaderCellDef mat-sort-header style="max-width: 100px">
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row;" style="max-width: 100px">
+                <app-button variant="text" [icon]="expandedRequestElement === row ? 'expand_less' : 'expand_more'"
+                    (clicked)="getExpandedRequestElement(row); $event.stopPropagation()">
+                </app-button>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="classStartDateTime">
+            <mat-header-cell mat-sort-header *matHeaderCellDef>
+                 <div class="text-gray-400 text-sm font-weight-normal">Class Detail</div>
+            </mat-header-cell>
+            <mat-cell class="pt-3 pb-3" *matCellDef="let row">
+                <span>{{row.startDateTime | dateFormat | async}} {{row.startDateTime | date:'shortTime'}} -
+                    {{row.endDateTime | dateFormat | async}} {{row.endDateTime | date:'shortTime'}}</span>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="locationName">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="text-gray-400 text-sm font-weight-normal">Location</div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.locationName}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="instructorName">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                <div class="text-gray-400 text-sm font-weight-normal">Instructor Name</div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.instructorName}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="expandedRequestsDetail">
+            <mat-cell *matCellDef="let row" [attr.colspan]="courseColumnsToDisplay" [class.sub-table-cell]="true"
+                class="py-0">
+                <div style="width: 100%">
+                    <div class="pl-3">
+                        <ng-container class="mt-4" *ngTemplateOutlet="expandedRequestsTable"></ng-container>
+                    </div>
+                </div>
+            </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="classScheduleColumnsToDisplay"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: classScheduleColumnsToDisplay;"></mat-row>
+        <mat-row [ngStyle]="{ display: expandedRequestElement === row ? 'block' : 'none' }"
+            *matRowDef="let row; columns: ['expandedRequestsDetail']" class="overview-detail-row"></mat-row>
+    </mat-table>
+</ng-template>
+
+
+<ng-template #expandedRequestsTable>
+    <app-data-loader *ngIf="!expandedRequestElement"></app-data-loader>
+    <mat-table #requestSort="matSort" matSort *ngIf="expandedRequestElement" [dataSource]="publicRequestDataSource"
+        [multiTemplateDataRows]="true" class="w-full">
+
+        <ng-container matColumnDef="firstName">
+            <mat-header-cell *matHeaderCellDef>
+                <div class="text-gray-400 text-sm font-weight-normal">First Name</div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <div (click)="editedCell = { rowId: row.id, column: 'firstName' }" class="textFieldContainer">
+                <ng-container *ngIf="isCellEditing(row, 'firstName'); else viewMode">
+                    <app-textbox [defaultValue]="row.firstName" (input)="onChangeValue(row, 'firstName', $event)"
+                        (blur)="editedCell = null">
+                    </app-textbox>
+                </ng-container>
+                <ng-template #viewMode>
+                        {{ row.firstName }}
+                </ng-template>
+            </div>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="lastName">
+            <mat-header-cell *matHeaderCellDef>
+                <div class="text-gray-400 text-sm font-weight-normal">Last Name</div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <div (click)="editedCell = { rowId: row.id, column: 'lastName' }" class="textFieldContainer">
+                <ng-container *ngIf="isCellEditing(row, 'lastName'); else viewMode">
+                    <app-textbox [defaultValue]="row.lastName" (input)="onChangeValue(row, 'lastName', $event)"
+                        (blur)="editedCell = null">
+                    </app-textbox>
+                </ng-container>
+                <ng-template #viewMode>
+                        {{ row.lastName }}
+                </ng-template>
+            </div>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="emailAddress">
+            <mat-header-cell *matHeaderCellDef>
+                <div class="text-gray-400 text-sm font-weight-normal">Email Address</div>
+            </mat-header-cell>
+             <mat-cell *matCellDef="let row">
+                <div (click)="editedCell = { rowId: row.id, column: 'emailAddress' }" class="textFieldContainer">
+                <ng-container *ngIf="isCellEditing(row, 'emailAddress'); else viewMode">
+                    <app-textbox [defaultValue]="row.emailAddress" (input)="onChangeValue(row, 'emailAddress', $event)"
+                        (blur)="editedCell = null">
+                    </app-textbox>
+                </ng-container>
+                <ng-template #viewMode>
+                        {{ row.emailAddress }}
+                </ng-template>
+            </div>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="company">
+           <mat-header-cell *matHeaderCellDef>
+                <div class="text-gray-400 text-sm font-weight-normal">Company</div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <div (click)="editedCell = { rowId: row.id, column: 'company' }" class="dropDown-container" style="cursor: pointer;">
+                    <ng-container  *ngIf="isCellEditing(row, 'company'); else viewMode">
+                        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                        <mat-select placeholder="{{organizationPlaceholder}}" [value]="row.company" (selectionChange)="onChangeValue(row, 'company', $event)">
+                            <mat-option *ngFor="let org of organizations" [value]="org.name">
+                                {{org.name}}
+                            </mat-option>
+                        </mat-select>
+                        <button *ngIf="row.company" matSuffix mat-icon-button
+                                type="button" aria-label="Clear"
+                                (click)="onChangeValue(row, 'company', {value: null})">
+                                <mat-icon>close</mat-icon>
+                        </button>
+                        </mat-form-field>
+                    </ng-container>
+                    <ng-template #viewMode>
+                        {{row.company}}
+                    </ng-template>
+                </div>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="nercCertNumber">
+            <mat-header-cell *matHeaderCellDef>
+                <div class="text-gray-400 text-sm font-weight-normal">Nerc Cert Number</div>
+            </mat-header-cell>
+           <mat-cell *matCellDef="let row">
+                <div (click)="editedCell = { rowId: row.id, column: 'nercCertNumber' }" class="textFieldContainer">
+                <ng-container *ngIf="isCellEditing(row, 'nercCertNumber'); else viewMode">
+                    <app-textbox [defaultValue]="row.nercCertNumber" (input)="onChangeValue(row, 'nercCertNumber', $event)"
+                        (blur)="editedCell = null">
+                    </app-textbox>
+                </ng-container>
+                <ng-template #viewMode>
+                        {{ row.nercCertNumber }}
+                </ng-template>
+            </div>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="nercCertType">
+           <mat-header-cell *matHeaderCellDef>
+                <div class="text-gray-400 text-sm font-weight-normal">Nerc Cert Type</div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <div (click)="editedCell = { rowId: row.id, column: 'nercCertType' }" class="dropDown-container" style="cursor: pointer;">
+                    <ng-container  *ngIf="isCellEditing(row, 'nercCertType'); else viewMode">
+                        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                        <mat-select placeholder="Select Certification" [value]="row.nercCertType" (selectionChange)="onChangeValue(row, 'nercCertType', $event)">
+                            <mat-option *ngFor="let nercCert of nercCerts" [value]="nercCert.name">
+                                {{nercCert.name}}
+                            </mat-option>
+                        </mat-select>
+                        <button *ngIf="row.nercCertType" matSuffix mat-icon-button
+                                type="button" aria-label="Clear"
+                                (click)="onChangeValue(row, 'nercCertType', {value: null})">
+                                <mat-icon>close</mat-icon>
+                        </button>
+                        </mat-form-field>
+                    </ng-container>
+                    <ng-template #viewMode>
+                        {{row.nercCertType}}
+                    </ng-template>
+                </div>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="nercCertExpiration">
+            <mat-header-cell *matHeaderCellDef>
+                <div class="text-gray-400 text-sm font-weight-normal">Cert expiration</div>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <div (click)="editedCell = { rowId: row.id, column: 'nercCertExpiration' }" class="textFieldContainer">
+                    <ng-container *ngIf="isCellEditing(row, 'nercCertExpiration'); else viewMode">
+                        <app-date [defaultValue]="row.expirationDate ? formatDateToYyyyMmDd(row.expirationDate) : null"
+                            (input)="onChangeValue(row, 'nercCertExpiration', $event)"></app-date>
+                    </ng-container>
+                    <ng-template #viewMode>
+                        {{row.expirationDate | dateFormat | async}}
+                    </ng-template>
+                </div>
+            </mat-cell>
+        </ng-container>
+       <ng-container matColumnDef="action">
+  <mat-header-cell *matHeaderCellDef>
+    <div class="text-gray-400 text-sm font-weight-normal">Action</div>
+  </mat-header-cell>
+  <mat-cell *matCellDef="let row" class="pr-2">
+    <ng-container *ngIf="editedCell?.rowId === row.id; else defaultActions">
+      <app-button ButtonType="button" size="sm" class="pr-2 action-button" text="Save"
+        (click)="saveChanges(row)"></app-button>
+      <app-button ButtonType="button" size="sm" class="pr-2 action-button" text="Undo"
+        (click)="undoChanges(row)"></app-button>
+    </ng-container>
+    <ng-template #defaultActions>
+      <app-button ButtonType="button" size="sm" class="pr-2 action-button" text="Approve"
+        (click)="updateRequest(row, requestedAction.Accept)"></app-button>
+      <app-button ButtonType="button" size="sm" class="pr-2 action-button" text="Reject"
+        (click)="updateRequest(row, requestedAction.Deny)"></app-button>
+    </ng-template>
+  </mat-cell>
+</ng-container>
+
+
+        <mat-header-row *matHeaderRowDef="requestColumnsToDisplay"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: requestColumnsToDisplay;"></mat-row>
+    </mat-table>
+</ng-template>

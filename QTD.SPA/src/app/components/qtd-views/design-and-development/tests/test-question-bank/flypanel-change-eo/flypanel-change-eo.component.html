@@ -1,0 +1,33 @@
+<div *ngIf="!addEO" class="m-5">
+  <!-- This section is the header -->
+  <section class="flex flex-row justify-between">
+    <div class="flex flex-row" style="align-items:center;">
+      <mat-icon class="mr-4 mb-1 cursor-pointer" (click)="closed.emit('fp-add-test-item')" style="color: #5C9B31;">keyboard_arrow_left</mat-icon>
+      <p class="text-xl font-bold" style="margin-top: 0.5rem;">Select a new {{("Enabling Objective" | labelReplacement)| async}} for the Test Question</p>
+    </div>
+    <app-button ButtonType="icon" icon="close" (clicked)="closed.emit('fp-add-test-item')"></app-button>
+  </section>
+  <!-- This section is for enabling objective -->
+  <section class="mt-5 flex flex-col ml-2">
+    <div (click)="addEO = true;" class="cursor-pointer flex flex-row ">
+      <p class="font-bold">Add an {{("Enabling Objective" | labelReplacement)| async}} For the Test Item</p>
+      <app-icon class="greenicon ml-3" icon="keyboard_arrow_right"></app-icon>
+    </div>
+    <span class="text-gray-400" *ngIf="eoId === ''">No EO Selected</span>
+    <span style="color:#5C9B31;" *ngIf="eoId !== '' && eoData">{{eoData.number}} - {{eoData.description}}</span>
+  </section>
+
+  <section class="flex flex-col mt-5 ml-2">
+    <label class="mb-2 text-gray-400">Note / Reason</label>
+    <textarea class="p-2 textAreaStyle" [(ngModel)]="reason"></textarea>
+    <app-input-error *ngIf="reason.length < 1" text="Please Enter Reason for EO Change"></app-input-error>
+  </section>
+
+  <section class="flex w-full ml-2 mt-3" style="justify-content:flex-end;">
+    <app-button [disabled]="reason.length < 1" (clicked)="changeEO()" ButtonType="button" color="secondary" size="sm" text="Save"></app-button>
+  </section>
+</div>
+
+<ng-container *ngIf="addEO">
+  <app-flypanel-select-eo [selectedId]="eoId" (closed)="addEO=false;" (idSelected)="addEO = false;eoId = $event.id;getEOData()"></app-flypanel-select-eo>
+</ng-container>

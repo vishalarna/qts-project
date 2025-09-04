@@ -1,0 +1,184 @@
+<ng-container *ngIf="addTool">
+    <div class="flex flex-col px-12 py-12">
+
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p class="text-xl font-bold text-gray-900" *ngIf="oldToolData === undefined">Add New {{("Tool" | labelReplacement)| async}}s</p>
+            <p class="text-xl font-bold text-gray-900" *ngIf="oldToolData && isCopy === false">Edit {{("Tool" | labelReplacement)| async}}s</p>
+            <p class="text-xl font-bold text-gray-900" *ngIf="oldToolData && isCopy === true">Copy {{("Tool" | labelReplacement)| async}}s</p>
+
+            <app-button [disabled]="showSpinner" (clicked)="closed.emit('fp-add-tool-closed')" ButtonType='icon'
+                icon="close">
+            </app-button>
+        </div>
+      <form class="flex flex-col" [formGroup]="toolForm">
+        <mat-stepper labelPosition="bottom">
+        <ng-template matStepperIcon="edit">
+            <app-icon icon="done"></app-icon>
+          </ng-template>
+          <mat-step label="Assign Category" class="mt-3">
+            <div class="flex flex-row justify-between">
+                <app-label [for]="'categoryId'" [text]="'Category'" class="text-gray-400"></app-label>
+                <app-button variant="text" (clicked)="openPanel()" text="Add new Category" icon="add"
+                    iconPosition="left">
+                </app-button>
+            </div>
+            <mat-select (selectionChange)="getNumber($event)" formControlName="categoryId" placeholder="Select Category"
+                class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                <mat-option *ngFor="let d of categories" [value]="d.id">
+                    {{d.title}}
+                </mat-option>
+            </mat-select>
+            <app-input-error *ngIf="toolForm.get('categoryId')?.invalid" text="Category Is Required">
+            </app-input-error>
+            <div class="flex flex-row-reverse pt-12">
+                <app-button color="secondary" [disabled]="toolForm.get('categoryId')!.invalid" text="Continue" size="sm"
+                  (clicked)="stepper.next()"></app-button>
+              </div>
+          </mat-step>
+
+          <mat-step label="{{('Tool' | labelReplacement)| async}}s Information" class="mt-3">
+            <div class="flex flex-col mr-2">
+                <app-label [for]="'number'" text="{{('Tool' | labelReplacement)| async}}s Number"></app-label>
+                <app-textbox [disabled]="true" formControlName="number" placeholder="Select category first" [maxLength]="10"></app-textbox>
+                <app-input-error *ngIf="toolForm.get('number')?.invalid" text="Number Is Required">
+                </app-input-error>
+            </div>
+
+            <div class="flex flex-col flex-grow mt-3">
+                <app-label [for]="'name'" text="{{('Tool' | labelReplacement)| async}}s Title"></app-label>
+                <app-textbox placeholder="" formControlName="name">
+                </app-textbox>
+                <app-input-error *ngIf="toolForm.get('name')?.invalid" text="Name Is Required">
+                </app-input-error>
+            </div>
+
+            <div class="flex flex-col flex-grow mt-3">
+                <app-label [for]="'description'" text="{{('Tool' | labelReplacement)| async}}s Description"></app-label>
+                <app-textarea [value]="toolForm.get('description')?.value ?? ''" placeholder="{{('Tool' | labelReplacement)| async}}s Description" formControlName="description">
+                </app-textarea>
+              <!--   <app-input-error *ngIf="toolForm.get('name')?.invalid" text="Name Is Required">
+                </app-input-error> -->
+            </div>
+
+            <div *ngIf="oldToolData">
+                <div class="flex flex-row justify-between border-b items-center py-3 mb-3">
+                  <h1 class="text-base text-black"> Documents</h1>
+                </div>
+                <div class="flex flex-row mat-table-datawrapper">
+                 <app-document-table [inputLinkedDataType]="'Tool'"  [inputLinkedDataId]="oldToolData?.id"></app-document-table>
+               </div>
+            </div>
+            <div class="flex flex-row-reverse pt-12">
+                <app-button color="secondary" [disabled]="toolForm.get('name')!.invalid" text="Continue" size="sm"
+                  (clicked)="stepper.next()"></app-button>
+            </div>
+          </mat-step>
+
+          <mat-step label="Revision and Date" class="mt-3">
+
+            <app-label [for]="'effectiveDate'" text="Effective Date"></app-label>
+            <app-date  formControlName="effectiveDate"></app-date>
+           <!--  <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+            </app-input-error> -->
+
+            <div class="flex flex-col flex-grow mt-3">
+                <app-label [for]="'notes'" text="Revision Notes" class="label required"></app-label>
+                <app-textarea [value]="toolForm.get('notes')?.value ?? ''" placeholder="Revision Notes" formControlName="notes">
+                </app-textarea>
+                <app-input-error *ngIf="toolForm.get('notes')?.invalid" text="Revision Note Is Required">
+                </app-input-error>
+            </div>
+
+            <div *ngIf="oldToolData === undefined" class="flex flex-row justify-between pt-12">
+                <mat-checkbox [(ngModel)]="addAnother" [ngModelOptions]="{standalone: true}">Add new {{("Tool" | labelReplacement)| async}}s</mat-checkbox>
+
+                <app-button [disabled]="toolForm.invalid" [spinner]="showSpinner" (clicked)="saveTool()"
+                    text="Save" size="sm"></app-button>
+
+            </div>
+
+            <div *ngIf="oldToolData" class="flex flex-row-reverse pt-12">
+                <app-button *ngIf="isCopy===false" [disabled]="toolForm.invalid" [spinner]="showSpinner" (clicked)="editTool()"
+                text="Edit" size="sm"></app-button>
+
+                <app-button *ngIf="isCopy===true" [disabled]="toolForm.invalid" [spinner]="showSpinner" (clicked)="saveTool()"
+                text="Copy" size="sm"></app-button>
+
+            </div>
+          </mat-step>
+        </mat-stepper>
+            <!-- <div class="flex-col mt-3">
+                <div class="flex flex-row justify-between">
+                    <app-label [for]="'categoryId'" [text]="'Category'"></app-label>
+                    <app-button variant="text" (clicked)="openPanel()" text="Add new Category" icon="add"
+                        iconPosition="left">
+                    </app-button>
+                </div>
+                <mat-select (selectionChange)="getNumber($event)" formControlName="categoryId" placeholder="Select Category"
+                    class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                    <mat-option *ngFor="let d of categories" [value]="d.id">
+                        {{d.title}}
+                    </mat-option>
+                </mat-select>
+                <app-input-error *ngIf="toolForm.get('categoryId')?.invalid" text="Category Is Required">
+                </app-input-error>
+            </div>
+            <div class="flex flex-row mt-3 justify-between">
+                <div class="flex flex-col mr-2">
+                    <app-label [for]="'number'" text="Tool ID"></app-label>
+                    <app-textbox [disabled]="true" formControlName="number" placeholder="Select category first" [maxLength]="10"></app-textbox>
+                    <app-input-error *ngIf="toolForm.get('number')?.invalid" text="Number Is Required">
+                    </app-input-error>
+                </div>
+
+                <div class="flex flex-col flex-grow">
+                    <app-label [for]="'name'" text="Tool Name"></app-label>
+                    <app-textbox placeholder="" formControlName="name">
+                    </app-textbox>
+                    <app-input-error *ngIf="toolForm.get('name')?.invalid" text="Name Is Required">
+                    </app-input-error>
+                </div>
+            </div>
+            <div class="mt-4">
+                <div class="flex flex-grow">
+                    <app-label [for]="'hyperlink'" text="Hyperlink"></app-label>
+                    <p class="text-xs text-gray-400 ml-2">upload a PDF copy of the regulation or enter a
+                        hyperlink for
+                        the regulation</p>
+                </div>
+                <input type="file" (change)="fileChange(file.files)" [hidden]="true" #file>
+                <app-button *ngIf="!fileUploaded" (clicked)="file.click()" variant="text" icon="upload"
+                    iconPosition="left" text="Upload PDF"></app-button>
+                <ng-container class="border-2 border-black" *ngIf="fileUploaded">
+                    <span>{{fileName}}</span>
+                    <button (click)="removeFile()">
+                        <app-icon icon="close"></app-icon>
+                    </button>
+                </ng-container>
+
+                <app-textbox *ngIf="!fileUploaded" formControlName="hyperlink" placeholder="Enter Hyperlink">
+                </app-textbox>
+
+            </div>
+            <div class="mt-5">
+                <app-label [for]="'effectiveDate'" text="Effective Date"></app-label>
+                <app-date (ngModelChange)="dateChanged($event)" formControlName="effectiveDate"></app-date>
+                <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+                </app-input-error>
+            </div>
+            <div class="flex flex-row justify-between pt-12">
+                <mat-checkbox [(ngModel)]="addAnother" [ngModelOptions]="{standalone: true}">Add new Tool</mat-checkbox>
+
+                <app-button [disabled]="toolForm.invalid || dateError" [spinner]="showSpinner" (clicked)="saveTool()"
+                    text="Save" size="sm"></app-button>
+
+            </div> -->
+        </form>
+
+
+    </div>
+</ng-container>
+<ng-container *ngIf="addCategory">
+    <app-fly-panel-add-tool-category (closed)="closePanel();">
+    </app-fly-panel-add-tool-category>
+</ng-container>

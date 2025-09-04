@@ -1,0 +1,112 @@
+<mat-toolbar
+  class="app-toolbar-sticky flex align-items-center dif-survey-header"
+>
+  <div class="flex items-center w-100">
+    <app-button
+      type="button"
+      ButtonType="icon"
+      icon="keyboard_arrow_left"
+      class="header-back-button"
+      (click)="goBack()"
+    ></app-button>
+    <div class="edit-dif-survey-heading ml-4">
+      <h3>{{ this.difSurveyViewResponse?.title }}</h3>
+    </div>
+    <div class="edit-dif-survey-date">
+      <span>Completed</span>
+      <span class="survey-date">
+        {{
+          this.difSurveyViewResponse?.completedDate | dateFormat | async
+        }}</span
+      >
+    </div>
+  </div>
+</mat-toolbar>
+
+<div
+  class="flex-row bg-white-one mt-1 center-wrap rounded-b-md mat-elevation-z8"
+>
+  <mat-table
+    style="border-top: 0.8px solid #e1e5e4"
+    mat-table
+    [dataSource]="responseDataSource"
+    matSort
+  >
+    <ng-container matColumnDef="fullNumber">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> # </mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ row?.number }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{ "Task" | labelReplacement | async }} Description
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{ row?.taskDescription }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="difficulty">
+      <mat-header-cell
+        class="new-mat-header-cell survey-difficulty"
+        *matHeaderCellDef
+        mat-sort-header
+      >
+        Difficulty
+      </mat-header-cell>
+      <mat-cell class="survey-difficulty" *matCellDef="let row">
+        {{ row?.na ? "N/A" : row?.difficulty }}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="importance">
+      <mat-header-cell
+        class="survey-importance"
+        *matHeaderCellDef
+        mat-sort-header
+      >
+        Importance
+      </mat-header-cell>
+      <mat-cell class="survey-importance" *matCellDef="let row">
+        {{ row?.na ? "N/A" : row?.importance }}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="frequency">
+      <mat-header-cell
+        class="survey-frequency"
+        *matHeaderCellDef
+        mat-sort-header
+      >
+        Frequency
+      </mat-header-cell>
+      <mat-cell class="survey-frequency" *matCellDef="let row">
+        {{ row?.na ? "N/A" : row?.frequency }}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="textBox">
+      <mat-header-cell
+        class="comments-header"
+        *matHeaderCellDef
+      ></mat-header-cell>
+      <mat-cell class="survey-textarea-dis" *matCellDef="let row">
+        {{ row?.comments }}
+      </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+    <!-- Row shown when there is no matching data.-->
+
+    <tr class="mat-row flex text-center" *matNoDataRow>
+      <td class="mat-cell w-full">No Data</td>
+    </tr>
+  </mat-table>
+</div>
+<div class="flex-row bg-white-one mt-1 center-wrap rounded-b-md mat-elevation-z8">
+  <div class="comment-section">
+    <form class="step-container" [formGroup]="viewResponseForm">
+      <span class="comment-label">Additional Comments</span>
+      <div class="step-controls-section">
+        <ckeditor
+          [editor]="Editor"
+          name="additionalComment"
+          formControlName="additionalComment"
+        ></ckeditor>
+      </div>
+    </form>
+  </div>
+</div>

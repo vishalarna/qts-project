@@ -1,0 +1,52 @@
+<div class="container-fluid">
+
+    <div class="custom-formdatawrap" *ngIf="showRecipients">        
+        <h6 class="form-datawrap-heading">Recepients</h6>
+        <div class="form-space-top">
+            <div class="form-check ">
+                <input type="checkbox" [disabled]="mode==='read' ? true :false" [(ngModel)]="employees"
+                    (change)="onCustomSettingChanged('Send to Employees', $any($event).target.checked)">
+                <label class="form-check-label">
+                    {{("Employee" | labelReplacement)| async}}
+                </label>
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox" [disabled]="mode==='read' ? true : false" [(ngModel)]="managers"
+                    (change)="onCustomSettingChanged('Send To Managers', $any($event).target.checked)" />
+                <label class="form-check-label">
+                    Managers
+                </label>
+            </div>
+
+            <div class="form-check">
+                <input type="checkbox"
+                       [disabled]="mode==='read' ? true : false || emailAddresses.length == 0"
+                       [(ngModel)]="others" [checked]="emailAddresses.length>0">
+                <label class="form-check-label">
+                    Others
+                </label>
+        </div>
+        </div>
+    </div>
+    <div>
+        <div class="row">
+            <label class="emailaddress">Enter Email Address<span>(separate multiple with space)</span></label>
+        </div>
+        <div class="row tag-inputwrap">
+            <mat-form-field>
+                <mat-chip-list #chipList>
+                    <span *ngIf="emailAddresses.length>0">
+                        <mat-chip selected *ngFor="let item of emailAddresses; let i=index" [selectable]="true"
+                                  [removable]="removable" (removed)="removeEmail(item)" required name="chips">
+                            {{item.value}}
+                            <mat-icon matChipRemove *ngIf="removable">cancel</mat-icon>
+                        </mat-chip>
+                    </span>
+                    <input [matChipInputFor]="chipList" [disabled]="mode==='read' ? true : false"
+                        [(ngModel)]="inputAddress" (ngModelChange)="onEmailAddressChange($event)" [matChipInputAddOnBlur]="true" />
+                </mat-chip-list>
+            </mat-form-field>
+        </div>
+    </div>
+</div>

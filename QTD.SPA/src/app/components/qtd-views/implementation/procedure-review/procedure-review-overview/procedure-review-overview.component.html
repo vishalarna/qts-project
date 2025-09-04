@@ -1,0 +1,316 @@
+<app-header title="" [canGoBack]="false"></app-header>
+<ng-container *ngIf="!isLicenseValid">
+    <div class="w-100 text-center px-2 py-5 invalid-license-message" >
+        In order to access this feature your license must support EMP and be a Delux License.  Please contact your account administrator for access
+    </div>
+</ng-container>
+<ng-container *ngIf="isLicenseValid">
+<div class="flex flex-row flex-wrap ml-8 mt-3">
+    <p class="font-bold text-lg px-4">{{("Procedure" | labelReplacement)| async}} Reviews</p>
+</div>
+
+<div class="px-10 pb-12 flex flex-row">
+    <ng-container *ngIf="!isLoading">
+        <div class="container bg-white rounded m-3 pt-3 shadow-sm w-full mb-4">
+            <div class="flex flex-row ">
+                <div class="flex flex-col" style="width:20vw ;" (click)="procedureReviewPublished>0 && openFlyInPanelProcedureReviewDraft(publish)">
+                    <p>Total Published {{("Procedure" | labelReplacement)| async}} Reviews</p>
+                    <span [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':procedureReviewPublished>0,'text-xl text-black':procedureReviewPublished==0}">
+                        {{procedureReviewPublished | number: '2.0'}}</span>
+
+                </div>
+                <div class="flex flex-col" style="width:20vw ;"  (click)="procedureReviewInDrafts>0 && openFlyInPanelProcedureReviewDraft(draft)">
+                    <p>Total Draft {{("Procedure" | labelReplacement)| async}} Reviews</p>
+                    <span [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':procedureReviewInDrafts>0,'text-xl text-black':procedureReviewInDrafts==0}">
+                        {{procedureReviewInDrafts | number: '2.0'}}</span>
+
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col" style="width:23vw;"  (click)="procedureReviewNumberofEmployeesPending>0 && openFlyInPanelProcedureReviewDraft(pending)">
+                    <p>Total no. of {{("Employee" | labelReplacement)| async}}s Pending {{("Procedure" | labelReplacement)| async}} Review Completion </p>
+                    <span [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':procedureReviewNumberofEmployeesPending>0,'text-xl text-black':procedureReviewNumberofEmployeesPending==0}">
+                        {{procedureReviewNumberofEmployeesPending | number: '2.0'}}</span>
+                </div>
+            </div>
+
+        </div>
+    </ng-container>
+
+</div>
+
+<div class="flex flex-row justify-between ml-12 mr-12 px-2 py-2 bg-white-one pt-2" *ngIf="authFilter || devStatus || reviewStatus">
+    <p>Issuing Authority Filter Applied : {{authFilter?.title ?? "Not Selected"}}</p>
+    <p>Dev Status Filter Applied :  {{devStatus}}</p>
+    <p>Review Status Filter Applied : {{reviewStatus}}</p>
+    <p>Date Range Filter Applied : {{dateRange === null || dateRange === undefined || dateRange.startDate === null || dateRange.startDate === undefined ? 'None':datePipe.transform(convertUtcToLocalDate(dateRange.startDate), 'MM/dd/yyyy')}} - {{dateRange === null || dateRange === undefined || dateRange.endDate === null || dateRange.endDate === undefined ? 'None':datePipe.transform(convertUtcToLocalDate(dateRange.endDate), 'MM/dd/yyyy')}} Filter Applied</p>
+
+
+
+  </div>
+
+
+<app-data-loader *ngIf="isLoading"></app-data-loader>
+<!-- main-page starts -->
+<div class="flex flex-col px-12 pb-12 mt-12" *ngIf="procedureReviewDataSource">
+    <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8">
+        <!-- search and buttons starts -->
+        <div
+            class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+            <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input class="text-sm flex-grow focus:outline-none" placeholder="Search"
+                type="text" (keyup)="commonFilterProcedureReview()" [(ngModel)]="filterText">
+                <app-icon icon="close" class="cursor-pointer" (click)="clearFilterFunction()"></app-icon>
+
+            <div class="flex flex-row space-x-4 text-sm">
+                    <app-button variant="text" class="mt-2 ml-8" *ngIf="clearFilter" (clicked)="clearFilterData()" text="Clear filter" icon="clear" iconPosition="right"
+                            ></app-button>
+                <app-button color="secondary" text="Filters" size="sm" icon="filter_alt" iconPosition="left"
+                    (clicked)="openFlyInPanel(procedureFilters)">
+                </app-button>
+                <app-button text="Add New" size="sm" iconPosition="left" icon="add" (clicked)="addNewProcedureReview()">
+                </app-button>
+            </div>
+        </div>
+        <!-- search and button ends -->
+    
+            <app-data-loader  *ngIf="isLoading"></app-data-loader>
+            <mat-table  [dataSource]="procedureReviewDataSource" matSort >
+
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="index">
+                    <mat-header-cell *matHeaderCellDef >
+                        <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                            [checked]="selection.hasValue() && isAllSelected()"
+                            [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+                        </mat-checkbox>
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <mat-checkbox (click)="$event.stopPropagation()"
+                            (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)"
+                            [aria-label]="checkboxLabel(row)">
+                        </mat-checkbox>
+                    </mat-cell>
+                </ng-container>
+
+
+                <!-- procedure Column -->
+                <ng-container matColumnDef="customProcedureColumn">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Procedure" | labelReplacement)| async}} </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.procedureNumber}} - {{element.procedureTitle}}</mat-cell>
+                </ng-container>
+
+                <!-- title Column -->
+                <ng-container matColumnDef="procedureReviewTitle">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Procedure" | labelReplacement)| async}} Review Title </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.procedureReviewTitle}} </mat-cell>
+                </ng-container>
+
+                <!-- issuingAuthority Column -->
+                <ng-container matColumnDef="issuingAuthorityTitle">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>Issuing Authority </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.issuingAuthorityTitle}} </mat-cell>
+                </ng-container>
+
+                <!-- releaseDate Column -->
+                <ng-container matColumnDef="startDateTime">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Review Release Date </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.startDateTime === null || element.startDateTime === undefined ? 'N/A':this.datePipe.transform(convertUtcToLocalDate(element.startDateTime), 'MM/dd/yyyy')}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="endDateTime">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Review Due Date </mat-header-cell>
+                    <mat-cell *matCellDef="let element"> {{element.endDateTime === null || element.endDateTime === undefined ? 'N/A':this.datePipe.transform(convertUtcToLocalDate(element.endDateTime), 'MM/dd/yyyy')}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="reviewStatus">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Review Status </mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+
+                        <mat-chip style="background-color: #f2f3f3;color: #7a807e;border-radius: 2px;" *ngIf="element.isClose==='close'">
+                            Closed
+                        </mat-chip>
+                        <mat-chip style="background-color: #eef7ff;color: #80b264;border-radius: 2px;"*ngIf="element.isOpen==='open'">
+                            Open
+                        </mat-chip>
+
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="isPublished">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Dev Status </mat-header-cell>
+
+                    <mat-cell class="pt-3 pb-3" *matCellDef="let element">
+                        <mat-chip-list>
+                          <mat-chip style="background-color: #f2f3f3;color: #7a807e;border-radius: 2px;" *ngIf="!element.active">
+                            Inactive
+                        </mat-chip>
+                            <mat-chip style="background-color: #eef7ff;color: #80b264;border-radius: 2px;" *ngIf="element.publishedDate && !element.isInUse">
+                                Published
+                            </mat-chip>
+                            <mat-chip style="background-color: #eef7ff;color: #80b264;border-radius: 2px;" *ngIf="element.isInUse">
+                              Scheduled In Use
+                            </mat-chip>
+                            <mat-chip style="background-color: #fff9e8;color: #ffcf5c;border-radius: 2px;" *ngIf="!element.isPublished">
+                                In Development
+                            </mat-chip>
+
+                        </mat-chip-list>
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                    <mat-header-cell *matHeaderCellDef>  </mat-header-cell>
+                    <mat-cell *matCellDef="let element">
+                        <div class="flex flex-row items-center text-gray-four btn-group">
+                            <button mat-icon-button [matMenuTriggerFor]="menu" >
+                                <app-icon icon="more_vert"></app-icon>
+                            </button>
+                            <mat-menu #menu="matMenu">
+                            <!--     <label (click)="openEmpPage('view',row.id)" mat-menu-item translate>L.Open</label> -->
+                                <label  mat-menu-item translate (click)="EditProcedureReview(editProcedureDialogue,element.id,element.procedureTitle,element.isOpen,element.isInUse)">Edit</label>
+                               <label mat-menu-item translate (click)="goToViewEnroll(element.id)">View Enrollment and Completion</label>
+                               <span *ngIf="element.isStatusChangeable" matTooltipPosition="right" matTooltip="The {{ 'procedure' | labelReplacement | async }} review cannot be made inactive. It is currently released to at least one Employee's EMP dashboard.">
+                               <label mat-menu-item translate [disabled]="element.isStatusChangeable" (click)="changeStatus(activeInactive,element)">Make Active/Inactive
+
+                                <app-icon icon="help_outline" class="ml-2 font-normal text-gray-400"></app-icon></label>
+                               </span>
+                                  <label *ngIf="!element.isStatusChangeable"  mat-menu-item translate [disabled]="element.isStatusChangeable" (click)="changeStatus(activeInactive,element)">Make Active/Inactive
+                                </label>
+                                <label mat-menu-item translate [disabled]="element.isDeletable"   (click)="deleteProcedureReview(statusModal,element)">Delete</label>
+                            </mat-menu>
+                        </div>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;" ></mat-row>
+            
+                <tr class="mat-row flex text-center " *matNoDataRow>
+                    <td class="mat-cell w-full m-2">No {{("Procedure" | labelReplacement)| async}} linked</td>
+                  </tr>
+            </mat-table>
+
+            <mat-paginator [pageSizeOptions]="[20, 40, 60]"   showFirstLastButtons
+                aria-label="Select page of periodic elements">
+            </mat-paginator>
+
+    </div>
+</div>
+<!-- main-page ends -->
+
+
+
+<ng-template #procedureFilters>
+
+    <div class="flex flex-row justify-between border-b items-center px-6 pb-4">
+        <h1 class="text-xl font-medium text-gray-900">Filters</h1>
+        <button class="focus:outline-none" (click)="flyPanelService.close()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                </path>
+            </svg>
+        </button>
+    </div>
+    <!-- form starts here -->
+    <form class="block text-sm px-6">
+        <div class="mt-12">
+            <label class="inline-block">Issuing Authority</label>
+            <mat-select placeholder="Select Issuing Authority" name="authFilter" class="appearance-none rounded border bg-gray-50 w-full px-4 py-3 mt-2" [(ngModel)]="authFilter" >
+                <input matInput class="pt-3 pb-3 pl-3" type="text" name="searchTxt" [(ngModel)]="searchTxt" (keyup)="issuingAuthoritySearch($event.target)" placeholder="Enter Text to Search">
+                <mat-option *ngFor="let item of authority_list" [value]="item" [hidden]="!item.active">
+                    {{item.title}}
+                </mat-option>
+              </mat-select>
+        </div>
+        <div class="mt-8">
+            <label class="inline-block text-gray-700">Review Status</label>
+            <mat-select placeholder="Select Review Status" name="reviewStatus" class="appearance-none rounded border bg-gray-50 w-full px-4 py-3 mt-2" [(ngModel)]="reviewStatus" >
+                <mat-option [value]="'All'" >
+                    All
+                </mat-option>
+                <mat-option [value]="'open'">
+                    Open
+                </mat-option>
+                <mat-option [value]="'close'">
+                    Close
+                </mat-option>
+              </mat-select>
+        </div>
+
+        <div class="mt-8">
+            <label class="inline-block text-gray-700">Dev Status</label>
+            <mat-select placeholder="Select Dev Status" name="devStatus" class="appearance-none rounded border bg-gray-50 w-full px-4 py-3 mt-2" [(ngModel)]="devStatus" >
+                <mat-option [value]="'All'">
+                    All
+                </mat-option>
+                <mat-option [value]="'publish'">
+                    Publish
+                </mat-option>
+                <mat-option [value]="'schedule'">
+                    Scheduled
+                </mat-option>
+                <mat-option [value]="'indevelopment'">
+                    InDevelopment
+                </mat-option>
+                <mat-option [value]="'inactive'">
+                    Inactive
+                </mat-option>
+              </mat-select>
+        </div>
+        <div class="mt-8">
+            <label class="inline-block text-gray-700">Select Date of Enrollment</label>
+
+            <mat-select placeholder="Select Date" name="dateRange" class="appearance-none rounded border bg-gray-50 w-full px-4 py-3 mt-2" [(ngModel)]="dateRange" >
+                <mat-option *ngFor="let cs of procedureReviewList" [value]="{id:cs.id,startDate:cs.startDateTime,endDate:cs.endDateTime}">
+                  <span>{{ cs.startDateTime | date:'MM-dd-yy' }}&nbsp;-&nbsp;{{cs.endDateTime | date:'MM-dd-yy' }}</span>
+                </mat-option>
+              </mat-select>
+        </div>
+    <button type="button" (click)="commonFilterProcedureReview();this.clearFilter = true;this.flyPanelService.close();"
+            class="inline-block text-green-one border border-green-one py-3 px-6 w-full rounded font-medium text-sm mt-8 text-center">Apply
+            filters</button>
+    </form>
+    <!-- form ends here -->
+</ng-template>
+
+<ng-template #statusModal>
+    <app-qtd-dialogue [header]="modalHeader"  [description]="modalDescription" cancelText="No" confirmText="Yes"
+        [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()" (confirmed)="deleteIt($event)">
+    </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #activeInactive>
+
+    <app-qtd-dialogue [header]="modalHeader"  [description]="modalDescription" cancelText="No" confirmText="Yes"
+        [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()" (confirmed)="makeActive($event)">
+    </app-qtd-dialogue>
+</ng-template>
+
+
+<ng-template #editProcedureDialogue>
+
+  <app-update-procedure-dialogue [procedureReviewId]="editProcedureId" [procedureTitle]="editProcedureTitle">
+  </app-update-procedure-dialogue>
+</ng-template>
+
+<ng-template #draft>
+
+    <app-fly-panelprocedure-review-draft (closed)="flyPanelService.close()">
+
+    </app-fly-panelprocedure-review-draft>
+</ng-template>
+
+<ng-template #pending>
+
+    <app-fly-panelprocedure-review-pending (closed)="flyPanelService.close()">
+
+    </app-fly-panelprocedure-review-pending>
+</ng-template>
+
+<ng-template #publish>
+    <app-fly-panel-published-procedure-review>
+
+    </app-fly-panel-published-procedure-review>
+</ng-template>
+</ng-container>

@@ -1,0 +1,27 @@
+:host ::ng-deep .test-item-table .mat-header-cell:nth-child(1),
+:host ::ng-deep .test-item-table .mat-cell:nth-child(1) {
+  max-width: 70px;
+}
+:host ::ng-deep .test-item-table .mat-header-cell:nth-child(2),
+:host ::ng-deep .test-item-table .mat-cell:nth-child(2) {
+  max-width: 90px;
+}
+
+:host ::ng-deep .test-item-table .mat-header-cell:nth-child(6),
+:host ::ng-deep .test-item-table .mat-cell:nth-child(6) {
+  max-width: 150px;
+}
+
+:host ::ng-deep .test-item-table .mat-cell,:host ::ng-deep .test-item-table .mat-header-cell {
+  padding: 1rem;
+}
+
+:host ::ng-deep .test-item-table .mat-cell.no-data-cell{
+  flex: 1 1 100%;
+  max-width: unset;
+  border-bottom: none;
+}
+
+.filter-class{
+  flex: 1 1 32%;
+}

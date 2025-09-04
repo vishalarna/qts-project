@@ -1,0 +1,143 @@
+<ng-container *ngIf="addPosition">
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-bold text-gray-900">
+      <!-- {{oldProcedure ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+      <ng-container *ngIf="mode==='Add'">
+          Add New {{("Position" | labelReplacement)| async}}s
+        </ng-container>
+      <ng-container *ngIf="mode==='Edit'" >
+                Edit {{("Position" | labelReplacement)| async}}s
+              </ng-container>
+      <ng-container *ngIf="mode==='Copy'">
+      Copy {{("Position" | labelReplacement)| async}}s
+    </ng-container>
+
+    </p>
+    <app-button (click)="closedefinition()" ButtonType='icon' icon="close"></app-button>
+  </div>
+
+  <form [formGroup]="positionForm">
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+        <app-label [for]="'posNumber'" text="{{('Position' | labelReplacement)| async}} # " class="mt-6 float-left label required"></app-label>
+        <app-textbox type="text" formControlName="posNumber" [disabled]="mode==='Edit'" (keypress)="keyPressNumbers($event)"
+          placeholder="Enter {{('Position'| labelReplacement)| async}} number">
+        </app-textbox>
+
+        <app-input-error *ngIf="positionForm.get('posNumber')?.invalid" text="{{('Position' | labelReplacement)| async}} Number Is Required">
+        </app-input-error>
+      </div>
+    </div>
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-label [for]="'posName'" text="{{('Position' | labelReplacement)| async}} Abbreviation " class="mt-6 float-left label required"></app-label>
+        <app-textbox type="text" formControlName="posName"
+          placeholder="Enter {{('Position' | labelReplacement)| async}} Abbreviation">
+        </app-textbox>
+       <!--  <div *ngIf="formGroup.get('myField').hasError('whitespaceOnly')">
+          This field should contain only whitespaces.
+        </div> -->
+
+        <app-input-error *ngIf="positionForm.get('posName')?.invalid || positionForm.get('posName')?.hasError('whitespaceOnly')" text="{{('Position' | labelReplacement)| async}}  Abbreviation Is Required Or Contains WhiteSpaces">
+        </app-input-error>
+
+      </div>
+    </div>
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-label [for]="'postitle'" text="{{('Position' | labelReplacement)| async}} Title " class="mt-6 float-left label required"></app-label>
+        <app-textbox type="text" formControlName="postitle"
+          placeholder="Enter {{('Position' | labelReplacement)| async}} Title">
+        </app-textbox>
+
+        <app-input-error *ngIf="positionForm.get('postitle')?.invalid" text="{{('Position' | labelReplacement)| async}} Title Is Required Or Conatins WhiteSpaces">
+        </app-input-error>
+      </div>
+    </div>
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-label [for]="'posDescription'" text="{{('Position' | labelReplacement)| async}} Description"></app-label>
+        <app-textarea type="text" formControlName="posDescription"
+          placeholder="Enter {{('Position' | labelReplacement)| async}} description"
+          [value]="positionForm.get('posDescription')?.value || ''"
+          [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+        </app-textarea>
+      </div>
+    </div>
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+        <app-label [for]="'EffectiveDate'" [text]="'Effective Date '"></app-label>
+        <app-date  formControlName="EffectiveDate" placeholder="Select Date">
+        </app-date>
+       <!--  <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+        </app-input-error> -->
+      </div>
+    </div>
+
+    <div class="flex flex-row px-12">
+      <div class="flex flex-row float-left pr-4 mb-0" style="width: 50vw;">
+        <app-label [for]="'hyperlink'" text="Hyperlink"></app-label>
+        <p class="text-xs text-gray-400 ml-2">upload a PDF copy of the {{("Tool" | labelReplacement)| async}}s or enter a
+          hyperlink for
+          the {{("Tool" | labelReplacement)| async}}s</p>
+      </div>
+    </div>
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-0" style="width: 50vw;">
+        <input (change)="fileChange(file.files)" hidden type="file" #file>
+            <app-button *ngIf="!fileUploaded" (clicked)="file.click()" variant="text" icon="file_upload" iconPosition="left"
+              text="Upload PDF"></app-button>
+            <ng-container  *ngIf="fileUploaded">
+              <div class="flex flex-row">
+                <span style="padding-top: 0.05rem;" class=mr-2>{{fileName}}</span>
+                <button (click)="removeFile()" >
+                   <app-icon icon="close" ></app-icon>
+               </button>
+              </div>
+
+            </ng-container>
+      </div>
+    </div>
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-textbox *ngIf="!fileUploaded" formControlName="hyperlink" placeholder="Enter Hyperlink">
+          </app-textbox>
+      </div>
+    </div>
+
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-label [for]="'posNote'" text="{{('Position' | labelReplacement)| async}}  Note " class="mt-6 float-left" class="label required"></app-label>
+        <app-textarea [value]="positionForm.get('posNote')?.value ?? '' " type="text" formControlName="posNote"
+          placeholder="Enter {{('Position' | labelReplacement)| async}} Note">
+        </app-textarea>
+        <app-input-error *ngIf="positionForm.get('posNote')?.invalid" text="{{('Position' | labelReplacement)| async}} Note Is Required Or Conatins WhiteSpaces">
+        </app-input-error>
+      </div>
+    </div>
+
+    <div *ngIf="mode === 'Add'" class="px-12 mt-8 float-left py-3">
+      <mat-checkbox formControlName="AddAnother">
+        Add Another {{("Position" | labelReplacement)| async}}
+      </mat-checkbox>
+    </div>
+
+    <div class="px-12 mt-8 float-right py-3">
+      <app-button *ngIf="mode !== 'Edit' && !isCopy" [spinner]="showSpinner" [disabled]="positionForm.invalid || showSpinner "
+        type="button" size="sm"  text="Save" (clicked)="savePosition()">
+      </app-button>
+
+      <app-button *ngIf="oldPosition !== undefined && mode === 'Edit'"
+        [spinner]="showSpinner" [disabled]="positionForm.invalid || showSpinner"
+        (clicked)="updatePosition()" type="button" text="Update" size="sm">
+      </app-button>
+
+      <app-button *ngIf="isCopy" [spinner]="showSpinner" [disabled]="positionForm.invalid || showSpinner "
+      type="button" size="sm"  text="Copy" (clicked)="copyPosition()">
+    </app-button>
+    </div>
+
+
+  </form>
+</ng-container>
+

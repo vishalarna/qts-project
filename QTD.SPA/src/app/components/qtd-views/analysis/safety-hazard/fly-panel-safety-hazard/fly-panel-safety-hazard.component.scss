@@ -1,0 +1,9 @@
+.spinner-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.mat-progress-spinner circle {
+  stroke: green !important;
+}

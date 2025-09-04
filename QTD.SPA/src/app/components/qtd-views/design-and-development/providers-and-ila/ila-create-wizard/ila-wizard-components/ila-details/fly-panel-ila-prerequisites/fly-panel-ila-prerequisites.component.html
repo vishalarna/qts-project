@@ -1,0 +1,75 @@
+<div class="flex flex-col px-12 py-12">
+<!-- header starts here -->
+<div class="flex flex-row justify-between items-center mt-3">
+  <p class="text-xl font-bold text-gray-900">Prerequisites</p>
+  <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+</div>
+
+<app-spinner class="flex justify-center align-center mt-20" *ngIf="loading"></app-spinner>        
+<div *ngIf="!loading">
+
+<div class="flex flex-row items-center border-b-0.8 border-gray-one mt-3">
+  <div class="flex flex-grow">
+      <app-icon icon="search"></app-icon>
+      <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+          (input)="filterData(dataSource.data,$event)" [(ngModel)]="filterIlaString">
+  </div>  
+</div>
+<!-- header ends here -->
+
+<!--Buttons for link ILA and Filter Starts-->
+<div class="mt-4 flex flex-row justify-around px-2 w-100">  
+  <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded w-100" *ngIf="linkedIds.length > 0">
+    <div class="flex flex-row w-full justify-between mb-3">
+        <p class="text-xs text-gray-four pt-2">
+          {{ linkedIds.length + " " + ('ILA' | labelReplacement | async) + "s selected" }}
+        </p>
+        <app-button (clicked)="LinkToILA()" [spinner]="showLinkIlaLoader" class="mb-2" type="button" color="secondary" size="sm"
+           [disabled]="showLinkIlaLoader" text="Link to Prerequisites">
+        </app-button>
+    </div>
+    <hr>
+    <p class="text-xs text-gray-four mt-3">Selecting a Provider or Topic will select all {{("ILA" | labelReplacement)| async}}s linked
+        to the given Provider or Topic</p>
+  </div>
+  </div> 
+  
+  <!-- Table starts here -->
+      <span class="flex justify-center align-center mt-25" *ngIf="dataSource.data.length < 1">No {{("ILA" | labelReplacement)| async}}s Found</span>
+<ng-container *ngIf="dataSource.data !== undefined && dataSource.data.length > 0">
+  <div class="flex flex-col px-2">
+      <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="qtd-tree">
+        
+          <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+            <ng-container *ngIf="node.checkbox">
+              <mat-checkbox (change)="onIlaChange($event,node)" [checked]="node.selected">
+              </mat-checkbox><span>{{node.description}}</span>
+            </ng-container>
+            <ng-container *ngIf="!node.checkbox">
+              <app-icon style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;<span style="color: rgb(92, 155, 49);">{{node.description}}</span>
+            </ng-container>
+            
+          </mat-tree-node>
+     
+          <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+              <div class="mat-tree-node">
+                  <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.description">
+                      <app-icon [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'">
+                      </app-icon>
+                  </button>
+
+                  <mat-checkbox [checked]="node.selected"
+                      [indeterminate]="node.indeterminate && !node.selected"
+                      (change)="itemToggle($event.checked,node)"></mat-checkbox><span>{{node.description}}</span>
+              </div>
+
+              <div [class.qtd-tree-invisible]="!treeControl.isExpanded(node)" role="group">
+                  <ng-container matTreeNodeOutlet></ng-container>
+              </div>
+          </mat-nested-tree-node>
+      </mat-tree>
+
+  </div>
+</ng-container>
+</div>
+</div>

@@ -1,0 +1,66 @@
+<div class="row">
+  <div class="flex w-full" style="justify-content: center">
+    <div style="width: 100%" class="flex flex-col">
+      <section
+        class="flex flex-row border-b-0.8 border-gray-one pt-4 pb-4 rounded-sm"
+      >
+        <div
+          class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3"
+          style="width: 100%"
+        >
+          <div class="panel-heading">NERC</div>
+          <form [formGroup]="featureForm">
+            <ng-container formArrayName="features">
+              <div class="flex flex-row align-items-center mt-4" *ngFor="let val of featureForm.get('features')?.['controls']; let i=index" [formGroupName]="i">
+                <div class="mr-4" >
+                  <input 
+                    type="checkbox"
+                    formControlName="enabled"
+                    class="form-control"
+                    (change)="changeFeatureEnabled($event, i)"
+                  />
+                </div>
+                <app-label
+                  [text]="val.get('feature').value"
+                  class="text-gray-300 company-text mt-2"
+                  [ngClass]="{
+                    'text-gray-300': val.get('feature').value !== 'Public Classes',
+                    'text-gray-500': val.get('feature').value === 'Public Classes'
+                  }"
+                ></app-label>
+               
+              </div>
+              <div class="flex flex-row ">
+                <app-input-error 
+                *ngIf="isPublicEnabled == false"
+                text="To enable Publicly Available ILAs please contact your Account Representative"
+              ></app-input-error>
+              <span *ngIf="isPublicEnabled == true" class="mt-2">
+                Your public domain URL is {{domain}}/{{instanceName}}/{{publicUrlLink}}. 
+                If you wish to configure that URL, please go 
+                <app-link
+                  text="(dashboard settings page)"
+                  customClasses="cursor-pointer link hover:underline text-primary ml-1"
+                  (clicked)="onLinkClick()"
+                ></app-link>
+              </span>
+              
+            </div>
+              <div class="flex flex-row justify-content-end gap-2">
+                <app-button
+                  type="submit"
+                  color="primary"              
+                  size="md"
+                  text="Save"
+                  class="save-btn"
+                  (clicked) = "saveFeature()"
+                >
+                </app-button>
+              </div>
+            </ng-container>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,59 @@
+<!-- Forms card starts here -->
+<div class="bg-white shadow-md rounded px-12 py-12 ">
+    <h1 class="text-2xl font-semibold text-gray-900" translate>L.AuthViewHeader</h1>
+
+    <!-- form starts here -->
+    <form class="block text-sm" method="post" [formGroup]="twoFAForm" (ngSubmit)='submit2FA(this)'>
+
+        <p class="block text-gray-700 font-medium mt-4" translate>L.2FAInstructions</p>
+
+        <div class="mt-12">
+            <app-label [for]="'username'" customClasses="text-gray-700 font-medium" text='Email'></app-label>
+            <app-textbox type="email" [name]="'username'" formControlName="username" [defaultValue]="Username"
+            [placeholder]="'Enter Email'">
+            </app-textbox>
+            <app-input-error
+                *ngIf="twoFAForm.get('username')?.invalid && twoFAForm.get('username')?.hasError('required')"
+                [text]="'Email is Required'">
+            </app-input-error>
+            <app-input-error *ngIf="twoFAForm.get('username')?.invalid && twoFAForm.get('username')?.hasError('email')"
+                [text]="'Enter Valid Email'"></app-input-error>
+        </div>
+        <div class="mt-6">
+            <app-label [for]="'verificationCode'" customClasses="text-gray-700 font-medium"
+                text="{{'L.VerificationCode' | translate}}"></app-label>
+            <app-textbox type="number" [name]="'verificationCode'" formControlName="verificationCode"
+                [defaultValue]="VerificationCode" placeholder="{{'L.EnterVerificationCode' | translate}}">
+            </app-textbox>
+            <app-input-error
+                *ngIf="twoFAForm.get('verificationCode')?.invalid && twoFAForm.get('verificationCode')?.hasError('required')"
+                text="{{'L.EnterVerificationCode' | translate}}">
+            </app-input-error>
+        </div>
+
+        <div class="inline-flex items-center mt-6">
+            <!-- //Todo checkbox  -->
+            <input type="checkbox" name="daChkBox" formControlName="doNotAsk"
+                class="h-3 w-3 rounded-sm text-green-800 form-checkbox focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50">
+            <app-label for="daChkBox" customClasses="text-gray-500 ml-2 mt-2" text="{{'L.2FADon\'tAsk' |translate}}">
+            </app-label>
+
+        </div>
+
+        <div class="text-center mt-6">
+            <app-button type="submit" color="primary" size="lg" class="mt-6"
+                [disabled]="twoFAForm.invalid || processing" [spinner]="(processing) && twoFAForm.valid"
+                text="{{'L.Verify' |translate}}">
+            </app-button>
+
+            <app-button type="button" color="secondary" size="lg" class="mt-6 ml-2" (clicked)="resend2FA(this)"
+                [disabled]="resending ||processing" [spinner]="resending" [text]="'L.ResendCode' |translate">
+            </app-button>
+            <app-button color="secondary" size="lg" class="mt-6 ml-2" icon="logout" type="button" (clicked)="signOut()"  text="LogOut"></app-button>
+        </div>
+        <app-link routerLink="/auth/help" customClasses="hover:underline text-green-800 mt-12 text-center block"
+            text="{{'L.signInAnotherWay' | translate }}"></app-link>
+    </form>
+    <!-- form ends here -->
+</div>
+<!-- Forms card ends here -->

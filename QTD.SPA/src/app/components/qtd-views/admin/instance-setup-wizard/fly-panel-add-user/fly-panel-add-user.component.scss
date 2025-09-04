@@ -1,0 +1,20 @@
+:host::ng-deep .alreadyInUse > input {
+    border-color: red !important;
+}
+
+.username-textbox{
+    width:82%;
+}
+
+.check-provider-button{
+    margin:0;
+    width: 18%;
+}
+
+::ng-deep .select-identity-provider-dropdown .mat-form-field-wrapper{
+    padding-bottom: 0 !important;    
+}
+
+::ng-deep .check-provider-button button {
+    padding: 4px; 
+}

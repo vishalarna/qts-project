@@ -1,0 +1,32 @@
+<div class="flex flex-col w-full p-5">
+  <!-- Header Section -->
+  <section class="flex flex-row justify-between">
+    <span class="text-lg font-bold">{{("Employee" | labelReplacement)| async}}s Filters </span>
+    <app-icon (click)="closed.emit()" icon="close"></app-icon>
+  </section>
+
+  <section class="flex flex-col mt-4">
+    <form [formGroup]="filterForm">
+      <div class="mb-3">
+        <app-label text="Organization"></app-label>
+        <mat-select placeholder="Select Organization" class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white" formControlName="org">
+          <mat-option [value]="org.id" *ngFor="let org of organizations" [hidden]="!org.active">
+            {{org.name}}
+          </mat-option>
+        </mat-select>
+      </div>
+      <div class="mb-3">
+        <app-label text="{{('Position' | labelReplacement)| async}}"></app-label>
+        <mat-select placeholder="Select {{('Position' | labelReplacement)| async}}" class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white" formControlName="pos">
+          <mat-option value="">All {{("Position" | labelReplacement)| async}}s</mat-option>
+          <mat-option [value]="pos.id" *ngFor="let pos of positions" [hidden]="!pos.active">
+            {{pos.positionTitle}}
+          </mat-option>
+        </mat-select>
+      </div>
+      <div class="flex flex-row mt-3" style="justify-content:flex-end">
+        <app-button  ButtonType="button" size="sm" text="Apply Filters" (clicked)="applyFilters()"></app-button>
+      </div>
+    </form>
+  </section>
+</div>

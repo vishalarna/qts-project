@@ -1,0 +1,153 @@
+<ng-container *ngIf="addProcedure && !addIssuingAuthority">
+  <div class="px-12 ">
+    <div class="flex flex-row justify-between items-center mt-5" style="color: rgba(21, 55, 44, 1);">
+      <p *ngIf="oldProcedure === undefined && !isCopy" class="ml-4 text-xl font-bold text-gray-900">Add New {{("Procedure" | labelReplacement)| async}}s</p>
+      <p *ngIf="oldProcedure !== undefined && !isCopy" class="ml-4 text-xl font-bold text-gray-900">Edit {{("Procedure" | labelReplacement)| async}}s</p>
+      <p *ngIf="isCopy" class="text-xl font-bold text-gray-900">Copy {{("Procedure" | labelReplacement)| async}}s</p>
+      <app-button (click)="closeProcedure()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <mat-stepper labelPosition="bottom" [linear]="true" #stepper (selectionChange)="selectedChanged($event)"
+      [orientation]="(stepperOrientation | async)!">
+      <!-- Change edit icon -->
+      <ng-template matStepperIcon="edit">
+        <app-icon icon="done"></app-icon>
+      </ng-template>
+      <mat-step label="Assign Issuing Authority" [stepControl]="step1Form" [completed]="step1Form.valid">
+        <form class="flex flex-col" [formGroup]="step1Form">
+          <div class="flex flex-row">
+            <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+              <div *ngIf="oldProcedure === undefined">
+                <app-label style="color: rgba(21, 55, 44, 1);" required [for]="'IssuingAuthority'" [text]="'Issuing Authority '"
+                  class="mt-6 float-left label required">
+                </app-label>
+                <app-button style="color:rgba(92, 155, 49, 1);" variant="text" class="pt-4 float-right" text="Add New Issuing Authority"
+                  (clicked)="addProcedure=false;addIssuingAuthority=true;" icon="add" iconPosition="left">
+                </app-button>
+              </div>
+              <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                <mat-select formControlName="IssuingAuthority"
+                  placeholder="Select Issuing Authority">
+                  <input matInput class="pt-3 pb-3 pl-3" type="text" formControlName="searchTxt" (keyup)="issuingAuthoritySearch($event.target)" placeholder="Enter Text to Search">
+                  <mat-option *ngFor="let i of issuingAuthority_list" (onSelectionChange)="selectIssuingAuthority()"
+                    [value]="i.id" [hidden]="!i.active">
+                   {{i.title}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <app-input-error *ngIf="step1Form.get('IssuingAuthority')?.invalid" text="Issuing Authority Is Required">
+              </app-input-error>
+            </div>
+          </div>
+
+          <div class="self-end pt-12">
+            <app-button color="secondary" [disabled]="step1Form.invalid" text="Continue" size="sm"
+              (clicked)="stepper.next()"></app-button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step label="{{('Procedure' | labelReplacement)| async}}s Information" [stepControl]="step2Form" [completed]="step2Form.valid">
+        <form class="flex flex-col" [formGroup]="step2Form">
+
+          <div class="mt-3">
+            <app-label style="color: rgba(21, 55, 44, 1);" required [for]="'number'" text="{{('Procedure' | labelReplacement)| async}}s Number" class="label required"></app-label>
+            <app-textbox formControlName="number" placeholder="Enter Alpha/Numeric">
+            </app-textbox>
+            <app-input-error *ngIf="step2Form.get('number')?.invalid || step2Form.get('number')?.hasError('whitespaceOnly')" text="Number is Required Or Contains White Spaces">
+            </app-input-error>
+          </div>
+
+          <div class="mt-3">
+            <app-label style="color: rgba(21, 55, 44, 1);" required [for]="'ProcedureTitle'" text="{{('Procedure' | labelReplacement)| async}}s Title" class="label required"></app-label>
+            <app-textbox type="text" formControlName="ProcedureTitle" [placeholder]="'Title'">
+            </app-textbox>
+            <app-input-error text="{{('Procedure' | labelReplacement)| async}}s Title is Required Or Contains White Spaces" *ngIf="step2Form.get('ProcedureTitle')?.invalid || step2Form.get('ProcedureTitle')?.hasError('whitespaceOnly')">
+            </app-input-error>
+
+          </div>
+
+          <div class="mt-3">
+            <app-label style="color: rgba(21, 55, 44, 1);" [for]="'ProcedureDesc'" text="{{('Procedure' | labelReplacement)| async}}s Description"></app-label>
+            <app-textarea [value]="step2Form.get('ProcedureDesc')?.value || ''" type="text"
+              formControlName="ProcedureDesc" [placeholder]="'Description'">
+            </app-textarea>
+<!--             <app-input-error *ngIf="step2Form.get('ProcedureDesc')?.invalid" text="Description is Required"></app-input-error>
+ -->          </div>
+          <div class="mt-3">
+            <app-label style="color: rgba(21, 55, 44, 1);" [for]="'revNumber'" text="Revision Number"></app-label>
+            <app-textbox formControlName="revNumber" placeholder="">
+            </app-textbox>
+          </div>
+          <div class="mt-3">
+            <div class="flex flex-grow">
+              <app-label style="color: rgba(21, 55, 44, 1);" [for]="'hyperlink'" text="Hyperlink"></app-label>
+              <p class="text-xs text-gray-400 ml-2">upload a PDF copy of the regulation or enter a
+                hyperlink for
+                the regulation</p>
+            </div>
+            <input (change)="fileChange(file.files)" hidden type="file" #file>
+            <app-button *ngIf="!fileUploaded" (clicked)="file.click()" variant="text" icon="file_upload" iconPosition="left"
+              text="Upload PDF"></app-button>
+            <ng-container class="border-2 border-black" *ngIf="fileUploaded">
+              <span>{{fileName}}</span>
+              <button (click)="removeFile()">
+                <app-icon icon="close"></app-icon>
+              </button>
+            </ng-container>
+
+            <app-textbox *ngIf="!fileUploaded" formControlName="hyperlink" placeholder="Enter Hyperlink">
+            </app-textbox>
+<!--             <app-input-error *ngIf="step2Form.get('hyperlink')?.invalid" text="Please Provide A Valid Hyperlink"></app-input-error>
+ -->            <!-- <app-button variant="text" icon="upload" iconPosition="left" text="Upload PDF"></app-button>
+            <app-textbox formControlName="hyperlink" placeholder="Enter Hyperlink">
+            </app-textbox> -->
+          </div>
+
+          <div class="self-end pt-12">
+            <app-button color="secondary" [disabled]="step2Form.invalid" text="Continue" size="sm"
+              (clicked)="stepper.next()">
+            </app-button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step label="Revision and Date" [stepControl]="step3Form">
+        <form class="flex flex-col" [formGroup]="step3Form">
+          <div class="mt-3">
+            <app-label  [for]="'EffectiveDate'" text="Effective Date " class="label required"></app-label>
+            <app-date  formControlName="EffectiveDate"></app-date>
+<!--             <app-input-error *ngIf="step3Form.get('EffectiveDate')?.invalid" text="Effective Date is Required"></app-input-error>
+ -->          </div>
+          <div class="mt-3">
+            <app-label [for]="'RevisionNumber'" text="Reason for Revision" class="label required"></app-label>
+            <app-textarea [value]="this.step3Form.get('RevisionNumber')?.value || ''" formControlName="RevisionNumber">
+            </app-textarea>
+            <app-input-error *ngIf="step3Form.get('RevisionNumber')?.invalid || step3Form.get('RevisionNumber')?.hasError('whitespaceOnly')" text="Reason for Revision is Required Or Contains White Spaces"></app-input-error>
+          </div>
+          <div class="flex flex-row flex-grow justify-between pt-12">
+            <mat-checkbox *ngIf="oldProcedure === undefined" formControlName="AddAnother" name="AddAnother">Add another
+              {{("Procedure" | labelReplacement)| async}}s</mat-checkbox>
+            <app-button  [spinner]="showSpinner" *ngIf="oldProcedure === undefined" [disabled]="step2Form.invalid || step3Form.invalid || showSpinner"
+              (clicked)="saveProcedure()" text="Save" size="sm"></app-button>
+
+          </div>
+          <div class="flex flex-row-reverse">
+            <app-button  [spinner]="showSpinner" *ngIf="oldProcedure !== undefined && !isCopy"
+            [disabled]="step2Form.invalid || step3Form.invalid || showSpinner" (clicked)="updateProcedure()" text="Update" size="sm">
+          </app-button>
+          <app-button  [spinner]="showSpinner" *ngIf="isCopy" [disabled]="step2Form.invalid || step3Form.invalid || showSpinner" (clicked)="copyProcedure()"
+          text="Copy" size="sm"></app-button>
+          </div>
+          <div class="self-end pt-12">
+
+          </div>
+        </form>
+
+      </mat-step>
+
+    </mat-stepper>
+  </div>
+</ng-container>
+
+<ng-container #addNewIssuingAuthority *ngIf="!addProcedure && addIssuingAuthority">
+  <fly-panel-add-issuing-authority (closed)="FlypanelClosed()"></fly-panel-add-issuing-authority>
+</ng-container>

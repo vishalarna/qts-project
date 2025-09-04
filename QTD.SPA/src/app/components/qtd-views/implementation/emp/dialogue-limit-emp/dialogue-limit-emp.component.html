@@ -1,0 +1,26 @@
+<div class="flex flex-col w-full">
+    <div class="flex flex-row justify-between items-center mt-2 border-b-2" style="align-items:center;">
+      <p class="font-bold text-lg">License Limit Exceeded</p>
+      <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+      <app-icon
+        class="cursor-pointer"
+        icon="close"
+        (click)="close.emit()"
+      ></app-icon>
+    </div>
+  <div class="flex flex-col w-full mt-3">
+    <p>
+        <p>You have reached the maximum number of active {{("Employee" | labelReplacement)| async}} records that can be maintained in QTD.</p>
+
+        <p>
+      Current license = <span class = "font-bold">{{licenseNum}}</span>
+    </p>
+    <p>
+        
+        <!-- Please contact the <a href="https://outlook.office.com/owa/?to=sales@qualitytrainingsystems.com">QTS Sales</a> to upgrade your QTD license. -->
+        Please contact the <a href="mailto:sales@qualitytrainingsystems.com">QTS Sales</a> to upgrade your QTD license.
+    </p>
+  </div>
+   
+  </div>
+  

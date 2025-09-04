@@ -1,0 +1,62 @@
+﻿[
+  {
+    "Id": 1,
+    "DefaultLabel": "Employee",
+    "LabelReplacement": "Eric Claptop"
+  },
+  {
+    "Id": 2,
+    "DefaultLabel": "Position",
+    "LabelReplacement": "Upside Downs"
+  },
+  {
+    "Id": 3,
+    "DefaultLabel": "Task",
+    "LabelReplacement": null
+  },
+  {
+    "Id": 4,
+    "DefaultLabel": "Enabling Objective",
+    "LabelReplacement": null
+  },
+  {
+    "Id": 5,
+    "DefaultLabel": "Certifications",
+    "LabelReplacement": null
+  },
+  {
+    "Id": 6,
+    "DefaultLabel": "Procedures",
+    "LabelReplacement": null
+  },
+  {
+    "Id": 7,
+    "DefaultLabel": "Safety Hazards",
+    "LabelReplacement": null
+  },
+  {
+    "Id": 8,
+    "DefaultLabel": "Tools",
+    "LabelReplacement": null
+  },
+  {
+    "Id": 9,
+    "DefaultLabel": "Regulatory Requirements",
+    "LabelReplacement": null
+  },
+  {
+    "Id": 10,
+    "DefaultLabel": "Definitions",
+    "LabelReplacement": null
+  },
+  {
+    "Id": 11,
+    "DefaultLabel": "Instructions",
+    "LabelReplacement": null
+  },
+  {
+    "Id": 12,
+    "DefaultLabel": "Locations",
+    "LabelReplacement": null
+  }
+]

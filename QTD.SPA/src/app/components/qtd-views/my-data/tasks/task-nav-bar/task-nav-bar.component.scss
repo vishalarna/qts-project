@@ -1,0 +1,42 @@
+.qtd-tree-invisible {
+  display: none;
+}
+
+.qtd-tree ul,
+.qtd-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+/*
+   * This padding sets alignment of the nested nodes.
+   */
+.qtd-tree .mat-nested-tree-node div[role="group"] {
+  padding-left: 15px;
+}
+
+/*
+   * Padding for leaf nodes.
+   * Leaf nodes need to have padding so as to align with other non-leaf nodes
+   * under the same parent.
+   */
+.qtd-tree div[role="group"] > .mat-tree-node {
+  padding-left: 10px;
+}
+.alt-meta-box {
+  color: white !important; /* Overrides text color when active */
+}
+
+.qtd-meta-box {
+  color: #5c9b31;
+  background-color: rgba(92, 155, 49, 0.2);
+  border-radius: 2px;
+}
+
+.task-box:hover{
+  .qtd-meta-box{
+    color: white !important;
+  }
+}
+

@@ -1,0 +1,254 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    .table-header-row th {
+        border: 1px solid #000;
+        color: #000;
+        font-size: 18px;
+        font-weight: 800;
+        padding:5px;
+    }
+
+        .table-header-row th:first-child {
+            border-left: 0px
+        }
+
+        .table-header-row th:last-child {
+            border-right: 0px
+        }
+
+    .table-data-row {
+        border-bottom: 1px solid #000;
+    }
+
+        .table-data-row td {
+            color: #000;
+            font-size: 18px;
+            font-weight: 500;
+            padding:5px;
+        }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table" style="width:100%;margin-bottom:0px;border-collapse:collapse">
+    <!-- Header -->
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr>
+        <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+            @{int j = 1;}
+            <!-- Employee Information -->
+            @foreach (var employee in Model.EmployeeCertification.Select(ec => ec.Employee).Distinct().OrderBy(e => e.Person.LastName).ThenBy(e => e.Person.FirstName))
+            {
+                <div style="padding:5px;" id="@("page" + j)" class="@((j!=1 && j!=Model.EmployeeCertification.Select(ec => ec.Employee).Distinct().Count())?"strip":"")">
+                    <table style="width:100% ;border-collapse:collapse;">
+                            <tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Employee").Count() > 0)
+                                {
+                                    <td style="border: none !important; color: #800000; font-size: 1.4rem; font-weight: 600;padding:0.5rem ">
+                                        <b style=" border: 1px solid orange; border-radius: 8px; padding: 2px;">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b>
+                                    </td>
+                                    <td style="border: none !important; color: #800000; font-size: 1.4rem; font-weight: 600; padding: 0.5rem " colspan="11">
+                                        <b>@employee.Person.LastName, @employee.Person.FirstName</b>
+                                    </td>
+                                }
+                            </tr>
+                            <tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Positions").Count() > 0)
+                                {
+                                    <td style="border: none !important; color: #000; font-size: 1.4rem; font-weight: 600; padding: 0.5rem">
+                                        <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b>
+                                    </td>
+                                    <td style="border: none !important; font-size: 1.4rem; font-weight: 600; color: #000; padding: 0.5rem " colspan="11">
+                                        <b>
+                                            @{
+                                                var positionTitles = employee.EmployeePositions.Where(pos => pos.Position != null).Select(pos => pos.Position.PositionTitle).Distinct().ToList();
+                                            }
+
+                                            @(employee.Active ? string.Join(", ", positionTitles) : "")
+                                        </b>
+                                    </td>
+                                }
+                            </tr>
+                            <tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                                {
+                                    <td style="border: none !important; font-size: 1.4rem; font-weight: 600; color: #000; padding: 0.5rem ">
+                                        <b>Organization:</b>
+                                    </td>
+                                    <td style="border: none !important; font-size: 1.4rem; font-weight: 600; color: #000; padding: 0.5rem " colspan="11">
+                                        <b>
+                                            @if (employee.EmployeeOrganizations != null && employee.EmployeeOrganizations.Any())
+                                            {
+                                                @{
+                                                    var organizationNames = employee.EmployeeOrganizations.Where(org => org.Organization != null).Select(org => org.Organization.Name).Distinct().ToList();
+                                                }
+
+                                                @if (organizationNames.Any())
+                                                {
+                                                    @string.Join(", ", organizationNames)
+                                                }
+                                            }
+                                        </b>
+                                    </td>
+                                }
+                            </tr>
+                            <!-- Certifications for the current Employee -->
+                            <tr style="border-bottom: 2px solid #000; border-top:none" class="table-header-row">
+                                @if (Model.DisplayColumns.Where(r => r == "Issue Date").Count() > 0)
+                                {
+                                    <th style="text-align: left;width:15%">Issue Date</th>
+
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Cert Area").Count() > 0)
+                                {
+                                    <th style="text-align: left;width:21%">Cert Area</th>
+                                }
+
+                                @if (Model.DisplayColumns.Where(r => r == "Certification #").Count() > 0)
+                                {
+                                    <th style="text-align: left;width:31%">@("Certification".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #</th>
+                                }
+
+                                @if (Model.DisplayColumns.Where(r => r == "Renewal Date").Count() > 0)
+                                {
+                                    <th style="text-align: left;width:16%">Renewal Date</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Expiration Date").Count() > 0)
+                                {
+                                    <th style="text-align: left;width:17%">Expiration Date</th>
+                                }
+                            </tr>
+
+                            @foreach (var certification in Model.EmployeeCertification.Where(ec => ec.Employee == employee).OrderByDescending(r => r.ExpirationDate))
+                            {
+                                <tr class="table-data-row">
+                                    @if (certification != null && (Model.DisplayColumns.Where(r => r == "Issue Date").Count() > 0))
+                                    {
+                                        <td style="border: none !important; text-align:left">@certification.IssueDate.ToShortDateString()</td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Cert Area").Count() > 0)
+                                    {
+                                        <td style="border: none !important;">@certification.Certification.CertAcronym</td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Certification #").Count() > 0)
+                                    {
+                                        <td style="border: none !important;">@certification.CertificationNumber</td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Renewal Date").Count() > 0)
+                                    {
+                                        <td style="border: none !important;">@(certification.RenewalDate.HasValue ? certification.RenewalDate.Value.ToShortDateString() : "")</td>
+                                    }
+                                    @if (certification != null && (Model.DisplayColumns.Where(r => r == "Expiration Date").Count() > 0))
+                                    {
+                                        <td style="border: none !important;">@certification.ExpirationDate?.ToShortDateString()</td>
+                                    }
+                                </tr>
+
+                                foreach (var history in certification.EmployeeCertificationHistorys.OrderByDescending(h => h.ExpirationDate))
+                                {
+                                    <tr class="table-data-row">
+                                        @if (certification != null && (Model.DisplayColumns.Where(r => r == "Issue Date").Count() > 0))
+                                        {
+                                            <td style="border: none !important; text-align:left">@certification.IssueDate.ToShortDateString()</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Cert Area").Count() > 0)
+                                        {
+                                            <td style="border: none !important;">@certification.Certification.CertAcronym</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Certification #").Count() > 0)
+                                        {
+                                            <td style="border: none !important;">@certification.CertificationNumber</td>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Renewal Date").Count() > 0)
+                                        {
+                                            <td style="border: none !important;">@history.IssueDate.ToShortDateString()</td>
+                                        }
+                                        @if (certification != null && (Model.DisplayColumns.Where(r => r == "Expiration Date").Count() > 0))
+                                        {
+                                            <td style="border: none !important;">@history.ExpirationDate.ToShortDateString()</td>
+                                        }
+                                    </tr>
+                                }
+                            }
+                            <tr></tr>
+                    </table>
+                </div>
+                @if (j!= Model.EmployeeCertification.Select(ec => ec.Employee).Distinct().Count())
+                {
+                    <div style="page-break-after:always"></div>
+                    <div class="@(j!=0 ?"strip-dark":"")"></div>
+                @{j++;}
+                }
+            }
+        </td>
+    </tr>
+    @if (Model.EmployeeCertification.Select(ec => ec.Employee).Distinct().Count() <= 0)
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.EmployeeCertification.Select(ec => ec.Employee).Distinct().Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

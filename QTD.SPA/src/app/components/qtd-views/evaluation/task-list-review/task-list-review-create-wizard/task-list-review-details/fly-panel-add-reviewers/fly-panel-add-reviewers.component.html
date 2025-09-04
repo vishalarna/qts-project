@@ -1,0 +1,136 @@
+<div *ngIf="!isFlyPanelAddNewQTDUser">
+  <div class="flex flex-row justify-between items-center px-12 mt-5 mb-4">
+    <p class="text-xl font-bold text-gray-900 mb-0">
+      Add {{ "Task" | labelReplacement | async }} List Review Participants
+    </p>
+    <app-button
+      (click)="closeFlyPanel()"
+      ButtonType="icon"
+      icon="close"
+    ></app-button>
+  </div>
+
+  <div class="d-flex justify-content-end mb-4 mx-12">
+    <app-button
+      text="Create QTD User"
+      size="sm"
+      color="secondary"
+      (clicked)="openAddNewReviewerFlyPanel()"
+    ></app-button>
+  </div>
+
+  <div
+    class="mt-4 flex flex-row justify-around px-12 w-100"
+    *ngIf="selection.selected.length > 0"
+  >
+    <div
+      class="
+        flex flex-col flex-wrap
+        bg-gray-one
+        mb-3
+        mt-3
+        px-3
+        py-3
+        rounded
+        w-100
+      "
+    >
+      <div class="flex flex-row w-full justify-between align-items-center">
+        <p class="text-xs text-gray-four pt-2">
+          {{
+            selection.selected.length + " QTD User(s) selected to add as List Review Participant(s) for the " +  ('Task' | labelReplacement | async)  + " List Review"
+          }}
+        </p>
+        <app-button
+          (clicked)="linkToReview()"
+          class="mb-2"
+          type="button"
+          color="secondary"
+          size="sm"
+          text="Link to {{ 'Task' | labelReplacement | async }} List Review"
+        >
+        </app-button>
+      </div>
+    </div>
+  </div>
+
+  <app-data-loader *ngIf="!reviewerData"></app-data-loader>
+  <div *ngIf="reviewerData" class="flex flex-col reviewer-list-data mb-3 mx-12">
+    <mat-table
+      matSort
+      class="w-full"
+      style="border-top: 0.8px solid #e1e5e4; width: 100%"
+      mat-table
+      [dataSource]="reviewerDataSource"
+    >
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef class="table-reviewer">
+          <mat-checkbox
+            (change)="$event ? masterToggle() : null"
+            [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            class="mr-3"
+          ></mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" class="table-reviewer">
+          <mat-checkbox
+            *ngIf="!isLinked(row.id)"
+            (click)="$event.stopPropagation()"
+            (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"
+          ></mat-checkbox>
+          <app-icon
+            *ngIf="isLinked(row.id)"
+            class="mr-2"
+            style="color: rgb(92, 155, 49)"
+            icon="link"
+          ></app-icon>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="allReviewers">
+        <mat-header-cell *matHeaderCellDef class="px-2">
+          <span class="font-bold text-gray-500 reviewer-header"
+            >All QTD Users</span
+          >
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <img
+            style="border-radius: 50%; width: 50px; height: 50px"
+            class="img-fluid mr-2 mt-2 ml-2 mb-2"
+            [src]="row.image"
+            onerror="this.src='assets/img/ImageNotFound.jpg'"
+          />
+          <div [ngClass]="{ 'linked-row': isLinked(row.id) }">
+            <div class="font-bold mb-1 reviewer-name">
+              {{ row.person?.firstName }} {{ row.person?.lastName }}
+            </div>
+            <div
+              [ngClass]="{ 'linked-row': isLinked(row.id) }"
+              class="text-gray-500"
+            >
+              {{ row.person?.username }}
+            </div>
+          </div>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row
+        class="pl-2 pr-2"
+        *matHeaderRowDef="displayedColumns"
+      ></mat-header-row>
+      <mat-row
+        class="pr-2 pl-2"
+        *matRowDef="let row; columns: displayedColumns"
+      ></mat-row>
+
+      <tr class="no-data-mat-row flex text-center" *matNoDataRow>
+        <td class="mat-cell w-full m-2">No data to display</td>
+      </tr>
+    </mat-table>
+  </div>
+</div>
+
+<app-fly-panel-create-qtd-user
+  *ngIf="isFlyPanelAddNewQTDUser"
+  (closed)="closeNewReviewerFlyPanel($event)"
+  (newReviewers)="getNewReviewers($event)"
+></app-fly-panel-create-qtd-user>

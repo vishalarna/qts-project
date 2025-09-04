@@ -1,0 +1,10 @@
+<div id="editor" class="ck-editor">
+    <ckeditor
+      [editor]="editor"
+      (change)="onEmailTemplateContentChange($event)"
+      [config]="config"
+      [disabled]="mode==='read'? true: false"
+      toolbarPosition="bottom"
+      [(ngModel)]="emailData">
+    </ckeditor>
+</div>

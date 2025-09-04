@@ -1,0 +1,121 @@
+<mat-dialog-content>
+    <div class="flex flex-row justify-between items-center mt-2">
+      <p mat-dialog-title [textContent]="'Disclaimer'"></p>
+      <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+      <app-button ButtonType='icon' icon="close" (click)="close.emit()"></app-button>
+
+  </div>
+      <!-- <div class="float-container">
+
+          <div class="float-child">
+            <h2 class="green">Quality Training Systems </h2>
+            <p class="green">Provider Name</p>
+            <h2 class="green">Lauren Broox</h2>
+            <p class="green">Instructor</p>
+            <h2 class="green">May 24th, 2022</h2>
+            <p class="green">Completion Date</p>
+
+          </div>
+
+          <div class="float-child">
+            <h2 class="green">QTS_036 | Mitigate System Disturbances</h2>
+            <p class="green">ILA No. & Title</p>
+            <h2 class="green">14-A, Street III, Pine Avenue, CA</h2>
+            <p class="green">Location</p>
+            <h2 class="green">21</h2>
+            <p class="green">Total CEHs</p>
+
+          </div>
+
+
+        </div> -->
+        <div class="mt-4 mb-4" style="display:grid;row-gap: 2rem;">
+            <div style="grid-row: 1;grid-column: 1;">
+              <span class=" text-gray-400 text-lg">{{("ILA" | labelReplacement)| async}} Details</span>
+            </div>
+            <div style="grid-row: 2;grid-column: 1;">
+              <div class="flex flex-col">
+                <span class="text-gray-400">
+                  Provider Name
+                </span>
+                <span class="font-bold">
+                    {{classSchedule_emp?.providerName ?? "N/A"}}
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 2;grid-column: 2;">
+              <div class="flex flex-col">
+                <span class="text-gray-400">
+                  {{("ILA" | labelReplacement)| async}} No. & Title
+                </span>
+                <span class="font-bold">
+                    {{(classSchedule_emp?.ilaNumber ?? "N/A") + " | " + (classSchedule_emp?.ilaName ?? "N/A")}}
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 3;grid-column: 1;">
+              <div class="flex flex-col">
+                <span class="text-gray-400">
+                  {{("Instructor" | labelReplacement)| async}}
+                </span>
+                <span class="font-bold">
+                    {{classSchedule_emp?.instructorName ?? "N/A"}}
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 3;grid-column: 2;">
+              <div class="flex flex-col">
+                <span class="text-gray-400">
+                  {{("Location" | labelReplacement)| async}}
+                </span>
+                <span class="font-bold">
+                    {{classSchedule_emp?.locationName ?? "N/A"}}
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 4;grid-column: 1;">
+              <div class="flex flex-col">
+                <span class="text-gray-400">
+                  Due Date
+                </span>
+                <span class="font-bold">
+                  {{classSchedule_emp?.plannedDate === null ? "N/A": (classSchedule_emp?.plannedDate | dateFormat | async) }}
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 4;grid-column: 2;">
+              <div class="flex flex-col">
+                <span class="text-gray-400">
+                  Total CEHs
+               </span>
+                <span class="font-bold">
+                    {{classSchedule_emp?.totalTrainingHours ?? 00}}
+                </span>
+              </div>
+            </div>
+          </div>
+        <h2>EMP {{("Instruction" | labelReplacement)| async}}s</h2>
+        <p>Once you are ready to take the Online Course, click on the Begin Course button. If you are NOT ready, click on the Exit button to return to the homepage.
+
+            Note: Should you lose internet connection or power, or have to interrupt the course for an emergency, you will be able to resume the course by clicking on the In Progress button. Please contact your Training Department if you have issues or questions about restarting a course.</p>
+
+            <h2>Course Confidentiality</h2>
+            <p>
+                The purpose of this Computer-Based Training (CBT) course is to provide training in a specific skill/knowledge area and then assess your knowledge in that specific skill/knowledge area. The contents of this CBT course are consistent with the NERC Credential Maintenance Program’s criteria for development of learning objectives, evaluation of learning, and proof of completion. As such, you agree to the following:
+
+            I understand that this course, all activities, and the final assessment are secure and confidential. I agree that I will not do any of the following:
+            Discuss, disseminate, describe or otherwise reveal the contents of this course to any third party.
+            Publish, or cause to be published, the contents of this course, including content, activities, and learning assessments.
+            Complete activities or learning assessments with the assistance of another person, class materials, or other non-approved resources.
+            </p>   
+            <h2>CBT Learning {{("Instruction" | labelReplacement)| async}}s</h2>
+            <span class="font-bold" [innerHTML]="classSchedule_emp?.cbtLearningContractInstructions ?? 'N/A'"></span>        
+  <mat-dialog-actions align="end">
+    <div class="justify-between">
+        <!-- <app-button type="button" text="Cancel" variant="text" size="sm" class="mr-2"  (click)="close.emit()">
+        </app-button> -->
+        <span style="margin-right: 1rem; cursor:pointer;"  (click)="close.emit()">Cancel</span>
+      <app-button type="button" text="Start Course" (clicked)="startNewCourse()" color="blue" size="sm" class="mr-2">
+      </app-button>
+      </div>
+  </mat-dialog-actions>

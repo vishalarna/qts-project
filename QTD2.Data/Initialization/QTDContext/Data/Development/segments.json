@@ -1,0 +1,53 @@
+[
+  {
+    "Title": "Introduction to Power Systems",
+    "Duration": 120,
+    "IsNercStandard": true,
+    "IsNercOperatingTopics": false,
+    "IsNercSimulation": true,
+    "Content": "This course provides an overview of power systems.",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Title": "Power System Protection",
+    "Duration": 180,
+    "IsNercStandard": true,
+    "IsNercOperatingTopics": true,
+    "IsNercSimulation": false,
+    "Content": "This course covers power system protection principles.",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Title": "Advanced Power System Analysis",
+    "Duration": 240,
+    "IsNercStandard": false,
+    "IsNercOperatingTopics": true,
+    "IsNercSimulation": true,
+    "Content": "This course focuses on advanced power system analysis techniques.",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Title": "Electricity Market Fundamentals",
+    "Duration": 150,
+    "IsNercStandard": false,
+    "IsNercOperatingTopics": false,
+    "IsNercSimulation": false,
+    "Content": "This course introduces electricity market fundamentals.",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 5,
+    "Title": "Renewable Energy Integration",
+    "Duration": 180,
+    "IsNercStandard": true,
+    "IsNercOperatingTopics": true,
+    "IsNercSimulation": true,
+    "Content": "This course explores the integration of renewable energy sources into the power grid.",
+    "Deleted": false,
+    "Active": true
+  }
+]

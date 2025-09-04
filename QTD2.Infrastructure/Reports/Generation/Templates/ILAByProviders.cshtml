@@ -1,0 +1,31 @@
+﻿<table id="content-table" style="display: block; position: relative;">
+    <tr>
+        <td colspan="@Model.DisplayColumns.Count()" style="vertical-align: middle; text-align: center;">
+            <div style="display: flex;align-items: center;justify-content: space-between;">
+            <div>
+                <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: cover !important;"/></div>
+            <div style="text-align: center; "><b>@Model.Title </b></div>
+            <div style="float: right;"><b>Printed Date:</b> @DateTime.Now.Date.ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+
+    <tr class="table table-bordered" style="color:#fff; background-color:forestgreen;">
+        @foreach (var col in Model.DisplayColumns)
+        {
+            <th> @col</th>
+        }
+    </tr>
+
+
+    @foreach (var row in Model.Data)
+    {
+        <tr class="table table-bordered">
+            @foreach (var col in row)
+            {
+                <td>@col</td>
+            }
+        </tr>
+    }
+
+</table>

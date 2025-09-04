@@ -1,0 +1,126 @@
+<ng-container *ngIf = "!isPreviewFlyPanelOpen">
+  <app-data-loader *ngIf="loader"></app-data-loader>
+    <div  *ngIf="!loader"  class="flex flex-col px-12 py-12">
+            <div class="flex flex-row justify-between">
+                <h2>Link Test Item</h2>
+                <app-button ButtonType="icon" icon="close" (click)="flyPanelService.close()"></app-button>
+            </div>
+
+            <form [formGroup]="filterForm">
+                <div class="flex flex-row justify-between mt-3 items-center gap-4">
+                 <div class="filter-class">
+                  <mat-form-field appearance="outline" class="w-100 px-2">
+                    <mat-label>Test Question Type</mat-label>
+                    <mat-select formControlName="testItemTypeId">
+                      <mat-option *ngFor="let testItemType of testItemTypeList" [value]="testItemType.id">
+                        {{ testItemType.description }}
+                      </mat-option>
+                    </mat-select>
+                    <button mat-icon-button *ngIf="filterForm.get('testItemTypeId')?.value" matSuffix (click)="clearTestItemType()" aria-label="Clear">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </div>
+              
+                <div class="filter-class">
+                  <mat-form-field appearance="outline" class="w-100 px-2">
+                    <mat-label>Taxonomy Level</mat-label>
+                    <mat-select formControlName="taxonomyLevelId" >
+                      <mat-option *ngFor="let taxonomy of taxonomyList" [value]="taxonomy.id">
+                        {{ taxonomy.description }}
+                      </mat-option>
+                    </mat-select>
+                    <button mat-icon-button *ngIf="filterForm.get('taxonomyLevelId')?.value" matSuffix (click)="clearTaxonomyLevel()" aria-label="Clear">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </div>
+              
+                <div class="filter-class">
+                  <mat-form-field appearance="outline" class="w-100 px-2">
+                    <mat-label>Status</mat-label>
+                    <mat-select formControlName="status">
+                      <mat-option [value]="true">Active</mat-option>
+                      <mat-option [value]="false">Inactive</mat-option>
+                    </mat-select>
+                    <button mat-icon-button *ngIf="filterForm.get('status')?.value !== null" matSuffix (click)="clearStatus()" aria-label="Clear">
+                      <mat-icon>close</mat-icon>
+                    </button>
+                  </mat-form-field>
+                </div>
+              
+                </div>
+              </form>
+
+            <div class="pl-3 pt-3 m-0 flex flex-row justify-between" style="align-items: baseline;border-bottom: 2px solid #F2F2F2;">
+                <app-icon icon="search"></app-icon>
+                        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+                            [value]="filterSearchString" (input)="searchFilter($event)" />
+                        <app-icon icon="close" class="cursor-pointer" *ngIf="filterSearchString"
+                            (click)="clearSearchString()"></app-icon>
+            </div>
+            <div class="flex flex-row flex-wrap bg-gray-one justify-between mb-3 mt-3  px-3 py-3 rounded" *ngIf="checkListSelection.selected.length > 0">
+                <p class="text-xs text-gray-four pt-2">{{checkListSelection.selected.length}}  Test Questions have been selected</p>
+                <app-button  size="sm" color="secondary" (clicked)="linkTestItems()" text="Link TestItem"></app-button>
+            </div>
+            
+            <div class = "test-item-table">
+                <mat-table matSort  class="w-full" [dataSource]="dataSource" (matSortChange) = "testItemSort($event)">
+                    <ng-container matColumnDef="cb">
+                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <mat-radio-button [checked]="row.id == linkedId" name="radioMetaILA"
+                                    (change)="onChangeTestItem($event.source.checked, row)">
+                            </mat-radio-button>
+                        </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="number">
+                        <mat-header-cell mat-sort-header *matHeaderCellDef>ID</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            {{row.number}}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="question">
+                        <mat-header-cell mat-sort-header *matHeaderCellDef>Question Stem</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <span [innerHTML] = "row.question"></span>
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="type">
+                        <mat-header-cell mat-sort-header *matHeaderCellDef>Type</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            {{row.type}}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="taxonomy">
+                        <mat-header-cell mat-sort-header *matHeaderCellDef>Taxonomy Level</mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            {{row.taxonomy}}
+                        </mat-cell>
+                    </ng-container>
+
+                    <ng-container matColumnDef="status">
+                        <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <app-button  ButtonType="button" variant="text" [icon]="'visibility'" iconPosition="left" text="Preview" (clicked) = "isPreviewFlyPanelOpen = true;selectedRow = row"></app-button>
+                        </mat-cell>
+                    </ng-container>
+        
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+                    <tr class="mat-row flex text-center " *matNoDataRow>
+                      <td class="mat-cell w-full m-2 no-data-cell" >No Data Found</td>
+                    </tr>
+                </mat-table>
+                <mat-paginator [pageSize]="10" [pageSizeOptions]="[10, 20, 30]" showFirstLastButtons #testItemPaging></mat-paginator>
+            </div>
+    </div>
+</ng-container>
+
+ 
+<ng-container *ngIf = "isPreviewFlyPanelOpen">
+    <app-flypanel-preview-test-questions (closed)="isPreviewFlyPanelOpen = false" [previousQuestion]="selectedRow"></app-flypanel-preview-test-questions>
+</ng-container>

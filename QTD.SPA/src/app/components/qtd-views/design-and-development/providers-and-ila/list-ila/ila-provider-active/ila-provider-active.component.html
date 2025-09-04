@@ -1,0 +1,109 @@
+
+<!--Inactive option for provider starts-->
+<ng-container *ngIf="isProviderInactive && inactiveClicked">
+    <!-- <mat-dialog-content >
+        <div class="flex flex-row justify-between items-center mt-5 mb-8" >
+           <p class="text-xl font-semibold text-gray-900">Make Provider Inactive</p>
+           <app-button ButtonType='icon' class="mt--4" icon="close" mat-dialog-close="true"></app-button>
+       </div>
+   
+       <p class="mt-8">This Provider, has Active ILAs. Making this Provider Inactive will inactivate all linked ILAs. Are you sure you want to continue?</p>
+   </mat-dialog-content>
+   
+   
+   <mat-dialog-actions align="end">
+       <app-button type="button" text="Yes" color="primary" size="sm" class="mr-2" mat-dialog-close></app-button>
+   </mat-dialog-actions> -->
+
+   <app-qtd-dialogue [header]="header"
+        [description]="description"
+        [cancelText]="cancelText"
+        [confirmText]="confirmText">
+    </app-qtd-dialogue>
+   
+</ng-container>
+<!--Inactive option for provider ends-->
+
+<!--Active option for provider starts-->
+<ng-container *ngIf="!isProviderInactive && inactiveClicked">
+    <!-- <mat-dialog-content >
+        <div class="flex flex-row justify-between items-center mt-5 mb-8" >
+           <p class="text-xl font-semibold text-gray-900">Make Provider Active</p>
+           <app-button ButtonType='icon' class="mt--4" icon="close" mat-dialog-close="true"></app-button>
+       </div>
+   
+       <p class="mt-8">You are selecting to make the Provider Active. Are you sure you want to continue?</p>
+   </mat-dialog-content>
+   
+   
+   <mat-dialog-actions align="end">
+       <app-button type="button" text="Yes" color="primary" size="sm" class="mr-2" mat-dialog-close></app-button>
+   </mat-dialog-actions> -->
+
+   <app-qtd-dialogue [header]="header"
+        [description]="description"
+        [cancelText]="cancelText"
+        [confirmText]="confirmText">
+    </app-qtd-dialogue>
+   
+</ng-container>
+<!--Active option for provider ends-->
+
+
+
+
+<!--Inactive option for ila starts-->
+<ng-container *ngIf="isIlaInactive && !inactiveClicked">
+    <!-- <mat-dialog-content >
+        
+        <div class="flex flex-row justify-between items-center mt-5 mb-8" >
+           <p class="text-xl font-semibold text-gray-900">Make ILA Inactive</p>
+           <app-button ButtonType='icon' class="mt--4" icon="close" mat-dialog-close="true"></app-button>
+       </div>
+   
+       <p class="mt-8">You are selecting to make this ILA inactive. All ILA history and Employee records will be retained. Are you sure you want to continue?</p>
+
+   </mat-dialog-content>
+   
+   
+   <mat-dialog-actions align="end">
+       <app-button  type="button" text="Yes" color="primary" size="sm" class="mr-2" mat-dialog-close></app-button>
+    </mat-dialog-actions> -->
+
+    <app-qtd-dialogue [header]="header"
+        [description]="description"
+        [cancelText]="cancelText"
+        [confirmText]="confirmText">
+    </app-qtd-dialogue>
+   
+</ng-container>
+<!--Inactive option for ila ends-->
+
+
+<!--Active option for ila starts-->
+<ng-container *ngIf="!isIlaInactive && !inactiveClicked">
+    <!-- <mat-dialog-content >
+        <div class="flex flex-row justify-between items-center mt-5 mb-8" >
+           <p class="text-xl font-semibold text-gray-900">Make ILA Active</p>
+           <app-button ButtonType='icon' class="mt--4" icon="close" mat-dialog-close="true"></app-button>
+       </div>
+   
+       <p class="mt-8">You are selecting to make this ILA Active. Are you sure you want to continue? </p>
+   </mat-dialog-content>
+   
+   
+   <mat-dialog-actions align="end">
+       <app-button type="button"  text="Yes" color="primary" size="sm" class="mr-2" mat-dialog-close></app-button>
+    </mat-dialog-actions> -->
+
+    <app-qtd-dialogue [header]="header"
+        [description]="description"
+        [cancelText]="cancelText"
+        [confirmText]="confirmText">
+    </app-qtd-dialogue>
+   
+</ng-container>
+<!--Active option for ila ends-->
+
+
+

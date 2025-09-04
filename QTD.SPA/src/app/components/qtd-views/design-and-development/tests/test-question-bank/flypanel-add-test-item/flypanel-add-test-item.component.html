@@ -1,0 +1,101 @@
+<div [hidden]="addEO" class="m-5">
+  <!-- This section is the header -->
+  <section class="flex flex-row justify-between">
+    <p *ngIf="mode === 'add'" class="text-xl font-bold">Add New Test Question</p>
+    <p *ngIf="mode === 'edit'" class="text-xl font-bold">Edit Test Question</p>
+    <p *ngIf="mode === 'copy'" class="text-xl font-bold">Copy Test Question</p>
+
+    <app-button ButtonType="icon" icon="close" (clicked)="isCloseClick?closeByValue.emit(false):closed.emit('fp-add-test-item')"></app-button>
+  </section>
+  <!-- This section is for enabling objective -->
+  <section class="mt-5 flex flex-col ml-2">
+    <div (click)="addEO = true;" class="cursor-pointer flex flex-row ">
+      <p class="font-bold">Add an {{("Enabling Objective" | labelReplacement)| async}} For the Test Item</p>
+      <app-icon class="greenicon ml-3" icon="keyboard_arrow_right"></app-icon>
+    </div>
+    <span class="text-gray-400" *ngIf="eoId === null">No EO Selected</span>
+    <div class="flex flex-row mt-2" style="align-items: baseline;">
+      <span class="text-gray-400" style="color:#5C9B31;" *ngIf="eoId !== null">Selected EO - {{eoDescription}}</span>
+      <app-icon class="ml-3" style="color:#5C9B31;cursor:pointer;" *ngIf="eoId !== null" icon="close" (click)="eoId = null"></app-icon>
+    </div>
+  </section>
+  <!-- This section is for question Type and Taxonomy Level -->
+  <section class="mt-4">
+    <form class="flex flex-row" [formGroup]="testItemForm">
+      <div class="flex flex-col mr-3 w-2/4">
+        <label class="font-medium">Question Type</label>
+        <mat-select disableOptionCentering formControlName="type" (selectionChange)="selectedType = $event.value"
+          class="rounded-sm" style="border: 1px solid lightgray;" placeholder="Select Question Type">
+          <mat-option *ngFor="let type of testItemTypes" class="label_style"
+            [value]="type">{{type.description}}</mat-option>
+        </mat-select>
+        <app-input-error class="mt-2" *ngIf="testItemForm.get('type')?.hasError('required')"
+          text="Question Type is Required"></app-input-error>
+      </div>
+      <div class="flex flex-col w-2/4">
+        <div class="flex flex-row" style="align-items:flex-start;">
+          <label class="mr-2 font-medium">Taxonomy Level</label>
+          <app-icon icon="help_outline" style="color:lightgray;" [matTooltipClass]="'multiline-tooltip'" matTooltip="Select appropriate level of complexity for Test Question.
+            &#13; Recall - Remember facts and concept.
+            &#13; Application - Use information and concepts in different situations
+            &#13;Analyze - Establish relationships between presented information"></app-icon>
+        </div>
+        <mat-select disableOptionCentering formControlName="taxonomy" class="rounded-sm"
+          style="border: 1px solid lightgray;" placeholder="Select Taxonomy Level">
+          <mat-option *ngFor="let level of taxonomyLevels" class="label_style"
+            [value]="level.id">{{level.description}}</mat-option>
+        </mat-select>
+        <app-input-error class="mt-2" *ngIf="testItemForm.get('taxonomy')?.hasError('required')"
+          text="Taxonomy Level is Required"></app-input-error>
+      </div>
+    </form>
+  </section>
+  <section class="mt-4">
+    <ng-container
+      *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'true / false' && !testItemForm.get('taxonomy')?.hasError('required')">
+      <app-add-true-false (itemSaved)="testQuestionSaved($event)" [previousData]="previousQuestion" [mode]="mode"
+        [eoId]="eoId" [levelId]="testItemForm.get('taxonomy')?.value"
+        [type]="testItemForm.get('type')?.value" [isCloseClick]="isCloseClick" (closeByValue)="closeByValue.emit($event)"></app-add-true-false>
+    </ng-container>
+
+    <ng-container
+      *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'short answers' && !testItemForm.get('taxonomy')?.hasError('required')">
+      <app-add-short-questions (itemSaved)="testQuestionSaved($event)" [previousData]="previousQuestion" [mode]="mode"
+        [eoId]="eoId" [levelId]="testItemForm.get('taxonomy')?.value"
+        [type]="testItemForm.get('type')?.value" [isCloseClick]="isCloseClick" (closeByValue)="closeByValue.emit($event)"></app-add-short-questions>
+    </ng-container>
+
+    <ng-container
+      *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'multiple choice questions' && !testItemForm.get('taxonomy')?.hasError('required')">
+      <app-add-mcq (itemSaved)="testQuestionSaved($event)" [previousData]="previousQuestion" [mode]="mode" [eoId]="eoId"
+        [levelId]="testItemForm.get('taxonomy')?.value" [type]="testItemForm.get('type')?.value" [isCloseClick]="isCloseClick" (closeByValue)="closeByValue.emit($event)"></app-add-mcq>
+    </ng-container>
+
+    <ng-container
+      *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'multiple correct answers' && !testItemForm.get('taxonomy')?.hasError('required')">
+      <app-add-multiple-correct-answer (itemSaved)="testQuestionSaved($event)" [previousData]="previousQuestion"
+        [mode]="mode" [eoId]="eoId" [levelId]="testItemForm.get('taxonomy')?.value"
+        [type]="testItemForm.get('type')?.value" [isCloseClick]="isCloseClick" (closeByValue)="closeByValue.emit($event)"></app-add-multiple-correct-answer>
+    </ng-container>
+
+    <ng-container
+      *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'fill in the blank' && !testItemForm.get('taxonomy')?.hasError('required')">
+      <app-add-fill-in-the-blank  (itemSaved)="testQuestionSaved($event)" [previousData]="previousQuestion" [mode]="mode"
+        [eoId]="eoId" [levelId]="testItemForm.get('taxonomy')?.value"
+        [type]="testItemForm.get('type')?.value" [isCloseClick]="isCloseClick" (closeByValue)="closeByValue.emit($event)"></app-add-fill-in-the-blank>
+    </ng-container>
+
+    <ng-container
+      *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'match the column' && !testItemForm.get('taxonomy')?.hasError('required')">
+      <app-add-match-the-column (itemSaved)="testQuestionSaved($event)" [previousData]="previousQuestion" [mode]="mode"
+        [eoId]="eoId" [levelId]="testItemForm.get('taxonomy')?.value"
+        [type]="testItemForm.get('type')?.value" [isCloseClick]="isCloseClick" (closeByValue)="closeByValue.emit($event)"></app-add-match-the-column>
+    </ng-container>
+
+  </section>
+</div>
+
+<div *ngIf="addEO">
+  <app-flypanel-add-eo [ilaId]="ilaId" [selectedId]="eoId" (closed)="addEO = false;"
+    (idSelected)="addEO = false;eoDescription = $event.description;eoId = $event.id"></app-flypanel-add-eo>
+</div>

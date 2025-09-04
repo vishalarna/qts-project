@@ -1,0 +1,512 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using System.Text.RegularExpressions
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        width: 100%;
+    }
+
+    .questionAnswer > p {
+        margin: 0;
+    }
+
+    .questionAnswer > p {
+        margin: 0;
+    }
+
+    .fix-image img {
+        width: 400px !important;
+        height: auto !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+    }
+
+    .suggestion-block img {
+        display: inline-block;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+    }
+
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    .break {
+        page-break-after: always !important;
+        page-break-inside: avoid !important;
+        page-break-before: always !important;
+    }
+
+    table, img, blockquote, td, span {
+        page-break-inside: avoid;
+    }
+
+    .table-page-break{
+        page-break-inside: avoid !important;
+        page-break-before: always !important;
+        page-break-after: auto !important;
+        margin:0;
+        padding:0;
+        white-space:nowrap;
+    }
+</style>
+
+<table id="content-table" class="table" style="width:100%;margin-bottom:0px;border-collapse:collapse">
+    <!-- Header -->
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.Employees.Count() > 0)
+    {
+        var k = 1;
+        
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+
+                @foreach (var employee in Model.Employees)
+                {
+                    @foreach (var employeePosition in employee.EmployeePositions)
+                    {
+                        <table style="width:100%;border-collapse:collapse">
+                            <tbody>
+
+                                <tr>
+                                    <td style="border: none !important; font-size:18px; padding-top:22px;padding-bottom:15px" colspan="12">
+                                        <div style="display: -webkit-box;display:flex">
+                                            <span style="flex:1 1 20%;"><b>For Trainee:</b></span>
+                                            <span style="flex:1 1 80%"><b>@employee?.Person?.LastName , @employee?.Person?.FirstName</b></span>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+
+                                    <td style="border: none !important; font-size:18px; padding-top:22px;padding-bottom:10px" colspan="12">
+                                        <div style="display: -webkit-box;display:flex; justify-content:space-between">
+                                            @if (Model.DisplayColumns.Where(r => r == "Position Description").Count() > 0)
+                                            {
+                                                <div style="display: -webkit-box;display:flex; width:50%">
+                                                    <span style="width:40%;"><b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b></span>
+                                                    <span><b>@employeePosition.Position.PositionNumber - @employeePosition.Position.PositionTitle (@employeePosition.Position.PositionAbbreviation)</b> </span>
+                                                </div>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Review Date").Count() > 0)
+                                            {
+                                                var reviewDate = @employeePosition.Position.TaskListReviews.OrderByDescending(tlr => tlr.ApprovalDate).FirstOrDefault()?.ApprovalDate;
+                                                <div style="display: -webkit-box;display:flex; padding-left:10px; width:50%">
+                                                    <span style="width:20%;"><b>Review Date:</b></span>
+                                                    <span><b>@(reviewDate != null ? ((DateTime)reviewDate).ToShortDateString() : "")</b> </span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+                                        @{
+                                            var validPositionTasks = employeePosition.Position.Position_Tasks.Where(pt => pt.Task != null).ToList();
+                                        }
+                                        @if (validPositionTasks.Any())
+                                        {
+                                            @foreach (var positionTask in validPositionTasks)
+                                            {
+                                                var questionImageTag = false;
+                                                var stepImageTag = false;
+                                                var answerImageTag = false;
+                                                <div class="@(k%2==0?"strip-dark":"")"></div>
+                                                <div style="padding:5px;" id="@("page" + k)" class="@(k%2==0?"strip":"")">
+                                                    <table style="width:100%;border-collapse:collapse;margin-top:15px">
+                                                        <tbody>
+                                                            <tr>
+                                                                <td style="border: none !important; font-size: 18px; padding-bottom: 15px" colspan="12">
+                                                                    <div style="display: flex; align-items: flex-start">
+                                                                        <span style="flex:1 1 20%"><b> @((positionTask.Task.IsReliability) ? "*" : "") @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)): @positionTask?.Task?.SubdutyArea?.DutyArea?.Letter @positionTask?.Task?.SubdutyArea?.DutyArea?.Number.@positionTask?.Task?.SubdutyArea?.SubNumber.@positionTask?.Task?.Number - </b></span>
+                                                                        <span style="flex:1 1 80%"><b>@positionTask?.Task?.Description</b></span>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <tr>
+                                                                @if (Model.DisplayColumns.Where(r => r == "R-R Definition").Count() > 0)
+                                                                {
+                                                                    <td style="border: none !important; padding-top: 15px" colspan="12">
+                                                                        <div style="display: flex; align-items: flex-start">
+                                                                            <span style="flex:1 1 20%"><b>R-R* @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b></span>
+                                                                            <span style="flex: 1 1 80%">  <input type="checkbox" checked="@(positionTask.Task.IsReliability)" disabled /></span>
+                                                                        </div>
+                                                                    </td>
+                                                                }
+                                                            </tr>
+                                                            <tr>
+                                                                <td style="border: none !important;text-align: left;font-size:14px;padding-bottom:15px">*R-R is Reliability Related</td>
+                                                            </tr>
+
+                                                            @if (Model.DisplayColumns.Contains("Show Task Specific Suggestions"))
+                                                            {
+                                                                <tr style="border: none !important; font-size: 14px; padding-bottom: 15px">
+                                                                    <td style="border: none !important;vertical-align:top;width:30%">
+                                                                        <span><b>@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Specific Suggestions :</b></span>
+                                                                    </td>
+
+                                                                    <td style="border: none !important; vertical-align: top; width: 70%;">
+                                                                        <span>
+                                                                            @{
+                                                                                var suggestions = positionTask?.Task.Task_Suggestions;
+                                                                                if (suggestions != null && suggestions.Any())
+                                                                                {
+                                                                                    var formattedSuggestions = suggestions.Select(s =>
+                                                                                    {
+                                                                                        var description = s.Description ?? string.Empty;
+
+                                                                                        var cleanedDescription = Regex.Replace(description, @"<(?!img\s*[^>]*>)[^>]+>", "");
+
+                                                                                        cleanedDescription = cleanedDescription.Trim();
+
+                                                                                        return cleanedDescription;
+                                                                                    }).Where(d => !string.IsNullOrEmpty(d)).ToList();
+
+                                                                                    var suggestionString = string.Join(", ", formattedSuggestions);
+
+                                                                                    <b class="suggestion-block" style="display: inline;">@(new RawString(suggestionString))</b>
+                                                                                }
+                                                                            }
+                                                                        </span>
+                                                                    </td>
+
+                                                                </tr>
+
+
+                                                            }
+
+                                                            @if (Model.DisplayColumns.Contains("Show Task Details"))
+                                                            {
+                                                                <tr>
+                                                                    <td style="border: none !important; text-align: left; padding: 0.4rem; padding-left: 40px;" colspan="12">
+                                                                        <table style="width: 100%; border-collapse: collapse;">
+                                                                            <tr>
+                                                                                <td style="border: none; padding: 0.4rem;vertical-align:top"><b>Conditions:</b></td>
+                                                                                <td style="border: none; padding: 0.4rem;">@(new RawString(positionTask.Task.Conditions))</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="border: none; padding: 0.4rem; vertical-align: top;">
+                                                                                    <b>@("Tool".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b>
+                                                                                </td>
+                                                                                <td style="border: none; padding: 0.4rem;">
+                                                                                    @(new RawString(String.Join("", positionTask.Task.Task_Tools.Select(t => $"<p>{t.Tool.Name}</p>"))))
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="border: none; padding: 0.4rem;vertical-align:top"><b>References:</b></td>
+                                                                                <td style="border: none; padding: 0.4rem;">@(new RawString(positionTask.Task.References))</td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="border: none; padding: 0.4rem;vertical-align:top"><b>Criteria:</b></td>
+                                                                                <td style="border: none; padding: 0.4rem;">@(new RawString(positionTask.Task.Criteria))</td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                            @if (Model.DisplayColumns.Contains("Show Procedures linked to the Tasks"))
+                                                            {
+                                                                <tr>
+                                                                    <td style="border: none !important; padding-top: 15px; text-align: left; padding-left: 40px;" colspan="12">
+                                                                        <span style="padding: 0.4rem;"><b>@("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b></span>
+                                                                    </td>
+                                                                </tr>
+                                                                @if (positionTask.Task.Procedure_Task_Links.Any())
+                                                                {
+                                                                    <tr>
+                                                                        <td style="border: none !important; padding-left: 40px;" colspan="12">
+                                                                            @foreach (var procedure in positionTask.Task.Procedure_Task_Links)
+                                                                            {
+                                                                                <div style="display:flex">
+                                                                                    <span style="flex: 1 1 20%">
+                                                                                        @procedure.Procedure.Number
+                                                                                    </span>
+                                                                                    <span style="flex: 1 1 80%">
+                                                                                        @procedure.Procedure.Title
+                                                                                    </span>
+                                                                                </div>
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Show Safety Hazards linked to the Tasks").Count() > 0)
+                                                            {
+                                                                <tr>
+                                                                    <td style="border: none !important; padding-top: 15px; text-align: left; padding-left: 40px;" colspan="12">
+                                                                        <span style="padding: 0.4rem;"><b>@("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b></span>
+                                                                    </td>
+                                                                </tr>
+                                                                @if (positionTask.Task.SafetyHazard_Task_Links.Any())
+                                                                {
+                                                                    <tr>
+                                                                        <td style="border: none !important; padding-left: 40px;" colspan="12">
+                                                                            @foreach (var safetyHazard in positionTask.Task.SafetyHazard_Task_Links.OrderBy(e => e.SaftyHazard.Number))
+                                                                            {
+                                                                                <div style="display:flex">
+                                                                                    <span style="flex: 1 1 20%">
+                                                                                        @safetyHazard.SaftyHazard.Number
+                                                                                    </span>
+                                                                                    <span style="flex: 1 1 80%">
+                                                                                        @safetyHazard.SaftyHazard.Title
+                                                                                    </span>
+                                                                                </div>
+                                                                            }
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Show EO linked to the Tasks").Count() > 0)
+                                                            {
+                                                                <tr>
+                                                                    <td style=" border: none !important; padding-top: 15px; text-align: left; font-weight: 600; padding-left: 40px" colspan="12"><b>@("Enabling Objective".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b></td>
+                                                                </tr>
+                                                                @if (positionTask.Task.Task_EnablingObjective_Links.Any())
+                                                                {
+
+                                                                    @foreach (var eo in positionTask.Task.Task_EnablingObjective_Links)
+                                                                    {
+                                                                        <tr>
+                                                                            <td style="border: none; width: 25%;padding-left: 40px;"><span style="padding: 0.4rem;">@eo.EnablingObjective?.FullNumber</span></td>
+                                                                            <td style="border: none; padding: 0.4rem; width: 75%;">@eo.EnablingObjective?.Description</td>
+                                                                        </tr>
+                                                                    }
+
+                                                                }
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Steps/Sub-Steps").Count() > 0)
+                                                            {
+
+                                                                <tr>
+                                                                    <td style="border: none !important;padding:15px 0" colspan="12">
+                                                                        <table style="width: 100%; border-collapse: collapse;">
+                                                                            <tbody>
+                                                                                <tr>
+                                                                                    <td style="border: none !important; padding-top: 15px" colspan="12"><b>Performance Checksheet:</b></td>
+                                                                                </tr>
+                                                                            </tbody>
+                                                                        </table>
+                                                                        <table style="width: 100%; border-collapse: collapse;">
+                                                                            <thead>
+                                                                                <tr>
+                                                                                    <th style="border: 1px solid; border-left: 0; padding: 0.5rem 0.3rem; vertical-align: bottom;" colspan="1">Trainer Initial/Date</th>
+                                                                                    <th style="border: 1px solid; padding: 0.5rem 0.3rem; vertical-align: top;" colspan="1">Check</th>
+                                                                                    <th style="border: 1px solid; padding: 0.5rem 0.3rem; vertical-align: top;" colspan="3">Step #</th>
+                                                                                    <th style="border: 1px solid; padding: 0.5rem 0.3rem; vertical-align: top;" colspan="4">Step Description</th>
+                                                                                    <th style="border: 1px solid; padding: 0.5rem 0.3rem; vertical-align: top;" colspan="2">Training Method</th>
+                                                                                    <th style="border: 1px solid; border-right: 0; padding: 0.5rem 0.3rem; vertical-align: top;" colspan="1">Comments</th>
+                                                                                </tr>
+                                                                            </thead>
+                                                                            <tbody>
+                                                                                @foreach (var taskStep in positionTask.Task.Task_Steps.OrderBy(x => x.Number))
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td style="padding: 0.5rem 0.3rem; border-bottom: 1px solid;" colspan="1"></td>
+                                                                                        <td style="padding: 0.5rem 0.3rem; border-bottom: 1px solid; text-align: center;" colspan="1"><input type="checkbox" disabled /></td>
+                                                                                        <td style="padding: 0.5rem 0.3rem; border-bottom: 1px solid; white-space:nowrap;" colspan="3">@taskStep.Task.SubdutyArea.DutyArea.Letter @taskStep.Task.SubdutyArea.DutyArea.Number.@taskStep.Task.SubdutyArea.SubNumber.@taskStep.Task.Number.@taskStep.Number</td>
+                                                                                        <td class="fix-image" style="padding: 0.5rem 0.3rem; border-bottom: 1px solid;" colspan="4">
+                                                                                            @if (taskStep.Description.Contains("<img")) { stepImageTag = true; }
+                                                                                            @(new RawString(taskStep.Description))
+                                                                                        </td>
+                                                                                        <td style="padding: 0.5rem 0.3rem; border-bottom: 1px solid; white-space:nowrap;" colspan="2">
+                                                                                            <div style="display:-webkit-box;display:flex;align-items:center;gap:10px"><input type="checkbox" disabled /> <span>Perform</span></div>
+                                                                                            <div style="display:-webkit-box;display:flex;align-items:center;gap:10px"><input type="checkbox" disabled /> <span>Simulate</span></div>
+                                                                                            <div style="display:-webkit-box;display:flex;align-items:center;gap:10px"><input type="checkbox" disabled /> <span>Discuss</span></div>
+                                                                                        </td>
+                                                                                        <td style="padding: 0.5rem 0.3rem; border-bottom: 1px solid;" colspan="1"></td>
+                                                                                    </tr>
+                                                                                }
+                                                                            </tbody>
+                                                                        </table>
+                                                                    </td>
+                                                                </tr>
+                                                            }
+
+                                                            @{
+                                                                
+                                                                bool showOnlyQuestion = Model.DisplayColumns.Where(r => r == "Show Task Questions Only").Count() > 0;
+                                                                bool showQuestionAnswer = Model.DisplayColumns.Where(r => r == "Show Task Questions and Answers").Count() > 0;
+                                                            }
+                                                            @if (showOnlyQuestion || showQuestionAnswer)
+                                                            {
+                                                                <tr>
+                                                                    <td style="border: none;" colspan="12">
+                                                                        <table class="table" style="margin:0; width:100%">
+                                                                            <tr>
+                                                                                <td style="border: none; border-bottom: 2px solid #000; padding: 0.75rem 0;" colspan="12">
+                                                                                    <b>
+                                                                                        @((showQuestionAnswer) ? "Questions & Answers" : "Questions")
+                                                                                    </b>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <td style="border: none !important; padding: 0; padding-bottom: 20px" colspan="12">
+                                                                                    <table style="width: 100%; border-collapse: collapse;">
+                                                                                        @{
+                                                                                            int counter = 1;
+                                                                                        }
+                                                                                        @foreach (var taskQuestions in positionTask.Task.Task_Questions)
+                                                                                        {
+                                                                                            <tr>
+                                                                                                <td style="width: 7%; padding: 0.5rem 0.3rem;border: none;">
+                                                                                                    @counter
+                                                                                                </td>
+                                                                                                <td style="width: 93%; padding: 0.5rem 0.3rem;border: none;" class="questionAnswer fix-image">
+                                                                                                    @if (taskQuestions.Question.Contains("<img")) { questionImageTag = true; }
+                                                                                                    @(new RawString(taskQuestions.Question))
+                                                                                                </td>
+                                                                                            </tr>
+                                                                                            @if (showQuestionAnswer)
+                                                                                            {
+                                                                                                <tr style="border-bottom: 2px solid #000;">
+                                                                                                    <td style="width: 7%; padding: 0.5rem 0.3rem;border: none;">
+                                                                                                        Answer:
+                                                                                                    </td>
+                                                                                                    <td style="width: 93%; padding: 0.5rem 0.3rem;border: none;" class="questionAnswer fix-image">
+                                                                                                        @if (taskQuestions.Answer.Contains("<img")) { answerImageTag = true; }
+                                                                                                        @(new RawString(taskQuestions.Answer))
+                                                                                                    </td>
+                                                                                                </tr>
+                                                                                            }
+                                                                                            @{
+                                                                                                counter++;
+                                                                                            }
+                                                                                        }
+                                                                                    </table>
+                                                                                </td>
+                                                                            </tr>
+                                                                        </table>
+                                                                        
+                                                                    </td>
+                                                                </tr>
+                                                            }
+
+                                                            <tr style="border: none !important;">
+                                                                <td style="border: none !important;padding:15px 0" colspan="12">
+                                                                    <div ></div>
+                                                                    <table style="width: 100%; border-collapse: collapse;" class="@((stepImageTag || questionImageTag || answerImageTag) ? "table-page-break" : "")">
+                                                                        <thead>
+                                                                            <tr style="border: none !important;">
+                                                                                <td colspan="12" style="border: none !important;text-align: left; padding-bottom: 10px;">
+                                                                                    <b>Training Log for Task:</b> <span style="border-bottom: 2px solid #000; width: 100px; display: inline-block;">&nbsp;</span>
+                                                                                </td>
+                                                                            </tr>
+                                                                            <tr>
+                                                                                <th style="text-align: left; border: none !important; padding-bottom: 5px;width:20%">Training Date</th>
+                                                                                <th style="text-align: left; border: none !important; padding-bottom: 5px;width:30%">Signature of OJT Trainer</th>
+                                                                                <th style="text-align: left; border: none !important; padding-bottom: 5px;width:50%">Comments/Notes</th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody>
+                                                                            @for (int i = 0; i < 20; i++)
+                                                                            {
+                                                                                <tr>
+                                                                                    <td style="padding:10px;border: none !important;width:20%"><p style="border-bottom: 2px solid #000; width: 100%;">&nbsp;</p></td>
+                                                                                    <td style="padding:10px;border: none !important;width:30%"><p style="border-bottom: 2px solid #000; width: 100%;">&nbsp;</p></td>
+                                                                                    <td style="padding:10px;border: none !important;width:50%"><p style="border-bottom: 2px solid #000; width: 100%;">&nbsp;</p></td>
+                                                                                </tr>
+                                                                            }
+                                                                        </tbody>
+                                                                    </table>
+                                                                </td>
+                                                            </tr>
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                @if (positionTask?.Task != validPositionTasks.LastOrDefault()?.Task)
+                                                {
+                                                    <div style="page-break-after:always"></div>
+                                                    <div class="@(k % 2 == 0 ? "strip-dark" : "")"></div>
+                                                }
+                                                @{
+                                                    k++;
+                                                }
+                                            }
+                                        }
+                                    </td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+    @{
+        int taskCount = Model.Employees.Where(emp => emp.EmployeePositions != null).SelectMany(emp => emp.EmployeePositions).Where(pos => pos.Position != null).SelectMany(pos => pos.Position.Position_Tasks).Where(task => task != null && task.Task != null).Count();
+    }
+
+    @for (int i = 1; i <= taskCount; i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

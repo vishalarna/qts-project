@@ -1,0 +1,240 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    .fix-comment *{
+        margin:0;
+        padding:0;
+    }
+
+    .fix-comment img {
+        width: 400px !important;
+        height: auto !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+    }
+
+    .fix-comment ul, .fix-comment ol {
+        margin: 0 !important;
+        padding: 0 0 0 20px !important;
+        list-style-position: inside !important;
+    }
+
+    .fix-comment li {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1rem;
+    }
+
+    .fix-comment p {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.5 !important;
+    }
+
+    .fix-comment strong {
+        font-weight: bold !important;
+    }
+
+    .fix-comment u {
+        text-decoration: underline !important;
+    }
+
+    .fix-comment table {
+        border-collapse: collapse;
+    }
+
+    .fix-comment table td,
+    .fix-comment table th {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table landscape-report" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="padding-bottom: 0px; border-bottom: 2px solid #020378; margin: 0 0 10px 0;">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; justify-content: space-between; border-bottom: 4px solid #020378; margin: 0 0 3px 0;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378; "><b>@Model.Title </b></div>
+                    <div><b>Printed Date:</b> <span style="padding-left: 3px;">@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</span></div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @{
+        var filteredEmployees = Model.EmployeeIDs != null && Model.EmployeeIDs.Any() ? Model.DIFSurvey.SelectMany(x => x.Employees).Where(x => Model.EmployeeIDs.Contains(x.EmployeeId)).ToList() : Model.DIFSurvey.SelectMany(x => x.Employees).ToList();
+    }
+
+    @if (filteredEmployees.Any())
+    {
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+                @{
+                    int j = 1;
+                }
+                @foreach (var difSurvey in Model.DIFSurvey)
+                {
+                    @foreach (var employee in difSurvey.Employees.Where(x => filteredEmployees.Contains(x)))
+                    {
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        <div style="padding:5px;" id="@("page" + j)" class="@((j) % 2 == 0 ? "strip" : "")">
+                            <table style="width:100% ;border-collapse:separate;border-spacing:0">
+                                <tbody>
+                                    <tr>
+                                        <td colspan="1" style="border: none !important; width: 16%; padding: 0px;">
+                                            <p style="display: block; font-weight: 600; padding: 0 40px 0 0; font-size: 1.2rem; margin-bottom: 1.2rem">Survey Title:</p>
+                                        </td>
+                                        <td colspan="4" style="border: none !important; padding: 0px; padding-left: 10px;">
+                                            <p style="display: block; padding: 0 15px 0 0; font-weight: 600; font-size: 1.2rem; margin-bottom: 1.2rem">@difSurvey.Title</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="1" style="border: none !important; width: 16%; padding: 0px;">
+                                            <p style=" border: 1px solid orange; border-radius: 8px; font-weight: 600; font-size: 1.2rem; margin-bottom: 1.2rem">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</p>
+                                        </td>
+                                        <td colspan="4" style="border: none !important; padding: 0px; padding-left: 10px;">
+                                            <p style=" border: 1px solid orange; border-radius: 8px; font-weight: 600; font-size: 1.2rem; margin-bottom: 1.2rem">@difSurvey.Position.PositionTitle</p>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="1" style="border: none !important; width: 16%; padding: 0px;">
+                                            <p style="display: block; min-width: 140px; font-weight: 600; padding: 0 40px 0 0; font-size: 1.2rem; margin-bottom: 1.2rem">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</p>
+                                        </td>
+                                        <td colspan="4" style="border: none !important; padding: 0px; padding-left: 10px;">
+                                            <p style="display: block; padding: 0 15px 0 0; font-weight: 600; font-size: 1.2rem; margin-bottom: 1.2rem">@employee.Employee.Person.LastName, @employee.Employee.Person.FirstName</p>
+                                        </td>
+                                    </tr>
+
+                                    <tr style=" border-bottom: 2px solid #000; border-collapse: collapse" class="open-border-table-row">
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; padding-left: 0; width: 10%;padding: 5px" " align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))#</th>
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; width: 40%;padding: 5px" " align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Statement</th>
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; width: 5%; padding: 5px" align="left">Difficulty</th>
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; width: 5%; padding: 5px" align="left">Importance</th>
+                                        <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; width: 5%;padding:5px" align="left">Frequency</th>
+                                        @if (Model.DisplayColumns.Contains("Task Comments"))
+                                        {
+                                            <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; vertical-align: top; border-right: 2px solid #000; width: 10%; padding: 5px" align="left">Comments</th>
+                                        }
+                                    </tr>
+
+                                    @foreach (var difSurveyTask in difSurvey.Tasks)
+                                    {
+                                        <tr>
+                                            @{
+                                                var empResponse = employee.Responses.FirstOrDefault(X => X.DIFSurvey_TaskId == difSurveyTask.Id);
+                                            }
+                                            <td style="text-align: left; border-left: 0; border-top: 2px solid #000; vertical-align: top; border-bottom: 0; border-right: 2px solid #000; padding: 5px ">@difSurveyTask.Task.FullNumber</td>
+                                            <td style="text-align: left; border-left: 0; border-top: 2px solid #000; border-bottom: 0; vertical-align: top; border-right: 2px solid #000; padding: 5px">@difSurveyTask.Task.Description</td>
+                                            <td style="text-align: left; border-left: 0; border-top: 2px solid #000; border-bottom: 0; vertical-align: top; text-align: center; border-right: 2px solid #000; padding: 5px ">@(empResponse != null ? (empResponse.Difficulty.HasValue ? empResponse.Difficulty.ToString() : "0") : "0")</td>
+                                            <td style="text-align: left; border-left: 0; border-top: 2px solid #000; border-bottom: 0; vertical-align: top; text-align: center; border-right: 2px solid #000; padding: 5px">@(empResponse != null ? (empResponse.Importance.HasValue ? empResponse.Importance.ToString() : "0") : "0")</td>
+                                            <td style="text-align: left; border-left: 0; border-top: 2px solid #000; border-bottom: 0; vertical-align: top; text-align: center; border-right: 2px solid #000; padding: 5px">@(empResponse != null ? (empResponse.Frequency.HasValue ? empResponse.Frequency.ToString() : "0") : "0")</td>
+                                            @if (Model.DisplayColumns.Contains("Task Comments"))
+                                            {
+                                                <td style="text-align: left; border-left: 0; border-top: 2px solid #000; border-bottom: 0; vertical-align: top; border-right: 0; padding: 5px ">@(empResponse != null ? empResponse.Comments : "")</td>
+                                            }
+                                        </tr>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Additional Comments"))
+                                    {
+                                        <tr>
+                                            <td colspan="12" style="text-align: left; border-left: 0; border-top: 0; border-bottom: 0; border-right: 0;margin-top:5px;padding-top:20px" class="fix-comment">
+                                                <strong><u>Additional Comments:</u></strong> @(new RawString(employee.Comments))
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                                <tr></tr>
+                            </table>
+                        </div>
+                        @if (!employee.Equals(filteredEmployees.Last()))
+                        {
+                            <div style="page-break-after:always"></div>
+                            <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        }
+                        @{
+                            j++;
+                        }
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border: none">
+            <td style="border: none; text-align: center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap;">
+    @for (int i = 1; i <= filteredEmployees.Count(); i++)
+    {
+        <a href=@("#page" + i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

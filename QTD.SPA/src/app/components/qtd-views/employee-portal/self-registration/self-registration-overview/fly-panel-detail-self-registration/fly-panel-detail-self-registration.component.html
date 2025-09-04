@@ -1,0 +1,174 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+  <app-button
+    type="button"
+    ButtonType="icon"
+    icon="keyboard_arrow_left"
+    (clicked)="goBack()"
+  >
+  </app-button>
+  <div class="flex flex-row items-center space-x-4 w-full justify-between">
+    <h1>Course Detail</h1>
+    <div class="justify-between">
+      <app-button
+        type="button"
+        color="blueBorder"
+        text="Close"
+        (clicked)="goBack()"
+      >
+      </app-button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<div class="mt-5 flex justify-center" style="align-items: center">
+  <app-data-loader *ngIf="loader"></app-data-loader>
+  <div style="width: 80%" *ngIf="!loader">
+    <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm">
+      <div class="d-flex align-items-center pb-3">
+        <button (click)="toggleDetails()" class="btn btn-link p-0" aria-label="Toggle details"><app-icon [icon]="!isHourDetailCollapsed ? 'expand_more' :'expand_less'">
+        </app-icon></button>
+        <span class="hour-heading">
+          Total Credit Hours & Other Details
+        </span>
+      </div>
+      <div [@slideToggle]="isHourDetailCollapsed ? 'open' : 'closed'" *ngIf="isHourDetailCollapsed">
+        <div class="d-flex">
+          <div class="detail-heading">Total Training Hours :</div>
+          <app-textbox [disabled] = "true" [defaultValue] = "courseDetail?.totalTrainingHours" class="detail-input"></app-textbox>
+        </div>
+        <div *ngIf = "courseDetail?.ilaCertificationDetailsVM != null">
+        <div class="font-weight-bold text-lg pt-2 pb-2">NERC :</div>
+        <div class="pl-3">
+          <div class="d-flex">
+            <div class="detail-heading">Operating Topics / CEHs:</div>
+            <app-textbox [disabled] = "true" [defaultValue] = "courseDetail?.ilaCertificationDetailsVM?.nercCEHHours" class="detail-input"></app-textbox>
+          </div>
+          <div class="d-flex">
+            <div class="detail-heading">Standard:</div>
+            <app-textbox [disabled] = "true" [defaultValue] = "courseDetail?.ilaCertificationDetailsVM?.standardReqHour" class="detail-input"></app-textbox>
+          </div>
+          <div class="d-flex">
+            <div class="detail-heading">Simulation:</div>
+            <app-textbox [disabled] = "true" [defaultValue] = "courseDetail?.ilaCertificationDetailsVM?.simulationReqHour" class="detail-input"></app-textbox>
+          </div>
+          <div class="d-flex">
+            <div class="detail-heading">Count Towards Emergency Operations Training:</div>
+            <app-textbox [disabled] = "true" [defaultValue] = "courseDetail?.ilaCertificationDetailsVM?.isEmergencyOpHours ? 'Yes' :'No'" class="detail-input"></app-textbox>
+          </div>
+          <div class="d-flex">
+            <div class="detail-heading">Partial Credit Allowed:</div>
+            <app-textbox [disabled] = "true" [defaultValue] = "courseDetail?.ilaCertificationDetailsVM?.isPartialCreditHours ? 'Yes' :'No'" class="detail-input"></app-textbox>
+          </div>
+        </div>
+      </div>
+        <div *ngFor = "let cert of courseDetail.certification_SubRequirementVM">
+        <div class="font-weight-bold text-lg pt-2 pb-2">{{cert.name}} :</div>
+          <div class="pl-3">
+            <div class="d-flex">
+              <div class="detail-heading">Credit Hours:</div>
+              <app-textbox [disabled] = "true" [defaultValue] = "cert.cehHours" class="detail-input"></app-textbox>
+            </div>
+            <div *ngIf = "cert.certificationSubRequirements.length > 0">
+                <div class="font-weight-bold pt-2 pb-2">SubRequirements</div>
+                <div *ngFor = "let sr of cert.certificationSubRequirements">
+                  <div class="d-flex">
+                    <div class="detail-heading">{{sr.reqName}}:</div>
+                    <app-textbox [disabled] = "true" [defaultValue] = "sr.reqHour" class="detail-input"></app-textbox>
+                  </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <span class="font-bold text-lg pt-4" style="width: 50%">Learning Objectives</span>
+      <table mat-table [dataSource]="objectives">
+        <!--- Note that these columns can be defined in any order.
+                      The actual rendered columns are set as a property on the row definition" -->
+        <!-- Position Column -->
+        <ng-container matColumnDef="type">
+          <th mat-header-cell *matHeaderCellDef>Type</th>
+
+          <td mat-cell *matCellDef="let element">
+            <div *ngIf="element.type === 'EO'; else templateName">EO</div>
+            <ng-template #templateName>
+              <div>{{"Task" | labelReplacement | async }}</div>
+            </ng-template>
+          </td>
+        </ng-container>
+        <!-- Name Column -->
+        <ng-container matColumnDef="number">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let element; let i = index"
+            style="width: 10%">{{ element.fullNumber}}</td>
+        </ng-container>
+        <!-- Weight Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let element" style="width: 65%">
+            <div *ngIf="element.task === undefined; else templateName">{{ element.description }}
+            </div>
+            <ng-template #templateName>
+              <div>{{ element.description }}</div>
+            </ng-template>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+      </table>
+
+      <span class="font-bold text-lg" style="width: 50%">{{"Procedure" | labelReplacement | async}}s</span>
+      <table mat-table [dataSource]="procedures">
+        <!--- Note that these columns can be defined in any order.
+                        The actual rendered columns are set as a property on the row definition" -->
+
+        <!-- Name Column -->
+        <ng-container matColumnDef="number">
+          <th mat-header-cell *matHeaderCellDef>#</th>
+          <td mat-cell *matCellDef="let element; let i = index">{{ element.number }}</td>
+        </ng-container>
+
+        <!-- Weight Column -->
+        <ng-container matColumnDef="description">
+          <th mat-header-cell *matHeaderCellDef>Description</th>
+          <td mat-cell *matCellDef="let element"> {{ element.title }}
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedProcedureColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedProcedureColumns"></tr>
+      </table>
+
+      <span class="font-bold text-lg mt-2" style="width: 50%">Class Details</span>
+      <div class="float-container d-flex">
+        <div class="float-child">
+           <h2 class="green">{{("Instructor" | labelReplacement)| async}}</h2>
+            <p class="green">{{ courseDetail?.instructorName }}</p>
+        </div>
+        <div class="float-child">
+          <h2 class="green">{{("Location" | labelReplacement)| async}}</h2>
+          <p class="green">{{ courseDetail?.locationName }}</p>
+        </div>
+        <div class="float-child">
+          <h2 class="green">Start Date</h2>
+          <p class="green">{{ courseDetail?.startDate | dateFormat | async }}</p>
+        </div>
+        <div class="float-child">
+          <h2 class="green">End Date</h2>
+          <p class="green">{{ courseDetail?.endDate  | dateFormat | async }}</p>
+        </div>
+      </div>
+
+      <span class="font-bold text-lg" style="width: 50%">Course {{ "Instruction" | labelReplacement | async }}s
+      </span>
+      <div [innerHTML]="courseDetail?.specialInstructions"></div>
+
+      <span class="font-bold text-lg" style="width: 40%">Webinar Link</span>
+
+      <mat-form-field appearance="fill" style="width: 40%">
+        <input [disabled]="true" matInput placeholder="{{ courseDetail?.webinarLink }}"/>
+        <mat-icon matSuffix (click)="copyMessage(courseDetail.webinarLink)"
+          >file_copy</mat-icon>
+      </mat-form-field>
+    </section>
+  </div>
+</div>

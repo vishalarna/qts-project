@@ -1,0 +1,33 @@
+<ng-container>
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <div>
+        <p class="text-xl font-bold text-gray-900 mb-0"> {{ flyPanelHeading }} </p>
+        <p>This is a list of Training Programs without any associated Training Program Review created for them.</p>
+    </div>
+    <div>
+        <app-button (click)="xClick()" ButtonType="icon" icon="close"></app-button>
+    </div>
+  </div>
+  <div class="flex-row bg-white-one rounded-b-md m-2 px-4">
+    <mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="positionName">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Position" | labelReplacement)| async}} </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.positionName}}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="trainingProgramType">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>Program Type</mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.trainingProgramType}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="programTitle">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          Training Program
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{row.programTitle}} - {{row.version}}</mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
+    <mat-paginator [pageSizeOptions]="[10, 20, 40]" showFirstLastButtons aria-label="Select page of training programs">
+    </mat-paginator>
+  </div>
+</ng-container>

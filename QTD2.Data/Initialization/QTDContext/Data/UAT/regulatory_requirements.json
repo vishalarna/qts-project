@@ -1,0 +1,44 @@
+[
+ {
+  "Id": 1,
+  "IssuingAuthorityId": 1,
+  "Number": "RR-001",
+  "Title": "Regulatory Requirement 001",
+  "Active": true
+ },
+ {
+  "Id": 2,
+  "IssuingAuthorityId": 1,
+  "Number": "RR-002",
+  "Title": "Regulatory Requirement 002",
+  "Active": true
+ },
+ {
+  "Id": 3,
+  "IssuingAuthorityId": 1,
+  "Number": "RR-003",
+  "Title": "Regulatory Requirement 003",
+  "Active": true
+ },
+ {
+  "Id": 4,
+  "IssuingAuthorityId": 2,
+  "Number": "R_001",
+  "Title": "Regulation 001",
+  "Active": true
+ },
+ {
+  "Id": 5,
+  "IssuingAuthorityId": 2,
+  "Number": "R_001",
+  "Title": "Regulation 002",
+  "Active": true
+ },
+ {
+  "Id": 6,
+  "IssuingAuthorityId": 2,
+  "Number": "R_002",
+  "Title": "Regulation 003",
+  "Active": true
+ }
+]

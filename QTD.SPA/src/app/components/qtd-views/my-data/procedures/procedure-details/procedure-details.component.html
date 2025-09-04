@@ -1,0 +1,90 @@
+<div class="ml-4 mr-4 ">
+  <div class="flex flex-row flex-wrap mt-3 justify-between">
+    <div class="flex flex-col pl-4">
+      <p class="text-xs text-gray-four">Issuing Authority: {{issuAuthTitle}}</p>
+      <p class="font-bold text-base">{{procTitle}}</p>
+    </div>
+    <div class="flex flex-row  items-center text-gray-four btn-group">
+      <div class="cursor-pointer bg-gray-200 p-2 rounded">
+        <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+          <span *ngIf="isActive" class="font-bold">
+            <span style="color:green" class="mr-1">●</span>
+            Active
+          </span>
+          <span *ngIf="!isActive" class="font-bold">
+            <span style="color:red" class="mr-1">●</span>
+            Inactive
+          </span>
+
+        </label>
+        <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+        <mat-menu #menu="matMenu">
+          <button style="background-color: rgba(39, 143, 109, 0.2);color:rgba(0, 13, 9, 1);" mat-menu-item *ngIf="!isActive" (click)="changeStatus(statusModal,true)">
+            <span style="color:green" class="mr-1 text-lg">●</span>Make
+            Active</button>
+
+          <label mat-menu-item [disabled]="!catInactive || procedureInactiveCheck" *ngIf="isActive" (click)="changeStatus(statusModal,false)">
+            <span style="color:red" class="mr-1 text-lg">●</span> Make
+            Inactive</label>
+        </mat-menu>
+      </div>
+      <div class="ml-4 cursor-pointer ">
+        <app-icon icon="more_horiz" [matMenuTriggerFor]="options"></app-icon>
+        <mat-menu #options="matMenu">
+          <label [disabled]="!isActive || !catInactive" (click)="editProcedure(addNewProcedure)" mat-menu-item> Edit</label>
+          <label [disabled]="!isActive || !catInactive" (click)="copyProcedure(addNewProcedure)" mat-menu-item> Copy</label>
+          <label [disabled]="procedureDeleteCheck || !isActive || !catInactive" (click)="deleteProcedure(deleteModal)" mat-menu-item> Delete</label>
+        </mat-menu>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="flex flex-row flex-wrap bg-white shadow-xs border-0.5 rounded px-2 pt-2 ml-4">
+    <p class="text-xs text-gray-four mr-4 ">Revision Number: {{revisionNumber}}</p>
+    <p class="text-xs text-gray-four mr-4 ">Effective Date: {{effectiveDate}}</p>
+    <a [href]="hyperlink" class="text-xs text-gray-four mr-4 ">Hyperlink: <app-link class="text-qtd" [text]="hyperlink" [routerLink]="hyperlink">
+    </app-link></a>
+    <p class="text-xs text-gray-four mr-4 ">PDF: {{procedureFileUpload}}</p>
+   <!--  <p class="text-xs text-gray-four mr-4 ">Hyperlink: <app-link class="text-qtd" [text]="hyperlink" [routerLink]="hyperlink">
+      </app-link>
+    </p> -->
+  </div>
+
+  <mat-tab-group class="mt-5 pl-4">
+    <mat-tab label="{{(('Task' | labelReplacement)| async) | uppercase}}s">
+      <app-procedure-task [procTitle]="procTitle" [id]="id" (procedureDeleteCheck)="procedureDeleteCheck = $event" [isActive]="!catInactive || !isActive"></app-procedure-task>
+    </mat-tab>
+    <mat-tab label="{{(('Enabling Objective' | labelReplacement)| async) | uppercase}}">
+      <app-procedure-enabling-objective (procedureDeleteCheck)="procedureDeleteCheck = $event" [procTitle]="procTitle" [isActive]="!catInactive || !isActive"></app-procedure-enabling-objective>
+    </mat-tab>
+    <mat-tab label="{{(('Safety Hazard' | labelReplacement)| async) | uppercase}}s">
+      <app-procedure-safety-hazard (procedureDeleteCheck)="procedureDeleteCheck = $event" [isActive]="!catInactive || !isActive" [procTitle]="procTitle"></app-procedure-safety-hazard>
+    </mat-tab>
+    <mat-tab label="{{(('ILA' | labelReplacement)| async) | uppercase}}s">
+      <app-procedure-ila (procedureDeleteCheck)="procedureDeleteCheck = $event" [procTitle]="procTitle" [isActive]="!catInactive || !isActive"></app-procedure-ila>
+    </mat-tab>
+    <mat-tab label="{{(('Regulatory Requirement' | labelReplacement)| async) | uppercase}}s">
+      <app-procedure-reg-requirement (procedureDeleteCheck)="procedureDeleteCheck = $event" [procTitle]="procTitle" [isActive]="!catInactive || !isActive"></app-procedure-reg-requirement>
+    </mat-tab>
+  </mat-tab-group>
+</div>
+
+<ng-template #addNewProcedure>
+  <app-fly-panel-add-procedure [oldProcedure]="currentProcedure" [isCopy]="isCopy" (closed)="flyPanelService.close()">
+  </app-fly-panel-add-procedure>
+</ng-template>
+
+<ng-template #deleteModal>
+  <app-qtd-dialogue [header]="modalHeader" [description]="modalDescription" cancelText="No" confirmText="Yes"
+  [showEffectiveDateAndReason]="true"
+    (canceled)="dialog.closeAll()" (confirmed)="getData($event,'delete')">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #statusModal>
+  <app-qtd-dialogue [header]="modalHeader" [description]="modalDescription" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="changeActiveStatus($event,!isActive)">
+  </app-qtd-dialogue>
+</ng-template>

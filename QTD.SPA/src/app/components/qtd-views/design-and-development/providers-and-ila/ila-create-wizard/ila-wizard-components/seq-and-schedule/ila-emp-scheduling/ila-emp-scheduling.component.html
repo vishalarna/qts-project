@@ -1,0 +1,29 @@
+<ng-container>
+  <div class="flex flex-col">
+    <p class="text-base font-bold">
+      CBT Release Settings
+    </p>
+    <span style="font-size: 16px;"
+                                    >If you are ready to schedule classes and enroll student for this {{("ILA" | labelReplacement)| async}},
+                                     click the Open Schedules/Roster to open the Scheduling window.
+                                     <br>
+                                     <br>
+                                    The {{("ILA" | labelReplacement)| async}} will remain in Draft/Development mode until at least one
+                                     class has been scheduled. After one class has been scheduled,
+                                      and enrollment options selected, the {{("ILA" | labelReplacement)| async}} will change to a Published status.
+                                       At that time, all changes to this {{("ILA" | labelReplacement)| async}} will
+                                        be tracked as version updates.
+  </span>
+  <br>
+
+  <app-button
+  type="button"
+  size="md"
+  color="secondary"
+  text="Open Schedules/Roster"
+  style="width: 220px;"
+  (clicked)="redirectTOSC()"
+>
+</app-button >
+  </div>
+</ng-container>

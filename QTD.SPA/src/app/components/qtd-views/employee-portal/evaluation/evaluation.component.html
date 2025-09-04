@@ -1,0 +1,221 @@
+<div class="flex flex-col w-full">
+      <!-- <app-header [toggleMenuIcon]="false" breadcrumbs="Design and Development / Training Programs"></app-header> -->
+      <app-header
+        [toggleMenuIcon]="false"
+        [canGoBack]="false"
+        [breadcrumbs]="url"
+        [showSignOut]="true"
+      ></app-header>
+
+<div class="flex flex-col m-5">
+  <section>
+    <span class="font-bold text-lg">Evaluations</span>
+  </section>
+  <section class="w-full mt-4">
+    <mat-tab-group [selectedIndex]="selectedIndex" [dynamicHeight]="true">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Completed Evaluations</span>
+          <div class="icon" *ngIf="completedCount > 0">
+            <span class="icon__value">{{completedCount}}</span>
+          </div>
+        </ng-template>
+        <div class="flex flex-row items-center pt-4 pb-4 pl-3 border-b-0.8 bg-white border-gray-one">
+          <app-icon class="text-gray-four" icon="search"></app-icon>
+          <input (input)="filterCompleted($event)" class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"/>
+        </div>
+        <table #completedSort="matSort" matSort [dataSource]="completedSource" class="w-full" mat-table>
+          <ng-container matColumnDef="number">
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>Evaluation No.</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <span>{{row.number}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="title">
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>{{("ILA" | labelReplacement)| async}} # and Title</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <span>{{row.ilaTitle}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="instructor">
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>{{("Instructor" | labelReplacement)| async}}</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <span>{{row.instructorName}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="location">
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>{{("Location" | labelReplacement)| async}}s</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <span>{{row.locationName}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="classtime">
+            <th mat-sort-header style="width:15%;" mat-header-cell *matHeaderCellDef>Class Duration</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+
+              <span>{{ datePipe.transform(covertUtcToLocalTime(row.classStartDate),'yyyy-MM-dd hh:mm a') }} - {{ datePipe.transform(covertUtcToLocalTime(row.classEndDate),'yyyy-MM-dd hh:mm a') }}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="completionDate">
+            <th mat-sort-header style="width:10%;" mat-header-cell *matHeaderCellDef>Evaluation Completed Date</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <span>{{row.completionDate | date:'MM-dd-yyyy'}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-sort-header style="width:16%;" mat-header-cell *matHeaderCellDef>Status</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <div>
+                <div class="blueStatus">
+                  {{row.status}}
+                </div>
+              </div>
+            </td>
+          </ng-container>
+          <!-- <ng-container matColumnDef="action">
+            <th style="width:16%;" mat-header-cell *matHeaderCellDef></th>
+            <td mat-cell *matCellDef="let row">
+              <app-button
+                color="secondary"
+                text="Start Evaluation"
+                size="sm"
+              ></app-button>
+            </td>
+          </ng-container> -->
+          <tr mat-header-row *matHeaderRowDef="displayedColumnsCompleted"></tr>
+          <tr style="vertical-align:baseline;" mat-row *matRowDef="let row; columns: displayedColumnsCompleted"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td
+              class="mat-cell text-center"
+              [attr.colspan]="displayedColumns.length"
+            >
+              No Completed Evaluation Records found
+            </td>
+          </tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #completedPaging>
+
+        </mat-paginator>
+      </mat-tab>
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Pending Evaluations</span>
+          <div class="icon" *ngIf="pendingCount > 0">
+            <span class="icon__value">{{pendingCount}}</span>
+          </div>
+        </ng-template>
+        <div class="flex flex-row items-center pt-4 pb-4 pl-3 border-b-0.8 bg-white border-gray-one">
+          <app-icon class="text-gray-four" icon="search"></app-icon>
+          <input (input)="filterPending($event)" class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"/>
+        </div>
+        <table #pendingSort="matSort" matSort [dataSource]="pendingSource" class="w-full" mat-table>
+          <ng-container matColumnDef="number">
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>Evaluation No.</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <span>{{row.number}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="ilaTitle">
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>{{("ILA" | labelReplacement)| async}} # and Title</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <span>{{row.ilaTitle}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="instructorName">
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>{{("Instructor" | labelReplacement)| async}}</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <span>{{row.instructorName}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="locationName">
+            <th mat-sort-header mat-header-cell *matHeaderCellDef>{{("Location" | labelReplacement)| async}}s</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <span>{{row.locationName}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="classStartDate">
+            <th mat-sort-header style="width:15%;" mat-header-cell *matHeaderCellDef>Class Duration</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+             <span> {{datePipe.transform(covertUtcToLocalTime(row.classStartDate),'yyyy-MM-dd hh:mm a')}} - {{datePipe.transform(covertUtcToLocalTime(row.classEndDate),'yyyy-MM-dd hh:mm a')}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="dueDate">
+            <th mat-sort-header style="width:10%;" mat-header-cell *matHeaderCellDef>Due Date</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <span>{{row.dueDate | date:'MM/dd/yyyy'}}</span>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <th mat-sort-header style="width:16%;" mat-header-cell *matHeaderCellDef>Status</th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <div [ngSwitch]="row.status">
+                  <div class="greenStatus" *ngSwitchCase="'In Progress'">
+                    {{row.status}}
+                  </div>
+                  <div class="yellowStatus" *ngSwitchCase="'Pending'">
+                    {{row.status}}
+                  </div>
+              </div>
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <th style="width:18%;" mat-header-cell *matHeaderCellDef></th>
+            <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+              <app-button
+                *ngIf="row.isAllowed"
+                color="blueBorder"
+                text="Start Evaluation"
+                size="sm"
+                (clicked)="selectedRow=row;openDialog(disclaimer,row.classSchedule_Evaluation_RosterId);"
+              ></app-button>
+              <app-button
+                *ngIf="!row.isAllowed"
+                color="blueBorder"
+                text="Resume Evaluation"
+                size="sm"
+                (clicked)="selectedRow=row;openDialog(disclaimer,row.classSchedule_Evaluation_RosterId);"
+              ></app-button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr style="vertical-align:baseline;" mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+          <tr class="mat-row" *matNoDataRow>
+            <td
+              class="mat-cell text-center"
+              [attr.colspan]="displayedColumns.length"
+            >
+              No Pending Evaluation Records found
+            </td>
+          </tr>
+        </table>
+        <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #pendingPaging>
+
+          </mat-paginator>
+        </mat-tab>
+      </mat-tab-group>
+      <!-- <div class="p-3 bg-white border-gray-100" style="border-top-right-radius: 2.5rem;border-top-left-radius: 1rem;border:1px solid lightgray">
+        <span class="font-bold text-base">Completed Evaluations</span>
+      </div>
+      <div class="pt-3 pb-3 pl-3 pr-5 bg-white" style="border-top-right-radius: 2.5rem;border-top-left-radius: 1rem;border:1px solid lightgray">
+        <span>Pending Evaluations</span>
+      </div> -->
+      <!-- <div class="tab-container">
+        <ul class="tabs">
+          <div class="border_div flex" style="padding-right:0.1rem;" [ngClass]="selected === 'C' ? 'mat-elevation-z3':''">
+            <a (click)="selected='C'" src="tabf0-1" class="p-3 w-full" [ngClass]="selected === 'C' ? 'active mat-elevation-z3':''">Completed Evaluations</a>
+          </div>
+          <div class="border_div flex" style="padding-right:0.1rem;" [ngClass]="selected === 'P' ? 'mat-elevation-z3':''">
+            <a (click)="selected='P'" src="tabf0-2" class="p-3 w-full" [ngClass]="selected === 'P' ? 'active mat-elevation-z3':''">Pending Evaluations</a>
+          </div>
+
+        </ul>
+      </div> -->
+    </section>
+  </div>
+</div>
+
+<ng-template #disclaimer>
+  <app-disclaimer-dialog [selectedRowData]="selectedRow" (closed)="readyData();dialog.closeAll();">
+
+  </app-disclaimer-dialog>
+</ng-template>

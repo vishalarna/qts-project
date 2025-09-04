@@ -1,0 +1,92 @@
+<div class="flex flex-col pt-5">
+  <table matSort mat-table class="w-full" [dataSource]="dataSource">
+    <ng-container matColumnDef="ila">
+      <th style="width: 25%" mat-header-cell *matHeaderCellDef>{{("ILA" | labelReplacement)| async}}</th>
+      <td class="py-3" mat-cell *matCellDef="let row">
+        {{ ilaNumber + " " + ilaName }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="class">
+      <th style="width: 15%" mat-sort-header mat-header-cell *matHeaderCellDef>
+        Training Class
+      </th>
+      <td class="py-3" mat-cell *matCellDef="let row">
+        {{ location }}
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="eval">
+      <th mat-sort-header mat-header-cell *matHeaderCellDef>Evaluation</th>
+      <td class="py-3" mat-cell *matCellDef="let row">
+        <div class="flex flex-row">{{ row.title }}</div>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="completed">
+      <th mat-sort-header mat-header-cell *matHeaderCellDef>Completed</th>
+      <td class="py-3" mat-cell *matCellDef="let row">
+        {{ row.completed ? "Yes" : "No" }}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="action">
+      <th mat-sort-header mat-header-cell *matHeaderCellDef></th>
+      <td class="py-3" mat-cell *matCellDef="let row">
+        <div
+          (click)="openEvalDialog(evalForm,row)"
+
+          style="border: 0.6px solid #5c9b31; text-align: center"
+          class="rounded w-full cursor-pointer flex justify-center"
+        >
+          <span class="py-2" style="color: #5c9b31">Enter Evaluation Data</span>
+        </div>
+        <!-- <div
+          *ngIf="row.completed"
+          style="
+            border: 0.6px solid #7a807e1a;
+            background-color: #7a807e1a;
+            text-align: center;
+            cursor: not-allowed;
+          "
+          class="rounded w-full flex justify-center"
+        >
+          <span style="color: #7a807e66" class="py-2"
+            >Enter Evaluation Data</span
+          >
+        </div> -->
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+    <tr
+      class="py-4"
+      style="vertical-align: baseline"
+      mat-row
+      *matRowDef="let row; columns: displayedColumns"
+    ></tr>
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">
+        No data Found.
+      </td>
+    </tr>
+  </table>
+  <mat-paginator
+    [pageSizeOptions]="[10, 15, 20]"
+    showFirstLastButtons
+    aria-label="Select page of Student Evaluation"
+  >
+  </mat-paginator>
+</div>
+
+<ng-template #evalForm>
+  <app-fill-eval-form-dialog
+    [selectedData]="selectedData"
+    (canceled)="dialog.closeAll()"
+    (selected)="dialog.closeAll();evalSelected($event,confirm);"
+  ></app-fill-eval-form-dialog>
+</ng-template>
+
+<ng-template #confirm>
+  <app-qtd-dialogue [header]="'Overrite Evaluation Responses'" [cancelText]="'Cancel'" [confirmText]="'Yes'"
+  [description]="description" (confirmed)="redirectToEval()" (canceled)="dialog.closeAll();">
+
+  </app-qtd-dialogue>
+</ng-template>

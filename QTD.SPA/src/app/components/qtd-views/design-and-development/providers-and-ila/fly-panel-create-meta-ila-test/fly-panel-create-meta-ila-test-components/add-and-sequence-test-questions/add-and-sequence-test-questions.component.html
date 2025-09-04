@@ -1,0 +1,101 @@
+<div class="strip-container">
+  <div class="strip cursor-pointer" (click)="openAddTestItemFlyPanel.emit(true)">
+    <div class="strip-label"> Create New Test Items </div>
+      <app-button type="button" ButtonType="icon" icon="keyboard_arrow_right" class="meta-test-forward-button" ></app-button>
+  </div>
+  <div class="strip cursor-pointer" (click)="openImportTestItemFlyPanel.emit(true)">
+    <div class="strip-label"> Import from Question Bank </div>
+      <app-button type="button"  ButtonType="icon" icon="keyboard_arrow_right" class="meta-test-forward-button" ></app-button>
+  </div>
+</div>
+<div *ngIf="addedQuestionsData.data.length>0">
+  <div class="flex flex-col py-12">
+    <ng-container>
+            <div class="questions-table-header">
+                <div class="flex flex-row justify-between">
+                    <p class="font-bold text-lg m-0 p-0">
+                        Test Questions
+                    </p>
+                </div>
+                <div class="question-count">
+                    {{addedQuestionsData.data.length}} Question(s) Added 
+                </div>
+            </div>
+            <div class="question-table-caption">
+                    <span>Select the option below or drag the handles below to arrange the sequence of questions</span>
+            </div>
+        <form >
+          <div class="flex flex-row check-box-container">
+              <p>
+                  <mat-checkbox [checked]="testItemSequence" (change)="testItemSequence = $event.checked">Randomize the test Question Sequence</mat-checkbox>
+                  <br/>
+                  <mat-checkbox [checked]="randomDistractor" (change)="randomDistractor = $event.checked">Randomize the test Question Distractor Sequence</mat-checkbox>
+              </p>
+          </div>
+        </form>
+        <div class="added-questions-list" >
+            <mat-table class="w-full " matSort [dataSource]="addedQuestionsData" cdkDropList
+                (cdkDropListDropped)="drop($event)"
+                cdkDropListData="addedQuestionsData"
+                [cdkDropListDisabled]="dragDisabled">
+
+                <ng-container matColumnDef="cb">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" >
+                        <app-icon [icon]="'drag_indicator'" class="text-gray-400 dragCursor" (mousedown)="dragDisabled = false;"></app-icon>
+                    </mat-cell>
+                </ng-container>
+
+
+                <ng-container matColumnDef="number">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        ID
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        {{row.number}}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="question" >
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Question Stem
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" style="width: 40%;word-wrap: break-word;" class="pt-3">
+                        <div class="ques-desc" [innerHTML]="row.description"></div>
+                    </mat-cell>
+
+                </ng-container>
+
+                <ng-container matColumnDef="type">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Type </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.testItemType.description}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="taxonomyLevel">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Taxonomy Level </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.taxonomyLevel.description}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="del">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>  </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <app-icon [icon]="'delete'" (click)="deleteTestItem.emit(row.id);"
+                         style="color: rgba(92, 155, 49, 1)" class="cursor-pointer"></app-icon>
+                    </mat-cell>
+                </ng-container>
+
+                <mat-row *matHeaderRowDef="displayColumns"></mat-row>
+                    <mat-row *matRowDef="let row; columns : displayColumns" cdkDrag
+                    [cdkDragData]="row"></mat-row>
+                    <tr class="mat-row flex text-center " *matNoDataRow>
+                        <td class="mat-cell w-full m-2 no-data-cell" >No Data Found</td>
+                    </tr>
+
+            </mat-table>
+        </div>
+      </ng-container>
+  </div>
+</div>
+

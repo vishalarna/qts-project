@@ -1,0 +1,38 @@
+<div class="list-filter-menu">
+    <div class="list-filter-menu-header">
+        <span class="main-heading">{{(reportSkeletonFilter.name | dynamicLabelReplacement) | async}}</span>
+        <div>
+            <span *ngIf="valueType === 'array'" class="list-filter-data-count">{{filterListData.length}} selected of {{filterListCount}}</span>
+            <app-button *ngIf="valueType === 'array'" variant="text" text="Edit" (clicked)="openFlyInPanel(appFilterList)"></app-button>
+            <app-button *ngIf="valueType === 'single'" variant="text" text="Edit" (clicked)="openFlyInPanel(appFilterSingle)"></app-button>
+            <app-button *ngIf="valueType === 'range'" variant="text" text="Edit" (clicked)="openFlyInPanel(appFilterRange)"></app-button>
+        </div>
+    </div>
+    <div class="list-filter-selected-data">
+        <ul *ngIf="filterListData.length>0">
+            <li *ngFor="let option of sortFilterValues(filterListData)">{{option.name}}</li>
+        </ul>
+        <p *ngIf="filterListData.length==0">None Selected</p>
+    </div>
+</div>
+
+<ng-template #appFilterList>
+    <app-filter-list [reportSkeletonFilter]="reportSkeletonFilterData" [reportMode]="reportMode"
+        [filterOption]="filterOption"
+        (OnSelectedListUpdated)="getFilterListDataChange($event)"
+        (closed)="this.flyPanelService.close()">
+    </app-filter-list>
+  </ng-template>
+
+  <ng-template #appFilterSingle>
+    <app-filter-single [reportSkeletonFilter]="reportSkeletonFilterData" [reportMode]="reportMode"
+    [filterOption]="filterOption"
+    (OnFilterUpdated)="getFilterOptionChange($event)" (closed)="this.flyPanelService.close()" [reportData] = "reportData"></app-filter-single>
+  </ng-template>
+
+  <ng-template #appFilterRange>
+    <app-filter-range [reportSkeletonFilter]="reportSkeletonFilterData" [reportMode]="reportMode"
+        (OnFilterUpdatedEvent)="getFilterOptionChange($event)" (closed)="this.flyPanelService.close()"></app-filter-range>
+  </ng-template>
+  
+

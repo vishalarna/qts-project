@@ -1,0 +1,484 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+    <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="exitWizard(exitInstanceSetup)">
+    </app-button>
+    <div class="flex flex-row items-center space-x-4 w-full justify-between">
+        <h1>Instance Setup Wizard</h1>
+        <div class="justify-between">
+            <app-button [disabled]="isDisableContinueButton()" *ngIf="currentIndex != 3" type="button" text="Continue"
+                (clicked)="nextStep()">
+            </app-button>
+            <app-button *ngIf="currentIndex == 3" type="button" text="Close" (clicked)="exitWizard(exitInstanceSetup)">
+            </app-button>
+        </div>
+    </div>
+</mat-toolbar>
+
+<div>
+    <mat-stepper #stepper labelPosition="bottom" [linear]="true" (selectionChange)="onStepSelectionChange($event)">
+        <ng-template matStepperIcon="edit">
+            <app-icon icon="done"></app-icon>
+        </ng-template>
+        <mat-step [stepControl]="clientForm">
+            <form class="flex flex-col" [formGroup]="clientForm">
+                <ng-template matStepLabel>Client</ng-template>
+                <div class="step-control-container label required px-5">
+                    <div class="flex justify-between w-full">
+                        <label class="step-control-label">Select Client</label>
+                        <app-button variant="text" text="Create New Client" icon="add" iconPosition="left"
+                            (clicked)="openClientFlyInPanel(createNewClient)">
+                        </app-button>
+                    </div>
+                    <div class="step-control">
+                        <mat-form-field appearance="outline" class="text-sm dropdown w-100">
+                            <mat-select #selectClient="matSelect" placeholder="Select Client" formControlName="clientId"
+                                (selectionChange)="onClientSelected($event)">
+                                <input matInput class="pt-3 pb-3 pl-3" type="text" formControlName="searchClient" (input)="inputSearchClient($event)" placeholder="Enter Text to Search">
+                                <mat-option *ngFor="let client of clientList" [value]="client.id">{{ client.name
+                                    }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+            </form>
+
+
+        </mat-step>
+        <mat-step [stepControl]="instanceForm">
+            <app-data-loader *ngIf="loader"></app-data-loader>
+            <form class="flex flex-col" [formGroup]="instanceForm">
+                <ng-template matStepLabel>Instance</ng-template>
+                <div class="step-control-container label required px-5">
+                    <div class="flex justify-between w-full">
+                        <label class="step-control-label">Select Instance</label>
+                        <app-button variant="text" text="Create New Instance" icon="add" iconPosition="left"
+                            (clicked)="openInstanceFlyInPanel(createNewInstance,'create')">
+                        </app-button>
+                    </div>
+                    <div class="step-control">
+                        <mat-form-field appearance="outline" class="text-sm dropdown w-100">
+                            <mat-select  #selectInstance="matSelect" placeholder="Select Instance" formControlName="instanceId"
+                                (selectionChange)="onInstanceSelected($event)">
+                                <input matInput class="pt-3 pb-3 pl-3" type="text" formControlName="searchInstance" (input)="inputSearchInstance($event)" placeholder="Enter Text to Search">
+                                <mat-option *ngFor="let instance of instanceList" [value]="instance.id">{{ instance.name
+                                    }}</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                </div>
+
+                <div *ngIf="selectedInstance" style="width: 100%" class="flex flex-col px-5">
+                    <div class="flex flex-col bg-white mat-elevation-z3 p-4 card-shadow">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="mb-3 panel-heading">
+                                Instance Information
+                            </div>
+                            <div class="mb-3">
+                                <app-button variant="text" text="Edit" icon="edit" iconPosition="left"
+                                (clicked)="openInstanceFlyInPanel(createNewInstance,'edit')">
+                            </app-button>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row align-items-center row-spacewrap">
+                            <app-label text="Instance Name"
+                                class="text-gray-300 company-text label-wrap"></app-label>
+                            <div class="flex flex-col float-left w-full text-wrap">
+                                <label>{{selectedInstance?.name}}</label>
+                            </div>
+                        </div>
+                        <div class="flex flex-row align-items-center row-spacewrap">
+                            <app-label text="Default Identity Provider"
+                                class="text-gray-300 company-text label-wrap"></app-label>
+                            <div class="flex flex-col float-left w-full text-wrap">
+                                <label>{{selectedInstance?.instanceSetting?.defaultIdentityProvider?.name}}</label>
+                            </div>
+                        </div>
+                        <div class="flex flex-row align-items-center row-spacewrap">
+                            <app-label text="Database Name"
+                                class="text-gray-300 company-text label-wrap"></app-label>
+                            <div class="flex flex-col float-left w-full text-wrap">
+                                <label>{{selectedInstance?.instanceSetting?.databaseName}}</label>
+                            </div>
+                        </div>
+                        <div class="flex flex-row align-items-center row-spacewrap">
+                            <app-label
+                                text="Client Account Number"
+                                class="text-gray-300 company-text label-wrap"></app-label>
+                            <div class="flex flex-col float-left w-full text-wrap">
+                                <label>{{selectedInstance?.instanceSetting?.clientAccountNumber}}</label>
+                            </div>
+                        </div>
+
+                        <div class="flex flex-row align-items-center row-input-spacewrap">
+                            <app-label text="SCORM Tenant Name"
+                                class="text-gray-300 company-text label-wrap"></app-label>
+                            <div class="flex flex-col float-left w-full">
+                                <label>{{selectedInstance?.instanceSetting?.scormTenant ?? '-'}}</label>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-row align-items-center row-input-spacewrap">
+                            <app-label text="Is In Beta"
+                                class="text-gray-300 company-text label-wrap"></app-label>
+                            <div class="flex flex-col float-left w-full">
+                                <label>{{selectedInstance?.isInBeta}}</label>
+                            </div>
+                        </div>
+ 
+                        <div class="flex flex-row align-items-center row-input-spacewrap">
+                            <app-label text="MFAEnabled"
+                                class="text-gray-300 company-text label-wrap"></app-label>
+                            <div class="flex flex-col float-left w-full">
+                                <label>{{selectedInstance?.instanceSetting?.mfaEnabled}}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </mat-step>
+        <mat-step [completed]="getCompletion(2)">
+            <app-data-loader *ngIf="loader"></app-data-loader>
+            <ng-template matStepLabel>License</ng-template>
+            <ng-template matStepContent>
+                <div class="px-5 mb-2 d-flex justify-content-end" *ngIf="!loader">
+                    <app-button *ngIf="licenseDataSource.data.length == 0" text="Add" size="sm"
+                        (clicked)="openLicenseFlyInPanel(createAndEditLicense,'Add')"></app-button>
+                    <app-button *ngIf="licenseDataSource.data.length > 0" text="Update" size="sm"
+                        (clicked)="openLicenseFlyInPanel(createAndEditLicense, 'Update')"></app-button>
+                </div>
+                <div class="px-5" *ngIf="!loader">
+                    <mat-table class="table-auto w-full" [dataSource]="licenseDataSource" matSort  #licenseDataSort="matSort" (matSortChange)="sortLicenseDataSource($event)"
+                        [multiTemplateDataRows]="true">
+                        <ng-container matColumnDef="activationCode">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Activation Code</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <app-button variant="text" icon="arrow_drop_down"
+                                    (clicked)="(expandedData = expandedData === row ?null:row);getLicenseProductDetails(row.id);$event.stopPropagation();">
+                                </app-button>
+                                {{row.activationCode}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="createdDate">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Create Date</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.createdDate == null ? 'N/A' : (row.createdDate | dateFormat )| async}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="active">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Status</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.active == true ? 'Active' : 'Inactive'}}
+                            </mat-cell>
+                        </ng-container>
+                        
+                        <ng-container matColumnDef="expandedDetail">
+                            <mat-cell *matCellDef="let row" [attr.colspan]="displayedLicenseColumns">
+                              <div style="width: 100%;" class="example-element-detail"
+                               >
+                      
+                                <!--List View in expanded details-->
+                                  <ng-container class="mt-4" *ngTemplateOutlet="expandedTable"></ng-container>
+                              </div>
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedLicenseColumns"></mat-header-row>
+                        <mat-row class="example-element-row" [class.example-expanded-row]="expandedData === row"
+                            *matRowDef="let row; columns: displayedLicenseColumns"></mat-row>
+                        <mat-row [ngStyle]="{'display' : expandedData===row ? 'block' : 'none'} "
+                            *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></mat-row>
+                            <tr class="mat-row flex text-center " *matNoDataRow>
+                                <td class="mat-cell w-full m-2" colspan="3">No data to display</td>
+                            </tr>
+                    </mat-table>
+                </div>
+
+
+                <ng-template #expandedTable>
+                    <div *ngIf="licenseDetail" class="flex w-full" style="justify-content: center">
+                        <div style="width: 100%" class="flex flex-col">
+                            <div class="flex flex-col bg-white mat-elevation-z3 p-4 card-shadow">
+                                <div class="mb-3 panel-heading">
+                                    License Information
+                                </div>
+
+                                <div class="flex flex-row align-items-center row-spacewrap">
+                                    <app-label text="Client Id"
+                                        class="text-gray-300 company-text label-wrap"></app-label>
+                                    <div class="flex flex-col float-left w-full text-wrap">
+                                        <label>{{licenseDetail.clientAccountNumber}}</label>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row align-items-center row-spacewrap">
+                                    <app-label text="License Type"
+                                        class="text-gray-300 company-text label-wrap"></app-label>
+                                    <div class="flex flex-col float-left w-full text-wrap">
+                                        <label>{{licenseDetail.licenseType}}</label>
+                                    </div>
+                                </div>
+                                <div class="flex flex-row align-items-center row-spacewrap">
+                                    <app-label
+                                        text="Current no. of {{('Employee' | labelReplacement)| async}} Records/Total {{('Employee' | labelReplacement)| async}} Records Available"
+                                        class="text-gray-300 company-text label-wrap"></app-label>
+                                    <div class="flex flex-col float-left w-full text-wrap">
+                                        <label>{{licenseDetail.employeeRecordsUsed}}
+                                            /{{licenseDetail.totalEmployeeRecordsAvailable}}</label>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-row align-items-center row-input-spacewrap">
+                                    <app-label text="Activation Code"
+                                        class="text-gray-300 company-text label-wrap"></app-label>
+                                    <div class="flex flex-col float-left w-full">
+                                        <label>{{licenseDetail.activationCode}}</label>
+                                    </div>
+                                </div>
+
+                                <div class="flex flex-row content-wrap" style="padding: 0.5em 1em 0.3em;">
+                                    <app-label text="Activation Code Expiration"
+                                        class="text-gray-300 company-text"></app-label>
+                                    <div class="flex flex-col float-left w-full text">
+                                        {{licenseDetail.expiration | date }}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div *ngIf="productDetailDataSource" class="row m-auto label-mb-0">
+                        <div class="flex w-full" style="justify-content: center">
+                            <div style="width: 100%" class="flex flex-col">
+                                <div class="flex flex-col bg-white mat-elevation-z3 p-4 card-shadow">
+                                    <div class="panel-heading">
+                                        QTD Product Suite
+                                    </div>
+                                    <mat-table [dataSource]="productDetailDataSource" matSort #productDataSort="matSort" (matSortChange)="sortProductDetailDataSource(productDataSort)">
+                                        <ng-container matColumnDef="productName">
+                                            <mat-header-cell *matHeaderCellDef mat-sort-header> Product Name
+                                            </mat-header-cell>
+                                            <mat-cell *matCellDef="let row"> {{row.productName}} </mat-cell>
+                                        </ng-container>
+
+                                        <ng-container matColumnDef="productAcronym">
+                                            <mat-header-cell *matHeaderCellDef mat-sort-header>Product Acronym
+                                            </mat-header-cell>
+                                            <mat-cell *matCellDef="let row"> {{row.productAcronym}} </mat-cell>
+                                        </ng-container>
+                                        <ng-container matColumnDef="releaseDate">
+                                            <mat-header-cell *matHeaderCellDef mat-sort-header>Version & Release Date
+                                            </mat-header-cell>
+                                            <mat-cell *matCellDef="let row"> {{row.releaseDate}} </mat-cell>
+                                        </ng-container>
+                                        <ng-container matColumnDef="companyProduct">
+                                            <mat-header-cell *matHeaderCellDef mat-sort-header>Does my company have this product?
+                                            </mat-header-cell>
+                                            <mat-cell *matCellDef="let row"
+                                                [ngClass]=" row.enabled === true ? 'success' : 'failure'">
+                                                {{row.enabled
+                                                ===
+                                                true ? "Yes" : "No"}} </mat-cell>
+                                        </ng-container>
+
+                                        <mat-header-row *matHeaderRowDef="displayLicenseExpandColumns"></mat-header-row>
+                                        <mat-row *matRowDef="let row; columns: displayLicenseExpandColumns;">
+                                        </mat-row>
+
+                                        <tr class="mat-row flex text-center " *matNoDataRow>
+                                            <td class="mat-cell w-full m-2">No data to display</td>
+                                        </tr>
+
+                                    </mat-table>
+                                    <div class="flex flex-row align-items-center content-text">
+                                        For more information on your company's current license type and to learn
+                                        more
+                                        about
+                                        the QTD Product
+                                        Suite, send and email to&nbsp;
+                                        <a class="email-wrap">sales@qualitytraningsystems.com</a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-template>
+            </ng-template>
+        </mat-step>
+        <mat-step>
+            <app-data-loader *ngIf="loader"></app-data-loader>
+            <ng-template matStepLabel>Users</ng-template>
+            <ng-template matStepContent>
+                <div class="px-5 d-flex justify-content-between align-items-center"  *ngIf="!loader">
+                    <div class="d-flex w-50 align-items-center">
+                        <app-label customClasses="mb-0"
+                          [text]="('Current no. of ' | labelReplacement | async) + ' Records/Total ' + ('Employee' | labelReplacement | async) + ' Records Available'"
+                          class="text-gray-300 company-text label-wrap mb-0">
+                        </app-label>
+                        <label class="w-100 d-block mb-0">
+                          {{ licenseDetail.employeeRecordsUsed }} / {{ licenseDetail.totalEmployeeRecordsAvailable }}
+                        </label>
+                      </div>
+                    <div>
+                        <app-button text="Add User" size="sm"
+                            (clicked)="openUserFlyInPanel(createUser, null, 'create')"></app-button>
+                    </div>
+                </div>
+                <div class="px-5"  *ngIf="!loader">
+                    <div class="flex flex-row items-center border-b-0.8 border-gray-one mt-4 ">
+                        <div class="flex flex-gro align-items-center px-5 bg-white w-100">
+                            <app-icon icon="search" class="px-3"></app-icon>
+                            <input class="text-sm flex-grow ml-10px focus:outline-none py-4" placeholder="Search" type="text"
+                            (input)="inputSearchUser($event)" [value]="userSearchString"  >
+                            <app-icon *ngIf="userSearchString != ''" icon="close" class="cursor-pointer" (click)="clearUserSearch()"></app-icon>
+                        </div>
+                    </div>
+                    <mat-table class="table-auto w-full" [dataSource]="personsWithUserDataSource" matSort #personDataSort="matSort" (matSortChange)="sortPersonsWithUserData(personDataSort)" [resizableTable]="true">
+                        <ng-container matColumnDef="username">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Username</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.username}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="firstName">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                First Name</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.firstName}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="lastName">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Last Name</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.lastName}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="isEmployee">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Is Employee</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.isEmployee}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="employeeNumber">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Employee Number</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.isEmployee ? row.employeeNumber : ""}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="isTQEvaluator">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Is TQEvaluator</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.isEmployee ? row.isTQEvaluator : ""}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="isInstructor">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Is Instructor</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.isInstructor}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="instructorCategoryTitle">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Instructor Category Title</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.isInstructor ? row.instructorCategoryTitle : ""}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="instructorNumber">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Instructor Number</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.isInstructor ? row.instructorNumber : ""}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="isQTDUser">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Is QTD User</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.isQTDUser}}
+                            </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="status">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                Status</mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                {{row.active ? 'Active' : 'Inactive'}}
+                            </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="options">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                               </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <div class="flex flex-row items-center text-gray-four btn-group">
+                                    <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" [matMenuTriggerFor]="menu">
+                                    </app-button>
+                                    <mat-menu #menu="matMenu">
+                                        <label *ngIf="row.active" (click)="removeUserByInstanceAsync(row)" mat-menu-item>Remove</label>
+                                        <label *ngIf="!row.active"   mat-menu-item (click)="openUserFlyInPanel(createUser, row, 'edit',true)">Readd</label>
+                                        <label *ngIf="row.active"  (click)="openUserFlyInPanel(createUser, row, 'edit')" mat-menu-item>Update</label>
+                                    </mat-menu>
+                                  </div>
+                            </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayedPersonWithUserDataColumns"></mat-header-row>
+                        <mat-row class="example-element-row"
+                            *matRowDef="let row; columns: displayedPersonWithUserDataColumns" [ngClass]="{ 'inactive-row': !row.active }"></mat-row>
+
+                        <mat-row class="mat-row flex text-center" *matNoDataRow>
+                            <td class="mat-cell w-full m-2" colspan="3"> No data matching the filter </td>
+                        </mat-row>
+                    </mat-table>
+                </div>
+            </ng-template>
+        </mat-step>
+    </mat-stepper>
+</div>
+
+<ng-template #exitInstanceSetup>
+    <app-qtd-dialogue [header]="'Confirmation'" [description]="'Any unsaved changes will be lost.'" [cancelText]="'No'"
+        [isQuestion]="true" [confirmText]="'Yes'" (canceled)="dialog.closeAll()" (confirmed)="backOrExitWizard()">
+    </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #createNewClient>
+    <app-fly-panel-create-new-client (closed)="flyPanelService.close()" (newClientDetail)="getNewClient($event)">
+    </app-fly-panel-create-new-client>
+</ng-template>
+
+<ng-template #createNewInstance>
+    <app-fly-panel-create-new-instance (closed)="flyPanelService.close()" [selectedClient]="selectedClient" [instanceFlyInMode]="instanceFlyInMode"  [selectedInstance]="selectedInstance"
+        (newInstanceDetail)="getNewInstance($event)" (updateInstanceDetail)="updateInstanceDetail($event)">
+    </app-fly-panel-create-new-instance>
+</ng-template>
+
+<ng-template #createAndEditLicense>
+    <app-fly-panel-create-and-edit-license (closed)="flyPanelService.close()" [licenseEditMode]="licenseEditMode" [selectedInstance]="selectedInstance"
+        [licenseDetail]="licenseDetail" (newLicenseDetail)="getNewLicense($event)">
+    </app-fly-panel-create-and-edit-license>
+</ng-template>
+
+<ng-template #createUser>
+    <app-fly-panel-add-user (closed)="flyPanelService.close()" [selectedInstance]="selectedInstance" [mode]="actionMode" [inputPersonWithUserDataVm]="personWithUserDataVm"
+        [licenseDetail]="licenseDetail" (newUserDetail)="getNewUser($event)" (updateUserDetail)="getUpdateUser($event)" [readding]="readding">
+    </app-fly-panel-add-user>
+</ng-template>

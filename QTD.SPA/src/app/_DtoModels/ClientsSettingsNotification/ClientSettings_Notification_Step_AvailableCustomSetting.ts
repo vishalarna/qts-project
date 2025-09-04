@@ -1,0 +1,5 @@
+import { ClientSettings_Notification_AvailableCustomSetting } from "./ClientSettings_Notification_AvailableCustomSetting";
+
+export class ClientSettings_Notification_Step_AvailableCustomSetting extends ClientSettings_Notification_AvailableCustomSetting{
+
+}

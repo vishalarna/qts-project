@@ -1,0 +1,1279 @@
+<div
+  *ngIf="mainSpinner"
+  class="flex mt-5"
+  style="justify-content: center; align-items: center"
+>
+  <app-spinner></app-spinner>
+</div>
+
+<div *ngIf="!mainSpinner" class="w-full flex flex-row mt-16">
+  <!--left side of page starts-->
+  <div class="w-9/12">
+    <!--ILA Number and ILA Title Starts-->
+    <div class="flex flex-col px-4 pb-12">
+      <div class="border-0.5 rounded mat-elevation-z2 h-auto px-4 bg-white-one">
+        <!--2 cols starts-->
+        <div class="flex flex-col">
+          <div class="flex flex-row justify-between h-32 py-3">
+            <div style="width: 100px; height: 110px">
+              <!-- <p *ngIf="!url">No image selected</p> -->
+              <img
+                [src]="url"
+                onerror="this.src ='assets/img/ImageNotFound.jpg'"
+              />
+            </div>
+
+            <!--change button-->
+            <div class="float-right">
+              <input
+                type="file"
+                (change)="selectFile($event)"
+                accept="image/*"
+                class="align-right float-right"
+                title=" "
+                id="upload-file-2"
+                hidden
+              />
+              <p>{{ image_name }}</p>
+              <label for="upload-file-2" class="text-green-800 align-right"
+                >Change</label
+              >
+            </div>
+          </div>
+
+          <div class="flex flex-row justify-between mb-4">
+            <!--ILA Number Starts-->
+            <div class="w-4/12 mr-4">
+              <mat-label class="block font-normal" for="ila_number"
+                >{{("ILA" | labelReplacement)| async}} Number</mat-label
+              >
+              <app-textbox
+                type="text"
+                [name]="'ILAName'"
+                [disabled]="true"
+                [defaultValue]="number"
+                [placeholder]="'Name'"
+              >
+              </app-textbox>
+              <!--  <input [(ngModel)]="number" disabled="true" type="text" name="ila_number"
+                                class="bg-white-one px-2 border py-2 w-full rounded" /> -->
+            </div>
+            <!--ILA Number Ends-->
+
+            <!--ILA Title Starts-->
+            <div class="w-8/12">
+              <mat-label class="block font-normal" for="ila_title"
+                >{{("ILA" | labelReplacement)| async}} Title</mat-label
+              >
+              <app-textbox
+                type="text"
+                [name]="'ILATitle'"
+                [disabled]="true"
+                [defaultValue]="offical_name"
+                [placeholder]="'Name'"
+              >
+              </app-textbox>
+              <!--     <input [(ngModel)]="offical_name" disabled="true" type="text" name="ila_title"
+                                class="bg-white-one px-2 border py-2 w-full rounded" /> -->
+            </div>
+            <!--ILA Title Ends-->
+          </div>
+        </div>
+        <!--2 cols ends-->
+        <div class="flex flex-col mt-4">
+          <form [formGroup]="TotalCreditHourForm" class="flex flex-row">
+            <span>Total Training Hours: </span>
+            <app-input-error
+              class="mx-4 text-sm"
+              *ngIf="TotalCreditHourForm.get('TotalCreditHours')?.errors?.['pattern']"
+              [text]="'Number is Required'"
+            >
+            </app-input-error>
+            <input
+            (input)="checkInput()"
+              (keydown)="checkInput()"
+              class="mb-3 border mx-4 py-1 w-20 rounded"
+              formControlName="TotalCreditHours"
+              type="number"
+              name="TotalCreditHours"
+              min="0"
+            />
+          </form>
+          <div *ngIf="isChanged" class="flex mb-4">
+            <app-button
+              (clicked)="saveTrainingHours()"
+              text="Save"
+              size="sm"
+              color="secondary"
+              [disabled]="trHourSpinner || TotalCreditHourForm.invalid"
+              [spinner]="trHourSpinner"
+            ></app-button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!--ILA Number and ILA Title Ends-->
+
+    <div class="flex flex-col px-4 pb-8">
+      <div *ngIf="hasCertifyingBodyInconsistencies" class="warning-box">
+        <div *ngFor="let body of certifyingBodiesList">
+          <strong>{{ body.certifyingBody.name }} Certifications are out of sync.</strong>
+          <ul>
+            <li *ngFor="let inconsistency of body.certifyingBodyConsistencyResults">
+              <div *ngFor="let issue of inconsistency.certifyingBodyInconsistencies">
+                <div *ngIf="issue.displayName">
+                  {{ issue.name }} - {{ issue.message }}
+                </div>
+              </div>
+            </li>
+              <li *ngFor="let message of uniqueCertifyingBodyMessages">{{ message }}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!--Credit Hours Starts-->
+    <div class="flex flex-col px-4 pb-12">
+      <div
+        class="
+          border-0.5
+          rounded
+          mat-elevation-z2
+          h-auto
+          px-4
+          py-3
+          bg-white-one
+        "
+      >
+        <!--Heading Starts-->
+        <div class="flex flex-row justify-between">
+          <p class="text-lg font-semibold">Credit Hours</p>
+          <div class="flex flex-row space-x-4 text-sm">
+            <mat-button-toggle-group [value]="creditHoursView" aria-label="Font Style"
+              (change)="changeCreditHoursView($event.value)">
+              <mat-button-toggle value="ByCertification"
+                style="color: #456FA5; background-color: white; border: 1px solid #E4E6E5;">By {{("Certification" | labelReplacement)| async}}
+              </mat-button-toggle>
+              <mat-button-toggle value="ByCertifyingBody"
+                style="color: #456FA5; background-color: white; border: 1px solid #E4E6E5;">By Certifying Body
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <!--Edit Button Starts-->
+          <div *ngIf="Save_Clicked || Save_PJM_Clicked">
+            <app-button
+              variant="text"
+              size="sm"
+              text="Edit"
+              icon="edit"
+              iconPosition="left"
+              (clicked)="EditCreditHours()"
+              class="
+                flex flex-row
+                text-sm
+                font-normal
+                text-gray-four
+                items-center
+              "
+            >
+            </app-button>
+          </div>
+          <!--Edit Button Ends-->
+        </div>
+        <!--Heading Ends-->
+
+        <!--Dropdown Starts-->
+        <div *ngIf="creditHoursView == 'ByCertification'">
+
+        <app-spinner *ngIf="certificationLoader"></app-spinner>
+        <div *ngIf="!certificationLoader">
+          <mat-form-field appearance="outline" class="dropdown w-full">
+            <mat-select
+              (selectionChange)="CertificationSelectionChange()"
+              [(ngModel)]="value_selected"
+              placeholder="Select {{('Certification' | labelReplacement)| async}}"
+            >
+              <mat-option
+                *ngFor="let d of CertificatesList"
+                [value]="d.certificationId"
+              >
+                {{ d.certificationName }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!--Dropdown Ends-->
+
+        <!--NERC Text Starts-->
+        <!--NERC Text Ends-->
+
+        <!--PJM Text Starts-->
+        <!-- <p class="text-green-800" *ngIf="!isNercCheck && Save_PJM_Clicked && !edit_credit_hours">PJM Credit Hours </p> -->
+        <!--PJM Text Ends-->
+
+        <!--NERC Div Starts-->
+        <form
+          class="flex flex-row justify-between w-full mt-4"
+          *ngIf="value_selected != '' && !certificationLoader"
+          [formGroup]="NERCForm"
+        >
+          <table class="table-auto">
+            <!--Div for textboxes-->
+            <tbody>
+              <tr>
+                <td>
+                  <app-label
+                    class="table-column font-normal pb-6 label required"
+                    [for]="'cehHours'"
+                    [text]="'CEH Hours'"
+                  >
+                  </app-label>
+                </td>
+                <td>
+                  <app-input-error
+                    *ngIf="NERCForm.get('cehHours')?.errors?.['required'] && (NERCForm.get('cehHours')?.dirty) "
+                    class="mx-4 text-sm"
+                    text="Required"
+                  ></app-input-error>
+                  <app-input-error
+                    class="mx-4 text-sm"
+                    *ngIf="NERCForm.get('cehHours')?.errors?.['pattern']"
+                    [text]="'Number is Required'"
+                  >
+                  </app-input-error>
+                  <input
+                    class="mb-3 border mx-4 py-1 w-20 rounded"
+                    [formControlName]="'cehHours'"
+                    type="number"
+                    [name]="'CEH HOURS'"
+                  />
+                </td>
+              </tr>
+
+              <tr *ngIf="subrequirements && subrequirements.length > 0">
+                <td>
+                  <p class="text-green-800">Sub Requirement Details</p>
+                </td>
+              </tr>
+              <tr *ngFor="let data of subrequirements">
+                <td>
+                  <app-label
+                    class="table-column font-normal pb-6 label required"
+                    [for]="data.subRequirementId"
+                    [text]="data.reqName"
+                  >
+                  </app-label>
+                </td>
+                <td>
+                  <app-input-error
+                    *ngIf="NERCForm.get(data.subRequirementId)?.errors?.['required'] && (NERCForm.get(data.subRequirementId)?.dirty) "
+                    class="mx-4 text-sm"
+                    text="Required"
+                  ></app-input-error>
+                  <app-input-error
+                    class="mx-4 text-sm"
+                    *ngIf="NERCForm.get(data.subRequirementId)?.errors?.['pattern']"
+                    [text]="'Number is Required'"
+                  >
+                  </app-input-error>
+                  <input
+                    class="mb-3 border mx-4 py-1 w-20 rounded"
+                    [formControlName]="data.subRequirementId"
+                    type="number"
+                    [name]="data.subRequirementId"
+                  />
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <!--Div for checkboxes-->
+          <div class="pr-4">
+            <div
+              class="flex flex-row"
+              *ngIf="
+                isNercCheck === true &&
+                value_selected != '' &&
+                isCertificateNerc === true
+              "
+            >
+              <mat-checkbox formControlName="IncludeSimulation"
+                >Includes Simulations</mat-checkbox
+              >
+            </div>
+            <div
+              class="flex flex-row"
+              *ngIf="
+                isNercCheck === true &&
+                value_selected != '' &&
+                isCertificateNerc === true
+              "
+            >
+              <mat-checkbox formControlName="EmergencyOPHours"
+                >Count toward Emergency Operating training</mat-checkbox
+              >
+            </div>
+            <div class="flex flex-row" *ngIf="value_selected != ''">
+              <mat-checkbox formControlName="PartialCredit"
+                >Partial Credit allowed</mat-checkbox
+              >
+            </div>
+
+            <div class="flex flex-row justify-end py-8">
+              <app-button
+                [disabled]="!isDeleteAllowed"
+                (click)="DeleteLinks()"
+                type="button"
+                color="secondary"
+                size="sm"
+                text="Delete"
+                style="margin-right: 4px"
+              >
+              </app-button>
+              <app-button
+                [disabled]="NERCForm && !NERCForm.valid"
+                (click)="SaveNERC()"
+                type="button"
+                color="secondary"
+                size="sm"
+                text="Save"
+              >
+              </app-button>
+            </div>
+
+            <!--  <button (click)="SaveNERC()" class="custom_class px-4 btn-icon-secondary">Save</button> -->
+          </div>
+        </form>
+        <!--NERC Div Ends-->
+
+        <!--PJM Div Starts-->
+        <form
+          *ngIf="isNercCheck === false && value_selected != '' && PJMForm"
+          [formGroup]="PJMForm"
+        >
+          <div class="flex flex-col justify-between w-full mt-4">
+            <!--Div for Labels-->
+            <table class="table-auto">
+              <!--Div for textboxes-->
+              <tbody *ngFor="let data of pjmStandardMembers">
+                <tr>
+                  <td>
+                    <app-label
+                      class="table-column font-normal pb-6 label required"
+                      [for]="'cehHours'"
+                      [text]="'CEH Hours'"
+                    >
+                    </app-label>
+                  </td>
+                  <td>
+                    <app-input-error
+                      *ngIf="PJMForm.get('cehHours')?.errors?.['required'] && (PJMForm.get('cehHours')?.dirty) "
+                      class="mx-4 text-sm"
+                      text="Required"
+                    ></app-input-error>
+                    <app-input-error
+                      class="mx-4 text-sm"
+                      *ngIf="PJMForm.get('cehHours')?.errors?.['pattern']"
+                      [text]="'Number is Required'"
+                    >
+                    </app-input-error>
+                    <input
+                      class="mb-3 border mx-4 py-1 w-20 rounded"
+                      [formControlName]="'cehHours'"
+                      type="number"
+                      [name]="'CEH HOURS'"
+                    />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <app-label
+                      class="table-column font-normal pb-6 label required"
+                      [for]="data.label"
+                      [text]="data.name"
+                    >
+                    </app-label>
+                  </td>
+                  <td>
+                    <app-input-error
+                      *ngIf="PJMForm.get(data.label)?.errors?.['required'] && (PJMForm.get(data.label)?.dirty) "
+                      class="mx-4 text-sm"
+                      text="Required"
+                    ></app-input-error>
+                    <app-input-error
+                      class="mx-4 text-sm"
+                      *ngIf="PJMForm.get(data.label)?.errors?.['pattern']"
+                      [text]="'Number is Required'"
+                    >
+                    </app-input-error>
+                    <input
+                      class="mb-3 border mx-4 py-1 w-20 rounded"
+                      [formControlName]="data.label"
+                      type="number"
+                      [name]="data.label"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+
+            <!--Div for buttons-->
+            <div class="flex flex-row justify-end">
+              <app-button
+                [disabled]="PJMForm && PJMForm.invalid"
+                (click)="SavePJM()"
+                type="button"
+                color="secondary"
+                size="sm"
+                text="Save"
+              >
+              </app-button>
+            </div>
+            <!--  <div>
+                            <button (click)="SavePJM()" class="px-4 btn-icon-secondary">Save</button>
+                        </div> -->
+          </div>
+        </form>
+        <!--PJM Div Ends-->
+
+        <!--Edit Button Click Functionality Starts-->
+        <ng-container *ngIf="edit_credit_hours">
+          <div class="flex flex-col justify-between">
+            <!--NERC Starts-->
+            <div
+              *ngIf="isNercCheck"
+              class="h-96 mt-2 px-2"
+              [formGroup]="NERCForm"
+            >
+              <p class="text-sm font-semibold border-b-2">NERC Credit Hours</p>
+
+              <div class="flex flex-row">
+                <table class="table-auto">
+                  <!--Div for textboxes-->
+                  <tbody *ngFor="let data of nercStandardMembers">
+                    <tr *ngIf="data.type === 'if' && data !== undefined">
+                      <td>
+                        <app-label
+                          class="table-column font-normal pb-6 label required"
+                          [for]="data.label"
+                          [text]="data.name"
+                        >
+                        </app-label>
+                      </td>
+                      <td>
+                        <app-input-error
+                          *ngIf="NERCForm.get(data.label)?.errors?.['required'] && (NERCForm.get(data.label)?.dirty) "
+                          class="mx-4 text-sm"
+                          text="Required"
+                        ></app-input-error>
+                        <app-input-error
+                          class="mx-4 text-sm"
+                          *ngIf="NERCForm.get(data.label)?.errors?.['pattern']"
+                          [text]="'Number is Required'"
+                        >
+                        </app-input-error>
+                        <input
+                          class="mb-3 border mx-4 py-1 w-20 rounded"
+                          [formControlName]="data.label"
+                          type="number"
+                          [name]="data.label"
+                        />
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+
+                <!--Div for checkboxes-->
+                <div class="pr-4">
+                  <ng-container *ngFor="let i of nercMembers">
+                    <div class="flex flex-row" *ngIf="i.type === 'cb'">
+                      <mat-checkbox
+                        [checked]="selected === i"
+                        (change)="selected = i"
+                        >{{ i.name }}</mat-checkbox
+                      >
+                    </div>
+                    <!-- help icon for 2nd checkbox
+                                      <app-icon icon="help_outline" *ngIf="i.id === '2'"></app-icon> -->
+                  </ng-container>
+                </div>
+              </div>
+
+              <app-button
+                color="secondary"
+                (clicked)="SaveNERCChanges()"
+                type="button"
+                text="Save Changes"
+                size="sm"
+                class="float-right mt-4"
+              ></app-button>
+              <app-button
+                (clicked)="DeleteNERCChanges()"
+                variant="text"
+                text="Delete"
+                class="float-right mt-8 mr-2"
+              ></app-button>
+            </div>
+            <!--NERC Ends-->
+
+            <!--PJM Starts-->
+            <div *ngIf="!isNercCheck" class="h-28" [formGroup]="PJMForm">
+              <p class="text-sm font-semibold border-b-2">PJM Credit Hours</p>
+              <table class="table-auto">
+                <!--Div for textboxes-->
+                <tbody *ngFor="let data of pjmStandardMembers">
+                  <tr>
+                    <td>
+                      <app-label
+                        class="table-column font-normal pb-6 label required"
+                        [for]="data.label"
+                        [text]="data.name"
+                      >
+                      </app-label>
+                    </td>
+                    <td>
+                      <app-input-error
+                        *ngIf="PJMForm.get(data.label)?.errors?.['required'] && (PJMForm.get(data.label)?.dirty) "
+                        class="mx-4 text-sm"
+                        text="Required"
+                      ></app-input-error>
+                      <app-input-error
+                        class="mx-4 text-sm"
+                        *ngIf="PJMForm.get(data.label)?.errors?.['pattern']"
+                        [text]="'Number is Required'"
+                      >
+                      </app-input-error>
+                      <input
+                        class="mb-3 border mx-4 py-1 w-20 rounded"
+                        [formControlName]="data.label"
+                        type="number"
+                        [name]="data.label"
+                      />
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <!--Div for buttons-->
+
+              <app-button
+                color="secondary"
+                (clicked)="SavePJMChanges()"
+                type="button"
+                text="Save Changes"
+                size="sm"
+                class="float-right mb-1"
+              ></app-button>
+              <app-button
+                (clicked)="DeletePJMChanges()"
+                variant="text"
+                text="Delete"
+                class="float-right mt-2 mr-2"
+              ></app-button>
+            </div>
+          </div>
+          <!--PJM Ends-->
+        </ng-container>
+        <!--Edit Button Click Functionality Ends-->
+        
+        </div>
+
+        <div *ngIf="creditHoursView == 'ByCertifyingBody'">
+
+          <app-spinner *ngIf="certifyingBodyLoader"></app-spinner>
+          <div *ngIf="!certifyingBodyLoader">
+            <mat-form-field appearance="outline" class="dropdown w-full">
+              <mat-select
+                (selectionChange)="certifyingBodySelectionChange($event)"
+                [value]="certifyingBodySelected"
+                placeholder="Select Certifying Body"
+              >
+                <mat-option
+                  *ngFor="let d of certifyingBodiesList"
+                  [value]="d.certifyingBody?.id"
+                >
+                  {{ d.certifyingBody?.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+  
+          <!--Dropdown Ends-->
+          <!--NERC Div Starts-->
+          <form
+            class="flex flex-row justify-between w-full mt-4"
+            *ngIf="certifyingBodySelected != '' && !certifyingBodyLoader"
+            [formGroup]="NERCFormForCertifyingBody"
+          >
+            <table class="table-auto">
+              <!--Div for textboxes-->
+              <tbody>
+                <tr>
+                  <td>
+                    <app-label
+                      class="table-column font-normal pb-6 label required"
+                      [for]="'cehHours'"
+                      [text]="'CEH Hours'"
+                    >
+                    </app-label>
+                  </td>
+                  <td>
+                    <app-input-error
+                      *ngIf="NERCFormForCertifyingBody.get('cehHours')?.errors?.['required'] && (NERCFormForCertifyingBody.get('cehHours')?.dirty) "
+                      class="mx-4 text-sm"
+                      text="Required"
+                    ></app-input-error>
+                    <app-input-error
+                      class="mx-4 text-sm"
+                      *ngIf="NERCFormForCertifyingBody.get('cehHours')?.errors?.['pattern']"
+                      [text]="'Number is Required'"
+                    >
+                    </app-input-error>
+                    <input
+                      class="mb-3 border mx-4 py-1 w-20 rounded"
+                      [formControlName]="'cehHours'"
+                      type="number"
+                      [name]="'CEH HOURS'"
+                    />
+                  </td>
+                </tr>
+  
+                <tr *ngIf="certifyingBodySubRequirements && certifyingBodySubRequirements.length > 0">
+                  <td>
+                    <p class="text-green-800">Sub Requirement Details</p>
+                  </td>
+                </tr>
+                <tr *ngFor="let subReq of certifyingBodySubRequirements">
+                  <td>
+                    <app-label
+                      class="table-column font-normal pb-6 label required"
+                      [for]="subReq.reqName"
+                      [text]="subReq.reqName"
+                    >
+                    </app-label>
+                  </td>
+                  <td>
+                    <app-input-error
+                      *ngIf="NERCFormForCertifyingBody.get(subReq.reqName)?.errors?.['required'] && (NERCFormForCertifyingBody.get(subReq.reqName)?.dirty) "
+                      class="mx-4 text-sm"
+                      text="Required"
+                    ></app-input-error>
+                    <app-input-error
+                      class="mx-4 text-sm"
+                      *ngIf="NERCFormForCertifyingBody.get(subReq.reqName)?.errors?.['pattern']"
+                      [text]="'Number is Required'"
+                    >
+                    </app-input-error>
+                    <input
+                      class="mb-3 border mx-4 py-1 w-20 rounded"
+                      [formControlName]="subReq.reqName"
+                      type="number"
+                      [name]="subReq.reqName"
+                    />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--Div for checkboxes-->
+            <div class="pr-4">
+              <div
+                class="flex flex-row"
+                *ngIf="
+                isCertifyingBodyNercCheck === true &&
+                certifyingBodySelected != '' 
+                "
+              >
+                <mat-checkbox formControlName="IncludeSimulation"
+                  >Includes Simulations</mat-checkbox
+                >
+              </div>
+              <div
+                class="flex flex-row"
+                *ngIf="
+                isCertifyingBodyNercCheck === true &&
+                certifyingBodySelected != '' 
+                "
+              >
+                <mat-checkbox formControlName="EmergencyOPHours"
+                  >Count toward Emergency Operating training</mat-checkbox
+                >
+              </div>
+              <div class="flex flex-row" *ngIf="certifyingBodySelected != ''">
+                <mat-checkbox formControlName="PartialCredit"
+                  >Partial Credit allowed</mat-checkbox
+                >
+              </div>
+
+              <div class="flex flex-row justify-end py-8">
+
+                <app-button
+                  (click)="DeleteLinksByCertifyingBody()"
+                  type="button"
+                  color="secondary"
+                  size="sm"
+                  text="Delete"
+                  style="margin-right: 4px"
+                >
+                </app-button>
+                <app-button
+                  [disabled]="NERCFormForCertifyingBody && !NERCFormForCertifyingBody.valid"
+                  (click)="saveNERCByCertifyingBodyAsync()"
+                  type="button"
+                  color="secondary"
+                  size="sm"
+                  text="Save"
+                >
+                </app-button>
+              </div>
+            </div>
+          </form>
+          <!--NERC Div Ends-->
+  
+          </div>
+          <div>
+            <p class="text-sm font-semibold">Linked {{("Certification" | labelReplacement)| async}}s</p>
+            <p
+              class="text-sm"
+              style="margin-left: 10px"
+              *ngIf="LinkedCertificatesList.length < 1"
+            >
+              No {{("Certification" | labelReplacement)| async}}s Linked
+            </p>
+  
+            <div
+              *ngFor="let title of LinkedCertificatesList"
+              style="margin-left: 10px"
+            >
+              <ul class="text-sm">
+                <span class="text-sm mr-2" style="color: green">{{ title }}</span>
+              </ul>
+            </div>
+          </div>
+      </div>
+    </div>
+    <!--Credit Hours Ends-->
+
+    <!--Prequisites Starts-->
+    <div class="flex flex-col px-4 pb-12">
+      <app-data-loader *ngIf="prereqLoader"></app-data-loader>
+      <div
+        *ngIf="!prereqLoader"
+        class="border-0.5 rounded mat-elevation-z2 px-4 py-3 bg-white-one h-auto"        
+      >
+        <div class="flex flex-row justify-between">
+          <div>
+            <p class="text-lg font-semibold">Pre-requisites</p>
+          </div>
+          <div>
+            <button
+              *ngIf="!prerequisites_edit"
+              (click)="openFlyInPanelPrerequisites(addPrerequisitesPanel)"
+              class="text-green-600 text-sm"
+            >
+              <app-icon icon="add"></app-icon>Add Pre-requisites
+            </button>
+            <app-button
+              *ngIf="prerequisites_edit"
+              (click)="openFlyInPanelPrerequisites(addPrerequisitesPanel)"
+              variant="text"
+              size="sm"
+              text="Edit"
+              icon="edit"
+              iconPosition="left"
+              class="
+                flex flex-row
+                text-sm
+                font-normal
+                text-gray-four
+                items-center
+              "
+            ></app-button>
+          </div>
+        </div>
+        <div class="flex flex-row flex-wrap bg-gray-one justify-between mb-3 mt-3  px-3 py-3 rounded"
+        *ngIf="unlinkPrerequisitesIDs.length > 0">
+        <p class="text-xs text-gray-four pt-2">{{unlinkPrerequisitesIDs.length}} Prerequisites selected</p>
+        <app-button icon="link_off" iconPosition="left" size="sm" color="secondary" text="Unlink Prerequisites" 
+        (clicked)="unlinkPrerequisitesModal(unlinkModal)" >
+        </app-button>
+    </div>
+        <ng-container>
+          <mat-table
+            [dataSource]="ilatableDataSource"
+            #objSort="matSort"
+            matSort
+            class="table-bordered"
+          >
+            <ng-container matColumnDef="index">
+              <mat-header-cell *matHeaderCellDef>
+                <mat-checkbox
+                  (change)="$event ? masterToggle() : null"
+                  [checked]="selection.hasValue() && isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()">
+                </mat-checkbox>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <mat-checkbox
+                  (click)="$event.stopPropagation()"
+                  (change)="$event ? selectrow(row) : null"
+                  [checked]="selection.isSelected(row)"
+                >
+                </mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="number">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Number
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.number }} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="name">
+              <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Name
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row"> {{ row.name }} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="action">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> 
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="cursor-pointer flex flex-row justify-center">                                     
+                <app-button  ButtonType="icon" icon="link_off" style="color:lightgray"  (clicked)="unlinkPrerequisitesModal(unlinkModal,row.id)"
+                ></app-button>
+                  </mat-cell>
+            </ng-container>
+            <mat-header-row
+              *matHeaderRowDef="displayedColumns"
+            ></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center" *matNoDataRow>
+              <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+          </mat-table>
+        </ng-container>
+        <form [formGroup]="PrerequisitesForm" class="flex flex-col pb-0 mt-4">
+          <ckeditor
+            [editor]="Editor"
+            formControlName="Prerequisites"
+            name="Prerequisites"
+          ></ckeditor>
+        </form>
+      </div>
+    </div>
+    <!--Prequisites Ends-->
+
+    <!--Procedures Starts-->
+    <div class="flex flex-col px-4 pb-12 h-auto">
+      <app-data-loader *ngIf="procedureLoader"></app-data-loader>
+      <div
+        *ngIf="!procedureLoader"
+        class="border-0.5 rounded mat-elevation-z2 px-4 py-3 bg-white-one"
+        [ngStyle]="{ height: !procedures_edit ? '13rem' : 'auto' }"
+      >
+        <div class="flex flex-row justify-between">
+          <div>
+            <p class="text-lg font-semibold">
+              {{ "Procedure" | labelReplacement | async }}s
+            </p>
+          </div>
+          <div>
+            <button
+              *ngIf="!procedures_edit"
+              (click)="openFlyInPanelProcedures(addproceduresPanel)"
+              class="text-green-600 text-sm"
+            >
+              <app-icon icon="add"></app-icon>Add
+              {{ "Procedure" | labelReplacement | async }}s
+            </button>
+            <app-button
+              *ngIf="procedures_edit"
+              (click)="openFlyInPanelProcedures(addproceduresPanel)"
+              variant="text"
+              size="sm"
+              text="Edit"
+              icon="edit"
+              iconPosition="left"
+              class="
+                flex flex-row
+                text-sm
+                font-normal
+                text-gray-four
+                items-center
+              "
+            ></app-button>
+          </div>
+        </div>
+        <div *ngFor="let array of message1; let i = index">
+          <ul class="text-sm" [class.inActiveItem]="!array.active">
+            <span class="text-sm text-gray-400 mr-2">{{ i + 1 }}</span>
+            {{
+              array.number
+            }}
+            -
+            {{
+              array.description
+            }}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!--Procedures Ends-->
+
+    <!--Safety Hazards Starts-->
+    <div class="flex flex-col px-4 pb-12">
+      <app-data-loader *ngIf="shLoader"></app-data-loader>
+      <div
+        *ngIf="!shLoader"
+        class="border-0.5 rounded mat-elevation-z2 px-4 py-3 bg-white-one"
+        [ngStyle]="{ height: !safetyhazards_edit ? '13rem' : 'auto' }"
+      >
+        <div class="flex flex-row justify-between">
+          <div>
+            <p class="text-lg font-semibold">
+              {{ "Safety Hazard" | labelReplacement | async }}s
+            </p>
+          </div>
+          <div>
+            <button
+              *ngIf="!safetyhazards_edit"
+              (click)="openFlyInPanelSafetyHazard(addSafetyHazardPanel)"
+              class="text-green-600 text-sm"
+            >
+              <app-icon icon="add"></app-icon>Add
+              {{ "Safety Hazard" | labelReplacement | async }}s
+            </button>
+            <app-button
+              *ngIf="safetyhazards_edit"
+              (click)="openFlyInPanelSafetyHazard(addSafetyHazardPanel)"
+              variant="text"
+              size="sm"
+              text="Edit"
+              icon="edit"
+              iconPosition="left"
+              class="
+                flex flex-row
+                text-sm
+                font-normal
+                text-gray-four
+                items-center
+              "
+            ></app-button>
+          </div>
+        </div>
+        <div *ngFor="let array of message3; let i = index">
+          <ul class="text-sm">
+            <span class="text-sm text-gray-400 mr-2">{{ i + 1 }}</span>
+            {{
+              array.number
+            }}
+            -
+            {{
+              array.description
+            }}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!--Safety Hazards Ends-->
+
+    <!--Regulatory Requirements Starts-->
+    <div class="flex flex-col px-4 pb-12 h-auto">
+      <app-data-loader *ngIf="rrLoader"></app-data-loader>
+      <div
+        *ngIf="!rrLoader"
+        class="border-0.5 rounded mat-elevation-z2 px-4 py-3 bg-white-one"
+        [ngStyle]="{ height: !regulatoryrequirements_edit ? '13rem' : 'auto' }"
+      >
+        <div class="flex flex-row justify-between">
+          <div>
+            <p class="text-lg font-semibold">
+              {{ "Regulatory Requirement" | labelReplacement | async }}s
+            </p>
+          </div>
+          <div>
+            <button
+              *ngIf="!regulatoryrequirements_edit"
+              (click)="
+                openFlyInPanelRegulatoryRquirements(addRegulatoryRequirement)
+              "
+              class="text-green-600 text-sm"
+            >
+              <app-icon icon="add"></app-icon>Add
+              {{ "Regulatory Requirement" | labelReplacement | async }}s
+            </button>
+            <app-button
+              *ngIf="regulatoryrequirements_edit"
+              (click)="
+                openFlyInPanelRegulatoryRquirements(addRegulatoryRequirement)
+              "
+              variant="text"
+              size="sm"
+              text="Edit"
+              icon="edit"
+              iconPosition="left"
+              class="
+                flex flex-row
+                text-sm
+                font-normal
+                text-gray-four
+                items-center
+              "
+            ></app-button>
+          </div>
+        </div>
+        <div *ngFor="let array of message; let i = index">
+          <ul class="text-sm">
+            <span class="text-sm text-gray-400 mr-2">{{ i + 1 }}</span>
+            {{
+              array.number
+            }}
+            -
+            {{
+              array.description
+            }}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!--Regulatory Requirements Ends-->
+  </div>
+  <!--left side of page ends-->
+
+  <div class="border-r border-gray-300"></div>
+
+  <!--right side of page starts-->
+  <div class="w-3/12">
+    <div>
+      <app-button
+        variant="text"
+        size="sm"
+        text="Edit"
+        icon="edit"
+        iconPosition="left"
+        (clicked)="ila_details.emit()"
+        class="
+          flex flex-row-reverse
+          text-sm
+          font-normal
+          text-gray-four
+          items-center
+        "
+      >
+      </app-button>
+    </div>
+
+    <!--Provider Starts-->
+    <div class="flex flex-col p-4">
+      <!-- Provider Header Starts-->
+      <div class="flex flex-row items-center">
+        <div class="flex flex-col flex-grow">
+          <p class="flex-auto font-medium text-lg">Provider</p>
+        </div>
+        <!--    <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left" (clicked)="ila_details.emit()"
+          class="flex flex-row text-sm font-normal text-gray-four items-center">
+        </app-button> -->
+      </div>
+      <!-- Provider Header Ends-->
+
+      <!--Provider Content Starts-->
+      <div class="flex flex-col pb-8 space-y-12 text-sm">
+        <p>{{ provider }}</p>
+      </div>
+
+      <!--Provider Content Ends-->
+    </div>
+    <!--Provider Ends-->
+
+    <!--Topic Starts-->
+    <div class="flex flex-col p-4">
+      <!-- Topic Header Starts-->
+      <div class="flex flex-row items-center">
+        <div class="flex flex-col flex-grow">
+          <p class="flex-auto font-medium text-lg">Topic</p>
+        </div>
+        <!--   <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left" (clicked)="ila_details.emit()"
+          class="flex flex-row text-sm font-normal text-gray-four items-center">
+        </app-button> -->
+      </div>
+      <!-- Topic Header Ends-->
+
+      <!--Topic Content Starts-->
+      <div class="flex flex-col pb-8 space-y-12 text-sm">
+        <p>{{ topic }}</p>
+      </div>
+
+      <!--Topic Content Ends-->
+    </div>
+    <!--Topic Ends-->
+
+    <!--Offical Name Starts-->
+    <div class="flex flex-col p-4">
+      <!-- Offical Name Header Starts-->
+      <div class="flex flex-row items-center">
+        <div class="flex flex-col flex-grow">
+          <p class="flex-auto font-medium text-lg">Offical Name</p>
+        </div>
+        <!--   <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left" (clicked)="ila_details.emit()"
+          class="flex flex-row text-sm font-normal text-gray-four items-center">
+        </app-button> -->
+      </div>
+      <!-- Offical Name Header Ends-->
+
+      <!--Offical Name Content Starts-->
+      <div class="flex flex-col pb-8 space-y-12 text-sm border-b">
+        <p>{{ offical_name }}</p>
+      </div>
+
+      <!--Offical Name Content Ends-->
+    </div>
+    <!--Offical Name Ends-->
+
+    <!--Number Starts-->
+    <div class="flex flex-col p-4">
+      <!-- Number Header Starts-->
+      <div class="flex flex-row items-center">
+        <div class="flex flex-col flex-grow">
+          <p class="flex-auto font-medium text-lg">Number</p>
+        </div>
+        <!--  <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left" (clicked)="ila_details.emit()"
+          class="flex flex-row text-sm font-normal text-gray-four items-center">
+        </app-button> -->
+      </div>
+      <!-- Number Header Ends-->
+
+      <!--Number Content Starts-->
+      <div class="flex flex-col pb-8 space-y-12 text-sm border-b">
+        <p>{{ number }}</p>
+      </div>
+
+      <!--Number Content Ends-->
+    </div>
+    <!--Number Ends-->
+
+    <!--ILA Description Starts-->
+    <div class="flex flex-col p-4">
+      <!-- ILA Description Header Starts-->
+      <div class="flex flex-row items-center">
+        <div class="flex flex-col flex-grow">
+          <p class="flex-auto font-medium text-lg">{{("ILA" | labelReplacement)| async}} Description</p>
+        </div>
+        <!-- <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left" (clicked)="ila_details.emit()"
+          class="flex flex-row text-sm font-normal text-gray-four items-center">
+        </app-button> -->
+      </div>
+      <!-- ILA Description Header Ends-->
+
+      <!--ILA Description Content Starts-->
+      <div class="flex flex-col pb-8 border-b space-y-12 text-sm">
+        <p>{{ ILA_Description }}</p>
+      </div>
+
+      <!--ILA Description Content Ends-->
+    </div>
+    <!--ILA Description Ends-->
+
+    <!--Position Starts-->
+    <div class="flex flex-col p-4">
+      <!-- Position Header Starts-->
+      <div class="flex flex-row items-center">
+        <div class="flex flex-col flex-grow">
+          <p class="flex-auto font-medium text-lg">
+            {{ "Position" | labelReplacement | async }}s
+          </p>
+        </div>
+        <!--   <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left" (clicked)="ila_details.emit()"
+          class="flex flex-row text-sm font-normal text-gray-four items-center">
+        </app-button> -->
+      </div>
+      <!-- Position Header Ends-->
+
+      <div class="flex flex-col text-sm">
+        <div *ngFor="let i of positions">
+          <ul
+            class="mb-2 text-xs bg-gray-100 rounded p-2"
+            style="color: rgb(92, 155, 49)"
+          >
+            {{
+              i.positionTitle
+            }}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!--Position Ends-->
+
+    <!--Delivery Methods Starts-->
+    <div class="flex flex-col p-3">
+      <!-- Delivery Methods Header Starts-->
+      <div class="flex flex-row items-center">
+        <div class="flex flex-col flex-grow">
+          <p class="flex-auto font-medium text-lg">Delivery Methods</p>
+        </div>
+        <!--    <app-button variant="text" size="sm" text="Edit" icon="edit" iconPosition="left" (clicked)="ila_details.emit()"
+          class="flex flex-row text-sm font-normal text-gray-four items-center">
+        </app-button> -->
+      </div>
+      <!-- Delivery Methods Header Ends-->
+
+      <div class="flex flex-col text-sm">
+        <div *ngFor="let i of delivery_methods">
+          <ul class="mb-2">
+            {{
+              i.value
+            }}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <!--Delivery Methods Ends-->
+  </div>
+  <!--right side of page ends-->
+</div>
+
+<!--fly in for prerequisites-->
+<ng-template #addPrerequisitesPanel>
+  <app-fly-panel-ila-prerequisites
+    [edit_pre]="message4"
+    (prerequisites)="receivePrerequisites($event)"
+    (preqList)="recievepreqList($event)"
+    [ILAID]="ILAID"
+  >
+  </app-fly-panel-ila-prerequisites>
+</ng-template>
+
+<!--fly in for procedures-->
+<ng-template #addproceduresPanel>
+  <app-fly-panel-ila-procedures
+    [alreadyLinked]="message1"
+    (procedures)="receiveProcedures($event)"
+    [ILAID]="ILAID"
+  >
+  </app-fly-panel-ila-procedures>
+</ng-template>
+
+<!--fly in for safety hazards-->
+<ng-template #addSafetyHazardPanel>
+  <app-fly-panel-ila-safety-hazard
+    (safetyhazard)="receiveSafetyHazard($event)"
+    [safteyHazard_array]="message3"
+    [ILAID]="ILAID"
+  >
+  </app-fly-panel-ila-safety-hazard>
+</ng-template>
+
+<!--fly in for regulatory requirements-->
+<ng-template #addRegulatoryRequirement>
+  <app-fly-panel-ila-regulatory-requirements
+    (regulatorty_req)="receiveRequirementRegulatory($event)"
+    [regrequirement_array]="message"
+    [ILAID]="ILAID"
+    [regulatoryrequirements_edit]="regulatoryrequirements_edit"
+  >
+  </app-fly-panel-ila-regulatory-requirements>
+</ng-template>
+
+<ng-template #unlinkModal>
+  <app-qtd-dialogue header="Unlink  {{('prerequisites' | labelReplacement)| async}}" cancelText="No" confirmText="Yes"
+       [description] = "unlinkPrerequisiteDescription" (canceled)="dialog.closeAll()" (confirmed)="unlinkPrerequisite($event)">
+  </app-qtd-dialogue>
+</ng-template>

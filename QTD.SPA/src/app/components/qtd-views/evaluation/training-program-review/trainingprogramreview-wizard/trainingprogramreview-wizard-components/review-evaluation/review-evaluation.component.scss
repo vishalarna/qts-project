@@ -1,0 +1,50 @@
+.mat-step-section {
+  display: flex;
+  justify-content: space-between;
+  padding-bottom: 2.5rem;
+  margin-bottom: 2.5rem;
+
+  &.with-bottom-border {
+    border-bottom: 1px solid #e1e5e4;
+  }
+  .step-header-section {
+    display: flex;
+    flex: 1 1 30%;
+    flex-direction: column;
+    padding-right: 0.8rem;
+
+    .step-main-header {
+      color: #000d09;
+      font-size: 1rem;
+      font-weight: 500;
+      line-height: 143%; /* 1.43rem */
+      letter-spacing: 0.00938rem;
+    }
+    .step-header-caption {
+      color: #7a807e;
+      font-size: 0.75rem;
+      font-weight: 400;
+      line-height: 166%; /* 1.245rem */
+      letter-spacing: 0.025rem;
+    }
+  }
+  .step-controls-section {
+    padding: 1.5rem 2rem;
+    flex: 1 1 70%;
+    border-radius: 0.25rem;
+    border: 0.5px solid #e1e5e4;
+    background: #fff;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+    .step-control-container {
+      margin-bottom: 1.19rem;
+    }
+    .step-control-label {
+      color: #000d09;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 143%; /* 1.25125rem */
+      letter-spacing: 0.00938rem;
+      margin-bottom: 0.5rem;
+    }
+  }
+}

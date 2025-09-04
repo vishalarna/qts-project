@@ -1,0 +1,100 @@
+[
+ {
+  "Id": 1,
+  "SaftyHazardCategoryId": 1,
+  "Number": "CH-001",
+  "Title": "Liquids, cleaning products, paints, ",
+  "Active": true
+ },
+ {
+  "Id": 2,
+  "SaftyHazardCategoryId": 1,
+  "Number": "CH-002",
+  "Title": "Vapors, fumes, asbestos",
+  "Active": true
+ },
+ {
+  "Id": 3,
+  "SaftyHazardCategoryId": 1,
+  "Number": "CH-003",
+  "Title": "Gases",
+  "Active": true
+ },
+ {
+  "Id": 4,
+  "SaftyHazardCategoryId": 1,
+  "Number": "CH-004",
+  "Title": "Flammable materials",
+  "Active": true
+ },
+ {
+  "Id": 5,
+  "SaftyHazardCategoryId": 2,
+  "Number": "PHY-001",
+  "Title": "Noise",
+  "Active": true
+ },
+ {
+  "Id": 6,
+  "SaftyHazardCategoryId": 2,
+  "Number": "PHY-002",
+  "Title": "Temperature",
+  "Active": true
+ },
+ {
+  "Id": 7,
+  "SaftyHazardCategoryId": 2,
+  "Number": "PHY-003",
+  "Title": "Lighting",
+  "Active": true
+ },
+ {
+  "Id": 8,
+  "SaftyHazardCategoryId": 2,
+  "Number": "PHY-004",
+  "Title": "Radiation",
+  "Active": true
+ },
+ {
+  "Id": 9,
+  "SaftyHazardCategoryId": 3,
+  "Number": "ERG-001",
+  "Title": "Lifting",
+  "Active": true
+ },
+ {
+  "Id": 10,
+  "SaftyHazardCategoryId": 3,
+  "Number": "ERG-002",
+  "Title": "Sitting ",
+  "Active": true
+ },
+ {
+  "Id": 11,
+  "SaftyHazardCategoryId": 3,
+  "Number": "ERG-003",
+  "Title": "Posture",
+  "Active": true
+ },
+ {
+  "Id": 12,
+  "SaftyHazardCategoryId": 4,
+  "Number": "BIO-001",
+  "Title": "Plants and Insects",
+  "Active": true
+ },
+ {
+  "Id": 13,
+  "SaftyHazardCategoryId": 4,
+  "Number": "BIO-002",
+  "Title": "Blood and bodily fluids",
+  "Active": true
+ },
+ {
+  "Id": 14,
+  "SaftyHazardCategoryId": 4,
+  "Number": "BIO-003",
+  "Title": "Fungi and mold",
+  "Active": true
+ }
+]

@@ -1,0 +1,126 @@
+<div class="flex flex-col px-12 py-12">
+    <ng-container>
+        <div class="flex flex-row justify-between px-2 mb-3">
+            <h2>Add {{("ILA" | labelReplacement)| async}}s to Meta {{("ILA" | labelReplacement)| async}}</h2>
+            <app-button ButtonType="icon" icon="close" (clicked)="closed.emit()"></app-button>
+        </div>
+        <div class="search-set-container" *ngIf="!spinner">
+            <div class="flex flex-grow keyword-input">
+                <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                </svg>
+                <input class="text-sm flex-grow focus:outline-none" [value]="searchString" placeholder=" Search {{('ILA' | labelReplacement)| async}}s" type="text" (input)="searchILAs($event)" />
+            </div>
+        </div>
+    </ng-container>
+  <div class="spinner-container" *ngIf="spinner">
+  <app-spinner></app-spinner>
+</div>
+    <div class="rounded-t-md py-4 space-x-2" *ngIf="selection.selected.length > 0">
+        <mat-toolbar class="h-28 app-toolbar-sticky w-full">
+            <div class="flex flex-row items-center space-x-4 w-full justify-between">
+                <span class="text-sm">
+                    {{ selection.selected.length }} {{("ILA" | labelReplacement)| async}}{{ selection.selected.length > 1 ? 's' : '' }} selected
+                </span>
+                <div class="flex flex-row space-x-4 m-3 text-sm float-right">
+                    <app-button color="secondary" text="Add to Meta {{('ILA' | labelReplacement)| async}} " [disabled] = "spinner"
+                        (clicked)="linkILAs()" size="sm" icon="link" iconPosition="left">
+                    </app-button>
+                </div>
+            </div>
+        </mat-toolbar>
+      </div>
+      <div class="flex flex-row my-4 gap-3" *ngIf="!spinner">
+        <div class="flex flex-col w-50 gap-3">
+            <app-label text="Providers"></app-label>
+            <mat-select placeholder="Select Provider" (selectionChange)="onProviderChange($event.value)" class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                <mat-option [value]="0">--All--</mat-option>
+                <mat-option *ngFor="let provider of providers" [value]="provider.id" >
+                {{provider.name}}
+                </mat-option>
+            </mat-select>
+        </div>
+        <div class="flex flex-col w-50 gap-3">
+        <app-label text="Delivery Methods"></app-label>
+          <mat-select placeholder="Select Delivery Methods" (selectionChange)="onDeliveryMethodChange($event.value)" class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+            <mat-option [value]="0">--All--</mat-option>
+            <mat-option *ngFor="let deliveryMethod of deliveryMethods" [value]="deliveryMethod.id">
+              {{deliveryMethod.name}}
+            </mat-option>
+          </mat-select>
+        </div>
+      </div>
+    <div class="filter-list-data">
+    <mat-table *ngIf="!spinner" [dataSource]="dataSource" matSort (matSortChange)="sortData($event)">
+        <ng-container matColumnDef="index">
+            <mat-header-cell *matHeaderCellDef class="check-box"> 
+                <mat-checkbox (change)="$event ? masterToggle() : null"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()"></mat-checkbox>
+              </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="check-box">
+                <mat-checkbox *ngIf="!ILAsIds.includes(row.id)" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row) || row.checked" [disabled]="row.disabled" [ngClass]="{'disabled-checkbox': row.disabled}"></mat-checkbox>
+              </mat-cell>
+          </ng-container>
+        <ng-container matColumnDef="number">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="ilanum-title-nickname-provider p-lr-5"> {{("ILA" | labelReplacement)| async}} NO
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="ilanum-title-nickname-provider p-lr-5">{{row.number}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="title">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="ilanum-title-nickname-provider p-lr-5"> {{("ILA" | labelReplacement)| async}} Title
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="ilanum-title-nickname-provider p-lr-5">{{row.title}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="nickName">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="ilanum-title-nickname-provider p-lr-5"> Nickname
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="ilanum-title-nickname-provider p-lr-5">{{row.nickName}} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="provider">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="ilanum-title-nickname-provider p-lr-5">Provider
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="ilanum-title-nickname-provider p-lr-5">{{row.provider}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="isMeta">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="is-meta p-lr-5">IsMeta
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="is-meta p-lr-5">{{row.isMeta}}</mat-cell>
+        </ng-container>
+         <ng-container matColumnDef="creditHours">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="credit-hours p-lr-5 text-center">Credit Hours
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="credit-hours p-lr-5">{{row.creditHours===undefined || row.creditHours===null ?"N/A":row.creditHours}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="deliveryMethods">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="deliveryMethod-status p-lr-5 text-center">Delivery Methods
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="deliveryMethod-status p-lr-5">{{row.deliveryMethods}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="deliveryMethod-status p-lr-5">Status
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="flex flex-row justify-between deliveryMethod-status p-lr-5">
+                <div class="w-28 items-center">
+                  <p class="rounded-sm  text-xs font-medium active-view"
+                    [ngClass]="{'customcolorgreenOnlyText':row.active === true,'customcolorRedOnlyText':row.active === false}">
+                    {{row.active === true ? "Active":"Inactive"}}
+                  </p>
+                  <p class="rounded-sm  text-xs text-green-700 font-medium status-view"
+                    [ngClass]="{'blueBg':(row.status==='Published'),'bg-gray-100':row.status === 'Inactive','yellowBg':row.status==='Draft'}">
+                    {{row.status}}</p>
+                </div>
+            </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row flex text-center " *matNoDataRow>
+            <td class="mat-cell w-full m-2 no-data-cell" >No Data Found</td>
+        </tr>
+    </mat-table>
+</div>
+    <div>

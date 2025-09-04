@@ -1,0 +1,132 @@
+<ng-container>
+    <div class="px-12">
+
+
+    <div class="flex flex-row justify-between items-center mt-5">
+      <p class="text-xl font-bold text-gray-900">
+
+        <ng-container>
+                 Edit Start/End Date
+        </ng-container>
+
+
+      </p>
+
+      <app-button (click)="closeflyPanel()" ButtonType='icon' icon="close"></app-button>
+    </div>
+    <span>Edit start/end date for <span class="text-qtd">QT_456_001 Introduction to Power</span></span>
+    <form [formGroup]="editTrainingForm">
+      <div class="flex flex-row my-5">
+        <div class="flex flex-col justify-between" style="width: 50%;">
+          <app-label [for]="'startDate'" [text]="'Start Date '" class="label"></app-label>
+          <app-date formControlName="startDate"></app-date>
+        </div>
+        <div class="flex flex-col ml-2" style="width: 50%;">
+            <div class="flex flex-row justify-between" style="align-items:center">
+
+            <app-label [for]="'endDate'" [text]="'End Date'" class="label"></app-label>
+
+
+        </div>
+          <app-date formControlName="endDate"></app-date>
+          </div>
+
+      </div>
+      <div class="flex flex-row my-5">
+        <div class="flex flex-col justify-between" style="width: 50%;">
+          <app-label [for]="'startTime'" [text]="'Start Time '" class="label"></app-label>
+          <mat-form-field appearance="outline">
+            <input matInput type="time" value="03:00" formControlName="startTime">
+        </mat-form-field>
+        </div>
+        <div class="flex flex-col ml-2" style="width: 50%;">
+            <div class="flex flex-row justify-between" style="align-items:center">
+
+            <app-label [for]="'endTime'" [text]="'End Time'" class="label"></app-label>
+
+
+        </div>
+        <mat-form-field appearance="outline">
+            <input matInput type="time" value="03:00" formControlName="endTime">
+        </mat-form-field>
+          </div>
+
+      </div>
+
+
+        <div class="flex flex-row my-5">
+        <div class="flex flex-col justify-between" style="width: 50%;">
+          <app-label [for]="'instructor'" text="{{('Instructor' | labelReplacement)| async}}" class="label required"></app-label>
+
+          <mat-select formControlName="instructorId" placeholder="Select {{('Instructor' | labelReplacement)| async}}" required class="
+              appearance-none
+              rounded
+              border
+              w-full
+              px-4
+              py-2.5
+              align-item-end
+              bg-white
+            ">
+            <mat-option *ngFor="let p of instructor_list" [value]="p.id">
+              {{ p.instructorName }}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="flex flex-col ml-2" style="width: 50%;">
+            <div class="flex flex-row justify-between" style="align-items:center">
+
+              <app-label [for]="'location'" text="{{('Location' | labelReplacement)| async}}" class="label required"></app-label>
+
+        </div>
+        <mat-select formControlName="locationId" placeholder="Select {{('Location' | labelReplacement)| async}}" required class="
+        appearance-none
+        rounded
+        border
+        w-full
+        px-4
+        py-2.5
+        align-item-end
+        bg-white
+      ">
+      <mat-option *ngFor="let p of location_list" [value]="p.id">
+        {{ p?.locName }}
+      </mat-option>
+    </mat-select>
+          </div>
+
+      </div>
+
+
+
+
+
+
+      <div class="flex flex-row my-5">
+
+        <div class="flex flex-col w-full">
+            <app-label text="Notes">
+
+            </app-label>
+            <app-textarea formControlName="courseInstruction">
+
+            </app-textarea>
+        </div>
+
+      </div>
+
+
+
+      <div class="mt-8 float-right">
+        <app-button (clicked)="updateData()"
+          type="button" size="sm"  text="Save">
+        </app-button>
+
+
+      </div>
+
+
+    </form>
+</div>
+  </ng-container>
+

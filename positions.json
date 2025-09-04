@@ -1,0 +1,42 @@
+[
+  {
+    "PositionTitle": "Transmission System Operator",
+    "PositionDescription": "Transmission System Operator",
+    "IsPublished":  true
+  },
+  {
+    "PositionTitle": "Senior System Operator",
+    "PositionDescription": "Senior System Operator",
+    "IsPublished": true
+  },
+  {
+    "PositionTitle": "Shift Supervisor",
+    "PositionDescription": "Shift Supervisor",
+    "IsPublished": true
+  },
+  {
+    "PositionTitle": "Generation Operator",
+    "PositionDescription": "Generation Operator",
+    "IsPublished": true
+  },
+  {
+    "PositionTitle": "Training Administrator",
+    "PositionDescription": "Training Administrator",
+    "IsPublished": true
+  },
+  {
+    "PositionTitle": "Transmission Planner",
+    "PositionDescription": "Transmission Planner",
+    "IsPublished": true
+  },
+  {
+    "PositionTitle": "Distribution System Operator",
+    "PositionDescription": "Distribution System Operator",
+    "IsPublished": true
+  },
+  {
+    "PositionTitle": "Lineman",
+    "PositionDescription": "Lineman",
+    "IsPublished": true
+  }
+]

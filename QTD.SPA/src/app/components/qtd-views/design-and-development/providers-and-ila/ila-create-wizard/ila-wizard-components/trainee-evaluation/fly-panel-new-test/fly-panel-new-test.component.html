@@ -1,0 +1,206 @@
+<ng-container *ngIf="!view_data">
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p *ngIf="!view_data" class="text-xl font-semibold text-gray-900">Create New Test Item</p>
+    <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+  </div>
+  <!-- header ends here -->
+
+  <!--EO's start here-->
+  <div class="flex flex-col ml-12 mr-12 mt-6">
+    <div>
+      <p class="font-semibold text-sm">Add {{("Enabling Objective" | labelReplacement)| async}} for Test Items</p>
+    </div>
+
+    <div>
+      <button (click)="ShowDropDown()" variant="text" style="color: rgb(92, 155, 49) !important;">List Enabling
+        Objectives
+        for Selected {{("ILA" | labelReplacement)| async}}
+        <app-icon *ngIf="isDropdownVisible" icon="expand_less"></app-icon>
+        <app-icon *ngIf="!isDropdownVisible" icon="expand_more"></app-icon>
+      </button>
+      <div *ngIf="isDropdownVisible">
+        <div class="flex flex-row justify-between text-gray-four text-xs mt-4">
+          <p class="mt-2" *ngIf="!remove_array_length">Showing {{obj_length}} {{("Enabling Objective" | labelReplacement)| async}}(s)</p>
+        </div>
+        <table class="table w-full border text-left mt-5 hover" [formGroup]="EOForm">
+          <tbody>
+            <mat-radio-group formControlName="EO_id">
+              <tr *ngFor="let item of obj_topics" class="table-row text-sm font-normal hover:bg-gray-50">
+                <td class="table-cell align-middle border-b-0.8 border-gray-one">
+                  <mat-radio-button value="{{item.id}}" (change)="checkEnablingObjectives(item.id)">
+                  </mat-radio-button>
+                </td>
+                <td class=" table-cell align-middle border-b-0.8 border-gray-one w-full">
+                  {{item.description}}
+                </td>
+              </tr>
+            </mat-radio-group>
+          </tbody>
+          <app-input-error class="mt--2" *ngIf="EOForm.get('EO_id')?.hasError('required')"
+            text="{{('Enabling Objective' | labelReplacement)| async}} is Required"></app-input-error>
+        </table>
+
+      </div>
+    </div>
+
+  </div>
+
+  <!--EO's start end-->
+
+  <!--Question Type and Taxonomy Level Starts Here-->
+
+  <div class="flex flex-row ml-12 mt-16 justify-between mr-12">
+    <div>
+      <div *ngIf="!editable" [formGroup]="QuestionTypeForm" class="flex flex-col">
+        <mat-label class="font-medium text-sm">Question Type</mat-label>
+        <mat-form-field appearance="outline" class="dropdown w-56">
+          <mat-select placeholder="Select Value" formControlName="questionType">
+            <mat-option *ngFor="let d of question_type" [value]="d"
+              (onSelectionChange)="OnSelectionChangeQuestion(d.description,$event)">
+              {{d.description}}
+            </mat-option>
+          </mat-select>
+        </mat-form-field><br>
+        <app-input-error class="mt--2" *ngIf="QuestionTypeForm.controls.questionType.errors?.['required']"
+          [text]="'Question Type is Required'"></app-input-error>
+      </div>
+      <div *ngIf="editable" class="flex flex-col">
+        <mat-label class="font-medium text-sm">Question Type</mat-label>
+        <input appearance="outline" style="border: 1px solid black;" class="w-56 p-3 outline-black rounded-sm"
+          readonly="true" value="{{defaultType}}">
+      </div>
+    </div>
+    <div>
+      <div>
+        <div *ngIf="!editable" [formGroup]="TaxonomyLevelForm" class="flex flex-col">
+          <mat-label class="font-medium text-sm">Taxonomy Level
+            <!--   <app-icon icon="help"  [matTooltipClass]="'multiline-tooltip'"
+              matTooltip="Select appropriate level of complexity for Test Question.Recall - Remember facts and concept.&#13;Application - Use information and concepts in different situations&#13;Analyze - Establish relationships between presented information">
+            </app-icon> -->
+            <app-icon icon="help_outline" style="color:lightgray;" [matTooltipClass]="'multiline-tooltip'" matTooltip="Select appropriate level of complexity for Test Question.
+            &#13;Recall - Remember facts and concept.
+            &#13;Application - Use information and concepts in different situations
+            &#13;Analyze - Establish relationships between presented information
+            &#13;Evaluate - Make decisions based on criteria and standards
+            &#13;Create- Put elements together to form a  functional whole"></app-icon>
+          </mat-label>  
+          <mat-form-field appearance="outline" class="dropdown w-56 ">
+            <mat-select placeholder="Select Value" formControlName="taxonomyLevel">
+              <mat-option *ngFor="let d of taxonomy" [value]="d">
+                {{d.description}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field><br>
+          <app-input-error class="mt--2" *ngIf="TaxonomyLevelForm.controls.taxonomyLevel.errors?.['required']"
+            [text]="'Taxonomy is Required'"></app-input-error>
+        </div>
+      </div>
+      <div *ngIf="editable" class="flex flex-col">
+        <mat-label class="font-medium text-sm">Taxonomy Level</mat-label>
+        <input appearance="outline" style="border: 1px solid black;" class="w-56 p-3 outline-black rounded-sm"
+          readonly="true" value="{{defaultTaxonomy}}">
+      </div>
+    </div>
+
+
+  </div>
+  <!--Question Type and Taxonomy Level Ends Here-->
+
+  <app-mcqs-test [update]="update" [question_Id]="question_Id" *ngIf="qType == 'Multiple Choice Questions'" (answer)="recieveAnswer($event)"
+    (close_flypanel)="recievePanel($event)">
+  </app-mcqs-test>
+
+  <app-fill-in-the-blanks  [update]="update" [question_Id]="question_Id" *ngIf="qType == 'Fill in the Blank'" (close_flypanel)="recievePanel($event)"> </app-fill-in-the-blanks>
+  <app-true-false [update]="update" [question_Id]="question_Id" *ngIf="qType == 'True / False'"></app-true-false>
+  <app-match-the-column [update]="update" [question_Id]="question_Id" *ngIf="qType == 'Match the Column'"></app-match-the-column>
+  <app-short-answers [update]="update" [question_Id]="question_Id" *ngIf="qType == 'Short Answers'"></app-short-answers>
+</ng-container>
+
+<ng-container *ngIf="view_data">
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-semibold text-gray-900">View Test Item</p>
+    <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+  </div>
+
+  <div class="flex flex-col ml-12 mr-12 mt-6">
+    <div>
+      <p class="font-semibold text-sm">Add {{("Enabling Objective" | labelReplacement)| async}} for Test Items</p>
+    </div>
+
+    <div>
+      <p>{{("Enabling Objective" | labelReplacement)| async}} Linked to the question</p>
+      <table class="table w-full border text-left mt-5 hover">
+        <tbody>
+          <tr class="table-row text-sm font-normal hover:bg-gray-50">
+            <td class="table-cell align-middle border-b-0.8 border-gray-one">
+              <p>
+                {{linked_objective}}
+              </p>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="flex flex-row ml-12 mt-16 justify-between">
+    <div class="p-3 border-gray-200 flex flex-col">
+      <div>
+        Question Type :
+      </div>
+      <div class="p-3 rounded-sm border-2 border-gray-500">
+        {{questionType}}
+      </div>
+    </div>
+    <div class="border-gray-200 flex flex-col mr-5">
+      <div>
+        Taxonomy Level :
+      </div>
+      <div class="p-3 rounded-sm border-2 border-gray-500">
+        {{taxonomyLevel}}
+      </div>
+    </div>
+  </div>
+
+  <!-- True False View -->
+  <ng-container *ngIf="viewToDisplay === 'TF'">
+    <div class="ml-12 mt-16 flex flex-col">
+      <div>
+        {{questionStatement}}
+      </div>
+      <div>
+        <ng-container *ngFor="let option of trueFalseOptions">
+          <div class="flex flex-col border-black p-3">
+            {{option.choices}}
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- MCQ View -->
+  <ng-container *ngIf="viewToDisplay === 'MCQ'">
+    <div class="ml-12 mt-16 flex flex-col">
+      <div>
+        {{questionStatement}}
+      </div>
+      <div>
+        <ng-container *ngFor="let option of mcqOptions">
+          <div class="flex flex-col border-black p-3">
+            {{option.choices}}
+          </div>
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
+
+  <!-- Short Answer View -->
+  <ng-container *ngIf="viewToDisplay === 'SA'">
+
+  </ng-container>
+
+  <!-- Multiple Choice View -->
+  <ng-container *ngIf="viewToDisplay === 'MC'">
+
+  </ng-container>
+</ng-container>

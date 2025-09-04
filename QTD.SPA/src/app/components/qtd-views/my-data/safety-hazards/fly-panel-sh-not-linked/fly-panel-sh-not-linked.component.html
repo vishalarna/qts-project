@@ -1,0 +1,111 @@
+<ng-container *ngIf=" activeInactiveCheck === false"                     >
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+        <p class="text-xl font-bold text-gray-900">{{"Safety Hazards Not Linked to " + NotLinkedToName | dynamicLabelReplacement| async }}
+        </p>
+        <app-button (click)="closeFlyPanel()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <div class="flex flex-row items-center border-b py-4 px-4 ml-8 mr-8">
+        <app-icon icon="search" class="text-gray-400"></app-icon>
+        <input  [(ngModel)]="searchText" (ngModelChange)="searchFilter()"  type="text" id="name" placeholder="Search"
+            class="w-full transition duration-200 focus:shadow-xs focus:outline-none ring-offset-2 ml-2 text-sm font-normal">
+            <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+
+    </div>
+
+    <div class="flex flex-row px-12 mt-4 text-xs text-gray-500">
+        <div class="cursor-pointer">
+            <span> Showing: Active
+                <label mat-button class="mb-0">
+                    {{("Safety Hazard" | labelReplacement)| async}}s
+                </label>
+           <!--      <app-icon icon="expand_more"></app-icon> -->
+            </span>
+
+           <!--  <mat-menu #menu="matMenu"> -->
+                <!-- <label mat-menu-item>
+                    Active</label> -->
+
+               <!--  <label mat-menu-item *ngIf="showActive" (click)="toggleActiveFilter(false)">
+                    Inactive</label>
+            </mat-menu> -->
+        </div>
+
+    </div>
+
+    <app-data-loader *ngIf="spinner"></app-data-loader>
+    <ng-container *ngIf="treedataSource.data.length > 0">
+        <div class="flex flex-col px-12">
+
+            <mat-tree [dataSource]="treedataSource" [treeControl]="tasktreeControl" class="qtd-tree">
+                <!-- This is the tree node template for leaf nodes -->
+                <!-- There is inline padding applied to this node using styles.
+                    This padding value depends on the mat-icon-button width. -->
+                <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                   <!--  <app-icon icon="link_off" (click)="unlinkItemsModal(unlinkTaskModal, node.id)"></app-icon>
+                    &nbsp;&nbsp;
+                    {{node.description}} -->
+                    <ng-container>
+                        <app-icon *ngIf="node.isSafetyHazard" icon="link_off"></app-icon> {{node.description}}
+                    </ng-container>
+                </mat-tree-node>
+                <!-- This is the tree node template for expandable nodes -->
+                <mat-nested-tree-node *matTreeNodeDef="let node; when: hasTaskChild">
+                    <div class="mat-tree-node">
+                        <button style="outline:none;" mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.description">
+                            <app-icon [icon]="tasktreeControl.isExpanded(node) ? 'expand_more' : 'expand_less'">
+                            </app-icon>
+                        </button>
+
+                        {{node.description}}
+                    </div>
+                    <!-- There is inline padding applied to this div using styles.
+                          This padding value depends on the mat-icon-button width.  -->
+                    <div [class.qtd-tree-invisible]="!tasktreeControl.isExpanded(node)" role="group">
+                        <ng-container matTreeNodeOutlet></ng-container>
+                    </div>
+                </mat-nested-tree-node>
+            </mat-tree>
+        </div>
+    </ng-container>
+
+
+    <ng-template #unlinkTaskModal>
+        <app-qtd-dialogue [header]="NotLinkedToName" [description]="unlinkDescription" cancelText="No" confirmText="Yes"
+            [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="getData($event)">
+        </app-qtd-dialogue>
+    </ng-template>
+
+</ng-container>
+
+
+<ng-container *ngIf=" activeInactiveCheck === true">
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+        <p class="text-xl font-bold text-gray-900">{{moduleName}}
+        </p>
+        <app-button (click)="closeFlyPanel()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+
+    <app-data-loader *ngIf="spinner"></app-data-loader>
+    <ng-container *ngIf="treedataSource.data.length > 0">
+        <div class="flex flex-col px-12">
+
+            <mat-tree [dataSource]="treedataSource" [treeControl]="tasktreeControl" class="qtd-tree">
+                <!-- This is the tree node template for leaf nodes -->
+                <!-- There is inline padding applied to this node using styles.
+                    This padding value depends on the mat-icon-button width. -->
+                <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                   <!--  <app-icon icon="link_off" (click)="unlinkItemsModal(unlinkTaskModal, node.id)"></app-icon>
+                    &nbsp;&nbsp;
+                    {{node.description}} -->
+
+                    <span *ngIf="NotLinkedToName === 'Catactive' || NotLinkedToName === 'Catinactive'">{{node.number}} - {{node.title}}</span>
+                    <span *ngIf="NotLinkedToName === 'Shactive' || NotLinkedToName === 'Shinactive'">{{node.number}} - {{node.title}}</span>
+   
+                </mat-tree-node>
+            </mat-tree>
+        </div>
+    </ng-container>
+
+</ng-container>

@@ -1,0 +1,207 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+  <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBack()">
+  </app-button>
+  <div class="flex flex-row items-center space-x-4 w-full justify-between">
+    <h1>{{ title }}</h1>
+    <div class="justify-between">
+      <app-button size="sm" type="button" text="Close" *ngIf="currentIndex === 0" (clicked)="goBack()">
+      </app-button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<app-data-loader *ngIf="loader"></app-data-loader>
+<div *ngIf="!loader && ilas && ilas.length < 1" class="w-full flex justify-center mt-5" style="align-items:center;">
+  <span>No Data Found</span>
+</div>
+<div *ngIf="!loader && ilas && ilas.length > 0" class="flex w-full" style="justify-content: center">
+  <div style="width: 70%" class="flex flex-col">
+    <!-- Provider And ILA Section -->
+    <section class="flex flex-row border-gray-one pt-4 pb-4 rounded-sm">
+      <table mat-table [dataSource]="dataSource" multiTemplateDataRows class="mat-elevation-z8" matSort>
+        <ng-container matColumnDef="{{ column }}" *ngFor="let column of columnsToDisplay">
+          <div *ngIf="column === 'select'">
+            <th mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+              </mat-checkbox>
+            </th>
+            <td mat-cell *matCellDef="let element">
+              <mat-checkbox (click)="$event.stopPropagation()"
+                (change)="$event ? selection.toggle(element[column]) : null"
+                [checked]="selection.isSelected(element[column])" [aria-label]="checkboxLabel(element[column])">
+              </mat-checkbox>
+            </td>
+          </div>
+          <div *ngIf="column !== 'select'">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>
+              {{ column | dynamicLabelReplacement| async  }}
+            </th>
+
+            <td mat-cell *matCellDef="let element">
+              <app-button variant="text" icon="{{
+                  element === expandedElement
+                    ? 'keyboard_arrow_down'
+                    : 'keyboard_arrow_up'
+                }}" *ngIf="(column === 'ILA No.') && doShowMainExpandable" (click)="toggleRow(element)"></app-button>
+              {{ element[column] }}
+              <div class="flex flex-row items-center text-gray-four btn-group" *ngIf="column === 'action'">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_horiz"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <!-- <label mat-menu-item>Edit Training</label>
+                                  <label mat-menu-item [routerLink]="'/implementation/sc/grades/1'">View/Edit Grades</label>
+                                  <label mat-menu-item>Delete</label> -->
+                </mat-menu>
+                <!-- </mat-menu> -->
+              </div>
+            </td>
+          </div>
+        </ng-container>
+        <!-- Expanded Content Column - The detail row is made up of this one column that spans across all columns -->
+        <ng-container matColumnDef="expandedDetail">
+          <td mat-cell *matCellDef="let element" [attr.colspan]="columnsToDisplay.length">
+            <div class="example-element-detail" *ngIf="element.addresses && element.addresses?.data?.length"
+              [@detailExpand]="
+                element === expandedElement ? 'expanded' : 'collapsed'
+              ">
+              <div class="inner-table mat-elevation-z8" *ngIf="expandedElement">
+                <table #innerTables mat-table [dataSource]="element.addresses" matSort multiTemplateDataRows>
+                  <ng-container matColumnDef="{{ innerColumn }}" *ngFor="let innerColumn of innerDisplayedColumns">
+                    <div *ngIf="innerColumn === 'select'">
+                      <th mat-header-cell *matHeaderCellDef>
+                        <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                          [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="
+                            selection.hasValue() && !isAllSelected()
+                          " [aria-label]="checkboxLabel()">
+                        </mat-checkbox>
+                      </th>
+                      <td mat-cell *matCellDef="let element">
+                        <mat-checkbox (click)="$event.stopPropagation()" (change)="
+                            $event
+                              ? selection.toggle(element[innerColumn])
+                              : null
+                          " [checked]="selection.isSelected(element[innerColumn])"
+                          [aria-label]="checkboxLabel(element[innerColumn])">
+                        </mat-checkbox>
+                      </td>
+                    </div>
+                    <div *ngIf="innerColumn !== 'select'">
+                      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                        {{ innerColumn | dynamicLabelReplacement | async }}
+                      </th>
+
+                      <td mat-cell *matCellDef="let element">
+                        <app-button variant="text" icon="{{
+                            element == expandedSubElement
+                              ? 'keyboard_arrow_down'
+                              : 'keyboard_arrow_up'
+                          }}" *ngIf="innerColumn === 'Class Date' || (innerColumn === 'Class Date' && showRetakeButton)" (click)="toggleSubRow(element)"></app-button>
+                        {{ element[innerColumn] }}
+                      </td>
+                    </div>
+                  </ng-container>
+
+                  <!-- Expanded SubContent Column - The subdetail row is made up of this one column that spans across all columns -->
+                  <ng-container matColumnDef="expandedSubDetail">
+                    <td mat-cell *matCellDef="let element" [attr.colspan]="innerDisplayedColumns.length">
+                      <div class="example-element-detail"
+                        *ngIf="element.blocks && element.blocks?.data && element.blocks?.data.length" [@detailExpand]="
+                          element === expandedSubElement
+                            ? 'expanded'
+                            : 'collapsed'
+                        ">
+                        <div class="inner-table mat-elevation-z8" *ngIf="expandedSubElement">
+                          <table #subTables mat-table [dataSource]="expandedSubElement.blocks" matSort>
+                            <ng-container matColumnDef="{{ innerColumn }}" *ngFor="
+                                let innerColumn of subBlockDisplayedColumns
+                              ">
+                              <div *ngIf="innerColumn === 'select'">
+                                <th mat-header-cell *matHeaderCellDef>
+                                  <mat-checkbox (change)="$event ? toggleAllRows() : null" [checked]="
+                                      selection.hasValue() && isAllSelected()
+                                    " [indeterminate]="
+                                      selection.hasValue() && !isAllSelected()
+                                    " [aria-label]="checkboxLabel()">
+                                  </mat-checkbox>
+                                </th>
+                                <td mat-cell *matCellDef="let element">
+                                  <mat-checkbox (click)="$event.stopPropagation()" (change)="
+                                      $event
+                                        ? selection.toggle(element[innerColumn])
+                                        : null
+                                    " [checked]="
+                                      selection.isSelected(element[innerColumn])
+                                    " [aria-label]="
+                                      checkboxLabel(element[innerColumn])
+                                    ">
+                                  </mat-checkbox>
+                                </td>
+                              </div>
+                              <div *ngIf="innerColumn !== 'select'">
+                                <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                                  {{ innerColumn | dynamicLabelReplacement | async}}
+                                </th>
+
+                                <td mat-cell *matCellDef="let element">
+                                  {{ element[innerColumn] }}
+                                  <div *ngIf="innerColumn === 'Action'">
+                                    <div *ngIf="showEnrollButtons" class="flex">
+                                      <app-button *ngIf="!element.isEnrolled"
+                                      (clicked)="enrollStudent(element.empId,element.classId)" variant="text"
+                                      class="mt-2 pl-3" text="Enroll" icon="edit" iconPosition="left"></app-button>
+                                      <app-button *ngIf="!element.isEnrolled" variant="text" class="mt-2 pl-3"
+                                        text="Decline" (clicked)="declineEmployee(element.empId,element.classId)"
+                                        icon="close" iconPosition="left"></app-button>
+                                      <app-button variant="text"
+                                        *ngIf="!element.isEnrolled && !element.isWaitlisted && element.waitListEnabled"
+                                        class="mt-2 pl-3" text="Add to WaitList" icon="add"
+                                        (clicked)="addToWaitList(element.empId,element.classId);"
+                                        iconPosition="left"></app-button>
+                                    </div>
+                                    <div *ngIf="showReleaseButton" class="flex">
+                                        <app-button *ngIf="!element.isEnrolled"
+                                        (clicked)="releaseTest(element)" variant="text"
+                                          class="mt-2 pl-3" text="Release Test" icon="article" iconPosition="left"></app-button>
+                                    </div>
+                                    <div *ngIf="showRetakeButton">
+                                      <app-button *ngIf="!element.isEnrolled"
+                                      (clicked)="releaseRetake(element)" variant="text"
+                                        class="mt-2 pl-3" text="Release Retake" icon="article" iconPosition="left"></app-button>
+                                    </div>
+                                  </div>
+                                </td>
+                              </div>
+                            </ng-container>
+                            <tr mat-header-row *matHeaderRowDef="subBlockDisplayedColumns"></tr>
+                            <tr mat-row *matRowDef="
+                                let row;
+                                columns: subBlockDisplayedColumns
+                              "></tr>
+                          </table>
+                        </div>
+                      </div>
+                    </td>
+                  </ng-container>
+
+                  <tr mat-header-row *matHeaderRowDef="innerDisplayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: innerDisplayedColumns"></tr>
+                  <tr mat-row *matRowDef="let row; columns: ['expandedSubDetail']" class="example-detail-row"></tr>
+                </table>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+
+        <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+        <tr mat-row *matRowDef="let element; columns: columnsToDisplay"
+          [class.example-element-row]="element.addresses && element.addresses?.data?.length"
+          [class.example-expanded-row]="expandedElement === element"></tr>
+        <tr mat-row *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"
+          [class.example-expanded-row]="expandedSubElement === row"></tr>
+      </table>
+    </section>
+  </div>
+</div>

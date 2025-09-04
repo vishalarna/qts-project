@@ -1,0 +1,58 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+        <p class="text-xl font-bold text-gray-900">{{name}}
+        </p>
+        <app-button (click)="flyInClose.close()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+  <app-spinner *ngIf="spinner"></app-spinner>
+    <ng-container *ngIf="treedataSource.data.length > 0">
+     <!--    <div class="flex flex-col px-12">
+
+            <mat-tree [dataSource]="treedataSource" [treeControl]="tasktreeControl" class="qtd-tree">
+             
+                <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                    &nbsp;&nbsp;
+
+               <span>{{node.testTitle}}</span>
+                   
+
+                </mat-tree-node>
+            </mat-tree>
+        </div> -->
+        
+    <div class="table-container px-12">
+        <mat-table matSort matSortActive="number" matSortDirection="asc" [dataSource]="treedataSource" matSort #procSort="matSort">
+            <ng-container matColumnDef="id">
+                <mat-header-cell mat-sort-header *matHeaderCellDef style="max-width: 100px;"> #
+                </mat-header-cell>
+                <mat-cell  *matCellDef="let row;let i = index" style="max-width: 100px;"> {{row.id}}
+                </mat-cell>
+            </ng-container> 
+            <ng-container matColumnDef="testTitle">
+                <mat-header-cell mat-sort-header *matHeaderCellDef mat-sort-header> Test Title
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">  {{row.testTitle}} 
+              <!--       <div [ngClass]="row.testTitle.trim().toLowerCase().includes('<p>') ? '':'mb-3'" class="flex flex-row"
+                    [innerHTML]="row.TestTitle"></div> -->
+                </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+
+        </mat-table>
+        <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #eoPaging
+        aria-label="Select page of periodic elements">
+        </mat-paginator>
+
+    </div>
+    </ng-container>
+</ng-container>
+
+

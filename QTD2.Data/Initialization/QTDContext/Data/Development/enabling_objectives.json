@@ -1,0 +1,323 @@
+[
+  {
+    "Id": 1,
+    "TopicId": 1,
+    "Description": "Explain the significance of an AC Interconnection; Identify the Interconnections in North America",
+    "Number": "1",
+    "SubCategoryId": 1,
+    "CategoryId": 1
+  },
+  {
+    "Id": 2,
+    "TopicId": 2,
+    "Description": "Sketch major types of bus arrangements ",
+    "Number": "1",
+    "SubCategoryId": 1,
+    "CategoryId": 1
+  },
+  {
+    "Id": 3,
+    "TopicId": 2,
+    "Description": "List the major equipment in a substation control house (alarm panels, relay panels, batteries, etc.) and the functions of each",
+    "Number": "2",
+    "SubCategoryId": 1,
+    "CategoryId": 1
+  },
+  {
+    "Id": 4,
+    "TopicId": 2,
+    "Description": "Describe automated systems used for controlling substation equipment",
+    "Number": "3",
+    "SubCategoryId": 1,
+    "CategoryId": 1
+  },
+  {
+    "Id": 5,
+    "TopicId": 3,
+    "Description": "State the types of loads on the power system including resIdential, commercial and industrial; state the typical motor, non-motor characteristics of each type",
+    "Number": "1",
+    "SubCategoryId": 1,
+    "CategoryId": 1
+  },
+  {
+    "Id": 6,
+    "TopicId": 3,
+    "Description": "State the effect of frequency and voltage on system load",
+    "Number": "2",
+    "SubCategoryId": 1,
+    "CategoryId": 1
+  },
+  {
+    "Id": 7,
+    "TopicId": 3,
+    "Description": "Sketch typical load curves for different times of year and days of week",
+    "Number": "3",
+    "SubCategoryId": 1,
+    "CategoryId": 1
+  },
+  {
+    "Id": 8,
+    "TopicId": 4,
+    "Description": "Explain the American wire gage (AWG) numbering system",
+    "Number": "1",
+    "SubCategoryId": 2,
+    "CategoryId": 1
+  },
+  {
+    "Id": 9,
+    "TopicId": 4,
+    "Description": "Explain the circular mils (CM) method of rating conductor size",
+    "Number": "2",
+    "SubCategoryId": 2,
+    "CategoryId": 1
+  },
+  {
+    "Id": 10,
+    "TopicId": 5,
+    "Description": "Describe the construction of underground pipe-type cable",
+    "Number": "1",
+    "SubCategoryId": 2,
+    "CategoryId": 1
+  },
+  {
+    "Id": 11,
+    "TopicId": 5,
+    "Description": "Describe cooling systems for underground cables and their importance for reliable operations",
+    "Number": "2",
+    "SubCategoryId": 2,
+    "CategoryId": 1
+  },
+  {
+    "Id": 12,
+    "TopicId": 6,
+    "Description": "Explain factors affecting resistance, capacitance, and inductance of an overhead AC transmission line",
+    "Number": "1",
+    "SubCategoryId": 2,
+    "CategoryId": 1
+  },
+  {
+    "Id": 13,
+    "TopicId": 6,
+    "Description": "Define Surge Impedance Loading (SIL) and state the conditions under which it occurs",
+    "Number": "2",
+    "SubCategoryId": 2,
+    "CategoryId": 1
+  },
+  {
+    "Id": 14,
+    "TopicId": 7,
+    "Description": "List the functions of switching devices; fault interruption, load break, visible isolation, sectionalizing",
+    "Number": "1",
+    "SubCategoryId": 3,
+    "CategoryId": 1
+  },
+  {
+    "Id": 15,
+    "TopicId": 7,
+    "Description": "List and explain the major characteristics of switching devices: current rating, speed of operation, voltage, fault interrupting capability, BIL rating",
+    "Number": "2",
+    "SubCategoryId": 3,
+    "CategoryId": 1
+  },
+  {
+    "Id": 16,
+    "TopicId": 7,
+    "Description": "Describe the processes of arc formation and interruption and hence explain the meaning of restrike voltage",
+    "Number": "3",
+    "SubCategoryId": 3,
+    "CategoryId": 1
+  },
+  {
+    "Id": 17,
+    "TopicId": 8,
+    "Description": "State the principal characteristics and typical applications of circuit switchers",
+    "Number": "1",
+    "SubCategoryId": 3,
+    "CategoryId": 1
+  },
+  {
+    "Id": 18,
+    "TopicId": 8,
+    "Description": "List different types of circuit switchers and explain the differences between them",
+    "Number": "2",
+    "SubCategoryId": 3,
+    "CategoryId": 1
+  },
+  {
+    "Id": 19,
+    "TopicId": 8,
+    "Description": "Describe typical construction and principle of operation of circuit switchers",
+    "Number": "3",
+    "SubCategoryId": 3,
+    "CategoryId": 1
+  },
+  {
+    "Id": 20,
+    "TopicId": 9,
+    "Description": "State the principal characteristics and typical applications of disconnects and disconnect switches (both load and no-load break)",
+    "Number": "1",
+    "SubCategoryId": 3,
+    "CategoryId": 1
+  },
+  {
+    "Id": 21,
+    "TopicId": 9,
+    "Description": "Identify typical locations in substations of bank disconnects, line disconnects, bypass disconnects, etc.",
+    "Number": "2",
+    "SubCategoryId": 1,
+    "CategoryId": 1
+  },
+  {
+    "Id": 22,
+    "TopicId": 10,
+    "Description": "Describe the principle of operation of an electric generator (see also Topic 11.3.7)",
+    "Number": "1",
+    "SubCategoryId": 4,
+    "CategoryId": 2
+  },
+  {
+    "Id": 23,
+    "TopicId": 10,
+    "Description": "Describe the basic components of an electric generator: rotor, stator, slip rings, cooling",
+    "Number": "2",
+    "SubCategoryId": 4,
+    "CategoryId": 2
+  },
+  {
+    "Id": 24,
+    "TopicId": 11,
+    "Description": "State the purpose of PSS",
+    "Number": "1",
+    "SubCategoryId": 4,
+    "CategoryId": 2
+  },
+  {
+    "Id": 25,
+    "TopicId": 11,
+    "Description": "Explain possible consequences if PSS are out of service",
+    "Number": "2",
+    "SubCategoryId": 4,
+    "CategoryId": 2
+  },
+  {
+    "Id": 26,
+    "TopicId": 12,
+    "Description": "Explain the principle of operation of different types of turbines (e.g., steam, impulse, reaction) and their applications",
+    "Number": "1",
+    "SubCategoryId": 4,
+    "CategoryId": 2
+  },
+  {
+    "Id": 27,
+    "TopicId": 12,
+    "Description": "Identify frequency operating limits for steam and combustion turbines and the consequences of off-frequency operation",
+    "Number": "2",
+    "SubCategoryId": 4,
+    "CategoryId": 2
+  },
+  {
+    "Id": 28,
+    "TopicId": 13,
+    "Description": "State characteristics of different types of fossil fuel, including availability, cost, contaminants, and so on",
+    "Number": "1",
+    "SubCategoryId": 5,
+    "CategoryId": 2
+  },
+  {
+    "Id": 29,
+    "TopicId": 13,
+    "Description": "Describe the energy conversion processes in a fossil unit",
+    "Number": "2",
+    "SubCategoryId": 5,
+    "CategoryId": 2
+  },
+  {
+    "Id": 30,
+    "TopicId": 14,
+    "Description": "Describe important features of coal-handling equipment; explain the significance of mill points for system operation",
+    "Number": "1",
+    "SubCategoryId": 5,
+    "CategoryId": 2
+  },
+
+  {
+    "Id": 31,
+    "TopicId": 14,
+    "Description": "Describe important features of a fossil plant furnace",
+    "Number": "2",
+    "SubCategoryId": 5,
+    "CategoryId": 2
+  },
+  {
+    "Id": 32,
+    "TopicId": 15,
+    "Description": "Describe the basic configuration and components of a BWR nuclear plant",
+    "Number": "1",
+    "SubCategoryId": 6,
+    "CategoryId": 2
+  },
+  {
+    "Id": 33,
+    "TopicId": 15,
+    "Description": "Describe operating limitations of BWR plants",
+    "Number": "2",
+    "SubCategoryId": 6,
+    "CategoryId": 2
+  },
+  {
+    "Id": 34,
+    "TopicId": 16,
+    "Description": "Explain the source of energy for nuclear plants (binding energy of nucleons in the atom)",
+    "Number": "1",
+    "SubCategoryId": 6,
+    "CategoryId": 2
+  },
+  {
+    "Id": 35,
+    "TopicId": 16,
+    "Description": "List the types of nuclear radiation (alpha, beta, gamma) and describe associated hazards",
+    "Number": "2",
+    "SubCategoryId": 7,
+    "CategoryId": 2
+  },
+  {
+    "Id": 36,
+    "TopicId": 17,
+    "Description": "Describe the basic configuration and components of hydro plants",
+    "Number": "1",
+    "SubCategoryId": 7,
+    "CategoryId": 2
+  },
+  {
+    "Id": 37,
+    "TopicId": 17,
+    "Description": "Describe operating limitations (environmental, recreational, etc.) of hydro plants",
+    "Number": "2",
+    "SubCategoryId": 7,
+    "CategoryId": 2
+  },
+  {
+    "Id": 38,
+    "TopicId": 18,
+    "Description": "Describe the basic configuration and components of the run-of-the-river hydro plants",
+    "Number": "1",
+    "SubCategoryId": 7,
+    "CategoryId": 2
+  },
+  {
+    "Id": 39,
+    "TopicId": 18,
+    "Description": "Describe operating limitations (environmental, recreational, etc.) of run-of-the-river hydro plants",
+    "Number": "2",
+    "SubCategoryId": 7,
+    "CategoryId": 2
+  },
+  {
+    "Id": 40,
+    "TopicId": 19,
+    "Description": "Describe the basic configuration and components of pumped storage units",
+    "Number": "1",
+    "SubCategoryId": 7,
+    "CategoryId": 2
+  }
+]

@@ -1,0 +1,110 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+</style>
+
+<table id="content-table" class="table" style="width:100%; border-collapse:collapse;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important; padding-bottom: 0; border-collapse: collapse;">
+            <div class="repeatedReportHeader" style="display: -webkit-box; -webkit-box-pack: justify;display: flex; align-items: center; justify-content: space-between;">
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center;font-size:22px; font-weight:600;"><b>@Model.Title </b></div>
+                <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.Evaluators.Count() > 0)
+    {
+        <tr style=" border-collapse: collapse;">
+            @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+            {
+                <th style="text-align:left; border: 2px solid #000; border-left: 0; border-collapse: collapse;">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Organizations").Count() > 0)
+            {
+                <th style="text-align: left; border: 2px solid #000; border-collapse: collapse;">Organization</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Positions").Count() > 0)
+            {
+                <th style="text-align: left; border: 2px solid #000; border-right: 0; border-collapse: collapse;">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s Abbreviation</th>
+            }
+        </tr>
+
+
+        @foreach (var evaluator in Model.Evaluators)
+        {
+            <tr class="header-row" style="border-top:1px solid #000;">
+                @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                {
+                    <td style="border: none; padding-bottom: 0;">
+                        @evaluator.Person.LastName, @evaluator.Person.FirstName
+                    </td>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Organizations").Count() > 0)
+                {
+                    <td style="border: none; padding-bottom: 0;">
+                        @foreach (var org in evaluator.EmployeeOrganizations)
+                        {
+                            <p>@org.Organization.Name</p>
+                        }
+                    </td>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Positions").Count() > 0)
+                {
+                    <td style="border: none; padding-bottom: 0;">
+                        @foreach (var pos in evaluator.EmployeePositions.Select(r => r.Position).Distinct())
+                        {
+                            <p>@pos.PositionTitle</p>
+                        }
+                    </td>
+                }
+
+            </tr>
+
+            <tr style="height:10px;">
+                <td colspan="12" style="border:none"></td>
+            </tr>
+
+            @if (Model.DisplayColumns.Where(r => r == "Show Assigned Task Qualifications").Count() > 0)
+            {
+                <tr>
+                    <td colspan="12" style="border: none; color: #0000EE;padding-bottom:0px;padding-top:2px;"> Assigned @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Qualifications : </td>
+                </tr>
+                @if (Model.TaskQualifications != null)
+                {
+
+                    @{
+                        var taskQualifications = Model.TaskQualifications.Where(r => r.TaskQualification_Evaluator_Links.Where(r => r.EvaluatorId == evaluator.Id).Count() > 0).ToList();
+                    }
+                    @foreach (var employee in taskQualifications.Select(r => r.Employee).Distinct())
+                    {
+
+                        <tr>
+                            <td colspan="12" style="border: none; color: #0000EE;padding-top:0;padding-bottom:0px;"> @employee.Person.LastName, @employee.Person.FirstName </td>
+                        </tr>
+                    }
+                }
+            }
+        }
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>

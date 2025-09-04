@@ -1,0 +1,12 @@
+<app-header title="Upload DIF Survey {{('Employee' | labelReplacement)| async}} Response Data"></app-header>
+<div>
+<app-import-csv-wizard #importWizard
+  [type]="type"
+  (OnAttachFile)="getUploadedFile($event)"
+  (OnConfirmUpload)="OnConfirmUpload($event)"
+  [validationResult]="validationResult"
+  [confirmResult]="confirmResult"
+  [uploadColumns]="uploadColumns"
+  [template]="template"
+></app-import-csv-wizard>
+</div>

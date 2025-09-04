@@ -1,0 +1,156 @@
+<ng-container *ngIf="!showCertBodyPanel">
+    <!-- header starts here -->
+    <div class="flex flex-row justify-between items-center px-12">
+        <h1 class="text-xl font-medium text-gray-900" translate>{{mode == 'add'?'Add':'Edit'}} {{("Employee" | labelReplacement)| async}} {{("Certification" | labelReplacement)| async}}s
+        </h1>
+        <button type="button" class="focus:outline-none" (click)="flyPanelSrvc.close()">
+            <svg class="w-7 h-7 stroke-current text-gray-four" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+    <!-- header ends here -->
+
+    <!-- form starts here -->
+    <form class="block text-sm space-y-6 py-12" [formGroup]="form" (ngSubmit)="AddEditEmployeeCertification()">
+
+        <div class="flex flex-row px-6 float-right">
+            <button class="font-medium text-green-one" (click)="toggleCertBodyPanel()">Add new certifying
+                body</button>
+        </div>
+        <div class="flex px-6 flex-row justify-between">
+            <div class="w-full">
+                <label class="inline-block text-gray-700 font-medium">
+                    <div>Certifying Body</div>
+                </label>
+                <mat-form-field appearance="outline" class="text-sm">
+                    <mat-label class="text-sm">Select CertifyingBody</mat-label>
+                    <mat-select formControlName="certBodyId" (valueChange)="getCertTypes($event)">
+                        <mat-option *ngFor="let item of certBodies" [value]="item.id">{{item.name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <app-input-error *ngIf=" form.controls.certBodyId.touched &&
+                     form.controls.certBodyId.errors?.['required']" text="Please
+                     select valid value"></app-input-error>
+                <!-- <select class="appearance-none text-base rounded border bg-gray-50 w-full px-4 py-3 mt-2"
+                    [disabled]="mode=='edit'" name="certBody" [(ngModel)]="empCertOpt.certifyingBodyId"
+                    (ngModelChange)="getCertTypes()" required>
+                    <option [value]='undefined'>Select Certifying Body</option>
+                    <option *ngFor="let item of certBodies" [ngValue]="item.id">{{item.name}}</option>
+                </select> -->
+            </div>
+
+
+            <div class="w-full">
+                <label class="inline-block text-gray-700 font-medium">Credential Type *</label>
+                <mat-form-field appearance="outline" class="text-sm">
+                    <mat-label class="text-sm">Select Credential</mat-label>
+                    <mat-select formControlName="certificationId">
+                        <mat-option *ngFor="let item of certifications" [value]="item.id">{{item.name}}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <app-input-error *ngIf=" form.controls.certificationId.touched&&
+                form.controls.certificationId.errors?.['required']" text="Please
+                select valid value"></app-input-error>
+                <!-- <select class="appearance-none text-base rounded border bg-gray-50 w-full px-4 py-3 mt-2"
+                    [disabled]="mode=='edit'" name="certifications" [(ngModel)]="empCertOpt.certificationId" required>
+                    <option [value]='undefined'>Select Credential Type</option>
+                    <option *ngFor="let item of certifications" [ngValue]="item.id">{{item.name}}</option>
+                </select> -->
+            </div>
+        </div>
+
+        <div class="flex px-6 flex-row justify-between">
+            <div class="w-full">
+                <label class="block text-gray-700 font-medium">Cert ID #*</label>
+                <app-textbox type="text" placeholder="Enter {{('Certification' | labelReplacement)| async}}s ID" formControlName="certNumber">
+                </app-textbox>
+
+                <app-input-error *ngIf="form.controls.certNumber.dirty &&
+                form.controls.certNumber.errors?.['required']" text="Please
+                select valid value"></app-input-error>
+            </div>
+        </div>
+
+        <div class="flex px-6 flex-row justify-between">
+            <div class="w-full">
+                <label class="block text-gray-700 font-medium">Recert Date</label>
+                <app-date formControlName="recertDate" placeholder="MM/DD/YY"></app-date>
+            </div>
+            <div class="w-full">
+                <label class="inline-block text-gray-700 font-medium">Expiry Date</label>
+                <app-date formControlName="expireDate" placeholder="MM/DD/YY"></app-date>
+                <app-input-error *ngIf=" form.controls.expireDate.dirty &&
+                form.controls.expireDate.errors?.['required']" text="Please
+                select valid value"></app-input-error>
+            </div>
+
+        </div>
+        <div class="flex px-6 flex-row justify-between" *ngIf="mode=='edit'">
+            <div class="w-full">
+                <label class="inline-block text-gray-700 font-medium">Issue Date</label>
+                <app-date formControlName="issueDate" placeholder="MM/DD/YY"></app-date>
+            </div>
+        </div>
+        <div class="px-6 float-right">
+            <!-- button starts -->
+
+            <app-button color="secondary" type="submit" text="Save" [disabled]="form.invalid"></app-button>
+
+            <!-- <button type="button" (click)="AddEditEmployeeCertification()"
+                class="float-right text-green-one border border-green-one inline-block py-3 px-6 rounded text-center"
+                translate>Save</button> -->
+
+            <!-- button ends -->
+        </div>
+    </form>
+    <!-- form ends here -->
+
+
+    <div class="flex flex-col" *ngIf="mode=='edit'">
+
+        <div class="border-t flex flex-row items-center px-12 pt-6 pb-8 justify-between">
+            <p class="focus:outline-none font-medium text-green-one">{{("Certification" | labelReplacement)| async}}s History</p>
+            <button type="button" class="focus:outline-none">
+                <svg v-if="showHistory" class="w-5 h-5 mr-6 stroke-current text-gray-four" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                </svg>
+                <svg v-else-if="!showHistory" class="w-5 h-5 mr-6 stroke-current text-gray-four" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+        </div>
+        <div v-show="showHistory" class="history-list px-12 h-44 overflow-auto w-11/12">
+            <div class="flex flex-grow flex-row items-center space-x-4 mb-8">
+                <img class="w-10 h-10" src="./assets/img/image_one.png" alt="avatar">
+                <div class="space-y-1">
+                    <p class="text-sm font-normal text-gray-five"><b>Sarah Lucy</b> changed the <b>Cert No.</b> 3 hours
+                        ago</p>
+                    <p class="text-xs">08/14/2022 <span class="text-gray-four px-1.5">to</span> 12/01/2024</p>
+                </div>
+            </div>
+            <div class="flex flex-grow flex-row items-center space-x-4 mb-8">
+                <img class="w-10 h-10" src="./assets/img/image_one.png" alt="avatar">
+                <div class="space-y-1">
+                    <p class="text-sm font-normal text-gray-five"><b>Sarah Lucy</b> changed the <b>Cert No.</b> 3 hours
+                        ago</p>
+                    <p class="text-xs">08/14/2022 <span class="text-gray-four px-1.5">to</span> 12/01/2024</p>
+                </div>
+            </div>
+            <div class="flex flex-grow flex-row items-center space-x-4 mb-8">
+                <img class="w-10 h-10" src="./assets/img/image_one.png" alt="avatar">
+                <div class="space-y-1">
+                    <p class="text-sm font-normal text-gray-five"><b>Sarah Lucy</b> changed the <b>Cert No.</b> 3 hours
+                        ago</p>
+                    <p class="text-xs">08/14/2022 <span class="text-gray-four px-1.5">to</span> 12/01/2024</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
+<ng-container *ngIf="showCertBodyPanel">
+    <app-fly-panel-certifying-body (closed)="showCertBodyPanel=false"></app-fly-panel-certifying-body>
+</ng-container>

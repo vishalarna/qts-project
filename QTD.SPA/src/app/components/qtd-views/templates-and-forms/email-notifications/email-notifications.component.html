@@ -1,0 +1,299 @@
+<app-top-nav-bar
+    [mode]="defaultMode"
+    [enabled]="!!this.SelectedClientNotification"
+    (saveSettingsClicked)="getOnSaveSettingsClickEvent($event)"
+    (editClicked)="getOnEditClickEvent($event)"
+    (cancelClicked)="getOnCancelClickEvent($event)"
+>
+</app-top-nav-bar>
+<section class="panel-section">
+    <div class="container ng-container">
+        <div class="row">
+            <div class="col-md-4">
+                <app-email-notification-navigation-bar
+                    [clientNotifications]="ClientNotifications"
+                    (onNotificationClickEvent)="getSelectedNotificationScreen($event)"
+                    [selectedNotification]="SelectedClientNotification"></app-email-notification-navigation-bar>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'Class Schedule'">
+                <app-class-schedule
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [emailData]="this.selectedClientNotificationData.steps[0].template"
+                    [employees]="Employees"
+                    (notificationChangedEvent)="getClassScheduleChangeValues($event)"
+                ></app-class-schedule>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'Certification Expiration'">
+                <app-certification-expiration
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getCertificationExpirationChangeValue($event)">
+                </app-certification-expiration>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP Login'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP Test'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP Pretest'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP Online Course'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP Student Evaluation'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP Procedure Review'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP IDP Review'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP Task Qualification - Trainee'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP Task Qualification - Evaluator'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP Self-Registration Approval'">
+                <app-emp-default
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP Self-Registration Denial'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP DIF Survey'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'EMP GAP Survey'">
+                <app-emp-default
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [timingText]="this.selectedClientNotificationData.timingText"
+                    [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+                ></app-emp-default>
+            </div>
+          <div class="col-md-8" *ngIf="SelectedClientNotification === 'Meta ILA - Self Paced Released'">
+            <app-emp-default
+              [mode]="defaultMode"
+              [notification]="this.selectedClientNotificationData"
+              [events]="eventsSubject.asObservable()"
+              [timingText]="this.selectedClientNotificationData.timingText"
+              [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+              [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+              (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+            ></app-emp-default>
+          </div>
+          <div class="col-md-8" *ngIf="SelectedClientNotification === 'Meta ILA - Employee - Self Registration Needed'">
+            <app-emp-default
+              [mode]="defaultMode"
+              [notification]="this.selectedClientNotificationData"
+              [events]="eventsSubject.asObservable()"
+              [timingText]="this.selectedClientNotificationData.timingText"
+              [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+              [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+              (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+            ></app-emp-default>
+          </div>
+          <div class="col-md-8" *ngIf="SelectedClientNotification === 'Meta ILA - Admin - Self Registration Needed'">
+            <app-emp-default
+              [mode]="defaultMode"
+              [notification]="this.selectedClientNotificationData"
+              [events]="eventsSubject.asObservable()"
+              [timingText]="this.selectedClientNotificationData.timingText"
+              [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+              [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+              (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+            ></app-emp-default>
+          </div>
+          <div class="col-md-8" *ngIf="SelectedClientNotification === 'Meta ILA - Employee - Registration Needed'">
+            <app-emp-default
+              [mode]="defaultMode"
+              [notification]="this.selectedClientNotificationData"
+              [events]="eventsSubject.asObservable()"
+              [timingText]="this.selectedClientNotificationData.timingText"
+              [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+              [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+              (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+            ></app-emp-default>
+          </div>
+          <div class="col-md-8" *ngIf="SelectedClientNotification === 'Meta ILA - Admin - Registration Needed'">
+            <app-emp-default
+              [mode]="defaultMode"
+              [notification]="this.selectedClientNotificationData"
+              [events]="eventsSubject.asObservable()"
+              [timingText]="this.selectedClientNotificationData.timingText"
+              [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+              [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+              (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+            ></app-emp-default>
+          </div>
+          <div class="col-md-8" *ngIf="SelectedClientNotification === 'Meta ILA - Test Released'">
+            <app-emp-default
+              [mode]="defaultMode"
+              [notification]="this.selectedClientNotificationData"
+              [events]="eventsSubject.asObservable()"
+              [timingText]="this.selectedClientNotificationData.timingText"
+              [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+              [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+              (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+            ></app-emp-default>
+          </div>
+          <div class="col-md-8" *ngIf="SelectedClientNotification === 'Admin - Employee Portal Completions'">
+            <app-class-schedule
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [emailData]="this.selectedClientNotificationData.steps[0].template"
+                    [isScheduleForNext]="false"
+                    (notificationChangedEvent)="getClassScheduleChangeValues($event)"
+                ></app-class-schedule>
+          </div>
+          <div class="col-md-8" *ngIf="SelectedClientNotification === 'Simulator Scenario Collaboration'">
+            <app-emp-default
+                [mode]="defaultMode"
+                [notification]="this.selectedClientNotificationData"
+                [events]="eventsSubject.asObservable()"
+                [timingText]="this.selectedClientNotificationData.timingText"
+                [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+            ></app-emp-default>
+           </div> 
+            <div class="col-md-8" *ngIf="SelectedClientNotification === 'Public Class Schedule Request'">
+            <app-public-class-schedule-request
+                    [mode]="defaultMode"
+                    [notification]="this.selectedClientNotificationData"
+                    [events]="eventsSubject.asObservable()"
+                    [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                    (notificationChangedEvent)="getPublicClassScheduleRequestChangeValue($event)">
+                </app-public-class-schedule-request>
+           </div>          
+           <div class="col-md-8" *ngIf="SelectedClientNotification === 'Public Class Schedule Request Accepted'">
+            <app-emp-default
+                [mode]="defaultMode"
+                [notification]="this.selectedClientNotificationData"
+                [events]="eventsSubject.asObservable()"
+                [timingText]="this.selectedClientNotificationData.timingText"
+                [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+            ></app-emp-default>
+           </div>
+           <div class="col-md-8" *ngIf="SelectedClientNotification === 'Public Class Schedule Request Rejected'">
+            <app-emp-default
+                [mode]="defaultMode"
+                [notification]="this.selectedClientNotificationData"
+                [events]="eventsSubject.asObservable()"
+                [timingText]="this.selectedClientNotificationData.timingText"
+                [empDefaultData]="this.selectedClientNotificationData.steps[0].template"
+                [modelBinderItems]="this.selectedClientNotificationData.steps[0].model"
+                (notificationChangedEvent)="getEmpDefaultChangeValues($event)"
+            ></app-emp-default>
+           </div>
+        </div>
+    </div>
+</section>

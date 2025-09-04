@@ -1,0 +1,88 @@
+<div class="flex flex-row justify-between items-center px-12 mt-5">
+  <p class="text-xl font-bold text-gray-900 mt-1">
+    {{ "Task" | labelReplacement | async }} Filter
+  </p>
+  <app-button
+  (clicked)="closeFilterFlyPanel()"
+  ButtonType="icon"
+  icon="close"
+  ></app-button>
+</div>
+
+<div *ngIf = "isLoading" class="filter-spinner">
+  <app-spinner></app-spinner>
+</div>
+<div *ngIf = "!isLoading">
+  <form [formGroup]="filterFormGroup" class="container-spacing">
+    <div>
+      <div class="flex flex-col">
+        <div class="flex flex-col float-left w-100">
+          <app-label
+            [for]="'position'"
+            text="{{ 'Position' | labelReplacement | async }}"
+            class="mt-6 float-left label label-style"
+          ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select
+              formControlName="position"
+              (selectionChange)="positionClick($event)"
+              placeholder="Select {{ 'Position' | labelReplacement | async }}"
+            >
+              <mat-option
+                *ngFor="let i of positions"
+                [value]="i.id"
+                >{{ i.positionTitle }}</mat-option
+              >
+            </mat-select>
+            <button
+              *ngIf="filterFormGroup.get('position').value"
+              matSuffix
+              mat-icon-button
+              type="button"
+              aria-label="Clear"
+              (click)="clearPositionSelection(); $event.stopPropagation()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <mat-radio-group
+          class="mt-4 radio-filter-options"
+          [value]="getFilterRadioValue()"
+        >
+          <mat-radio-button
+            value="allWithPosition"
+            (click)="filterBy('allWithPosition')"
+            [ngClass]="{ 'non-clickable': !filterFormGroup.get('position').value }"
+            >All {{ "Task" | labelReplacement | async }}s Linked to
+            {{ "Position" | labelReplacement | async }} (RRT and
+            Non-RRT)</mat-radio-button
+          >
+          <mat-radio-button value="rr" (click)="filterBy('rr')"
+            [ngClass]="{ 'non-clickable': !filterFormGroup.get('position').value }"
+            >RR {{ "Task" | labelReplacement | async }}s Only</mat-radio-button
+          >
+          <mat-radio-button value="nonRR" (click)="filterBy('nonRR')"
+            [ngClass]="{ 'non-clickable': !filterFormGroup.get('position').value }"
+            >Non-RR {{ "Task" | labelReplacement | async }}s
+            Only</mat-radio-button
+          >
+          <mat-radio-button value="isMeta" (click)="filterBy('isMeta')"
+            [ngClass]="{ 'non-clickable': !filterFormGroup.get('position').value }"
+            >Meta {{ "Task" | labelReplacement | async }}s
+            Only</mat-radio-button
+          >
+        </mat-radio-group>
+      </div>
+      <div class="flex justify-end">
+        <app-button
+          (clicked)="filterTask()"
+          ButtonType="button"
+          text="Apply Filter"
+          color="secondary"
+          size="sm"
+        ></app-button>
+      </div>
+    </div>
+  </form>
+</div>

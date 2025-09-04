@@ -1,0 +1,15 @@
+.mat-column-id,
+.mat-column-number {
+  flex: 0 0 120px;
+}
+
+.mat-column-description {
+  flex: 1 0 300px;
+}
+
+
+.inActiveItem mat-cell {
+  color: gray !important;
+  font-style: italic !important;
+}
+

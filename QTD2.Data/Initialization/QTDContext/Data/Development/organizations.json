@@ -1,0 +1,34 @@
+[
+ {
+  "ID": 1,
+  "Name": "PowerCo"
+ },
+ {
+  "ID": 2,
+  "Name": "Electric Utility"
+ },
+ {
+  "ID": 3,
+  "Name": "Generation Co"
+ },
+ {
+  "ID": 4,
+  "Name": "Training Department"
+ },
+ {
+  "ID": 5,
+  "Name": "North Division"
+ },
+ {
+  "ID": 6,
+  "Name": "South Division"
+ },
+ {
+  "ID": 7,
+  "Name": "East Division"
+ },
+ {
+  "ID": 8,
+  "Name": "West Division"
+ }
+]

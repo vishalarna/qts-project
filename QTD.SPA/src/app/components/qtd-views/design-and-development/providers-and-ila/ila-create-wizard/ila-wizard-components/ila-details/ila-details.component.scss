@@ -1,0 +1,39 @@
+:host ::ng-deep .ck-editor__editable {
+    min-height: 113px !important;
+    max-height: 300px !important;
+  }
+
+.custom_class{
+    transform: translate(250px, 65px);
+}
+
+.custom_class_1{
+    transform: translate(25px, 30px)
+}
+
+.custom_class_2{
+    transform: translate(13px, 40px);
+}
+
+.custom_class_3{
+    transform: translate(18px, 31px)
+}
+
+.custom_class_4{
+    transform: translate(-36px, 5px);
+}
+
+.inActiveItem {
+    color: gray !important;
+    font-style: italic !important;
+  }
+  
+  .warning-box {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #f5c6cb;
+    margin-bottom: 15px;
+  }
+  

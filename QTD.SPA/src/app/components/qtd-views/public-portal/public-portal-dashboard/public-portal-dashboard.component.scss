@@ -1,0 +1,120 @@
+.selectedTab {
+  border: solid 1px #bdffb7 !important;
+  color: rgb(0, 0, 0);
+  background-color: #47bd781a;
+  cursor: default;
+}
+
+.pointerClass {
+  cursor: pointer;
+}
+
+:host ::ng-deep .public-portal-header {
+    .header-button {
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 143%;
+      letter-spacing: 0.00938rem;
+    }
+    
+    .register-button {
+      color: #fff;
+      padding: 0.75rem 1.87rem;
+    }
+  }
+
+  :host ::ng-deep .highlight-event-date > div > span{
+    border: 1px solid rgb(0, 255, 0) !important;
+    border-radius: 4px;
+  }
+
+  .loader-class{
+    width: 100%;
+    height: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  :host ::ng-deep .action-button button{
+    padding: 5px 10px;
+  }
+
+  .blueBg {
+    background-color: #345e951a !important;
+    border-color: #345e95;
+    border-radius: 5px;
+    border-width: 1px;
+  }
+  
+  .whiteBg {
+    background-color: white !important;
+  }
+  .blurBg {
+    color: #6b7280; 
+  }
+  :host ::ng-deep .cal-month-view .cal-day-cell {
+    min-height: 20px;
+    border-left: none;
+    border-right: none;
+    border-radius: 1rem;
+    width: 50%;
+  }
+
+  :host ::ng-deep .cal-month-view .cal-day-cell.cal-today {
+    background-color: white;
+  }
+  
+  :host ::ng-deep .cal-month-view .cal-cell-row .cal-cell:hover,
+  .cal-month-view .cal-cell.cal-has-events.cal-open {
+    background-color: white;
+  }
+
+  :host ::ng-deep .cal-month-view .cal-cell-row:hover {
+    background-color: white;
+  }
+
+  .calender-width{
+    width: 53%;
+  }
+
+  :host ::ng-deep .public-classes .mat-cell:nth-child(3) {
+  max-width: 140px;
+}
+
+:host ::ng-deep .public-classes .mat-header-cell:nth-child(3) {
+  max-width: 140px;
+}
+
+:host ::ng-deep .public-classes .mat-cell:nth-child(2) {
+  max-width: 295px;
+}
+
+:host ::ng-deep .public-classes .mat-header-cell:nth-child(2) {
+  max-width: 295px;
+}
+
+:host ::ng-deep .public-classes .mat-cell:nth-child(4) {
+  max-width: 500px;
+}
+
+:host ::ng-deep .public-classes .mat-header-cell:nth-child(4) {
+  max-width: 500px;
+}
+
+:host ::ng-deep .public-classes .mat-cell:nth-child(5) {
+  max-width: 210px;
+}
+
+:host ::ng-deep .public-classes .mat-header-cell:nth-child(5) {
+  max-width: 210px;
+}
+
+:host ::ng-deep .public-classes .mat-cell {
+  padding: 2px 5px;
+}
+
+::ng-deep mat-cell app-textarea textarea {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}

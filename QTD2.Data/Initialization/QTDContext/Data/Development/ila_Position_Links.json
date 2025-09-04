@@ -1,0 +1,32 @@
+[
+  {
+    "ILAId": 1,
+    "PositionId": 1,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 2,
+    "PositionId": 2,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 3,
+    "PositionId": 3,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 4,
+    "PositionId": 4,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 5,
+    "PositionId": 5,
+    "Deleted": false,
+    "Active": true
+  }
+]

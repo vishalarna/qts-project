@@ -1,0 +1,28 @@
+
+<ng-container>
+    <mat-dialog-content>
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p mat-dialog-title>Include Planned Date for {{("ILA" | labelReplacement)| async}}</p>
+            <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+        </div>
+        <hr class="mt-1 mb-4">
+        <p  class="mb-4 text-sm" *ngIf = "!isPastClass">You are selecting to enroll {{EmployeeName}} into {{("ILA" | labelReplacement)| async}} {{IlaName}} which is scheduled to occur on {{(DateStart| dateFormat )| async}}.<span class="font-weight-bold"> Would you like to enter a Planned Date?</span></p>
+        <p  class="mb-4 text-sm" *ngIf = "isPastClass">You are selecting to enroll an Employee in a class that has already occurred. Are you sure you want to continue? Would you like to enter a Planned Date?</p>
+        <hr *ngIf="reasonDescription" class="mt-1 mb-8">
+        <div class="flex flex-col">
+            <app-label style="color: #7A807E;" text="Planned Date"></app-label>
+            <app-date [(ngModel)]="effectiveDate" style="width: 33%;"></app-date>
+            <!-- <app-label style="color: #7A807E;" text="Note/Reason" class="mt-2"></app-label>
+            <app-textarea [(ngModel)]="reason"></app-textarea> -->
+        </div>
+        <!-- header ends here -->
+    </mat-dialog-content>
+
+
+    <mat-dialog-actions class="flex flex-row justify-end">
+
+        <app-button type="button" (clicked)="onSaveReason($event)" text="Done" color="primary" size="sm" class="mr-2">
+        </app-button>
+    </mat-dialog-actions>
+</ng-container>

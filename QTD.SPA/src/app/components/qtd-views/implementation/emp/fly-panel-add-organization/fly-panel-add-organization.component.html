@@ -1,0 +1,59 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <!-- {{oldProcedure ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+        <ng-container *ngIf="mode==='Add'">
+          Add New Organization
+          </ng-container>
+          <ng-container *ngIf="mode==='Edit'">
+           Update Organization
+            </ng-container>
+      </p>
+      <app-button (click)="closedefinition()" ButtonType='icon' icon="close"></app-button>
+    </div>
+  
+    <form [formGroup]="addOrgForm">
+        <div class="flex flex-row px-12">
+            <div class="flex flex-col float-left pr-4 mb-6" style="width:50vw ;">
+                <app-label [for]="'orgName'" [text]="'Organization Name'"></app-label>
+                <app-textbox formControlName="orgName" placeholder="Enter Organization Name">
+                </app-textbox>
+                <div *ngIf="isChecked" class="pt-3">
+                  <mat-checkbox class="example-margin" formControlName="publicOrganisation">Public Organisation  </mat-checkbox>
+                </div>
+           </div>
+           
+        </div>
+        <!-- <div class="flex flex-row px-12">
+            <div class="flex flex-col float-left pr-4 mb-6" style="width:50vw ;">
+                <app-label [for]="'orgManager'" [text]="'Organization Managaer'"></app-label>
+                <app-textbox formControlName="orgManager" placeholder="Enter Organization Manager">
+                </app-textbox>
+                
+           </div>
+    </div> -->
+
+   
+
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='Add'">
+        <app-button [spinner]="showSpinner"
+          type="button" size="sm"  text="Add Organization" (click)="createNewOrganization()">
+        </app-button>
+      </div>
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode ==='Edit'">
+        <app-button [spinner]="showSpinner"
+          type="button" size="sm"  text="Update Organization" (click)="EditModal(updateModal)">
+        </app-button>
+      </div>
+  
+  
+    </form>
+  </ng-container>
+
+  <ng-template #updateModal>
+    <app-qtd-dialogue [showEffectiveDateAndReason]="false"  [header]="modalHeader" [description]="modalDescription"
+      cancelText="No" confirmText="Yes"
+      (canceled)="dialog.closeAll()" (confirmed)="updateOrganization()">
+    </app-qtd-dialogue>
+  </ng-template>
+  

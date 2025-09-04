@@ -1,0 +1,268 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        width: 100%;
+        border-collapse: collapse;
+        margin: 0;
+    }
+
+        .table td, .table th {
+            padding: 0;
+        }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+
+    @if (Model.CertificationFulfillmentStatuses.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                <table class="table">
+                    <tr>
+                        <td colspan="12" style="border:none" ;>
+                            <table class="table">
+                                <tr>
+                                    <td colspan="12" style="text-align:right;"><b>Year: @Model.Year</b></td>
+                                </tr>
+                                <tr style=" border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse;">
+                                    @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; text-align: left; border-collapse: collapse; vertical-align: bottom; padding:5px;" rowspan="2" ;>@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name / #</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; border-collapse: collapse; text-align: left; vertical-align: bottom; padding: 5px;" rowspan="2" ;>Organization</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; border-collapse: collapse; text-align: left; vertical-align: bottom; padding: 5px;" rowspan="2" ;>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Position Abbreviation").Count() > 0)
+                                    {
+                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; border-collapse: collapse; text-align: left; vertical-align: bottom; padding: 5px; padding: 5px; " rowspan="2" ;>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Abbreviation</th>
+                                    }
+
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; border-collapse: collapse; text-align: center; vertical-align: bottom; padding: 5px;" colspan="3">NERC CEHs</th>
+
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; border-collapse: collapse; text-align: center; vertical-align: bottom; padding: 5px;">PER-005</th>
+
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; border-collapse: collapse; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">Reg</th>
+
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; border-collapse: collapse; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">Reg2</th>
+
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; border-collapse: collapse; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">Other</th>
+
+                                    <th style="border-bottom: 2px solid #000; border-right: 0; border-top: 0; border-collapse: collapse; text-align: center; vertical-align: bottom; padding: 5px;" rowspan="2">Total Training Hours</th>
+
+                                </tr>
+
+                                <tr style=" border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse">
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; text-align: center; border-collapse: collapse; vertical-align: bottom; padding: 5px; ">Total CEHs</th>
+
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; text-align: center; border-collapse: collapse; vertical-align: bottom; padding: 5px; ">NERC St'ds</th>
+
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; text-align: center; border-collapse: collapse; vertical-align: bottom; padding: 5px;">Sim Hrs</th>
+
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 0; text-align: center; border-collapse: collapse; vertical-align: bottom; padding: 5px; ">EmOp</th>
+                                </tr>
+                                @{
+                                    var groupedCertificationStatuses = Model.CertificationFulfillmentStatuses
+                                        .Where(cfs => cfs != null)
+                                        .GroupBy(cfs => cfs.EmployeeId)
+                                        .OrderBy(group => group.First().EmployeeLastName)
+                                        .ToList();
+                                }
+
+                                @foreach (var group in groupedCertificationStatuses)
+                                {
+                                    var firstItem = group.First();
+                                    var employeeLastName = firstItem.EmployeeLastName;
+                                    var employeeFirstName = firstItem.EmployeeFirstName;
+                                    var employeeNumber = firstItem.Employee?.EmployeeNumber;
+
+                                    <tr style="border-bottom: 2px solid #000;">
+                                        @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                        {
+                                            <td style="border-bottom: 2px solid #000 !important; padding: 5px; text-align: left;">
+                                                @employeeLastName, @employeeFirstName (Emp #: @employeeNumber)
+                                            </td>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                                        {
+                                            @{
+                                                var orgList = group.SelectMany(cfs => cfs.Employee.EmployeeOrganizations.Select(eo => eo.Organization.Name)).Distinct().ToList();
+                                            }
+                                            <td style="border: none; padding: 5px; vertical-align: top; text-align: left; ">
+                                                @(new RawString(string.Join("<br />", orgList)))
+                                            </td>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                        {
+                                            @{
+                                                var posTitleList = group.SelectMany(cfs => cfs.Employee.EmployeePositions.Select(ep => ep.Position.PositionTitle)).Distinct().ToList();
+                                            }
+                                            <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                @(new RawString(string.Join("<br />", posTitleList)))
+                                            </td>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Position Abbreviation").Count() > 0)
+                                        {
+                                            @{
+                                                var posAbbList = group.SelectMany(cfs => cfs.Employee.EmployeePositions.Select(ep => ep.Position.PositionAbbreviation)).Distinct().ToList();
+                                            }
+                                            <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                                @(new RawString(string.Join("<br />", posAbbList)))
+                                            </td>
+                                        }
+
+                                        @{
+                                            var currentYear = Model.Year;
+                                            var startDate = new DateTime(currentYear, 1, 1);
+                                            var currentDate = DateTime.Now;
+                                            var yearEndDate = new DateTime(currentYear, 12, 31);
+                                            var endDate = currentDate < yearEndDate ? currentDate : yearEndDate;
+
+                                            var totalCEHs = group.Where(cfs => Model.NERCCertificationIds.Contains(cfs.CertificationId))
+                                                                 .SelectMany(cfs => cfs.FulfillmentRecords)
+                                                                 .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                                                 .Sum(record => record.CEHAwarded);
+
+                                            var stds = group.Where(cfs => Model.NERCCertificationIds.Contains(cfs.CertificationId))
+                                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate && record.IsComplete)
+                                                            .SelectMany(record => record.CertificationFulfillmentSubRequirements)
+                                                            .Where(subReq => subReq.CertificationSubRequirementName == "Standards")
+                                                            .Sum(subReq => subReq.Hours);
+
+                                            var simHrs = group.Where(cfs => Model.NERCCertificationIds.Contains(cfs.CertificationId))
+                                                              .SelectMany(cfs => cfs.FulfillmentRecords)
+                                                              .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate && record.IsComplete)
+                                                              .SelectMany(record => record.CertificationFulfillmentSubRequirements)
+                                                              .Where(subReq => subReq.CertificationSubRequirementName == "Simulations")
+                                                              .Sum(subReq => subReq.Hours);
+
+                                            var emOp = group.Where(cfs => Model.NERCCertificationIds.Contains(cfs.CertificationId))
+                                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate && record.IsEmergencyOpHours)
+                                                            .Sum(record => record.CEHAwarded);
+
+                                            var reg = group.Where(cfs => cfs.CertificationId == Model.RegCertificationId)
+                                                           .SelectMany(cfs => cfs.FulfillmentRecords)
+                                                           .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                                           .Sum(record => record.CEHAwarded);
+
+                                            var reg2 = group.Where(cfs => cfs.CertificationId == Model.Reg2CertificationId)
+                                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                                            .Sum(record => record.CEHAwarded);
+
+                                            var other = group.Where(cfs => cfs.CertificationId == Model.OtherCertificationId)
+                                                             .SelectMany(cfs => cfs.FulfillmentRecords)
+                                                             .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                                             .Sum(record => record.CEHAwarded);
+
+                                            var allCertificationIds = Model.NERCCertificationIds.Concat(new[] { Model.RegCertificationId, Model.Reg2CertificationId, Model.OtherCertificationId }).Distinct().ToList();
+
+                                            var totalTrainingHours = group.Where(cfs => allCertificationIds.Contains(cfs.CertificationId))
+                                                                          .SelectMany(cfs => cfs.FulfillmentRecords)
+                                                                          .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                                                          .Sum(record => record.TotalTrainingHours);
+                                        }
+
+                                        <td style="border: none; text-align: center;">@totalCEHs</td>
+                                        <td style="border: none; text-align: center;">@stds</td>
+                                        <td style="border: none; text-align: center;">@simHrs</td>
+                                        <td style="border: none; text-align: center;">@emOp</td>
+                                        <td style="border: none; text-align: center;">@reg</td>
+                                        <td style="border: none; text-align: center;">@reg2</td>
+                                        <td style="border: none; text-align: center;">@other</td>
+                                        <td style="border: none; text-align: center;">@totalTrainingHours</td>
+                                    </tr>
+                                }
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>

@@ -1,0 +1,180 @@
+<ng-container>
+  <div class="nav-wrap" *ngIf="!isComplete">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="navbrand-wrap col-md-6">
+          <div class="d-flex">
+            <div class="flex items-center dif-survey-header">
+              <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" class="header-back-button" (click)="openDialog(ExitPopup)"></app-button>
+            </div>
+            <div>
+              <h2 class="navbar-heading m-0">{{difSurveyViewResponse?.title}}</h2>
+            </div>
+          </div>
+        </div>
+        <div class="navbrand-wrap col-md-6">
+          <div class="d-flex justify-content-end">
+            <app-button color="secondary" text="Exit" size="md" (click)="openDialog(ExitPopup)"></app-button>
+            <app-button color="primary" text="Submit" size="md" (click)="openDialog(SubmitPopup)" [disabled]="isSubmitDisable" customClasses="ml-2"></app-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+<div class="container" *ngIf="!isComplete">
+  <div class="date-wrapper">
+    <mat-icon>calendar_today</mat-icon>
+    <span class="date-formate">
+      {{ difSurveyViewResponse?.startDate | dateFormat | async }} -
+      {{ difSurveyViewResponse?.dueDate | dateFormat | async }}
+    </span>
+  </div>
+  <p class="instruction-title"><b>Survey {{("Instruction" | labelReplacement)| async}}s</b></p>
+  <div class="survey-instruction" [innerHTML]="difSurveyViewResponse?.instructions">
+  </div>
+  <hr class="survey-break-line">
+  <div class="flex-row bg-white-one data-source-table rounded-b-md mt-4">
+    <mat-table [dataSource]="dataSource" matSort>
+      <ng-container matColumnDef="index">
+        <mat-header-cell class="flex-10 source-number" *matHeaderCellDef mat-sort-header> # </mat-header-cell>
+        <mat-cell class="flex-10 source-number" *matCellDef="let row">{{ row?.number }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="taskDescription">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="flex-25">
+          {{("Task" | labelReplacement)| async}} Description
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" class="flex-25">{{ row?.taskDescription }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="difficulty">
+        <mat-header-cell *matHeaderCellDef class="flex-15 flex-col align-items-start">
+          <div>Difficulty</div>
+          <div class="d-flex header-rating-cell"><span>1</span><span>2</span> <span>3</span> <span>4</span> <span>5</span> </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row; let rowIndex = index" class="flex-15">
+          <mat-radio-group [value]="getDifficultyValue(rowIndex)" (change)="onDifficultyChange($event, rowIndex)">
+            <mat-radio-button value="1"></mat-radio-button>
+            <mat-radio-button value="2"></mat-radio-button>
+            <mat-radio-button value="3"></mat-radio-button>
+            <mat-radio-button value="4"></mat-radio-button>
+            <mat-radio-button value="5"></mat-radio-button>
+          </mat-radio-group>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="importance">
+        <mat-header-cell *matHeaderCellDef class="flex-15 flex-col align-items-start">
+          <div>Importance</div>
+          <div class="d-flex header-rating-cell"><span>1</span><span>2</span> <span>3</span> <span>4</span> <span>5</span> </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row; let rowIndex = index" class="flex-15">
+          <mat-radio-group [value]="getImportanceValue(rowIndex)" (change)="onImportanceChange($event, rowIndex)">
+            <mat-radio-button value="1"></mat-radio-button>
+            <mat-radio-button value="2"></mat-radio-button>
+            <mat-radio-button value="3"></mat-radio-button>
+            <mat-radio-button value="4"></mat-radio-button>
+            <mat-radio-button value="5"></mat-radio-button>
+          </mat-radio-group>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="frequency" >
+        <mat-header-cell *matHeaderCellDef class="flex-15 flex-col align-items-start">
+          <div>Frequency</div>
+          <div class="d-flex header-rating-cell"><span>1</span><span>2</span> <span>3</span> <span>4</span> <span>5</span> </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row; let rowIndex = index" class="flex-15">
+          <mat-radio-group [value]="getFrequencyValue(rowIndex)" (change)="onFrequencyChange($event, rowIndex)">
+            <mat-radio-button value="1"></mat-radio-button>
+            <mat-radio-button value="2"></mat-radio-button>
+            <mat-radio-button value="3"></mat-radio-button>
+            <mat-radio-button value="4"></mat-radio-button>
+            <mat-radio-button value="5"></mat-radio-button>
+          </mat-radio-group>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="n/A">
+        <mat-header-cell *matHeaderCellDef class="flex-10"> N/A</mat-header-cell>
+        <mat-cell *matCellDef="let row; let rowIndex = index" class="flex-10">
+          <mat-radio-group [value]="getNAValue(rowIndex)" (change)="onNAChange(rowIndex, row)">
+            <mat-radio-button value="true"></mat-radio-button>
+          </mat-radio-group>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="comments">
+        <mat-header-cell *matHeaderCellDef class="flex-10"> Comments</mat-header-cell>
+        <mat-cell *matCellDef="let row; let rowIndex = index" class="flex-10" >
+          <button (click)="toggleComments(row)">
+            <mat-icon>comment</mat-icon>
+          </button>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="textBox">
+        <mat-header-cell *matHeaderCellDef class="w-0 p-0"></mat-header-cell>
+        <mat-cell class="survey-textarea-dis" *matCellDef="let row ;let rowIndex = index"  >
+            <app-textarea class="w-100" [value]="row?.comments" *ngIf="row.showComments" (input)="onCommentsChange($event, rowIndex)" placeholder="Add a comment"></app-textarea>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row flex text-center" *matNoDataRow>
+        <td class="mat-cell w-full m-2">No data matching the filter</td>
+      </tr>
+    </mat-table>
+  </div>
+  <hr class="survey-break-line">
+  <div  class="comment-section">
+    <form class="step-container" [formGroup]="createDifSurveyPageForm">
+      <span class="comment-label">Additional Comments</span>
+      <div class="step-controls-section">
+        <ckeditor
+          [editor]="Editor"
+          name="additionalComment"
+          formControlName="additionalComment"
+          (change)="handleCommentChange()"
+        ></ckeditor>
+      </div>
+  </form>
+  </div>
+</div>
+
+<ng-template #ExitPopup>
+  <app-qtd-dialogue
+    header="Exit DIF Survey"
+    description="Leaving will save an in progress version of this DIF Survey."
+    cancelText="No"
+    confirmText="Yes"
+    (confirmed)="onBackExitClick()"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #SubmitPopup>
+  <app-qtd-dialogue
+    header="Submit DIF Survey"
+    description="Submitting the DIF Survey will mark it Completed and no further changes will be possible."
+    cancelText="No"
+    confirmText="Yes"
+    (confirmed)="onSubmitClick()"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-container>
+  <div class="container" *ngIf="isComplete">
+    <div class="survey-wrapper">
+    <div class="flex complete-details flex-col justify-content-between">
+      <div>
+        <span class="survey-title-wrapper">
+          {{ difSurveyViewResponse?.title }}
+        </span>
+        <span class="survey-sub-title"> Completed On: {{ todayDate | dateFormat | async }} </span>
+      </div>
+      <div class="flex flex-row mt-3">
+        <app-button ButtonType="button" color="primary" size="sm" iconPosition="left" text="Done" (clicked)="goBack()" ></app-button>
+      </div>
+    </div>
+    </div>
+  </div>
+</ng-container>

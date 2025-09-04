@@ -1,0 +1,71 @@
+ <!-- header starts here -->
+ <div class="flex flex-row justify-between items-center px-12 mt-5">
+  <p class="text-xl font-bold text-gray-900">{{("ILA" | labelReplacement)| async}} Evaluation Settings</p>
+  <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+</div>
+<!-- header ends here -->
+
+<!--Content Starts-->
+<div class="flex flex-col mr-12 ml-12 mt-16 border h-auto rounded mb-12">
+  <!--first row starts-->
+  <div class="flex flex-row justify-between border-b-2 p-3 text-xs text-gray-500">
+    <div class=" w-13/24">
+      <p>Description</p>
+    </div>
+
+    <div class=" w-5/24">
+      <p>Default</p>
+    </div>
+
+    <div class=" w-5/24">
+      <p >Override</p> 
+    </div>
+
+  </div>
+  <!--first row ends-->
+
+  <!--Seconds Row starts-->
+  <div class="flex flex-row justify-between p-3">
+
+    <div class="w-13/24 text-sm pt-2">
+      <p>Time period to complete evaluation post class</p>
+    </div>
+
+    <div class="w-5/24">
+
+      <div class="flex flex-row border rounded mr-2 h-9 text-gray-500">
+        <div class="w-5/24 text-xs border-r">
+          <p class="pt-2 pl-2">7</p>
+        </div>
+        <div class="w-12/24 text-xs">
+          <p class="custom_class_2">Days</p>
+          <app-icon icon="expand_more" class="text-xs custom_class_1 float-right"></app-icon>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="w-5/24">
+
+      <div class="flex flex-row border rounded mr-2 h-9 text-gray-500">
+        <div class="w-7/24 text-xs border-r">
+          <p class="pt-2 pl-2">14</p>
+        </div>
+        <div class="w-12/24 text-xs">
+          <p class="custom_class_4">Weeks</p>
+          <app-icon icon="expand_more" class="text-xs custom_class_3 float-right"></app-icon>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+  <!--Seconds Row ends-->
+</div>
+<!--Content Ends-->
+
+<!--Save Button Starts-->
+<div class="w-28 h-26 float-right mr-12">
+  <app-button color="secondary" (clicked)="OnSave()" text="Save" size="sm"></app-button>
+</div>
+<!--Save Button Ends-->

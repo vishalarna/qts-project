@@ -1,0 +1,81 @@
+<div>
+  <!-- Question Section -->
+  <section class="flex flex-col">
+    <form [formGroup]="mcaForm">
+      <label class="font-medium">Question</label>
+      <ckeditor #ckeditor  [editor]="Editor" formControlName="question"></ckeditor>
+      <app-input-error *ngIf="mcaForm.get('question')?.hasError('required')" text="Enter Question Description">
+      </app-input-error>
+    </form>
+  </section>
+  <!-- Distractors Section -->
+  <section class="flex flex-col mt-5">
+    <form [formGroup]="mcaForm" class="flex flex-col">
+      <p class="font-bold">Distractors</p>
+      <span class="text-gray-400">Enter the options below and select the correct one</span>
+      <div *ngFor="let distractor of distractors, index as i" class="flex flex-col" style="min-height: fit-content;">
+        <div class="flex flex-row justify-between rounded-md pb-2 pt-0 mt-2 w-full"
+          style="align-items: center; height: max-content;">
+          <div class="flex flex-row w-full" style="align-items:baseline;">
+            <app-icon class="pt-2 mr-2" icon="drag_indicator" style="color: darkgrey!important;cursor:move">
+            </app-icon>
+            <mat-checkbox (change)="selectionChanged($event,distractor.id)" formControlName="isCorrect{{distractor.id}}"
+              class="mr-3"></mat-checkbox>
+            <ckeditor #ckeditor  [editor]="Editor" style="border: none;outline: none;resize: none;" class="w-full"
+              formControlName="description{{distractor.id}}" placeholder="Type option here..."></ckeditor>
+            <app-button ButtonType="icon" (clicked)="removeDistractor(distractor.id)" *ngIf="distractors.length > 4"
+              icon="delete"></app-button>
+          </div>
+        </div>
+        <app-input-error *ngIf="mcaForm.get('description' + distractor.id)?.hasError('required')"
+          text="Distractor Description is Required"></app-input-error>
+      </div>
+      <app-input-error class="mt-3" *ngIf="selection.selected.length < 1"
+        text="Select atleast 1 correct option"></app-input-error>
+        <div *ngIf="mode == 'add' || mode == 'edit'">
+           <app-button *ngIf="distractors.length < 10" class="mt-2" text="Add another distractor" (clicked)="addDistractor()"
+        ButtonType="button" variant="text" icon="add" iconPosition="left" color="secondary"></app-button>
+        </div>
+
+    </form>
+  </section>
+
+  <!-- Buttons Section -->
+  <section *ngIf="mode === 'add' && showSaveButton" class="flex flex-row justify-between mt-4" >
+    <!--add another-->
+      <mat-checkbox [(ngModel)]="AddAnother" [disabled]="mcaForm.invalid || selection.selected.length < 1 ">Add Another Multiple Correct Answer</mat-checkbox>
+
+      <!--save-->
+    <app-button [spinner]="saveSpinner" (clicked)="close=true;saveMCQ($event,close)" class="mr-2"
+      [disabled]="mcaForm.invalid || selection.selected.length < 1 || saveSpinner || saveAndAddSpinner"
+      ButtonType="button" size="sm" text="Save"></app-button>
+
+
+  </section>
+
+  <!--edit-->
+  <section *ngIf="mode === 'edit'" class="flex flex-row" style="justify-content:flex-end;">
+    <app-button [spinner]="saveSpinner" (clicked)="openDialog(reasonDialog)" class="mr-2"
+      [disabled]="mcaForm.invalid || selection.selected.length < 1 || saveSpinner"
+      ButtonType="button" size="sm" text="Update"></app-button>
+  </section>
+
+  <!--copy-->
+  <section *ngIf="mode === 'copy'" class="flex flex-row" style="justify-content:flex-end;">
+    <app-button [spinner]="saveSpinner" (clicked)="close=true;openSaveDialog(saveDialog)" class="mr-2"
+      [disabled]="mcaForm.invalid || selection.selected.length < 1 || saveSpinner"
+      ButtonType="button" size="sm" text="Copy"></app-button>
+  </section>
+</div>
+
+<ng-template #reasonDialog>
+  <app-qtd-dialogue [header]="'Update Multiple Correct Answers'" [cancelText]="'No'" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" [reasonOnly]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="updateMCA($event)"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #saveDialog>
+  <app-qtd-dialogue [header]="'Save Multiple Correct Answers'" [cancelText]="'No'" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" [reasonOnly]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="saveMCQ($event,close)"></app-qtd-dialogue>
+</ng-template>

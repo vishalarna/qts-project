@@ -1,0 +1,88 @@
+<mat-toolbar
+  class="app-toolbar-sticky flex align-items-center task-list-header"
+>
+  <div class="flex items-center">
+    <app-button
+      type="button"
+      ButtonType="icon"
+      icon="keyboard_arrow_left"
+      class="header-back-button"
+      (click)="goBack()"
+    ></app-button>
+    <div class="edit-task-list-heading ml-4">
+      <h3 *ngIf="mode == 'create'">New {{ "Task" | labelReplacement | async }} List Review</h3>
+      <h3 *ngIf="mode == 'edit'">Edit {{ "Task" | labelReplacement | async }} List Review</h3>
+    </div>
+  </div>
+  <div class="flex flex-row items-center">
+    <app-button [disabled]="mode == 'create'" type="button" text="Generate Report" size="sm" customClasses="task-list-generate-button header-button disabled-pointer" class="mr-2" (click)="updateAndGenerateReport()" >
+    </app-button>
+    <app-button *ngIf="currentStep != 5" [disabled]="currentStep == 1 && !isStep1FormValid" type="button" text="Continue" size="sm" customClasses="task-list-continue-button header-button disabled-pointer" (clicked)="continueClickAsync($event)" >
+    </app-button>
+    <app-button *ngIf="currentStep == 5" type="button" text="Save" size="sm" (clicked)="publishClickAsync()" customClasses="task-list-continue-button header-button disabled-pointer" >
+    </app-button>
+  </div>
+</mat-toolbar>
+
+<div class="task-list-container">
+  <mat-stepper [linear]="true" labelPosition="bottom" [orientation]="(stepperOrientation | async)!" class="task-list-stepper" #stepper (selectionChange)="onSelectionChange($event)" >
+    <ng-template matStepperIcon="edit">
+      <app-icon icon="done"></app-icon>
+    </ng-template>
+    <mat-step [completed]="isStep1FormValid">
+      <ng-template matStepLabel>{{("Task" | labelReplacement)| async}} List Review Details</ng-template>
+      <ng-template matStepContent>
+          <app-task-list-review-details #reviewDetails [inputTaskListReviewVM]="taskListReviewVM" [mode]="mode"></app-task-list-review-details>
+      </ng-template>
+    </mat-step>
+   <mat-step optional>
+    <ng-template matStepLabel>{{ ("Task" | labelReplacement) | async }}s</ng-template>
+    <ng-template matStepContent>
+      <ng-container *ngIf="!isUpdatingTaskList; else loadingTemplate">
+        <app-task-list-review-tasks [inputTaskListReviewVM]="taskListReviewVM"></app-task-list-review-tasks>
+      </ng-container>
+
+      <ng-template #loadingTemplate>
+        <div class="step-spinner">
+          <app-spinner></app-spinner>
+        </div>
+      </ng-template>
+    </ng-template>
+   </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Supporting Documents</ng-template>
+      <ng-template matStepContent>
+        <app-supporting-documents [inputTaskListReviewVM]="taskListReviewVM"></app-supporting-documents>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Action Items</ng-template>
+      <ng-template matStepContent>
+        <app-action-items [inputTaskListReviewVM]="taskListReviewVM"></app-action-items>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel
+        >Conclusion and Training Dept Sign-off</ng-template
+      >
+      <ng-template matStepContent>
+        <app-conclusion-and-training [inputTaskListReviewVM]="taskListReviewVM"></app-conclusion-and-training>
+      </ng-template>
+    </mat-step>
+  </mat-stepper>
+</div>
+
+<ng-template #closeTaskListReviewDialog>
+  <app-qtd-dialogue
+    [header]="header"
+    [description]="description"
+    [cancelText]="'No'"
+    [confirmText]="'Yes'"
+    (confirmed)="confirmedBackToOverview()"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #generateReportFlyIn>
+  <app-task-list-review-generate-report [inputTaskListReviewId] = "inputTaskListReviewId" [inputTaskListReviewStatus] = "taskListReviewVM.active" (closed) = "flypanelService.close()"></app-task-list-review-generate-report>
+</ng-template>

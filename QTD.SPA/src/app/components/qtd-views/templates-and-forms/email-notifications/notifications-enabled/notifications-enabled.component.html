@@ -1,0 +1,18 @@
+<div class="col-md-12">
+  <div class="row heighttop align-items-center">
+    <div class="col-md-10 p-0">
+      <h1 class="section-header">Email Notifications Enabled</h1>
+      <p class="btn-label">{{timingText | dynamicLabelReplacement| async }}</p>
+    </div>
+    <div class="col-md-2 custom-control custom-switch text-right p-0">
+      <input type="checkbox" class="custom-control-input"
+             [checked]="enabled"
+             (change)="onCheckboxChanged($event)"
+             id="customSwitch1"
+             [(ngModel)]="enabled"
+             [disabled]="mode==='read'? true: false"
+      >
+      <label class="custom-control-label" for="customSwitch1"></label>
+    </div>
+  </div>
+</div>

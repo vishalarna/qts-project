@@ -1,0 +1,167 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full" *ngIf="!isOpenInFlyPanel">
+    <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBack()">
+    </app-button>
+    <div class="flex flex-row items-center space-x-4 w-full justify-between">
+        <h1>{{('Task' | labelReplacement)| async}} Re-Qualifications</h1>
+        <div class="justify-between">
+            <app-button color="blue" type="button" text="Close" (clicked)="goBack()" style="margin-left: 10px;">
+            </app-button>
+        </div>
+    </div>
+</mat-toolbar>
+
+<div class="flex flex-row justify-content-end items-center px-12 mt-4 mb-2" *ngIf="isOpenInFlyPanel">
+  <div>
+      <app-button (click)="closed.emit()" ButtonType="icon" icon="close"></app-button>
+  </div>
+</div>
+<app-data-loader *ngIf="!this.task || allTaskDataLoader"></app-data-loader>  
+<div class="flex justify-center" *ngIf="this.task && !allTaskDataLoader" [ngClass]="{'mt-5':!isOpenInFlyPanel}" style="align-items:center;">
+    <div style="width:80%;" [ngClass]="{'w-100':isOpenInFlyPanel}">
+      <div class="flex justify-end">
+        <div class="w-30 px-12 py-2">
+          <app-button size = "sm" (clicked) = "downloadPdf()"  text = "Download {{('Task' | labelReplacement)| async}} Qualification Sheet"></app-button>
+        </div>
+      </div>
+        <!-- Top Header Section -->
+      <section class="flex flex-col p-4 rounded-sm" [ngClass]="{'mt-4' :!isOpenInFlyPanel}">         
+        <div  #pdf class="bg-white m-4 shadow-sm p-4 flex flex-col task-box-shadow" >
+
+          <div *ngIf="allTaskData.taskPositionWithCount.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2> {{("Position" | labelReplacement)| async}}s</h2>
+            </div>
+            <div class="ml-4">
+              <ul >
+                <li *ngFor="let pos of allTaskData.taskPositionWithCount">
+                  <div class="flex flex-row w-full">
+                    <div class="item-number">{{pos.position.positionNumber}}</div>
+                    <div class="item-dash">-</div>
+                    <div class="item-description">{{pos.position.positionTitle}}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ml-2 pb-4" *ngIf="this.task">
+            <div class="flex flex-row justify-between">
+              <h2>{{("Task" | labelReplacement)| async}}</h2>
+            </div>
+              <div class="flex flex-row w-full ml-4">
+                <div class="item-number">{{this.task.isReliability ? "*" : ""}} {{number}}</div>
+                <div class="item-dash">-</div>
+                <div class="item-description">{{this.task?.description}}</div>
+              </div>
+          </div>
+
+          <div *ngIf="task?.conditions" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>Conditions</h2>
+            </div>
+            <div [innerHTML]="task.conditions" class="ml-4 letter-spacing"></div>
+          </div>
+
+          <div *ngIf="allTaskData.tools.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>{{("Tool" | labelReplacement)| async}}s</h2>
+            </div>
+            <div class="ml-4">
+              <ul>
+                <li *ngFor="let tool of allTaskData.tools">
+                    <div class="letter-spacing">{{tool.name}}</div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div *ngIf="task?.references" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>References</h2>
+            </div>
+            <div [innerHTML]="task.references" class="ml-4 letter-spacing"></div>
+          </div>
+
+          <div *ngIf="task?.criteria" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>Criteria</h2>
+            </div>
+            <div [innerHTML]="task.criteria" class="ml-4 letter-spacing"></div>
+          </div>
+
+          <div *ngIf="allTaskData.proceduresWithLinkCounts.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2> {{("Procedure" | labelReplacement)| async}}s</h2>
+            </div>
+            <div class="ml-4">
+              <ul>
+                <li *ngFor="let proc of allTaskData.proceduresWithLinkCounts">
+                  <div class="flex flex-row w-full">
+                    <div class="item-number">{{proc.number}}</div>
+                    <div class="item-dash">-</div>
+                    <div class="item-description">{{proc.description}}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div *ngIf="allTaskData.safetyHazardWithLinkCounts.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>{{("Safety Hazard" | labelReplacement)| async}}s</h2>
+            </div>
+            <div class="ml-4">
+              <ul>
+                <li *ngFor="let sh of allTaskData.safetyHazardWithLinkCounts">
+                  <div class="flex flex-row w-full">
+                    <div class="item-number">{{sh.number}}</div>
+                    <div class="item-dash">-</div>
+                    <div class="item-description">{{sh.title}}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div *ngIf="allTaskData.enablingObjectiveWithCountOptions.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>{{("Enabling Objective" | labelReplacement)| async}}</h2>
+            </div>
+            <div class="ml-4">
+              <ul>
+                <li *ngFor="let eo of allTaskData.enablingObjectiveWithCountOptions">
+                  <div class="flex flex-row justify-between w-full">
+                    <div class="item-number">{{eo.number}}</div>
+                    <div class="item-dash">-</div>
+                    <div class="item-description">{{eo.description}}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div *ngIf="allTaskData.task_Steps.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>Steps</h2>
+            </div>
+            <div class="ml-4">
+              <ul>
+                <li *ngFor="let step of allTaskData.task_Steps">
+                  <div class="flex flex-row justify-between w-full">
+                    <div [innerHTML]="step.description.split(regex)[0]" class="letter-spacing"></div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </section>
+  </div>
+</div>
+
+<!-- <ng-template #activeInactive>
+    <app-qtd-dialogue [header]="dialogTitle" [description]="dialogDesc" cancelText="No" confirmText="Yes"
+      [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="toggleActive($event)">
+    </app-qtd-dialogue>
+  </ng-template> -->

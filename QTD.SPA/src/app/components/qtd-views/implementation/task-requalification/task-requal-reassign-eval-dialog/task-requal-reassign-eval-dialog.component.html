@@ -1,0 +1,38 @@
+<div class="flex flex-col">
+  <div class="flex flex-row justify-between pb-3" style="align-items:center">
+    <span class="text-xl font-bold">Reassign {{("Task" | labelReplacement)| async}} Qualification</span>
+    <app-icon (click)="canceled.emit()" icon="close" class="text-gray-500 cursor-pointer"></app-icon>
+  </div>
+
+  <mat-dialog-content class="border-2">
+    <form [formGroup]="qualificationForm" class="flex flex-col">
+      <div class="mb-3 mt-4" [innerHTML]="description"></div>
+      <label class="text-gray-400 mt-3">Select Evaluator(s)</label>
+      <!-- change this ngModel to reactive form with multiselect -->
+      <mat-select multiple placeholder="Select Evaluator(s)" formControlName="evaluatorId"
+        class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white" style="width:40%">
+        <mat-select-trigger>
+          <mat-chip-list>
+            <mat-chip *ngFor="let i of qualificationForm.get('evaluatorId')?.value" [removable]="true"
+              [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+              selected (removed)="removeData(i)">
+              {{i.person.firstName + ' ' + i.person.lastName}}
+              <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+              </app-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </mat-select-trigger>
+        <mat-option [value]="eval" *ngFor="let eval of evaluators">
+          {{eval.person.firstName + ' ' + eval.person.lastName}}
+        </mat-option>
+      </mat-select>
+      <mat-checkbox class="my-4" (change)="validate($event)" formControlName="reassign">Do Not Reassign at this time</mat-checkbox>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end" style="align-items:baseline;">
+    <span class="font-bold mr-4 cursor-pointer" (click)="canceled.emit()">Cancel</span>
+    <app-button [disabled]="qualificationForm.invalid" class="mb-4" (clicked)="emitData()" text="Save"
+      size="sm"></app-button>
+  </mat-dialog-actions>
+</div>

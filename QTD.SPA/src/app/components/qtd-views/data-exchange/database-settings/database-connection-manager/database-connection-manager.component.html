@@ -1,0 +1,61 @@
+<div class="flex flex-col mt-3 ">
+    <!-- search and buttons starts -->
+    <div class="panel-heading">
+        Database Connection Manager
+    </div>
+    <span class="panel-subheading">Please select an instance to continue</span>
+    <div class="
+        flex flex-row
+        bg-white-one
+        rounded-t-md
+        py-4
+        px-6
+        space-x-2
+        border-b-0.8 border-gray-one
+        w-full
+      ">
+        <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Enter keywords to search" type="text"
+            (keyup)="filterDatabaseNames($event)" />
+        <div class="flex flex-row space-x-4 text-sm"></div>
+    </div>
+</div>
+<mat-table [dataSource]="dataSourceDatabaseConnection" matSort class="manager-table">
+    <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+            #
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            {{row.id}}
+        </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="databaseName">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Database Name
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            {{row.databaseName}}
+        </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="Action">
+        <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <div class="flex flex-row items-center text-gray-four btn-group">
+                <app-button color="secondary" size="sm" text="Select" variant="outlined" shape="rect" type="submit"
+                class="mr-3"></app-button>
+            </div>
+        </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center" *matNoDataRow>
+        <td class="mat-cell w-full">We’re sorry there are no client available for you to view</td>
+    </tr>
+</mat-table>

@@ -1,0 +1,96 @@
+<ng-container *ngIf="filterProvider === false">
+  <div class="m-5 flex flex-col">
+    <section class="flex flex-row justify-between" style="align-items: center;">
+      <div class="flex flex-row" style="align-items: center;">
+        <p class="font-bold text-lg m-0 p-0">Change {{("ILA" | labelReplacement)| async}} For Test</p>
+      </div>
+      <app-button size="sm" ButtonType="icon" icon="close" (clicked)="closed.emit('fp-add-eo')">
+      </app-button>
+    </section>
+  
+    <section class="mt-5">
+      <app-label class="mb-3" text="Select a Provider"></app-label>
+      <mat-select [(ngModel)]="providerId" placeholder="Select Provider"
+      class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+        <mat-option *ngFor="let p of providers" [value]="p.id" [hidden]="!p.active">
+            {{p.name}}
+        </mat-option>
+        <app-spinner *ngIf="isLoading" class="spinner internal-spinner"></app-spinner>
+
+      </mat-select>
+    </section>
+  
+    <section class="mt-5">
+      <app-label class="mb-3" text="Select an {{('ILA' | labelReplacement)| async}}"></app-label>
+      <mat-select [(ngModel)]="selectedILA" placeholder="Select {{('ILA' | labelReplacement)| async}}"
+        class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+        <mat-option [value]="ila" *ngFor="let ila of ilaList" [hidden]="!ila.active">
+          {{ila.name}}
+        </mat-option>
+        <app-spinner *ngIf="isLoadingILA" class="spinner internal-spinner"></app-spinner>
+
+      </mat-select>
+    </section>
+  
+    <section *ngIf="saveHere" class="mt-5">
+      <app-label class="mb-3" text="Reason For changing {{('ILA' | labelReplacement)| async}} (Optional)"></app-label>
+      <app-textarea [placeholder]="'Enter reason here'" [(ngModel)]="reason">
+  
+      </app-textarea>
+      <div class="w-full flex flex-row mt-5" style="justify-content:flex-end;">
+        <app-button [disabled]="!selectedILA" (clicked)="changeILA()" ButtonType="button" text="Save"
+          size="sm"></app-button>
+      </div>
+    </section>
+  
+    <section *ngIf="!saveHere">
+      <div class="w-full mt-5 flex flex-row" style="justify-content: flex-end;">
+        <app-button [disabled]="!selectedILA" (clicked)="ilaIdSelected.emit({name:selectedILA?.name,id:selectedILA?.id})"
+          ButtonType="button" text="Select" size="sm"></app-button>
+      </div>
+    </section>
+  </div>
+</ng-container>
+
+<ng-container *ngIf="filterProvider === true">
+  <div class="m-5 flex flex-col">
+    <section class="flex flex-row justify-between" style="align-items: center;">
+      <div class="flex flex-row" style="align-items: center;">
+        <p class="font-bold text-lg m-0 p-0">Filter Provider</p>
+      </div>
+      <app-button size="sm" ButtonType="icon" icon="close" (clicked)="closeFunction()">
+      </app-button>
+    </section>
+  
+    <section class="mt-5">
+      <app-label class="mb-3" text="Select a Provider"></app-label>
+      <mat-select (selectionChange)="onSelectionChange($event)" placeholder="Select Provider"
+      class="appearance-none rounded border w-full px-4 py-2.5 mt-2" [(ngModel)]="providerFilterTrue">
+        <mat-option *ngFor="let p of providers" [value]="p.id" [hidden]="!p.active">
+            {{p.name}}
+        </mat-option>
+      </mat-select>
+    </section>
+
+    <section class="mt-5">
+      <app-label class="mb-3" text="Select {{('ILA' | labelReplacement)| async}}"></app-label>
+      <div *ngFor=" let i of selectedILAArray">
+        <mat-checkbox (change)="selectILA(i)" [value]="i.id" [hidden]="!i.active">{{i.name}}
+        </mat-checkbox>
+      </div>
+      
+    </section>
+  
+    <!-- <section class="mt-5">
+      <app-label class="mb-3" text="Select an ILA"></app-label>
+      <mat-select [(ngModel)]="selectedILA" placeholder="Select ILA"
+        class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+        <mat-option [value]="ila" *ngFor="let ila of ilaList">
+          {{ila.name}}
+        </mat-option>
+      </mat-select>
+    </section> -->
+  </div>
+</ng-container>
+
+

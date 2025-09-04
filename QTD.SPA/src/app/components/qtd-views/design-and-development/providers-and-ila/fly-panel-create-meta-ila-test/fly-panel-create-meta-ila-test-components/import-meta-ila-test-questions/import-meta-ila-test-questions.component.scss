@@ -1,0 +1,14 @@
+.checkbox-container{
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 1.44rem;
+    div{
+        flex: 1 1 50%;
+        margin-bottom: 1.4rem;
+    }
+}
+
+.form-checkbox{
+    display: flex;
+    align-items: center;
+}

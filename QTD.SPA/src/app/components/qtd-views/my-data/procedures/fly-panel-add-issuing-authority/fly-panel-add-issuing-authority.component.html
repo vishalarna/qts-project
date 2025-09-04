@@ -1,0 +1,80 @@
+<ng-container>
+  <div class="flex flex-row justify-between items-center px-12 mt-5 mb-6" style="color: rgba(21, 55, 44, 1);">
+    <p *ngIf="oldIssuingAuthority === undefined" class="text-xl font-bold ">Add New Issuing Authority</p>
+    <p *ngIf="oldIssuingAuthority !== undefined && !isCopy" class="text-xl font-bold ">Edit Issuing Authority</p>
+    <p *ngIf="isCopy" class="text-xl font-bold ">Copy Issuing Authority</p>
+    <app-button (click)="closeIssuingAuthority()" ButtonType='icon' icon="close"></app-button>
+  </div>
+
+  <form [formGroup]="issuingAuthorityForm" style="color: rgba(0, 13, 9, 1);">
+    <div class="flex flex-row px-12 ">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-label class="label required" [for]="'IssuingAuthorityTitle'" [text]="'Issuing Authority Title '">
+        </app-label>
+        <app-textbox type="text" formControlName="IssuingAuthorityTitle" [placeholder]="'Title'">
+        </app-textbox>
+        <app-input-error text="Issuing Authority Title is required Or Contains White Spaces"
+          *ngIf="issuingAuthorityForm.get('IssuingAuthorityTitle')?.invalid || issuingAuthorityForm.get('IssuingAuthorityTitle')?.hasError('whitespaceOnly')">
+        </app-input-error>
+      </div>
+    </div>
+
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-label [for]="'IssuingAuthorityDescription'" [text]="'Issuing Authority Description'"></app-label>
+        <app-textarea type="text" formControlName="IssuingAuthorityDescription"
+          [placeholder]="'Enter Issuing Authority Description'"
+          [value]="issuingAuthorityForm.get('IssuingAuthorityDescription')?.value || ''"
+          [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+        </app-textarea>
+      </div>
+    </div>
+
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-label [for]="'IssuingAuthorityWebsite'" [text]="'Issuing Authority Website'"></app-label>
+        <app-textbox type="text" formControlName="IssuingAuthorityWebsite"
+          [placeholder]="'Enter Issuing Authority Website'">
+        </app-textbox>
+      </div>
+    </div>
+
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+        <app-label [for]="'EffectiveDate'" [text]="'Effective Date '"></app-label>
+<!--         <app-date (ngModelChange)="dateChanged($event)" formControlName="EffectiveDate" placeholder="Select Date">
+        </app-date> -->
+        <app-date  formControlName="EffectiveDate" placeholder="Select Date">
+        </app-date>
+       <!--  <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+        </app-input-error> -->
+      </div>
+    </div>
+
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-label [for]="'Note'" [text]="'Note'" class="label required"></app-label>
+        <app-textarea [value]="issuingAuthorityForm.get('Note')?.value || ''" type="text" formControlName="Note" [placeholder]="'Enter Note'"
+          [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+        </app-textarea>
+        <app-input-error text="Note is required Or Contains White Spaces"
+        *ngIf="issuingAuthorityForm.get('Note')?.invalid || issuingAuthorityForm.get('Note')?.hasError('whitespaceOnly')">
+      </app-input-error>
+      </div>
+    </div>
+
+
+    <div *ngIf="!isCopy && !isEdit" class="px-12 mt-8 float-left py-3">
+      <mat-checkbox formControlName="AddAnother" name="AddAnotherIssuingAuthority">
+        Add Another Issuing Authority
+      </mat-checkbox>
+    </div>
+    <div class="px-12 mt-8 float-right py-3 mr-6">
+      <app-button [spinner]="showSpinner" [disabled]="issuingAuthorityForm.invalid || showSpinner"
+        type="button" size="sm" (clicked)="saveissuingAuthority()" text="Save">
+      </app-button>
+    </div>
+
+
+  </form>
+</ng-container>

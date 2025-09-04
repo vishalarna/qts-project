@@ -1,0 +1,104 @@
+<!--Heading starts-->
+<div class="flex flex-col px-12 py-12">
+  <ng-container *ngIf="linkPos">
+    <div class="flex flex-row justify-between">
+      <h2>Link  {{("Employee" | labelReplacement)| async}} to SQs</h2>
+      <app-button ButtonType="icon" icon="close" (clicked)="closed.emit('fp-task-pos-link-closed')"></app-button>
+
+    </div>
+    <div class="flex flex-row items-center border-b-0.8 border-gray-one">
+      <div class="flex flex-grow">
+        <app-icon icon="search"></app-icon>
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+          (input)="filterData($event)">
+      </div>
+
+    </div>
+
+    <!--Heading ends-->
+
+    <div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+
+      <div class="cursor-pointer">
+        <span> Showing:
+          <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+            <p *ngIf="showActive" class="font-bold">
+              Active
+            </p>
+            <p *ngIf="!showActive" class="font-bold">
+              Inactive
+            </p>
+
+          </label>
+          <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+        </span>
+
+        <mat-menu #menu="matMenu">
+          <label mat-menu-item *ngIf="!showActive" (click)="filterStatus(true)">
+            Active</label>
+
+          <label mat-menu-item *ngIf="showActive" (click)="filterStatus(false)">
+            Inactive</label>
+        </mat-menu>
+      </div>
+
+    </div>
+
+    <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="linkedIds.length > 0">
+      <div class="flex flex-row w-full justify-between mb-3">
+        <p class="text-xs text-gray-four pt-2">{{linkedIds.length}}  {{("Employee" | labelReplacement)| async}}(s) selected</p>
+        <app-button [disabled]="dateError || isLoading" [spinner]="isLoading" class="mb-2" type="button" color="secondary" size="sm"
+          (clicked)="linkToSQ()" text="Link to SQ">
+        </app-button>
+
+      </div>
+      <div class="flex flex-row w-full justify-between mb-3">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'startDate'" [text]="'Start Date'"></app-label>
+          <app-date [(ngModel)]="startDate" (ngModelChange)="dateChanged($event)" placeholder="Select Date">
+          </app-date>
+          <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+          </app-input-error>
+          <p class="text-xs text-gray-four pt-2">The selected Start Date will apply to all selected  {{("Employee" | labelReplacement)| async}}.</p>
+        </div>
+
+      </div>
+    </div>
+    <!-- *ngIf="active_tasks"
+
+      -->
+
+    <app-spinner *ngIf="employees === undefined"></app-spinner>
+    <ng-container *ngIf="employees && employees.length < 1">
+      <div>No Data Found</div>
+    </ng-container>
+    <ng-container *ngIf="employees && employees.length > 0">
+      <div class="flex flex-col mt-3">
+        <div class="flex flex-row mb-3" *ngFor="let p of filteredList">
+          <mat-checkbox *ngIf="!alreadyLinkedIds.includes(p.id)" (change)="positionChecked($event.checked, p.id)">
+            <div class="flex flex-row">
+              <img [src]="p.image" class="rounded-full w-10 h-10 m-2" onerror="this.src='assets/img/ImageNotFound.jpg'">
+              <div class="flex flex-col">
+                <p> {{p.firstName}} {{p.lastName}}</p>
+                <p> {{p.userName}} </p>
+              </div>
+            </div>
+          </mat-checkbox>
+          <ng-container *ngIf="alreadyLinkedIds.includes(p.id)">
+            <div class="flex flex-row">
+              <app-icon class="mt-3" style="color: rgb(92, 155, 49);" icon="link"></app-icon>
+              <img [src]="p.image" class="rounded-full w-10 h-10 m-2" onerror="this.src='assets/img/ImageNotFound.jpg'">
+              <div class="flex flex-col">
+                <p> {{p.firstName}} {{p.lastName}}</p>
+                <p> {{p.userName}} </p>
+              </div>
+            </div>
+          </ng-container>
+        </div>
+
+      </div>
+    </ng-container>
+  </ng-container>
+
+  <!-- Here goes the add position flypanel once it is ready -->
+</div>

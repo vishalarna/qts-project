@@ -1,0 +1,89 @@
+.ceh-upload-wraper {
+  padding: 35px;
+  .heading-title {
+    color: #000d09;
+    font-feature-settings: "clig" off, "liga" off;
+    font-family: Roboto;
+    font-size: 20px;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 160%;
+    letter-spacing: 0.15px;
+    margin-bottom: 17px;
+  }
+  .card-wraper {
+    border-radius: 4px;
+    border: 0.5px solid #e1e5e4;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+    padding: 24px 35px;
+    margin-bottom: 8px;
+    background-color: #ffffff;
+    label,
+    .label {
+      color: #000d09;
+      font-feature-settings: "clig" off, "liga" off;
+      font-family: Roboto;
+      font-size: 14px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 143%;
+      letter-spacing: 0.15px;
+      margin-bottom: 0px;
+    }
+    .ceh-radio-btn-wraper {
+      display: flex;
+      margin-top: 31px;
+    }
+    .date-picker-wraper {
+      max-width: 220px;
+      width: 100%;
+    }
+    .date-space {
+      line-height: 50px;
+      padding-top: 9px;
+      padding-right: 8px;
+      font-size: 20px;
+      font-weight: 400;
+    }
+    .show-record {
+      color: #000d09;
+      font-feature-settings: "clig" off, "liga" off;
+      font-family: Roboto;
+      font-size: 16px;
+      font-style: normal;
+      font-weight: 500;
+      line-height: 143%;
+      letter-spacing: 0.15px;
+    }
+  }
+  .ila-section {
+    min-height: 500px;
+  }
+
+  .caption-text {
+    color: #7a807e;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 143%; /* 20.02px */
+    letter-spacing: 0.15px;
+  }
+}
+.ceh-dialog .cdk-overlay-pane{
+  max-width: 50rem;
+  width: 100%;
+}
+.nav-wrap {
+  background-color: #fff;
+  box-shadow: 0px 0px 30px 0px #7A807E1A;
+  padding: 0.9rem 0;
+}
+.ceh-table-spacing{
+  margin-top: 3rem;
+}
+
+.navbar-heading{
+  padding: 0 0 0 1rem;
+}
+.greyed-out-row {
+  opacity: 0.6;
+}

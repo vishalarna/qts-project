@@ -1,0 +1,42 @@
+<mat-dialog-content>
+  <div class="flex flex-row justify-between items-center mt-2 mb-4">
+    <p mat-dialog-title textContent="Publish Scenario">Publish Scenario</p>
+    <app-button
+      ButtonType="icon"
+      class="mt--4"
+      icon="close"
+      mat-dialog-close="true"
+    ></app-button>
+  </div>
+
+  <div class="w-screen pr-3 form_container">
+    <form
+      [formGroup]="publishScenarioForm"
+      class="w-full flex flex-col mt-3 ml-3"
+    >
+      <span class="mb-4"
+        >Please provide Effective Date and Reason (if you want to) for this
+        change</span
+      >
+      <app-label [for]="'effectiveDate'" text="Effective Date" class="float-left label required"></app-label>
+      <app-date formControlName="effectiveDate"></app-date>
+      <app-input-error
+        class="mb-3"
+        *ngIf="publishScenarioForm.get('effectiveDate')?.hasError('required')"
+      ></app-input-error>
+      <label>Reason</label>
+      <app-textarea formControlName="note"></app-textarea>
+    </form>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="flex flex-row justify-end">
+  <app-button
+    size="sm"
+    [disabled]="publishScenarioForm.controls['effectiveDate'].invalid"
+    class="share_button"
+    variant="contained"
+    color="secondary"
+    text="Save"
+    (clicked)="publishScenarioFormvalue()"
+  ></app-button>
+</mat-dialog-actions>

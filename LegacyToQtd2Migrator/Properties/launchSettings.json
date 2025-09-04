@@ -1,0 +1,11 @@
+{
+  "profiles": {
+    "LegacyToQtd2Migrator": {
+      "commandName": "Project",
+      "commandLineArgs": "\"Server=WSAMZN-23VC648D;Database=EMPDemo;Integrated Security=true;TrustServerCertificate=True;\" \"Server=WSAMZN-23VC648D\\SQL2012;Database=QTD2MigrationTest;Integrated Security=true;TrustServerCertificate=True;\"",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
+      }
+    }
+  }
+}

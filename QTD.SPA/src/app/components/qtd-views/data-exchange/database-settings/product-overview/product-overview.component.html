@@ -1,0 +1,109 @@
+<div class="row m-auto pb-3 label-mb-0">
+  <div class="flex w-full" style="justify-content: center">
+    <div style="width: 100%" class="flex flex-col">
+      <div class="flex flex-col bg-white mat-elevation-z3 p-4 card-shadow">
+        <div class="mb-3 panel-heading">
+          License Information
+        </div>
+
+        <div class="flex flex-row align-items-center row-spacewrap">
+          <app-label text="Client Id" class="text-gray-300 company-text label-wrap"></app-label>
+          <div class="flex flex-col float-left w-full text-wrap">
+            <label>{{this.ClientSettings_License.clientAccountNumber}}</label>
+          </div>
+        </div>
+        <div class="flex flex-row align-items-center row-spacewrap">
+          <app-label text="License Type" class="text-gray-300 company-text label-wrap"></app-label>
+          <div class="flex flex-col float-left w-full text-wrap">
+            <label>{{this.ClientSettings_License.licenseType}}</label>
+          </div>
+        </div>
+        <div class="flex flex-row align-items-center row-spacewrap">
+          <app-label text="Current no. of {{('Employee' | labelReplacement)| async}} Records/Total {{('Employee' | labelReplacement)| async}} Records Available"
+            class="text-gray-300 company-text label-wrap"></app-label>
+          <div class="flex flex-col float-left w-full text-wrap">
+            <label>{{this.ClientSettings_License.employeeRecordsUsed}}
+              /{{this.ClientSettings_License.totalEmployeeRecordsAvailable}}</label>
+          </div>
+        </div>
+        <form [formGroup]="licenseForm">
+          <div class="flex flex-row align-items-center row-input-spacewrap">
+            <app-label text="Activation Code" class="text-gray-300 company-text label-wrap"></app-label>
+            <div class="flex flex-col float-left w-full">
+              <input type="text" class="form-control" formControlName="activationCode"
+                (change)="OnFieldUpdated('activationCode', ($any($event)).target.value)" />
+            </div>
+          </div>
+        </form>
+        <div class="flex flex-row content-wrap" style="padding: 0.5em 1em 0.3em;">
+          <app-label text="Activation Code Expiration" class="text-gray-300 company-text"></app-label>
+          <div class="flex flex-col float-left w-full text">
+            {{this.ClientSettings_License.expiration | date }}
+          </div>
+        </div>
+        <div class="flex flex-row justify-content-end gap-2 mt-4">
+          <app-button type="button" color="secondary" size="md" text="Cancel" *ngIf="mode == 'write'"
+            (clicked)="OnCancelButtonClick()" class="cancel-btn mr-2 border-0">
+          </app-button>
+          <app-button type="submit" color="primary" (clicked)="OnSaveButtonClick()" *ngIf="mode == 'write'" size="md"
+            text="Save" class="save-btn">
+          </app-button>
+          <app-button type="submit" color="primary" (clicked)="OnEditButtonClick()" *ngIf="mode == 'read'" size="md"
+            text="Edit" class="save-btn">
+          </app-button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="row m-auto label-mb-0">
+  <div class="flex w-full" style="justify-content: center">
+    <div style="width: 100%" class="flex flex-col">
+      <div class="flex flex-col bg-white mat-elevation-z3 p-4 card-shadow">
+        <div class="panel-heading">
+          QTD Product Suite
+        </div>
+        <mat-table [dataSource]="this.ClientSettings_License.products">
+          <ng-container matColumnDef="Product Name">
+            <mat-header-cell *matHeaderCellDef> Product Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.productName}} </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="Product Acronym">
+            <mat-header-cell *matHeaderCellDef>Product Acronym
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.productAcronym}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="Version & Release Date">
+            <mat-header-cell *matHeaderCellDef>Version & Release Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{row.releaseDate}} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="Does my company have this product?">
+            <mat-header-cell *matHeaderCellDef>Does my company have this product?
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" [ngClass]=" row.enabled === true ? 'success' : 'failure'"> {{row.enabled ===
+              true ? "Yes" : "No"}} </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayColumns;">
+          </mat-row>
+
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center " *matNoDataRow>
+            <td class="mat-cell w-full m-2">No data to display</td>
+          </tr>
+
+        </mat-table>
+        <div class="flex flex-row align-items-center content-text">
+          For more information on your company's current license type and to learn more about the QTD Product
+          Suite, send and email to&nbsp;
+          <a class="email-wrap">sales@qualitytraningsystems.com</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,86 @@
+<div class="m-5 flex flex-col">
+    <section class="flex flex-row justify-between" style="align-items: center;">
+      <div class="flex flex-row" style="align-items: center;">
+        <p class="font-bold text-lg m-0 p-0">Test Question Preview</p>
+      </div>
+      <app-button size="sm" ButtonType="icon" icon="close" (clicked)="closed.emit('fp-pr-tq')">
+      </app-button>
+    </section>
+
+    <section class="mt-4 ">
+        <form class="flex flex-row" [formGroup]="testItemForm">
+          <div class="flex flex-col mr-3 w-2/4">
+            <label class="font-medium">Question Type</label>
+            <mat-select formControlName="type" (selectionChange)="selectedType = $event.value" class="rounded-sm"
+              style="border: 1px solid lightgray;" placeholder="Select Question Type" class="p-3" [disabled]="true">
+              <mat-option *ngFor="let type of testItemTypes" class="label_style"
+                [value]="type">{{type.description}}</mat-option>
+            </mat-select>
+
+          </div>
+          <div class="flex flex-col w-2/4">
+            <div class="flex flex-row" style="align-items:flex-start;">
+              <label class="mr-2 font-medium">Taxonomy Level</label>
+              <app-icon icon="help_outline" style="color:lightgray;" [matTooltipClass]="'multiline-tooltip'"
+              matTooltip="Select appropriate level of complexity for Test Question.
+                &#13; Recall - Remember facts and concept.
+                &#13; Application - Use information and concepts in different situations
+                &#13;Analyze - Establish relationships between presented information"></app-icon>
+            </div>
+            <mat-select [disabled]="true" formControlName="taxonomy" class="rounded-sm" style="border: 1px solid lightgray;"
+              placeholder="Select Taxonomy Level" class="p-3">
+              <mat-option *ngFor="let level of taxonomyLevels" class="label_style"
+                [value]="level.id">{{level.description}}</mat-option>
+            </mat-select>
+          </div>
+        </form>
+    </section>
+    <section class="mt-4">
+        <ng-container
+          *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'true / false' && !testItemForm.get('taxonomy')?.hasError('required')">
+          <app-add-true-false [previousData]="previousQuestion" [mode]="mode" [eoId]="eoId"
+            [levelId]="testItemForm.get('taxonomy')?.value" [type]="testItemForm.get('type')?.value"></app-add-true-false>
+        </ng-container>
+
+        <ng-container
+          *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'short answers' && !testItemForm.get('taxonomy')?.hasError('required')">
+          <app-add-short-questions [previousData]="previousQuestion" [mode]="mode" [eoId]="eoId"
+            [levelId]="testItemForm.get('taxonomy')?.value"
+            [type]="testItemForm.get('type')?.value"></app-add-short-questions>
+        </ng-container>
+
+        <ng-container
+          *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'multiple choice questions' && !testItemForm.get('taxonomy')?.hasError('required')">
+          <app-add-mcq [previousData]="previousQuestion" [mode]="mode" [eoId]="eoId"
+            [levelId]="testItemForm.get('taxonomy')?.value" [type]="testItemForm.get('type')?.value"></app-add-mcq>
+        </ng-container>
+
+        <ng-container
+          *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'multiple correct answers' && !testItemForm.get('taxonomy')?.hasError('required')">
+          <app-add-multiple-correct-answer [previousData]="previousQuestion" [mode]="mode" [eoId]="eoId"
+            [levelId]="testItemForm.get('taxonomy')?.value"
+            [type]="testItemForm.get('type')?.value"></app-add-multiple-correct-answer>
+        </ng-container>
+
+        <ng-container
+          *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'fill in the blank' && !testItemForm.get('taxonomy')?.hasError('required')">
+          <app-add-fill-in-the-blank [previousData]="previousQuestion" [mode]="mode" [eoId]="eoId"
+            [levelId]="testItemForm.get('taxonomy')?.value"
+            [type]="testItemForm.get('type')?.value"></app-add-fill-in-the-blank>
+        </ng-container>
+
+        <ng-container
+          *ngIf="selectedType?.description?.trim()?.toLowerCase() === 'match the column' && !testItemForm.get('taxonomy')?.hasError('required')">
+          <app-add-match-the-column [previousData]="previousQuestion" [mode]="mode" [eoId]="eoId"
+            [levelId]="testItemForm.get('taxonomy')?.value"
+            [type]="testItemForm.get('type')?.value"></app-add-match-the-column>
+        </ng-container>
+
+    </section>
+    <section class="flex flex-row mt-4" style="justify-content: flex-end;">
+        <app-button (clicked)="closed.emit('fp-pr-tq')"
+            size="sm" ButtonType="button" color="secondary" text="Back"></app-button>
+    </section>
+
+
+</div>

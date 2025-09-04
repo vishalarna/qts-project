@@ -1,0 +1,120 @@
+<div class="flex flex-col w-full p-5">
+  <!-- header section -->
+  <section class="flex flex-row justify-between mb-5" style="align-items:center;">
+    <span class="text-lg font-bold">Filter for {{("Task" | labelReplacement)| async}} & Skill Qualification</span>
+    <app-icon (click)="closed.emit()" icon="close" class="cursor-pointer"></app-icon>
+  </section>
+
+  <app-data-loader *ngIf="isLoading"></app-data-loader>
+  <section *ngIf="!isLoading" class="flex flex-col w-full">
+    <form class="flex flex-col w-full" [formGroup]="filterForm">
+      <label>{{("Position" | labelReplacement)| async}}</label>
+      <mat-select (selectionChange)="onReset(['rrt','meta','dateRange','position']);filterBy='position'" formControlName="position"
+        class="appearance-none rounded border w-full px-4 py-3 mt-2 align-item-end bg-white"
+        placeholder="Select {{('Position' | labelReplacement)| async}} ">
+        <mat-option *ngFor="let pos of positions" [value]="pos.id" [hidden]="!pos.active">
+          {{pos.positionTitle}}
+        </mat-option>
+      </mat-select>
+
+      <span class="text-sm font-bold mt-5 mb-3 flex">Filter by {{("Task" | labelReplacement)| async}}s</span>
+      <!-- DA, SDA and Task filter -->
+      <div class="flex flex-row mb-2 w-full">
+        <div class="flex flex-col w-full">
+          <label>Duty Area</label>
+          <mat-select (selectionChange)="onReset(['rrt','meta','dateRange','da','sda','task']);loadSDA();filterBy='task'" formControlName="da" placeholder="Select Duty Area" style="width:90%"
+            class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white">
+            <mat-option [hidden]="!da.active" *ngFor="let da of dutyAreas" [value]="da.id">
+              {{da.letter + da.number + " - " + da.title}}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="flex flex-col w-full">
+          <label>Sub Duty Area</label>
+          <mat-select [disabled]="sdaLoader" (selectionChange)="onReset(['rrt','meta','dateRange','da','sda','task']);loadTasks();filterBy='task'" formControlName="sda" style="width:100%"
+            class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white"
+            placeholder="Select Sub Duty area">
+            <app-data-loader *ngIf="sdaLoader"></app-data-loader>
+            <mat-option [hidden]="!sda.active" *ngFor="let sda of subDutyArea" [value]="sda.id" >
+              {{sda.title}}
+            </mat-option>
+          </mat-select>
+        </div>
+      </div>
+      <label class="mb-2 mt-3">{{("Task" | labelReplacement)| async}}</label>
+      <mat-select [disabled]="taskLoader" (selectionChange)="onReset(['rrt','meta','dateRange','da','sda','task']);filterBy='task'" formControlName="task"
+        class="appearance-none rounded border w-full px-4 py-3 mt-2 align-item-end bg-white" placeholder="Select {{('Task' | labelReplacement)| async}}">
+        <app-data-loader *ngIf="taskLoader"></app-data-loader>
+        <mat-option [hidden]="!task.active" *ngFor="let task of tasks" [value]="task.id" >
+          {{task.description}}
+        </mat-option>
+      </mat-select>
+
+      <span class="text-sm font-bold mt-5 mb-3 flex">Filter by SQ</span>
+      <div class="flex flex-row mb-2 w-full">
+        <div class="flex flex-col w-full">
+          <label>Category</label>
+          <mat-select (selectionChange)="getSubCat();onReset(['rrt','meta','dateRange','category','subCategory','topic','sq']);filterBy='sq'" formControlName="category" placeholder="Select Category" style="width:90%"
+            class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white">
+            <mat-option [hidden]="!cat.active" *ngFor="let cat of categories" [value]="cat.id" >
+              {{cat.number + " - " + cat.title}}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="flex flex-col w-full">
+          <label>Sub Category</label>
+          <mat-select (selectionChange)="getSQAndTopics();onReset(['rrt','meta','dateRange','category','subCategory','topic','sq']);filterBy='sq'" formControlName="subCategory" style="width:100%"
+            class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white"
+            placeholder="Select Sub Category">
+            <mat-option *ngIf="subCatLoader">
+              <app-data-loader></app-data-loader>
+            </mat-option>
+            <mat-option [hidden]="!subCat.active" *ngFor="let subCat of subCategory" [value]="subCat.id" >
+              {{subCat.title}}
+            </mat-option>
+          </mat-select>
+        </div>
+      </div>
+      <label class="mb-2 mt-3">Topic</label>
+      <mat-select (selectionChange)="getSQ();onReset(['rrt','meta','dateRange','category','subCategory','topic','sq']);filterBy='sq'" formControlName="topic"
+        class="appearance-none rounded border w-full px-4 py-3 mt-2 align-item-end bg-white" placeholder="Select Topic">
+        <mat-option [hidden]="!topic.active" *ngFor="let topic of topics" [value]="topic.id">
+          {{topic.title}}
+        </mat-option>
+      </mat-select>
+
+      <label class="mb-2 mt-3">SQ</label>
+      <mat-select (selectionChange)="onReset(['rrt','meta','dateRange','category','subCategory','topic','sq']);filterBy='sq'" formControlName="sq"
+        class="appearance-none rounded border w-full px-4 py-3 mt-2 align-item-end bg-white" placeholder="Select SQ">
+        <mat-option [hidden]="!sq.active" *ngFor="let sq of sqs" [value]="sq.id">
+          {{ sq.number + " - " + sq.description}}
+        </mat-option>
+      </mat-select>
+
+      <label class="mb-2 mt-3">Training {{("Task" | labelReplacement)| async}} Group</label>
+      <mat-select (selectionChange)="onReset(['rrt','meta','dateRange','group']);filterBy='group'" formControlName="group"
+        class="appearance-none rounded border w-full px-4 py-3 mt-2 align-item-end bg-white" placeholder="Select {{('Task' | labelReplacement)| async}} Training Group">
+        <mat-option [hidden]="!tg.active" *ngFor="let tg of trainingGroups" [value]="tg.id">
+          {{tg.groupName}}
+        </mat-option>
+      </mat-select>
+
+      <label class="mb-2 mt-3">Evaluator</label>
+      <mat-select (selectionChange)="onReset(['rrt','meta','dateRange','eval']);filterBy='eval'" formControlName="eval"
+        class="appearance-none rounded border w-full px-4 py-3 mt-2 align-item-end bg-white"
+        placeholder="Select Evaluator">
+        <mat-option  *ngFor="let eval of evals" [value]="eval.id" >
+          {{eval.firstName + " " + eval.lastName}}
+        </mat-option>
+      </mat-select>
+
+      <mat-checkbox (change)="onReset(['rrt','meta','dateRange','da','sda','task','category','subCategory','topic','sq','group','eval','position']);filterBy === '' || filterBy === null ?filterBy='task':false" formControlName="rrt" class="mt-5 mb-3">RRT Only</mat-checkbox>
+      <mat-checkbox (change)="onReset(['rrt','meta','dateRange','da','sda','task','category','subCategory','topic','sq','group','eval','position']);filterBy === '' || filterBy === null ?filterBy='task':false" formControlName="meta">Meta {{("Task" | labelReplacement)| async}} Only</mat-checkbox>
+      <mat-checkbox (change)="onReset(['rrt','meta','dateRange','da','sda','task','category','subCategory','topic','sq','group','eval','position']);filterBy === '' || filterBy === null ?filterBy='task':false" formControlName="dateRange" class="mt-3 mb-3">{{("Task" | labelReplacement)| async}} that require requalification for specific date
+        range</mat-checkbox>
+      <div class="w-full flex flex-row mt-5" style="justify-content:flex-end">
+        <app-button (clicked)="emitFilterValues()" [disabled]="isValid()" ButtonType="button" size="sm" text="Apply Filters"></app-button>
+      </div>
+    </form>
+  </section>
+</div>

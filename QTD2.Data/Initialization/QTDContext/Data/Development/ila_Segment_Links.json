@@ -1,0 +1,63 @@
+[
+  {
+    "ILAId": 1,
+    "SegmentId": 1,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 2,
+    "SegmentId": 2,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 3,
+    "SegmentId": 3,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 4,
+    "SegmentId": 4,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 5,
+    "SegmentId": 5,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 4,
+    "SegmentId": 3,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 5,
+    "SegmentId": 4,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 3,
+    "SegmentId": 2,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 2,
+    "SegmentId": 1,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 1,
+    "SegmentId": 2,
+    "Deleted": false,
+    "Active": true
+  }
+
+]

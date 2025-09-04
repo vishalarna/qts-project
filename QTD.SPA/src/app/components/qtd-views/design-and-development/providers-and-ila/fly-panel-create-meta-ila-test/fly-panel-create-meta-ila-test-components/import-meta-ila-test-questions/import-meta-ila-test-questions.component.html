@@ -1,0 +1,151 @@
+<div class="flex-col w-full">
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-semibold text-gray-900 m-0">Select Items from Question Bank</p>
+    <app-button (click)="closeByValue.emit(false)" ButtonType='icon' icon="close"></app-button>
+  </div>
+  <div class="flex flex-col ml-12 mr-12 mt-8">
+    <div>
+      <p class="font-semibold text-sm">Add {{("Enabling Objective" | labelReplacement)| async}} for Test Items</p>
+    </div>
+
+    <div>
+      <button class="font-medium" (click)="ShowDropDown()" variant="text" style="color: rgb(92, 155, 49) !important;">List
+        {{("Enabling Objective" | labelReplacement)| async}} for Selected Meta {{("ILA" | labelReplacement)| async}}
+        <app-icon *ngIf="isDropdownVisible" icon="expand_less"></app-icon>
+        <app-icon *ngIf="!isDropdownVisible" icon="expand_more"></app-icon>
+      </button>
+      <div *ngIf="isDropdownVisible">
+        <table class="table w-full border text-left mt-5 hover">
+          <tbody>
+            <tr *ngFor="let item of eosLinkedToMetaILA" class="table-row text-sm font-normal hover:bg-gray-50">
+              <td class="table-cell align-middle border-b-0.8 border-gray-one">
+                <input type="checkbox" 
+                [checked]="getEoLevelCheckedValues(item.id)"
+                (change)="OnEoSelectionchange(item.id)" [value]="item.id"/>
+              </td>
+              <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                {{ item.fullNumber + " - " + item.description}}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    </div>
+
+  <div class="mt-12 ml-12 mr-12" *ngIf="!isOptionsVisible">
+    <p class="font-semibold text-sm">Choose one of the following to add
+      questions</p>
+    <div class="flex flex-col">
+      <div>
+        <button class="underline font-medium" (click)="showOptions('selection')" variant="text"
+          style="color: rgb(92, 155, 49) !important;">
+          Select Questions
+        </button>
+      </div>
+      <div class="my-3">
+        <p class="text-gray-400">or</p>
+      </div>
+      <div>
+        <button class="underline font-medium" (click)="showOptions('random')" variant="text"
+          style="color: rgb(92, 155, 49) !important;">
+          Generate Questions Randomly
+        </button>
+      </div>
+    </div>
+  </div>
+  <div class="mt-12 ml-12 mr-12" *ngIf="isOptionsVisible">
+    <div *ngIf="selectionMode=='random'">
+      <p class="font-medium">No. of questions to add</p>
+      <div class="border w-20 h-10 rounded">
+        <p class="float-left text-base mt-2 align-center ml-2">{{ randomCount}}</p>
+        <div class="float-right flex flex-col mt-0">
+          <button (click)="IncreaseNumber()" class=" focus:outline-none">
+            <app-icon icon=" expand_less"></app-icon>
+          </button>
+          <button (click)="DecreaseNumber()" class="mt--2 focus:outline-none">
+            <app-icon icon="expand_more"></app-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <!--Question Type Div Starts-->
+    <div>
+        <div class="mt-4">
+          <p class="font-medium">Question Type</p>
+        </div>
+        <div class="checkbox-container">
+          <div class="form-checkbox" *ngFor="let type of question_type " >
+            <input type="checkbox"
+            [checked]="getQuestionTypeCheckedValues(type.id)"
+            (change)="OnQuestionTypeSelectionhange(type.id)">
+            <label class="form-check-label pl-4" for="{{type.description}}">
+              {{type.description}}
+            </label>
+          </div>
+        </div>
+      </div>
+    <!--Question Type Div Ends-->
+
+    <!--Taxonomy Level Div Starts-->
+    <div>
+      <div class="mt-4">
+        <p class="font-medium">Taxonomy Level
+           <app-icon class="mx-2" matTooltipClass="multiline-tooltip"
+            matTooltip="Select the appropriate level of complexity for the test question &#13; Recall - Remember facts and concept &#13; Application - Use information and concepts in different situations &#13; Analyze - Establish relationships between presented information"
+            icon="help"></app-icon>
+        </p>
+      </div>
+      <div class="checkbox-container">
+        <div class="form-checkbox" *ngFor="let level of taxonomy " >
+          <input type="checkbox"
+              [checked]="getLevelCheckedValues(level.id)"
+              (change)="OnLevelSelectionhange(level.id)">
+          <label class="form-check-label pl-4" for="{{level.description}}">
+              {{level.description}}
+          </label>
+        </div>
+      </div>
+    </div>
+    <!--Taxonomy Level Div Ends-->
+    <div class="mt-3 flex justify-end">
+      <app-button [disabled]="selectedQuestionTypeIds.length==0 && selectedLevelIds.length==0 && selectedLevelEoIds.length==0" (clicked)="applySettings()" color="secondary" text="Apply Settings" size="sm">
+      </app-button>
+    </div>
+  </div>
+
+  <div *ngIf="isTestItemTableVisible" class="px-4">
+    <table class="table w-full border border-gray-one text-left mt-5 hover">
+      <thead>
+        <tr class="table-row text-xs text-gray-four">
+          <th class="table-cell border-gray-one font-normal"> <mat-checkbox (change)="checkAll($event)" [checked]="testQuesItems.length === filteredDataToPass.length && testQuesItems.length !== 0" [indeterminate]="testQuesItems.length < filteredDataToPass.length && testQuesItems.length !== 0"></mat-checkbox></th>
+          <th class="table-cell border-gray-one font-normal">Test Question</th>
+          <th class="table-cell border-gray-one font-normal">Type</th>
+          <th class="table-cell border-gray-one font-normal">Taxonomy Level</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let item of filteredDataToPass" class="h-11 table-row text-sm font-normal hover:bg-gray-50">
+          <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+            <mat-checkbox [checked]="testQuesItems.includes(item)"
+              (change)="OnSelectionChange(item,$event)"></mat-checkbox>
+          </td>
+          <td [matTooltip]="item.ques"
+            class="max-w-125 overflow-hidden table-cell align-middle border-b-0.8 border-gray-one">
+            <div [innerHTML]="item.ques"></div>
+          </td>
+          <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+            {{item.type}}
+          </td>
+          <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+            {{item.tax}}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+    <div class="mt-3 flex justify-end">
+      <app-button [disabled] = "testQuesItems.length==0" (clicked)="OnSave()" size="sm" text="Save" color="secondary"></app-button>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,180 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .expired-row {
+        color: gray;
+        font-style: italic;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+</style>
+
+
+<table id="content-table" class="table">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @{
+        var orderedDutyArea = Model.Tasks.OrderBy(task => task.SubdutyArea.DutyArea.Letter).ThenBy(task => task.SubdutyArea.DutyArea.Number).ThenBy(task => task.SubdutyArea.SubNumber).ThenBy(task => task.Number).GroupBy(x => x.SubdutyArea.DutyArea).Select(group => new
+        {
+            DutyArea = group.Key,
+            DutyAreaList = group.ToList()
+        }).ToList();
+    }
+    @if (orderedDutyArea.Count() > 0)
+    {
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+                @{
+                    int j = 1;
+                }
+                @foreach (var orderDA in orderedDutyArea)
+                {
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            @{
+                                var dutyArea = orderDA.DutyAreaList.First().SubdutyArea?.DutyArea;
+                            }
+                            @if (dutyArea != null)
+                            {
+                                <tr>
+                                    @if (Model.DisplayColumns.Where(r => r == "Duty Area").Count() > 0)
+                                    {
+                                        <td style="border: none !important; font-size: 1rem; padding: 10px;vertical-align:top;width:10%;" colspan="1">
+                                            <div style="font-weight:700">@dutyArea.Letter@dutyArea?.Number </div>
+                                        </td>
+                                        <td style="border: none !important; font-size: 1rem; padding: 10px;width:90%" colspan="11">
+                                            <div style="font-weight:700">@dutyArea?.Title</div>
+                                        </td>
+                                    }
+                                </tr>
+                            }
+                            @{
+                                var orderSubDutyArea = orderDA.DutyAreaList.GroupBy(x => x.SubdutyArea).Select(group => new
+                                {
+                                    SubDutyArea = group.Key,
+                                    SubDutyAreaList = group.ToList()
+                                }).ToList();
+                            }
+                            @foreach (var orderSDA in orderSubDutyArea)
+                            {
+                                @{
+                                    var subDutyArea = orderSDA.SubDutyAreaList.First().SubdutyArea;
+                                }
+                                @if (dutyArea != null && subDutyArea != null)
+                                {
+                                    <tr class="padding-class">
+                                        @if (Model.DisplayColumns.Where(r => r == "Sub-Duty Area").Count() > 0)
+                                        {
+                                            <td style="border: none !important; font-size: 1rem; padding: 10px;vertical-align:top;padding-left:15px;;width:10%" colspan="1">
+                                                <div style="font-weight:700">@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber</div>
+                                            </td>
+                                            <td style="border: none !important; font-size: 1rem; padding: 10px;padding-left:15px;width:90%" colspan="11">
+                                                <div style="font-weight:700">@subDutyArea?.Title</div>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+                                @foreach (var orderTask in orderSDA.SubDutyAreaList)
+                                {
+                                    <tr class="padding-class @(!orderTask.Active ? "expired-row" :"")">
+                                        <td style="border: none !important; font-size: 1rem; padding: 10px;padding-right:20px!important;vertical-align:top;padding-left:25px;width:10%" colspan="1">
+                                            <span style="font-weight:700">@(orderTask.IsReliability == true ? "*" : "")@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber.@orderTask.Number</span>
+                                        </td>
+                                        <td style="border: none !important; font-size: 1rem; padding: 10px;padding-left:50px!important;width:90%" colspan="11">
+                                            <span>@orderTask.Description</span>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            <tr></tr>
+                        </table>
+                    </div>
+                    <div class="customized-footer" style="margin:0;padding:0;">*R-R is Reliability Related</div>
+                    @if (j != orderedDutyArea.Count())
+                    {
+                        <div style="display:block; clear:both; page-break-after:always;"></div>
+                        <div class="@(j!=0?"strip-dark":"")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= orderedDutyArea.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

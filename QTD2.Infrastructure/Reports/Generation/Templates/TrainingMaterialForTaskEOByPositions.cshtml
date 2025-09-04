@@ -1,0 +1,190 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    ul {
+        padding-left: 30px;
+        list-style: none;
+        color: #000;
+        margin: 0;
+    }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    .EO-table td {
+        padding: 0;
+    }
+
+    .EO-table tr:not(:first-child) td {
+        padding-left: 30px;
+    }
+
+    .EO-table tr:nth-child(odd) td {
+        padding-left: 60px;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table" width="100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center;word-break:break-word;width:60%;">
+                    <b style="display: block; color: #020378; font-weight: bold; font-size: 16px; text-align: center; margin-top: 8px;">@Model.Title </b>
+                </div>
+                <div><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.Positions.Where(x => x.Position_Tasks.Any()).Count() > 0)
+    {
+        <tr>
+            <td style="border:0;padding:0 0.75rem" colspan="12" class="strip-container">
+                @{int j = 1;}
+                @foreach (var position in Model.Positions.Where(x => x.Position_Tasks.Any()))
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <div style="font-size: 22px; font-weight: 600; color: #000; margin-top: 5px; border-left: 0; border-top: 0; border-bottom: 0; border-right: 0">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s: @position.PositionTitle (@position.PositionAbbreviation)</div>
+                        @{
+                            var tasks = position.Position_Tasks.Where(x => x.Task != null).Select(x => x.Task).Distinct();
+                            var subDutyAreas = tasks.Select(x => x.SubdutyArea).Distinct();
+                            var dutyAreas = tasks.Select(x => x.SubdutyArea.DutyArea).Distinct();
+                        }
+                        @foreach (var dutyarea in dutyAreas.OrderBy(x => x.Letter).ThenBy(x => x.Number))
+                        {
+                            <table class="EO-table" style="font-size:18px;padding:8px 0px">
+                                <tr>
+                                    <td colspan="2" style="font-weight: 600; border: 0; padding: 5px 0 0; ">@dutyarea.Letter@dutyarea.Number - @dutyarea.Title</td>
+                                </tr>
+                                @foreach (var subDutyArea in subDutyAreas.Where(x => x.DutyAreaId == dutyarea.Id).OrderBy(x => x.SubNumber))
+                                {
+                                    <tr>
+                                        <td style="font-weight: 600; border:0;">@dutyarea.Letter@dutyarea.Number.@subDutyArea.SubNumber - @subDutyArea.Title</td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2" style="font-size:16px; border:0;">
+                                            <table style="font-weight:400; width: 100%;">
+                                                @foreach (var task in tasks.Where(x => x.SubdutyAreaId == subDutyArea.Id).OrderBy(x => x.Number))
+                                                {
+                                                    <tr>
+                                                        <td style=" border: 0; padding: 0; vertical-align: top;">
+                                                            <div style="display: -webkit-box; display: flex; -webkit-box-pack: justify; align-items: flex-start;">
+                                                                <div style="padding:0 30px 0 0">@dutyarea.Letter@dutyarea.Number.@subDutyArea.SubNumber.@task.Number</div>
+                                                                <div>@task.Description</div>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border: 0;">
+                                                            <table>
+                                                                @{
+                                                                    var ilas = task.ILA_TaskObjective_Links.Select(x => x.ILA);
+                                                                    if (Model.IncludeILAsOfEOTask)
+                                                                    {
+                                                                        ilas = ilas.Concat(task.Task_EnablingObjective_Links.SelectMany(x => x.EnablingObjective.ILA_EnablingObjective_Links.Select(r => r.ILA)));
+                                                                    }
+                                                                }
+                                                                @foreach (var ila in ilas.Distinct().OrderBy(x => x.Name))
+                                                                {
+                                                                    <tr>
+                                                                        <td style="border: 0;"><b>@ila.Name</b> @(!string.IsNullOrEmpty(ila.Number) ? "(" + ila.Number + ")" : "")</td>
+                                                                    </tr>
+                                                                    @if (Model.ShowTrainingResources)
+                                                                    {
+                                                                        <tr>
+                                                                            <td style="border: 0;">
+                                                                                <table>
+                                                                                    @foreach (var ilaResource in ila.ILA_Resources)
+                                                                                    {
+                                                                                        <tr>
+                                                                                            <td style="border:0;"><span style="text-decoration: underline; color: blue; font-style: italic; border: 0;">@ilaResource.Title</span></td>
+                                                                                        </tr>
+                                                                                    }
+                                                                                </table>
+                                                                            </td>
+                                                                        </tr>
+                                                                    }
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            </table>
+                        }
+                    </div>
+                    @if (!position.Equals(Model.Positions.Where(x => x.Position_Tasks.Any()).Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Positions.Where(x => x.Position_Tasks.Any()).Count(); i++)
+    {
+        <a href=@("#page" + i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>
+

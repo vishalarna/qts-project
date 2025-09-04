@@ -1,0 +1,54 @@
+<aside class="h-screen sticky top-0 flex flex-col bg-offWhite-two text-sm text-black">
+    <!-- Asides Header starts here -->
+    <div class="flex flex-col py-10 px-6 border-b-0.5 items-center border-gray-two mb-3 h-28 text-black">
+        <p class="pl-6">Job and {{("Task" | labelReplacement)| async}} Analysis</p>
+    </div>
+
+    <!-- Asides Header ends here -->
+    <div class="space-y-6 px-6 text-sm text-black" style="overflow:auto">
+        <div class="spinner-wrapper flex flex-col" *ngIf="isLoading">
+            <span>Loading</span>
+            <mat-progress-spinner mode="indeterminate" [diameter]="25">
+            </mat-progress-spinner>
+        </div>
+        <div class="flex flex-row items-center" *ngIf="!isLoading">
+            <div class="flex-grow space-y-1">
+                <p>Duty Areas</p>
+                <div class="flex flex-row items-center text-green-four">
+                    <p class="text-xs mr-2">Showing: Active {{("Task" | labelReplacement)| async}}s</p>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                        </path>
+                    </svg>
+                </div>
+            </div>
+            <div class="flex flex-row items-center pl-16 pt-2 pb-2 pr-4">
+                <app-add-new-menu-item *ngIf="addNewDA" Placeholder="Enter Duty Area"
+                    (Saved)="AddNewDutyArea($event,this)" (Cancelled)="addNewDA=false">
+                </app-add-new-menu-item>
+                <app-button icon="add" *ngIf="!addNewDA" (clicked)="addNewDA=true" text="Add New" variant="text"
+                    iconPosition="left">
+                </app-button>
+            </div>
+        </div>
+        <ng-container *ngIf="listDA.length>0">
+
+            <div class="flex flex-col space-y-6 px-6 text-sm text-black">
+                <h5 id="loading" *ngIf="navList.length==0">Loading ...</h5>
+                <ng-container *ngIf="navList.length>0">
+                    <span *ngFor="let m of navList">
+                        <app-menu-item Mode="write" [HasChildren]="m.Children!=undefined && m.Children.length>0"
+                            [Title]="m.Title" [IconName]="m.IconName ?? ''" [RoutePath]="m.RoutePath"
+                            [RouteParams]="m.RouteParams" [Children]="m.Children" (ItemSaved)="AddNewMenu($event)">
+                        </app-menu-item>
+                    </span>
+                </ng-container>
+            </div>
+        </ng-container>
+        <ng-container *ngIf="!isLoading && listDA.length==0">
+            <i>No Duty area found</i>
+        </ng-container>
+    </div>
+
+</aside>

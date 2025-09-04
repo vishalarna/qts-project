@@ -1,0 +1,63 @@
+<ng-container *ngIf="showReasonModal">
+    <mat-dialog-content>
+
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p mat-dialog-title [textContent]="header"></p>
+            <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+            <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+
+        </div>
+        <hr class="mt-1 mb-8">
+        <!--  <app-textbox [(ngModel)]="description" [disabled]="true"></app-textbox> -->
+        <div *ngIf="reasonName" class="flex flex-row">
+            <textarea cdkTextareaAutosize rows="auto" [disabled]="true" style="background-color: white;resize: none;border: none;width: 50%;min-height: fit-content;max-height: fit-content ;overflow: hidden;white-space: nowrap;" [textContent]="description"></textarea>
+            <span class="font-bold" [textContent]="reasonName"></span>
+        </div>
+        <!-- <textarea required *ngIf="!reasonName" cdkTextareaAutosize [disabled]="true" style="background-color: white;resize: none;border: none;width: 100%;min-height: fit-content" [textContent]="description"></textarea> -->
+<p align="justify">{{description}}</p>
+        <p class="mt-3">Are you sure you want to continue?</p>
+        <!-- header ends here -->
+    </mat-dialog-content>
+
+
+    <mat-dialog-actions class="flex flex-row justify-end">
+        <!-- (clicked)="confirm()"
+        (clicked)="cancel()" -->
+        <app-button type="button" (clicked)="closeDialog()" [text]="cancelText" color="grey" size="sm" class="mr-2">
+        </app-button>
+        <app-button type="button" (clicked)="onConfirm($event)" [text]="confirmText" color="secondary" size="sm"
+            class="mr-2" [mat-dialog-close]="!showEffectiveDateAndReason"></app-button>
+    </mat-dialog-actions>
+</ng-container>
+
+<ng-container *ngIf="!showReasonModal">
+    <mat-dialog-content>
+
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p mat-dialog-title [textContent]="header"></p>
+            <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+        </div>
+        <hr class="mt-1 mb-4">
+        <p  class="mb-4 text-sm" [textContent]="reasonDescription"></p>
+        <hr *ngIf="reasonDescription" class="mt-1 mb-8">
+     <!--    <form  [formGroup]="ActiveForm"> -->
+            <div class="flex flex-col">
+                <app-label style="color: #7A807E;" text="Effective Date"></app-label>
+                <app-date [(ngModel)]="effectiveDate"></app-date>
+                <app-label style="color: #7A807E;" text="Note/Reason" class="mt-2 label"></app-label>
+                <app-textarea [(ngModel)]="reason"></app-textarea>
+            </div>
+        <!-- </form> -->
+
+        <!-- header ends here -->
+    </mat-dialog-content>
+
+
+    <mat-dialog-actions class="flex flex-row justify-end">
+
+        <app-button type="button" [disabled]="!effectiveDate" (clicked)="onSaveReason($event)" text="Save" color="primary" size="sm" class="mr-2">
+        </app-button>
+    </mat-dialog-actions>
+</ng-container>

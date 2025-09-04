@@ -1,0 +1,304 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: black;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .raw-string-div > div > * {
+        margin-top: 0px
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table" style="width: 100%; border-collapse: collapse; margin-bottom: 0px">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0;padding-left:0">
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378; margin: 0 0 10px 0;">
+
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+
+                <div style="text-align: center; "><b style="font-size: 1.8rem; color: #0000a6;">@Model.Title </b></div>
+                <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.TrainingProgramReview != null)
+    {
+        <tr>
+            <td colspan="12" style="border:none;padding-top:0;" class="strip-container">
+                <table class="table" style="border-bottom: 1px solid #020378; color:#000000;">
+                    <tr>
+                        <td colspan="2" style="border: none !important;width:16%; padding: 0px; padding-left: 10px; padding-bottom:0px;">
+                            <div style="display:flex;"><p style="display: block; min-width: 130px;font-weight:600; padding: 0 40px 0 0; font-size: 1.2rem;">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</p> </div>
+                        </td>
+                        <td colspan="10" style="border: none !important; padding: 0px; padding-left: 15px; padding-bottom: 0px;">
+                            <div style="display: flex;"><p style="display: block; padding: 0 15px 0 0; font-weight: 500; font-size: 1.2rem;">@Model.TrainingProgramReview.TrainingProgram.Position.PositionNumber -@Model.TrainingProgramReview.TrainingProgram.Position.PositionTitle</p> </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        @{
+                            var type = Model.TrainingProgramReview.TrainingProgram.TrainingProgramType.TrainingProgramTypeTitle;
+                        }
+                        <td colspan="2" style="border: none !important; width:16%; padding: 0px; padding-left: 10px; padding-bottom:10px">
+                            <div style="display:flex;"><p style="display: block; font-weight: 600; font-size: 1rem; min-width: 130px; padding: 0 40px 0 0;">Type</p> </div>
+                        </td>
+                        <td colspan="4" style="border: none !important; padding: 0px; padding-left: 15px; padding-bottom: 10px">
+                            <div style="display: flex;"><p style="display: block; font-weight: 500; font-size: 1rem; padding: 0 15px 0 0;">@type</p> </div>
+                        </td>
+                        <td colspan="2" style="border: none !important;  padding: 0px; padding-left: 10px; padding-bottom: 10px">
+                            <div style="display:flex;"><p style="display: block; font-weight: 500; font-size: 1rem; min-width: 130px; padding: 0 40px 0 0;">@(type == "Continuing Training Program"?"Year":"Version") : @Model.TrainingProgramReview.TrainingProgram.Version</p> </div>
+                        </td>
+                        <td colspan="4" style="border: none !important; padding: 0px; padding-left: 15px; padding-bottom: 10px">
+                            <div style=" display: -webkit-box; display: flex; align-items: center;"><p style="display: block; font-weight: 500; font-size: 1rem; padding: 0 15px 0 0;margin:0">Review Date :</p>@Model.TrainingProgramReview.ReviewDate.GetValueOrDefault().ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                        </td>
+
+                    </tr>
+                </table>
+                <table class="table" style=" color: #000000;">
+                    <tr>
+                        <td colspan="6" style="border: none !important; padding: 0px; padding-left: 10px;">
+                            <div style="display: -webkit-box;display: flex;"><b style="display: block; min-width: 165px; padding: 0 40px 0 0; font-size: 1rem;">Evaluator Names </b> <span style="width: 100%; font-weight: 500; max-width: 15rem;">@String.Join(", ", Model.TrainingProgramReview.Reviewers.Select(c => c.Employee.Person.LastName + " " + c.Employee.Person.FirstName))</span> </div>
+                        </td>
+                        <td colspan="6" style="border: none !important;  padding: 0px; padding-left: 15px;">
+                            <div style=" display: -webkit-box; display: flex; font-weight: 500;"><b style="display: block; padding: 0 15px 0 0; font-size: 1rem;">Time Period of Evaluation</b> @Model.TrainingProgramReview.StartDate.GetValueOrDefault().ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()  -  @Model.TrainingProgramReview.EndDate.GetValueOrDefault().ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString() </div>
+                        </td>
+                    </tr>
+
+                </table>
+                @if (Model.DisplayColumns.Where(r => r == "Summary of Evaluation").Count() > 0)
+                {
+                    <div style="padding-bottom: 5px; padding-left: 0.65rem; color: #000000;">
+                        <p style="  margin-bottom: 8px; margin-top: 8px; font-weight: 600; font-size: 1rem;"><b>Summary of Evaluation</b></p>
+                        <div style="padding-left: 15px; margin-top: 8px; font-weight: 500; word-break: break-word;">
+                            @(new RawString(Model.TrainingProgramReview.Summary))
+                        </div>
+                    </div>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Historical Background").Count() > 0)
+                {
+                    <div style="padding-bottom: 5px; padding-left: 0.65rem; color: #000000;">
+                        <p style=" margin-bottom: 8px; margin-top: 8px; font-weight: 600; font-size: 1rem;"><b>Historical Background</b></p>
+                        <div style="font-weight: 600; padding-left: 15px; margin-top: 8px; font-weight: 500; word-break: break-word;">
+                            @(new RawString(Model.TrainingProgramReview.HistoricalBackground))
+                        </div>
+                    </div>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Description of Evaluation").Count() > 0)
+                {
+                    <div style="padding-left: 0.65rem; color: #000000;">
+                        <p style="margin-bottom: 8px; margin-top: 8px; font-weight: 600; font-size: 1rem;"><b>Description of Evaluation</b></p>
+                        <div style="font-weight: 600; padding-left: 15px;">
+                            <table class="table">
+                                <tr>
+                                    <td colspan="12" style="border: none !important;padding:5px 0px; vertical-align: top; border: 0 ">
+                                        <div style="display: -webkit-box; display: flex; font-weight: 500;" class="raw-string-div">
+                                            <b style="display: block; font-size: 1rem;flex:1 1 15%;width:20%;padding-right:0.5rem">Purpose</b>
+                                            <div class="raw-string-div" style="flex: 1 1 85%; width: 80%; word-wrap: break-word; overflow-wrap: break-word;">@(new RawString(Model.TrainingProgramReview.Purpose))</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12" style="border: none !important;padding:5px 0px; vertical-align: top; border: 0 ">
+                                        <div style="display: -webkit-box; display: flex; font-weight: 500;" class="raw-string-div">
+                                            <b style="display: block; font-size: 1rem;flex:1 1 15%;width:20%;padding-right:0.5rem">Method</b>
+                                            <div class="raw-string-div" style="flex: 1 1 85%; width: 80%; word-wrap: break-word; overflow-wrap: break-word;">@(new RawString(Model.TrainingProgramReview.Method))</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Results and Recommendations").Count() > 0)
+                {
+                    <div style="padding-left: 0.65rem; color: #000000;">
+                        <p style="margin-bottom: 8px; margin-top: 8px; font-weight: 600; font-size: 1rem;"><b>Results and Recommendations</b></p>
+                        <div style="font-weight: 600; padding-left: 15px;">
+                            <table class="table">
+                                <tr>
+                                    <td colspan="12" style="border: none !important;padding:5px 0px; vertical-align: top; border: 0 ">
+                                        <div style="display: -webkit-box; display: flex; font-weight: 500;" class="raw-string-div">
+                                            <b style="display: block; font-size: 1rem; flex: 1 1 15%; width: 20%; padding-right: 0.5rem">Program Design</b>
+                                            <div class="raw-string-div" style="flex: 1 1 85%; width: 80%; word-wrap: break-word; overflow-wrap: break-word;">@(new RawString(Model.TrainingProgramReview.ProgramDesign))</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12" style="border: none !important;padding:5px 0px; vertical-align: top; border: 0 ">
+                                        <div style="display: -webkit-box; display: flex; font-weight: 500;" class="raw-string-div">
+                                            <b style="display: block; font-size: 1rem; flex: 1 1 15%; width: 20%; padding-right: 0.5rem">Program Materials</b>
+                                            <div class="raw-string-div" style="flex: 1 1 85%; width: 80%; word-wrap: break-word; overflow-wrap: break-word;">@(new RawString(Model.TrainingProgramReview.ProgramMaterials))</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12" style="border: none !important;padding:5px 0px; vertical-align: top; border: 0 ">
+                                        <div style="display: -webkit-box; display: flex; font-weight: 500;" class="raw-string-div">
+                                            <b style="display: block; font-size: 1rem; flex: 1 1 15%; width: 20%; padding-right: 0.5rem">Program Implementation</b>
+                                            <div class="raw-string-div" style="flex: 1 1 85%; width: 80%; word-wrap: break-word; overflow-wrap: break-word;">@(new RawString(Model.TrainingProgramReview.ProgramImplementation))</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12" style="border: none !important;padding:5px 0px; vertical-align: top; border: 0 ">
+                                        <div style="display: -webkit-box; display: flex; font-weight: 500;" class="raw-string-div">
+                                            <b style="display: block; font-size: 1rem; flex: 1 1 15%; width: 20%;padding-right:0.5rem">Evaluation of Trainee Learning</b>
+                                            <div class="raw-string-div" style="flex: 1 1 85%; width:80%; word-wrap: break-word; overflow-wrap: break-word;">@(new RawString(Model.TrainingProgramReview.EvaluationOfTraineeLearning))</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12" style="border: none !important;padding:5px 0px; vertical-align: top; border: 0 ">
+                                        <div style="display: -webkit-box; display: flex; font-weight: 500;" class="raw-string-div">
+                                            <b style="display: block; font-size: 1rem; flex: 1 1 15%; width: 20%; padding-right: 0.5rem">Student Evaluation</b>
+                                            <div class="raw-string-div" style="flex: 1 1 85%; width: 80%; word-wrap: break-word; overflow-wrap: break-word; ">@(new RawString(Model.TrainingProgramReview.StudentEvaluationResults))</div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Supporting Documents").Count() > 0)
+                {
+
+
+                    <div style=" padding-left: 0.65rem; color: #000000;">
+                        <p style="font-size: 15px; margin-bottom: 8px;margin-top:8px;font-weight:600;"><b>Supporting Documents</b></p>
+                        <table style="width:100%; border:0;border-collapse:collapse">
+                            <thead>
+
+                                <tr>
+                                    <th style=" border: 1px solid;padding: 0px;border-left:0" align="left" colspan="2">
+                                        #:
+                                    </th>
+                                    <th align="left" style=" border: 1px solid; padding: 0px; padding-left: 5px" colspan="6">
+                                        Description:
+                                    </th>
+                                    <th align="left" style=" border: 1px solid; padding: 0px; padding-left:5px; border-right:0;" colspan="4">
+                                        Link
+                                    </th>
+
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.TrainingProgramReview.TrainingProgramReview_SupportingDocuments.Count() > 0)
+                                {
+                                    @foreach (var supportingDoc in Model.TrainingProgramReview.TrainingProgramReview_SupportingDocuments)
+                                    {
+                                        <tr>
+                                            <td style=" border:0;padding: 0px;" colspan="2">
+                                                @supportingDoc.Number
+                                            </td>
+                                            <th style=" border:0; padding: 0px; padding-left: 5px;text-align:left" colspan="6">
+                                                @supportingDoc.Name
+                                            </th>
+                                            <th style=" border: 0px; padding: 0px; padding-left: 5px; text-align: left " colspan="4">
+                                                @supportingDoc.Hyperlink
+                                            </th>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="12" style="border: none; padding: 0px; text-align: center;"><i>No Supporting Documents Found</i></td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Conclusions").Count() > 0)
+                {
+                    <div style=" padding-left: 0.65rem; color: #000000;">
+                        <p style="margin-bottom: 8px;margin-top:20px;font-weight:600;font-size:1rem"><b>Conclusions</b></p>
+                        <div style="font-weight: 500; padding-left: 15px;">
+                            @(new RawString(Model.TrainingProgramReview.Conclusion))
+                        </div>
+                    </div>
+                }
+                <div style="padding-bottom: 5px; margin: 1rem 0rem; display: -webkit-box; -webkit-box-pack: end;  display: flex; justify-content: flex-end; align-items: center; ">
+                    <p style="font-weight: 600; font-size: 1rem; margin: 0"><b>Review Date:</b></p>
+                    <div style="font-weight: 500; padding-left: 15px; min-width:100px">
+                        @Model.TrainingProgramReview.ReviewDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()
+                    </div>
+                </div>
+                <table>
+                    <tr>
+                        <td colspan="2" style="border: none !important; font-size: 1rem; min-width: 150px; padding: 2px 0px; vertical-align: top; border: 0; padding-left: 0.65rem; font-weight: 600; ">
+                            <b>Signature Name:</b>
+                        </td>
+                        <td colspan="10" style="vertical-align: top; font-size: 1rem; font-weight: 500; padding: 2px 0px; border: 0">
+                            @Model.TrainingProgramReview.TrainerName
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="border: none !important; font-size: 1rem; min-width: 150px; padding: 2px 0px; vertical-align: top; border: 0; padding-left: 0.65rem; font-weight: 600;">
+                            <b>Signature Title:</b>
+                        </td>
+                        <td colspan="10" style="vertical-align: top; font-size: 1rem; font-weight: 500; padding: 2px 0px; border: 0">
+                            @Model.TrainingProgramReview.Title
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+
+</table>
+
+
+
+

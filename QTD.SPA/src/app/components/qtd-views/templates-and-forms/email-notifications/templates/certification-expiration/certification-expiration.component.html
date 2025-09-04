@@ -1,0 +1,284 @@
+<div class="container-fluid">
+  <h1 class="panel-heading">{{("Certification" | labelReplacement)| async}}s Expiration</h1>
+  <div class="row switch-box">
+    <div class="col-md-12">
+      <div class="row heighttop align-items-center">
+        <div class="col-md-12 p-0">
+          <app-notifications-enabled
+            [events]="eventToggle.asObservable()"
+            (onNotificationEnabledToggleChangeEvent)="handleToggleValueChange($event)"
+            [enabled]="this.notification.enabled"
+            [mode]="mode" [timingText]="this.notification.timingText">
+          </app-notifications-enabled>
+        </div>
+      </div>
+      <div class="row heighttop">
+        <div class="col-md-12 p-0">
+          <h1 class="section-header">Select Certificates</h1>
+        </div>
+        <div class="col-md-9 p-0 mt-2">
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select multiple [value]="getLinkedCerts" [disabled]="mode === 'read' ? true : false">
+              <mat-select-trigger>
+                <mat-chip-list>
+                  <mat-chip *ngFor="let i of certificatearray" [removable]="true"  [disabled]="mode === 'read' ? true : false"
+                            (removed)="removeCertificate(i)"
+                            [ngStyle]="{'color': 'rgb(92, 155, 49)', 'background-color': 'rgba(243, 244, 246)', 'border-radius': '1px'}">
+                    {{ getCertificateName(i) }}
+                    <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove></app-icon>
+                  </mat-chip>
+                </mat-chip-list>
+              </mat-select-trigger>
+              <mat-option value="NERC" (click)="onNERCSelection()">NERC</mat-option>
+              <mat-option *ngFor="let i of certificates" [value]="i.certAcronym" (click)="onCertificateClick(i.certAcronym)">
+                {{ i.name }}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="row heighttop">
+        <h1 class="section-header">Notification Settings - First, Second and Final</h1>
+        <div class="col-md-12 p-0 txt-label ">
+          <div class="row justify-content-between m-auto" style="align-items: center">
+            <h5 class="sub-header">First Notification</h5>
+          </div>
+        </div>
+        <div class="col-md-12 p-0 txt-label" style="margin-top: 20px;">
+          Default Message
+        </div>
+        <br>
+        <div class="col-md-12 p-0 textarea-certificate">
+          <app-email-template-editor
+            [emailData]="notification.steps[0].template"
+            [events]="eventFirstTemplate.asObservable()"
+            [mode]="mode"
+            [order]="1"
+            (click)="select($event)"
+            (templateModifiedEvent)="handleEmailTemplateModifiedEvent($event)"
+          >
+          </app-email-template-editor>
+        </div>
+        <div id="mySidenav" class="sidenav" *ngIf="IsPanelOpen">
+          <div class="d-flex justify-content-end">
+            <button (click)="closeModel()"
+                    class="align-icon">
+              <mat-icon>clear</mat-icon>
+            </button>
+          </div>
+          <app-model-bindings [modelItems]="modelBinderItems"
+                              (modelItemButtonClicked)="GetChildData($event,1)"></app-model-bindings>
+        </div>
+        <div class="row template-bottomform">
+          <div class="col md-6 p-0">
+            <div class="d-flex template-bottom">
+              <div class="label-flex">
+                <label class="m-0">Expiring Within</label>
+              </div>
+              <div class="form-flex">
+                <input class="form-control"
+                       (change)="handleCustomSettingChange(1,'Expiring Within', $any($event.target).value.toString())"
+                       [disabled]="mode === 'read' ? true : false"
+                       type="number"
+                       [value]="this.getStepCustomSettingsValue('Expiring Within', 1)"
+                >
+              </div>
+              days
+            </div>
+          </div>
+          <div class="col md-6 p-0">
+            <div class="d-flex template-bottom justify-content-end">
+              <div class="label-flex">
+                <label class="m-0">Email Frequency</label>
+              </div>
+              <div class="form-flex">
+                <select class="form-control"
+                        [value]="this.getStepCustomSettingsValue('Email Frequency', 1)"
+                        [disabled]="mode === 'read' ? true : false"
+                        (change)="handleCustomSettingChange(1, 'Email Frequency', $any($event.target).value.toString())"
+                >
+                  <option>Weekly</option>
+                  <option>Monthly</option>
+                  <option>Daily</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-12">
+            <app-email-address-editor
+              [mode]="mode"
+              [events]="firstEmailSetting.asObservable()"
+              [employees]="getStepCustomSettingsValue('Send To Employees', 1).toUpperCase() == 'TRUE'"
+              [managers]="getStepCustomSettingsValue('Send To Managers', 1).toUpperCase() == 'TRUE'"
+              [others]="getStepCustomSettingsValue('Send To Others', 1)"
+              (customRecipientsChangeEvent)="handleEmailAddressEditorChangeEvent($event, 1)"></app-email-address-editor>
+          </div>
+        </div>
+        <div class="secondNotifcation">
+          <div class="row  m-0">
+            <div class="col-md-12 p-0 txt-label ">
+              <div class="row justify-content-between m-auto" style="align-items: center">
+                <h5 class="sub-header section-header">Second Notification</h5>
+              </div>
+            </div>
+
+            <div class="col-md-12 p-0 txt-label" style="margin-top: 20px;">
+              Default Message
+            </div>
+            <br>
+            <div class="col-md-12 p-0 textarea-certificate">
+              <app-email-template-editor [emailData]="notification.steps[1].template"
+                                         [mode]="mode" [order]="2"
+                                         [events]="eventSecondTemplate.asObservable()"
+                                         (templateModifiedEvent)="handleEmailTemplateModifiedEvent($event)"
+                                         (click)="select($event)">
+              </app-email-template-editor>
+            </div>
+            <div class="col-md-12 p-0">
+              <div id="mySidenav" class="sidenav" *ngIf="IsPanelOpen">
+                <div class="d-flex justify-content-end">
+                  <button (click)="closeModel()"
+                          class="align-icon">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </div>
+                <app-model-bindings [modelItems]="modelBinderItems"
+                                    (modelItemButtonClicked)="GetChildData($event,2)"></app-model-bindings>
+              </div>
+            </div>
+            <div class="row template-bottomform">
+              <div class="col md-6 p-0">
+                <div class="d-flex template-bottom">
+                  <div class="label-flex">
+                    <label class="m-0">Expiring Within</label>
+                  </div>
+                  <div class="form-flex">
+                    <input class="form-control"
+                           type="number"
+                           [value]="this.getStepCustomSettingsValue('Expiring Within', 2)"
+                           (change)="handleCustomSettingChange(2,'Expiring Within', $any($event.target).value.toString())"
+                           [disabled]="mode === 'read' ? true : false"
+                    >
+                  </div>
+                  days
+                </div>
+              </div>
+              <div class="col md-6 p-0">
+                <div class="d-flex template-bottom justify-content-end">
+                  <div class="label-flex">
+                    <label class="m-0">Email Frequency</label>
+                  </div>
+                  <div class="form-flex">
+                    <select class="form-control"
+                            [value]="this.getStepCustomSettingsValue('Email Frequency', 2)"
+                            (change)="handleCustomSettingChange(2, 'Email Frequency', $any($event.target).value.toString())"
+                            [disabled]="mode === 'read' ? true : false"
+                    >
+                      <option>Weekly</option>
+                      <option>Monthly</option>
+                      <option>Daily</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 p-0">
+              <app-email-address-editor
+                [mode]="mode"
+                [employees]="getStepCustomSettingsValue('Send To Employees', 2).toUpperCase() == 'TRUE'"
+                [managers]="getStepCustomSettingsValue('Send To Managers', 2).toUpperCase() == 'TRUE'"
+                [others]="getStepCustomSettingsValue('Send To Others', 2)"
+                [events]="secondEmailSetting.asObservable()"
+                (customRecipientsChangeEvent)="handleEmailAddressEditorChangeEvent($event, 2)"></app-email-address-editor>
+            </div>
+
+
+          </div>
+        </div>
+
+        <div class="finalNotifcation">
+          <div class="row m-0">
+            <div class="col-md-12 p-0 txt-label ">
+              <div class="row justify-content-between m-auto" style="align-items: center">
+                <h5 class="sub-header section-header">Final Notification</h5>
+              </div>
+            </div>
+            <div class="col-md-12 txt-label p-0" style="margin-top: 20px;">
+              Default Message
+            </div>
+            <br>
+            <div class="col-md-12 textarea-certificate p-0">
+              <app-email-template-editor
+                [emailData]="notification.steps[2].template"
+                [mode]="mode"
+                [order]="3"
+                [events]="eventThirdTemplate.asObservable()"
+                (templateModifiedEvent)="handleEmailTemplateModifiedEvent($event)"
+                (click)="select($event)">
+              </app-email-template-editor>
+            </div>
+            <div class="col-md-12 p-0">
+              <div id="mySidenav" class="sidenav" *ngIf="IsPanelOpen">
+                <div class="d-flex justify-content-end">
+                  <button (click)="closeModel()"
+                          class="align-icon">
+                    <mat-icon>clear</mat-icon>
+                  </button>
+                </div>
+                <app-model-bindings [modelItems]="modelBinderItems"
+                                    (modelItemButtonClicked)="GetChildData($event,3)"></app-model-bindings>
+              </div>
+            </div>
+            <div class="row template-bottomform">
+              <div class="col md-6 p-0">
+                <div class="d-flex template-bottom">
+                  <div class="label-flex">
+                    <label class="m-0">Expiring Within</label>
+                  </div>
+                  <div class="form-flex">
+                    <input class="form-control"
+                           type="number"
+                           [value]="this.getStepCustomSettingsValue('Expiring Within', 3)"
+                           [disabled]="mode === 'read' ? true : false"
+                           (change)="handleCustomSettingChange(3,'Expiring Within', $any($event.target).value.toString())"
+                    >
+                  </div>
+                  days
+                </div>
+              </div>
+              <div class="col md-6 p-0">
+                <div class="d-flex template-bottom justify-content-end">
+                  <div class="label-flex">
+                    <label class="m-0">Email Frequency</label>
+                  </div>
+                  <div class="form-flex">
+                    <select
+                      [value]="this.getStepCustomSettingsValue('Email Frequency', 3)"
+                      class="form-control"
+                      (change)="handleCustomSettingChange(3, 'Email Frequency', $any($event.target).value.toString())"
+                      [disabled]="mode === 'read' ? true : false"
+                    >
+                      <option>Weekly</option>
+                      <option>Monthly</option>
+                      <option>Daily</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-12 p-0">
+              <app-email-address-editor [mode]="mode"
+                                        [employees]="getStepCustomSettingsValue('Send To Employees', 3).toUpperCase() == 'TRUE'"
+                                        [managers]="getStepCustomSettingsValue('Send To Managers', 3).toUpperCase() == 'TRUE'"
+                                        [others]="getStepCustomSettingsValue('Send To Others', 3)"
+                                        [events]="thirdEmailSetting.asObservable()"
+                                        (customRecipientsChangeEvent)="handleEmailAddressEditorChangeEvent($event, 3)"></app-email-address-editor>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

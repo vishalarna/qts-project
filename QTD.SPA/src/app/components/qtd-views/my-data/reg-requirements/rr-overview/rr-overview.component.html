@@ -1,0 +1,150 @@
+<div class="flex flex-row flex-wrap ml-4 px-8 mt-3">
+    <p class="font-bold text-lg">{{("Regulatory Requirement" | labelReplacement)| async}}s Overview</p>
+</div>
+<div class="px-10 pb-12 flex flex-row">
+    <app-data-loader *ngIf="isLoading"></app-data-loader>
+    <ng-container *ngIf="!isLoading && stats">
+        <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4">
+
+            <div class="mb-4">Issuing Authorities</div>
+            <div class="flex flex-row ">
+                <div class="flex flex-col ">
+                    <span  (click)="stats.iaActive>0 && openFlyInPanel(RRNotLinkedTo, 'Catactive')"  [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.iaActive>0,'text-lg text-black':stats.iaActive==0}">
+                        {{stats.iaActive | number : '2.'}}
+                    </span>
+                    <p>Active</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span (click)="stats.iaInactive>0 && openFlyInPanel(RRNotLinkedTo, 'Catinactive')" [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':stats.iaInactive>0,'text-lg text-black':stats.iaInactive==0}">
+                        {{stats.iaInactive | number : '2.'}}
+                    </span>
+                    <p>Inactive</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4">
+
+            <div class="mb-4">Regulations</div>
+            <div class="flex flex-row">
+                <div class="flex flex-col">
+                    <span (click)="stats.rrActive>0 && openFlyInPanel(RRNotLinkedTo, 'Rractive')" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.rrActive>0,'text-lg text-black':stats.rrActive==0}">
+                        {{stats.rrActive | number : '2.'}}
+                    </span>
+                    <p>Active</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span (click)="stats.rrInactive>0 && openFlyInPanel(RRNotLinkedTo, 'Rrinactive')"  [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':stats.rrInactive>0,'text-lg text-black':stats.rrInactive==0}">
+                        {{stats.rrInactive | number : '2.'}}
+                    </span>
+                    <p>Inactive</p>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm mb-4 w-fit">
+
+            <div class="mb-4">Regulations not linked to</div>
+            <div class="flex flex-row">
+                <div class="flex flex-col">
+                    <span  [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.rrNotLinkedToTasks>0,'text-lg text-black':stats.rrNotLinkedToTasks==0}"
+                        (click)="openFlyInPanel(RRNotLinkedTo, 'Tasks')">
+                        {{stats.rrNotLinkedToTasks | number : '2.'}}
+                    </span>
+                    <p>{{("Task" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span  [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.rrNotLinkedToEOs>0,'text-lg text-black':stats.rrNotLinkedToEOs==0}"
+                        (click)="stats.rrNotLinkedToEOs > 0 && openFlyInPanel(RRNotLinkedTo,'Enabling Objectives')">
+                        {{stats.rrNotLinkedToEOs | number : '2.'}}
+                       </span>
+                    <p>{{("Enabling Objective" | labelReplacement)| async}}</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.rrNotLinkedToSHs>0,'text-lg text-black':stats.rrNotLinkedToSHs==0}"
+                        (click)="openFlyInPanel(RRNotLinkedTo,'Safety Hazards')">
+                        {{stats.rrNotLinkedToSHs | number : '2.'}}
+                    </span>
+                    <p>{{("Safety Hazard" | labelReplacement)| async}}</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.rrNotLinkedToProcs>0,'text-lg text-black':stats.rrNotLinkedToProcs==0}"
+                        (click)="openFlyInPanel(RRNotLinkedTo,'Procedures')">
+                        {{stats.rrNotLinkedToProcs | number : '2.'}}
+                    </span>
+                    <p>{{("Procedure" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.rrNotLinkedToILAs>0,'text-lg text-black':stats.rrNotLinkedToILAs==0}"
+                        (click)="openFlyInPanel(RRNotLinkedTo, 'ILAs')">
+                        {{stats.rrNotLinkedToILAs | number : '2.'}}
+                    </span>
+                    <p>{{("ILA" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+            </div>
+
+
+        </div>
+    </ng-container>
+</div>
+<div class="flex flex-row flex-wrap ml-4 px-8 mr-4 justify-between">
+    <p class="font-bold text-lg">Latest Activity</p>
+    <app-button variant="text" text="View all history" (clicked)="openFlyInPanel(RRHistory,'')"></app-button>
+</div>
+<app-data-loader *ngIf="!dataSource"></app-data-loader>
+<div class="px-12 pb-12 mt-2" *ngIf="dataSource">
+    <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8">
+
+        <mat-table [dataSource]="dataSource" matSort *ngIf="dataSource">
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Regulatory Requirement" | labelReplacement)| async}}s</mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="desc">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Description of Change </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.desc}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="modifyBy">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Modified By </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <div class="flex flex-col">
+                        <span class="text-qtd">{{row.modifyBy}}</span>
+                        <span class="mt-2">{{row.modifyDate | date:'medium' }}</span>
+                    </div>
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full m-2">No data matching the filter</td>
+            </tr>
+
+        </mat-table>
+
+     <!--    <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+            aria-label="Select page of periodic elements">
+        </mat-paginator> -->
+
+
+    </div>
+</div>
+
+<ng-template #RRNotLinkedTo>
+    <app-fly-panel-rr-not-linked [activeInactiveCheck]="activeInactiveCheck" [NotLinkedToName]="NotLinkedToPanelName"></app-fly-panel-rr-not-linked>
+</ng-template>
+
+<ng-template #RRHistory>
+    <app-fly-panel-rr-history></app-fly-panel-rr-history>
+</ng-template>

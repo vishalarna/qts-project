@@ -1,0 +1,688 @@
+<div *ngIf = "isLoading" class="actionItem-spinner">
+  <app-spinner></app-spinner>
+</div>
+<ng-container [formGroup]="actionItemForm" *ngIf = "!isLoading">
+<ng-container *ngIf="!this.openOperationFlyIn">
+  <div class="flex flex-row justify-between items-center px-12 mt-5 mb-3 pr-4">
+    <p class="text-xl font-bold text-gray-900 mb-0">Action Item</p>
+    <app-button
+      (click)="closeFlyPanel()"
+      ButtonType="icon"
+      icon="close"
+    ></app-button>
+  </div>
+
+    <div class="m-2 pr-4">
+      <div class="flex flex-col ml-5">
+        <app-label text ="Type" class="font-weight-bold label required"></app-label>
+        <mat-form-field appearance="outline" class="dropdown mt-1">
+          <mat-select
+            (selectionChange)="actionTypeChange($event)"
+            formControlName="type" placeholder = "Select Action Item"
+          >
+            <mat-option *ngFor="let item of actionItemsTypes" [value]="item" [disabled]="item === 'PrepareForTaskRequalification' || item === 'MakeTaskInactive'">{{addSpacesBetweenCapitalLetters(item) | dynamicLabelReplacement| async}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="flex flex-row mb-4 w-100">
+        <div class="flex flex-col ml-5 w-50">
+          <app-label text = "Assignee" class="font-weight-bold"></app-label>
+            <mat-select class="appearance-none rounded border w-full px-4 py-2.5 mt-2" formControlName="assignee" placeholder = "Select Assignee">
+              <mat-option *ngFor = "let assignee of assignees" [value] = "assignee?.id">{{assignee?.person.firstName}} {{assignee?.person.lastName}}</mat-option>
+            </mat-select>
+        </div>
+        <div class="flex flex-col ml-5 w-50">
+          <app-label text = "Priority" class="font-weight-bold label required"></app-label>
+            <mat-select class="appearance-none rounded border w-full px-4 py-2.5 mt-2" formControlName = "priority" placeholder = "Select Priority">
+              <mat-option *ngFor = "let priority of priorities" [value] ="priority?.id" >{{priority?.type}}</mat-option>
+            </mat-select>
+        </div>
+      </div>
+      <div class="flex flex-row mb-4 w-100">
+        <div class="flex flex-col ml-5 w-50">
+          <app-label text ="Assigned Date"  class="font-weight-bold label required"></app-label>
+          <app-date formControlName = "assignedDate" [maxDate]="actionItemForm.get('dueDate')?.value"></app-date>
+        </div>
+        <div class="flex flex-col ml-5 w-50">
+          <app-label text ="Due Date" class="font-weight-bold label required"></app-label>
+          <app-date formControlName = "dueDate" [minDate]="actionItemForm.get('assignedDate')?.value" ></app-date>
+        </div>
+      </div>
+      <div class="flex flex-col ml-5">
+        <app-label text = "Notes" class="font-weight-bold"></app-label>
+        <app-textbox formControlName = "notes"></app-textbox>
+      </div>
+
+    </div>
+</ng-container>
+
+<!-- subduty operation flyin start -->
+
+<ng-container *ngIf="actionItemType == 'SubDutyArea' && false">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="ml-5 mr-2 pr-4">
+      <div class="mt-4">
+        <app-label text="Operations" class="text-lg font-weight-bold"></app-label>
+      </div>
+      <div class="flex justify-end">
+        <app-button
+          variant="outlined"
+          text="Add New"
+          size="sm"
+          icon="add"
+          ButtonType="text"
+          (clicked)="this.openOperationFlyIn = true;selectedOperation=null"
+        ></app-button>
+      </div>
+      <div>
+        <mat-table [dataSource]="setDataSource(this.actionItemData?.subDuty_Operations)" class="manager-table" matSort>
+          <ng-container matColumnDef="operation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Operation
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.operation}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let row;let i = index">
+              <div class="flex flex-row items-center text-gray-four btn-group">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <label  mat-menu-item (click)="this.openOperationFlyIn = true; selectedOperation = row; selectedOperationIndex = i">Edit</label>
+                  <label  mat-menu-item (click)="deleteOperation(this.actionItemData?.subDuty_Operations,i)">Delete</label>
+                </mat-menu>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full">No Data</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="this.openOperationFlyIn">
+    <app-flypanel-subduty-operation [actionItemTypeName] = "actionItemType" [editOperation] ="selectedOperation" [task_Details] = "taskDetails"
+      (closed)="this.openOperationFlyIn = false" (subDutyOperationData) = "selectedOperation == null ? addToDataSource($event,this.actionItemData?.subDuty_Operations) : updateToDataSource($event,this.actionItemData?.subDuty_Operations,selectedOperationIndex)"
+    ></app-flypanel-subduty-operation>
+  </ng-container>
+</ng-container>
+
+<!-- subduty operation flyin end -->
+
+<!-- step operation flyin start -->
+
+<ng-container *ngIf="actionItemType == 'Steps' && false">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="ml-5 mr-2 pr-4">
+      <div class="mt-4">
+        <app-label text = "Operations" class="text-lg font-weight-bold"></app-label>
+      </div>
+      <div class="flex justify-end">
+        <app-button
+          variant="outlined"
+          text="Add New"
+          size="sm"
+          icon="add"
+          ButtonType="text"
+          (clicked)="this.openOperationFlyIn = true; selectedOperation=null"
+        ></app-button>
+      </div>
+      <div>
+        <mat-table [dataSource]="setDataSource(this.actionItemData?.step_Operations)" class="manager-table" matSort>
+          <ng-container matColumnDef="operation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Operation
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.operation}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+            <mat-cell *matCellDef="let row;let i = index">
+              <div class="flex flex-row items-center text-gray-four btn-group">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <label  mat-menu-item (click)="this.openOperationFlyIn = true; selectedOperation = row; selectedOperationIndex = i">Edit</label>
+                  <label  mat-menu-item (click)="deleteOperation(this.actionItemData?.step_Operations,i)">Delete</label>
+                </mat-menu>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full">No Data</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="this.openOperationFlyIn">
+    <app-flypanel-step-operation [actionItemTypeName] = "actionItemType" [taskId] = "taskId" [editOperation] ="selectedOperation"
+      (closed)="this.openOperationFlyIn = false" (stepOperation_Data) = "selectedOperation == null ? addToDataSource($event,this.actionItemData?.step_Operations) : updateToDataSource($event,this.actionItemData?.step_Operations,selectedOperationIndex)"
+    ></app-flypanel-step-operation>
+  </ng-container>
+</ng-container>
+
+<!-- step operation flyin end -->
+
+<!-- question and answer operation flyIn start -->
+
+<ng-container *ngIf="actionItemType == 'QuestionAndAnswer'&& false">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="ml-5 mr-2 pr-4">
+      <div class="mt-4">
+        <app-label text = "Operations" class="text-lg font-weight-bold"></app-label>
+      </div>
+      <div class="flex justify-end">
+        <app-button
+          variant="outlined"
+          text="Add New"
+          size="sm"
+          icon="add"
+          ButtonType="text"
+          (clicked)="this.openOperationFlyIn = true; selectedOperation=null"
+        ></app-button>
+      </div>
+      <div>
+        <mat-table [dataSource]="setDataSource(this.actionItemData?.questionAndAnswer_Operations)" class="manager-table" matSort>
+          <ng-container matColumnDef="operation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Operation
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.operation}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef>Actions</mat-header-cell>
+            <mat-cell *matCellDef="let row;let i = index">
+              <div class="flex flex-row items-center text-gray-four btn-group">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <label  mat-menu-item  (click)="this.openOperationFlyIn = true; selectedOperation = row;selectedOperationIndex =i">Edit</label>
+                  <label  mat-menu-item (click)="deleteOperation(this.actionItemData?.questionAndAnswer_Operations,i)">Delete</label>
+                </mat-menu>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full">No Data</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="this.openOperationFlyIn">
+    <app-flypanel-question-and-answer-operation [actionItemTypeName] = "actionItemType" [editOperation] ="selectedOperation"
+      (closed)="this.openOperationFlyIn = false" [taskId] = "taskId" (quesAnsOperation_Data) = "selectedOperation == null ? addToDataSource($event,this.actionItemData?.questionAndAnswer_Operations) : updateToDataSource($event,this.actionItemData?.questionAndAnswer_Operations,selectedOperationIndex)"
+    ></app-flypanel-question-and-answer-operation>
+  </ng-container>
+</ng-container>
+
+<!-- question and answer operation flyIn end -->
+
+<!-- suggestion operation flyin start -->
+
+<ng-container *ngIf="actionItemType == 'TaskSpecificSuggestions' && false">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="ml-5 mr-2 pr-4">
+      <div class="mt-4">
+        <app-label text = "Operations" class="text-lg font-weight-bold"></app-label>
+      </div>
+      <div class="flex justify-end">
+        <app-button
+          variant="outlined"
+          text="Add New"
+          size="sm"
+          icon="add"
+          ButtonType="text"
+          (clicked)="this.openOperationFlyIn = true; selectedOperation=null"
+        ></app-button>
+      </div>
+      <div>
+        <mat-table [dataSource]="setDataSource(this.actionItemData?.suggestion_Operations)" class="manager-table" matSort>
+          <ng-container matColumnDef="operation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Operation
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.operation}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let row;let i = index">
+              <div class="flex flex-row items-center text-gray-four btn-group">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <label  mat-menu-item (click)="this.openOperationFlyIn = true; selectedOperation = row;selectedOperationIndex = i" >Edit </label>
+                  <label  mat-menu-item (click)="deleteOperation(this.actionItemData?.suggestion_Operations,i)" >Delete</label>
+                </mat-menu>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full">No Data</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="this.openOperationFlyIn">
+    <app-flypanel-suggestion-operation [actionItemTypeName] = "actionItemType" [editOperation] ="selectedOperation"
+      (closed)="this.openOperationFlyIn = false" [taskId] = "taskId" (suggestionOperation_Data) = "selectedOperation == null ? addToDataSource($event,this.actionItemData?.suggestion_Operations) : updateToDataSource($event,this.actionItemData?.suggestion_Operations,selectedOperationIndex)"
+    ></app-flypanel-suggestion-operation>
+  </ng-container>
+</ng-container>
+
+<!-- suggestion operation flyin end -->
+
+<!-- tool operation flyIn start -->
+
+<ng-container *ngIf="actionItemType == 'Tools' && false">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="ml-5 mr-2 pr-4">
+      <div class="mt-4">
+        <app-label text = "Operations" class="text-lg font-weight-bold"></app-label>
+      </div>
+      <div class="flex justify-end">
+        <app-button
+          variant="outlined"
+          text="Add New"
+          size="sm"
+          icon="add"
+          ButtonType="text"
+          (clicked)="this.openOperationFlyIn = true;selectedOperation=null"
+        ></app-button>
+      </div>
+      <div>
+        <mat-table [dataSource]="setDataSource(this.actionItemData?.tool_Operations)" class="manager-table" matSort>
+          <ng-container matColumnDef="operation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Operation
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.operation}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let row;let i = index">
+              <div class="flex flex-row items-center text-gray-four btn-group">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <label  mat-menu-item (click)="this.openOperationFlyIn = true; selectedOperation = row;selectedOperationIndex = i">Edit</label>
+                  <label  mat-menu-item (click)="deleteOperation(this.actionItemData?.tool_Operations,i)">Delete</label>
+                </mat-menu>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full">No Data</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="this.openOperationFlyIn">
+    <app-flypanel-tool-operation [actionItemTypeName] = "actionItemType" [editOperation] ="selectedOperation"
+      (closed)="this.openOperationFlyIn = false" [taskId] = "taskId" (toolOperation_Data) = "selectedOperation == null ? addToDataSource($event,this.actionItemData?.tool_Operations) : updateToDataSource($event,this.actionItemData?.tool_Operations,selectedOperationIndex)"
+    ></app-flypanel-tool-operation>
+  </ng-container>
+</ng-container>
+
+<!-- tool operation flyIn end -->
+
+<!-- enabling objective operation flyIn start -->
+
+<ng-container *ngIf="actionItemType == 'EnablingObjective' && false">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="ml-5 mr-2 pr-4">
+      <div class="mt-4">
+        <app-label text = "Operations" class="text-lg font-weight-bold"></app-label>
+      </div>
+      <div class="flex justify-end">
+        <app-button
+          variant="outlined"
+          text="Add New"
+          size="sm"
+          icon="add"
+          ButtonType="text"
+          (clicked)="this.openOperationFlyIn = true;selectedOperation=null"
+        ></app-button>
+      </div>
+      <div>
+        <mat-table [dataSource]="setDataSource(this.actionItemData?.enablingObjective_Operations)" class="manager-table" matSort>
+          <ng-container matColumnDef="operation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Operation
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.operation}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let row;let i = index">
+              <div class="flex flex-row items-center text-gray-four btn-group">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <label mat-menu-item (click)="this.openOperationFlyIn = true; selectedOperation = row;selectedOperationIndex = i">Edit</label>
+                  <label  mat-menu-item (click)="deleteOperation(this.actionItemData?.enablingObjective_Operations,i)">Delete</label>
+                </mat-menu>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full">No Data</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="this.openOperationFlyIn">
+    <app-flypanel-enabling-objective-operation [actionItemTypeName] = "actionItemType"  [editOperation] ="selectedOperation"
+      (closed)="this.openOperationFlyIn = false" [taskId] = "taskId"  (eoOperation_Data) = "selectedOperation == null ? addToDataSource($event,this.actionItemData?.enablingObjective_Operations) : updateToDataSource($event,this.actionItemData?.enablingObjective_Operations,selectedOperationIndex)"
+    ></app-flypanel-enabling-objective-operation>
+  </ng-container>
+</ng-container>
+
+<!-- enabling objective operation flyIn end -->
+
+<!-- procedure operation flyIn start -->
+
+<ng-container *ngIf="actionItemType == 'Procedure' && false">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="ml-5 mr-2 pr-4">
+      <div class="mt-4">
+        <app-label text ="Operations" class="text-lg font-weight-bold"></app-label>
+      </div>
+      <div class="flex justify-end">
+        <app-button
+          variant="outlined"
+          text="Add New"
+          size="sm"
+          icon="add"
+          ButtonType="text"
+          (clicked)="this.openOperationFlyIn = true;selectedOperation=null"
+        ></app-button>
+      </div>
+      <div>
+        <mat-table [dataSource]="setDataSource(this.actionItemData?.procedure_Operations)" class="manager-table" matSort>
+          <ng-container matColumnDef="operation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Operation
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.operation}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let row;let i = index">
+              <div class="flex flex-row items-center text-gray-four btn-group">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <label  mat-menu-item (click)="this.openOperationFlyIn = true; selectedOperation = row;selectedOperationIndex = i">Edit</label>
+                  <label  mat-menu-item (click)="deleteOperation(this.actionItemData?.procedure_Operations,i)">Delete</label>
+                </mat-menu>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full">No Data</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="this.openOperationFlyIn">
+    <app-flypanel-procedure-operation [actionItemTypeName] = "actionItemType" [editOperation] ="selectedOperation"
+      (closed)="this.openOperationFlyIn = false" [taskId] = "taskId" (procedureOperation_Data) = "selectedOperation == null ? addToDataSource($event,this.actionItemData?.procedure_Operations) : updateToDataSource($event,this.actionItemData?.procedure_Operations,selectedOperationIndex)"
+    ></app-flypanel-procedure-operation>
+  </ng-container>
+</ng-container>
+
+<!-- procedure operation flyIn end -->
+
+<!-- regulatory requirement operation flyIn start -->
+
+<ng-container *ngIf="actionItemType == 'RegulatoryRequirements' && false">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="ml-5 mr-2 pr-4">
+      <div class="mt-4">
+        <app-label text ="Operations" class="text-lg font-weight-bold"></app-label>
+      </div>
+      <div class="flex justify-end">
+        <app-button
+          variant="outlined"
+          text="Add New"
+          size="sm"
+          icon="add"
+          ButtonType="text"
+          (clicked)="this.openOperationFlyIn = true;selectedOperation=null"
+        ></app-button>
+      </div>
+      <div>
+        <mat-table [dataSource]="setDataSource(this.actionItemData?.regulatoryRequirement_Operations)" class="manager-table" matSort>
+          <ng-container matColumnDef="operation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Operation
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.operation}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let row;let i = index">
+              <div class="flex flex-row items-center text-gray-four btn-group">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <label mat-menu-item (click)="this.openOperationFlyIn = true; selectedOperation = row;selectedOperationIndex = i">Edit</label>
+                  <label mat-menu-item (click)="deleteOperation(this.actionItemData?.regulatoryRequirement_Operations,i)">Delete</label>
+                </mat-menu>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full">No Data</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="this.openOperationFlyIn">
+    <app-flypanel-regulatory-requirement-operation [actionItemTypeName] = "actionItemType" [editOperation] ="selectedOperation"
+      (closed)="this.openOperationFlyIn = false" [taskId] = "taskId" (rrOperation_Data) = "selectedOperation == null ? addToDataSource($event,this.actionItemData?.regulatoryRequirement_Operations) : updateToDataSource($event,this.actionItemData?.regulatoryRequirement_Operations,selectedOperationIndex)"
+    ></app-flypanel-regulatory-requirement-operation>
+  </ng-container>
+</ng-container>
+
+<!-- regulatory requirement operation flyIn end -->
+
+<!-- safety hazard operation start -->
+
+<ng-container *ngIf="actionItemType == 'SafetyHazards' && false">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="ml-5 mr-2 pr-4">
+      <div class="mt-4">
+        <app-label text = "Operations" class="text-lg font-weight-bold"></app-label>
+      </div>
+      <div class="flex justify-end">
+        <app-button
+          variant="outlined"
+          text="Add New"
+          size="sm"
+          icon="add"
+          ButtonType="text"
+          (clicked)="this.openOperationFlyIn = true;selectedOperation=null"
+        ></app-button>
+      </div>
+      <div>
+        <mat-table [dataSource]="setDataSource(this.actionItemData?.safetyHazard_Operations)" class="manager-table" matSort>
+          <ng-container matColumnDef="operation">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Operation
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.operation}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let row;let i = index">
+              <div class="flex flex-row items-center text-gray-four btn-group">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <label mat-menu-item (click)="this.openOperationFlyIn = true; selectedOperation = row;selectedOperationIndex = i">Edit</label>
+                  <label mat-menu-item (click)="deleteOperation(this.actionItemData?.safetyHazard_Operations,i)">Delete</label>
+                </mat-menu>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full">No Data</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="this.openOperationFlyIn">
+    <app-flypanel-safety-hazard-operation [actionItemTypeName] = "actionItemType" [editOperation] ="selectedOperation"
+      (closed)="this.openOperationFlyIn = false" [taskId] = "taskId" (safetyHazardOperation_Data) = "selectedOperation == null ? addToDataSource($event,this.actionItemData?.safetyHazard_Operations) : updateToDataSource($event,this.actionItemData?.safetyHazard_Operations,selectedOperationIndex)"
+    ></app-flypanel-safety-hazard-operation>
+  </ng-container>
+</ng-container>
+
+<!-- safety hazard operation end -->
+
+<!-- task operation start -->
+
+<ng-container *ngIf="actionItemType == 'Task'">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="m-2 pr-4">
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label text = "Number" class="font-weight-bold"></app-label>
+      <app-textbox formControlName = "task_number" type = "number" pattern="[0-9]*" (input) = "onTaskNumberInput($event)"></app-textbox>
+    </div>
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label text = "Statement" class="font-weight-bold"></app-label>
+      <app-textbox formControlName = "task_statement" type = "text"></app-textbox>
+    </div>
+  </div>
+  </ng-container>
+</ng-container>
+
+<!-- task operation end -->
+
+
+<!-- conditions operation start -->
+
+<ng-container *ngIf="actionItemType == 'Conditions'">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="m-2 pr-4">
+      <div class="flex flex-col ml-5 mt-3">
+        <app-label class="font-weight-bold" text = "Conditions"></app-label>
+        <ckeditor [editor]="Editor" name = "conditions" formControlName="conditions"></ckeditor>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<!-- conditions operation end -->
+
+<!-- Criteria operation start -->
+
+<ng-container *ngIf="actionItemType == 'Criteria'">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="m-2 pr-4">
+      <div class="flex flex-col ml-5 mt-3">
+        <app-label text ="Criteria" class="font-weight-bold"></app-label>
+        <ckeditor [editor]="Editor" name = "criteria" formControlName="criteria"></ckeditor>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<!-- Criteria operation end -->
+
+<!-- References operation start -->
+
+<ng-container *ngIf="actionItemType == 'References'">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="m-2 pr-4">
+      <div class="flex flex-col ml-5 mt-3">
+        <app-label text = "References" class="font-weight-bold"></app-label>
+        <ckeditor [editor]="Editor" name = "references" formControlName="references"></ckeditor>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<!-- References operation end -->
+
+<!-- MetaTask operation start -->
+
+<ng-container *ngIf="actionItemType == 'MetaTask'">
+  <ng-container *ngIf="!this.openOperationFlyIn">
+    <div class="m-2 pr-4">
+      <div class="flex flex-row ml-5 mt-3">
+        <mat-checkbox formControlName = "isMeta"></mat-checkbox>
+        <app-label text = "IsMeta" class="font-weight-bold ml-2"></app-label>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>
+
+<!-- MetaTask operation end -->
+
+<!-- Save button  start -->
+
+<ng-container *ngIf="!this.openOperationFlyIn">
+  <div class="flex justify-end mt-3 m-2 pr-4">
+    <app-button text="Save" size="sm" type="submit" (clicked) = "onActionItemSave()"  [disabled]="actionItemForm.invalid || actionItemType === 'PrepareForTaskRequalification' || actionItemType === 'MakeTaskInactive'"></app-button>
+  </div>
+</ng-container>
+
+<!-- Save button  end -->
+</ng-container>

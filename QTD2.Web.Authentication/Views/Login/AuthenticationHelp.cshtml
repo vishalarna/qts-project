@@ -1,0 +1,27 @@
+﻿@using Microsoft.AspNetCore.Mvc.Localization
+@inject IViewLocalizer Localizer
+<div class="relative sm:w-2/5 mx-auto" style="padding-top:2rem">
+
+    <!-- Card starts here -->
+    <div class="bg-white shadow-md rounded px-12 py-12 ">
+        <h1 class="text-2xl font-semibold text-gray-900">@Localizer["MoreAuthInstructions"]</h1>
+
+        <div class="block text-sm">
+
+            <p class="block text-gray-700 font-medium mt-4">@Localizer["AuthTroubleInstructions"]</p>
+
+            <div class="mt-6 font-medium text-green-600">
+                <a href="#" class="hover:underline block">@Localizer["EmailSendingInstructions"]</a>
+                <a href="#" class="hover:underline block mt-2">@Localizer["HelpInstructions"]</a>
+            </div>
+
+        </div>
+    </div>
+    <!-- Card ends here -->
+    <!-- privacy terms starts here-->
+    <div class="mt-6 text-xs text-gray-500 text-center">
+        <a href="">Privacy and terms</a>
+    </div>
+    <!-- privacy and terms ends here -->
+
+</div>

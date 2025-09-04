@@ -1,0 +1,94 @@
+[
+ {
+  "ID": 1,
+  "CategoryID": 1,
+  "Title": "The Power System: Overview",
+  "Number": 1,
+  "Active": true
+ },
+ {
+  "ID": 2,
+  "CategoryID": 1,
+  "Title": "Transmission Lines and Associated Equipment",
+  "Number": 2,
+  "Active": true
+ },
+ {
+  "ID": 3,
+  "CategoryID": 1,
+  "Title": "Switching Devices",
+  "Number": 3,
+  "Active": true
+ },
+ {
+  "ID": 4,
+  "CategoryID": 2,
+  "Title": "Principles of Power Generation",
+  "Number": 1,
+  "Active": true
+ },
+ {
+  "ID": 5,
+  "CategoryID": 2,
+  "Title": "Fossil Fuel Units",
+  "Number": 2,
+  "Active": true
+ },
+ {
+  "ID": 6,
+  "CategoryID": 2,
+  "Title": "Nuclear Units",
+  "Number": 3,
+  "Active": true
+ },
+ {
+  "ID": 7,
+  "CategoryID": 2,
+  "Title": "Hydro Units",
+  "Number": 4,
+  "Active": true
+ },
+ {
+  "ID": 8,
+  "CategoryID": 3,
+  "Title": "Protection Equipment and Concepts",
+  "Number": 1,
+  "Active": true
+ },
+ {
+  "ID": 9,
+  "CategoryID": 3,
+  "Title": "Protection of Bulk Power Equipment",
+  "Number": 2,
+  "Active": true
+ },
+ {
+  "ID": 10,
+  "CategoryID": 3,
+  "Title": "Special Protective Schemes",
+  "Number": 3,
+  "Active": true
+ },
+ 
+ {
+  "ID": 11,
+  "CategoryID": 4,
+  "Title": "Operations Overview",
+  "Number": 1,
+  "Active": true
+ },
+ {
+  "ID": 12,
+  "CategoryID": 4,
+  "Title": "MW Control Principles",
+  "Number": 2,
+  "Active": true
+ },
+ {
+  "ID": 13,
+  "CategoryID": 4,
+  "Title": "Voltage Control Principles and Procedures",
+  "Number": 3,
+  "Active": true
+ }
+ ]

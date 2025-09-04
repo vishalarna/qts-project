@@ -1,0 +1,77 @@
+.drag-area .mat-icon {
+  color: #5c9b31;
+  font-size: 2.7rem;
+}
+
+.panel-heading {
+  font-weight: 600;
+  font-size: 18px;
+  line-height: 143%;
+  color: #4d4d4d;
+  align-items: center;
+  justify-content: space-between;
+}
+.drag-caption a {
+  color: #5c9b31;
+}
+
+.drag-area .mat-icon {
+  color: #5c9b31;
+  font-size: 2.7rem;
+}
+
+.cloud-upload-input {
+  border: 1px dashed #dddddd;
+  border-radius: 4px;
+  padding: 20px;
+}
+.resize-none {
+  resize: none;
+}
+
+.error {
+  color: #f00;
+}
+
+.dragarea {
+  color: #bbb;
+}
+
+.droparea {
+  color: #aaa;
+  opacity: 0.7;
+}
+
+.file-uploaded-div {
+  padding: 10px 13px;
+  border-radius: 4px;
+  background: #f7f1ff;
+  display: flex;
+  align-items: center;
+  span {
+    color: #7a807e;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 166%; /* 23.24px */
+    letter-spacing: 0.4px;
+    margin-left: 8px;
+    margin-top: 3px;
+  }
+}
+
+:host::ng-deep button.disabled-pointer:disabled{
+  cursor: default;
+  opacity: 0.65 !important;
+  color: #fff;
+  background-color: grey;
+  border-color: grey;
+}
+
+.panel-spin{  
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.pr-3{
+  padding-right:15px;
+}

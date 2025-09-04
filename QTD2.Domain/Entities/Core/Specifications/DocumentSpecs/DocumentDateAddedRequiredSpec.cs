@@ -1,0 +1,12 @@
+﻿using QTD2.Domain.Interfaces.Specification;
+
+namespace QTD2.Domain.Entities.Core.Specifications.DocumentSpecs
+{
+    public class DocumentDateAddedRequiredSpec : ISpecification<Document>
+    {
+        public bool IsSatisfiedBy(Document entity, params object[] args)
+        {
+            return entity.DateAdded != System.DateTime.MinValue;
+        }
+    }
+}

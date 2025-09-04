@@ -1,0 +1,74 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">{{TrainingProgramName}} {{TrainingProgramStatus ? 'Active' : 'Inactive'}}
+      </p>
+      <app-button (click)="flyInService.close()" ButtonType='icon' icon="close"></app-button>
+    </div>
+  
+    <app-data-loader *ngIf="spinner"></app-data-loader>
+    <div class="px-12  bg-white-one rounded-b-md">
+        <mat-table
+        [dataSource]="dataSourceTrainingPrograms "
+        matSort
+        *ngIf="dataSourceTrainingPrograms"
+      >
+        <ng-container matColumnDef="positionTitle">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{("Position" | labelReplacement)| async}}
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            {{ row.position.positionTitle }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="trainingProgramTypeTitle">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Program Type
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            {{ row.trainingProgramType.trainingProgramTypeTitle }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="tpVersionNo">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Version
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="flex flex-col">
+              <span>{{ row.tpVersionNo }}</span>
+              <!-- <span class="mt-2">{{row.modifyDate | date:'medium' }}</span> -->
+            </div>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="startDate">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> Year</mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="flex flex-col">
+              <span class="mt-2"
+                >{{ row.startDate | date: "yyyy" }} -
+                {{ row.endDate | date: "yyyy" }}</span
+              >
+            </div>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+    
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row flex text-center" *matNoDataRow>
+          <td class="mat-cell w-full m-2">No data matching the filter</td>
+        </tr>
+      </mat-table>
+      <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons>
+      </mat-paginator>
+    
+   
+
+  
+    </div>
+  
+  
+  
+  
+  
+  </ng-container>
+  

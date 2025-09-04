@@ -1,0 +1,167 @@
+<ng-container>
+  <div class="flex flex-col">
+    <div class="
+        border-gray-one border-0.5
+        bg-white-one
+        rounded
+        mb-8
+        pb-4
+        pt-4
+        pl-16
+        pr-16
+      ">
+      <p class="text-base font-bold">Evaluation Release Settings</p>
+
+      <form [formGroup]="evalForm">
+        <div>
+          <div class="flex flex-col mb-3">
+            <ul>
+              <li class="pt-3">
+                <mat-checkbox formControlName="evaluationRequired"
+                  (change)="uncheckOthers('evaluationRequired',$event)">
+                  Evaluation is not required for this {{("ILA" | labelReplacement)| async}}</mat-checkbox>
+              </li>
+              <li class="pt-3">
+                <mat-checkbox formControlName="evaluationUsedToDeployStudentEvaluation">
+                  EMP will not be used to deploy Student Evaluations for this
+                  {{("ILA" | labelReplacement)| async}}</mat-checkbox>
+              </li>
+              <li>
+                <p class="text-base font-bold m-t-20">Make Evaluation available:</p>
+                <div style="margin-left: 50px">
+                  <div>
+              <li class="pt-3">
+                <mat-checkbox [disabled]="
+                          evalForm.get('evaluationRequired')?.value === true
+                        " formControlName="evaluationAvailableOnStartDate"
+                  (change)="uncheckOthers('evaluationAvailableOnStartDate',$event)">
+                  On class start date and time
+                </mat-checkbox>
+              </li>
+              <li class="pt-3">
+                <mat-checkbox [disabled]="
+                          evalForm.get('evaluationRequired')?.value === true
+                        " formControlName="evaluationAvailableOnEndDate"
+                  (change)="uncheckOthers('evaluationAvailableOnEndDate',$event)">
+                  On class end date and time
+                </mat-checkbox>
+              </li>
+          </div>
+          <div style="margin-left: 50px">
+            <li class="pt-2">
+              <mat-checkbox formControlName="finalGradeRequired"
+                [disabled]="!evalForm.get('evaluationAvailableOnStartDate')?.value && !evalForm.get('evaluationAvailableOnEndDate')?.value || evalForm.get('evaluationRequired')?.value === true || evalForm.get('evaluationUsedToDeployStudentEvaluation')?.value === true">
+                Final grade required to release Evaluation</mat-checkbox>
+            </li>
+
+            <!-- <li class="pt-2">
+                      <mat-checkbox [disabled]="evalForm.get('evaluationRequired')?.value === true"
+                       formControlName="finalGradeRequired"
+                        >Final grade not required to release
+                        Evaluation</mat-checkbox
+                      >
+                    </li> -->
+          </div>
+        </div>
+        </li>
+        </ul>
+    </div>
+  </div>
+  </form>
+  <div>
+    <form [formGroup]="evalForm">
+      <div>
+        <div class="flex flex-col mb-3">
+          <ul>
+            <li class="pt-2">
+              <div class="flex flex-col pd-left-50">
+                <mat-checkbox (change)="uncheckOthers('releaseOnSpecificTimeAfterClassEndDate',$event)"
+                  [disabled]="evalForm.get('evaluationRequired')?.value === true"
+                  formControlName="releaseOnSpecificTimeAfterClassEndDate">
+                  At specified time on class end date
+                </mat-checkbox>
+                <div style="width: 25%" class="py-2 ml-5">
+                  <mat-select
+                    [disabled]="evalForm.get('evaluationRequired')?.value === true || evalForm.get('releaseOnSpecificTimeAfterClassEndDate')?.value === false"
+                    style="margin-right: 0px" (change)="uncheckOthers('setAvailabilityTimeEvaluate',$event)"
+                    formControlName="setAvailabilityTimeEvaluate" class="
+                          appearance-none
+                          rounded
+                          border
+                          w-full
+                          px-4
+                          py-2.5
+                          align-item-end
+                          bg-white
+                        ">
+                    <mat-option *ngFor="let item of testAvailabiilityTime" [value]="item">{{ item.timeSpan}}</mat-option>
+                  </mat-select>
+                </div>
+                <app-input-error
+                  *ngIf="(evalForm.get('evaluationRequired')?.value === false && evalForm.get('evaluationUsedToDeployStudentEvaluation')?.value === false) && evalForm.get('releaseOnSpecificTimeAfterClassEndDate')?.value && evalForm.get('setAvailabilityTimeEvaluate')?.value === null"
+                  text="Please Select Specific time to make Evaluation Available"></app-input-error>
+              </div>
+            </li>
+
+            <li class="pt-2 pd-left-50">
+              <mat-checkbox [disabled]="evalForm.get('evaluationRequired')?.value === true"
+                formControlName="releaseAfterGradeAssigned"
+                (change)="uncheckOthers('releaseAfterGradeAssigned',$event)">
+                After a grade is assigned
+              </mat-checkbox>
+            </li>
+            <li class="pt-2">
+              <app-input-error
+                *ngIf="(evalForm.get('evaluationRequired')?.value === false && evalForm.get('evaluationUsedToDeployStudentEvaluation')?.value === false) && evalSelection.selected.length < 1"
+                text="Please Select at least 1 option"></app-input-error>
+            </li>
+            <li class="pt-2">
+              <div class="flex flex-col">
+                <span>Evaluation Due Date</span>
+                <span class="text-gray-400">The number of days/weeks/months following the *class
+                  end date/time* students have to complete the
+                  Student Evaluation in EMP. After this due
+                  date, the Student Evaluation will be removed
+                  from EMP and Students will not be able to
+                  provide feedback.</span>
+                <div class="border py-2 flex mt-3" style="width: 20%; align-items: center">
+                  <app-textbox [disabled]="evalForm.get('evaluationRequired')?.value === true" formControlName="evaluationDueDate" (keypress)="keyPressNumbers($event)" [maxLength]="3" class="modifiedTextbox"></app-textbox>
+                  <mat-select [disabled]="evalForm.get('evaluationRequired')?.value === true" formControlName="empSettingsReleaseType">
+                    <mat-option *ngFor="let type of empSettingsReleaseTypes" [value]="type.typeId">{{type.typeName}}</mat-option>
+                  </mat-select>
+                </div>
+                <app-input-error
+                  *ngIf="(evalForm.get('evaluationRequired')?.value === false) && (evalForm.get('evaluationDueDate')?.hasError('required') || evalForm.get('empSettingsReleaseType')?.hasError('required')) "
+                  text="Due Date Days cannot be left empty"></app-input-error>
+              </div>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="flex flex-row justify-end">
+        <!-- <app-button
+              type="button"
+              size="sm"
+              color="secondary"
+              text="Cancel"
+              class="mr-5"
+            >
+            </app-button> -->
+      </div>
+    </form>
+  </div>
+  </div>
+  </div>
+</ng-container>
+
+<!-- <ng-template #linkStudentEvaluators>
+                  <app-fly-panel-add-tq-evaluater
+                    (idSelected)="tqStudentEvalSelected($event)"
+                  ></app-fly-panel-add-tq-evaluater>
+                </ng-template> -->
+
+<!-- <ng-template #linkClasses>
+  <app-fly-panel-classes-list [appClassesList]="classes_List" (idSelected)="SelectedClassIds($event)">
+
+  </app-fly-panel-classes-list>
+</ng-template> -->

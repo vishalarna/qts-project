@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Configurations>Debug;Release;UAT</Configurations>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QTD2.Application\QTD2.Application.csproj" />
+    <ProjectReference Include="..\QTD2.Data\QTD2.Data.csproj" />
+    <ProjectReference Include="..\QTD2.Domain\QTD2.Domain.csproj" />
+    <ProjectReference Include="..\QTD2.Infrastructure\QTD2.Infrastructure.csproj" />
+  </ItemGroup>
+
+</Project>

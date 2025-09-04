@@ -1,0 +1,295 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        width: 100%;
+        margin: 0;
+    }
+
+    table.table td {
+        padding: 2px 0;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378; ">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                        <div style=" font-size: 18px; font-weight: 600; margin-top: 0.6rem;">(@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Statement, Details and R-R* were changed on Date Shown)</div>
+                    </div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.Positions.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border:none;padding-top:0;" class="strip-container">
+                @{
+                    int j = 1;
+                }
+
+                @foreach (var position in Model.Positions)
+                {
+                    @if (position?.Position_Tasks?.First().Task?.Version_Tasks.Count() > 0)
+                    {
+
+                        <table class="table" style=" color:#000000;">
+                            <tr>
+                                <td colspan="12" style="border: none; padding:8px 0px;font-size: 1.2rem; font-weight: 600;">
+                                    <span style="font-style:italic">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</span><span style="padding:0px 10px 0px 15px">@position.PositionNumber - @position.PositionTitle (@position.PositionAbbreviation) </span>
+                                </td>
+
+                            </tr>
+                            <tr>
+                                <td colspan="12" style="border: none !important; padding:5px 0px; ">
+                                    <span style="font-style: italic;">Legend: A=Associated, D=Disassociated, M=Modified, R=Reliability, B=Baseline</span>
+                                </td>
+                            </tr>
+                        </table>
+                        @{
+                            var groupedPositionTasks = position.Position_Tasks.GroupBy(vt => vt.TaskId).ToList();
+                        }
+                        @foreach (var positionTaskGroup in groupedPositionTasks)
+                        {
+                            @foreach (var positionTask in positionTaskGroup)
+                            {
+                                @foreach (var versionTask in positionTask.Task.Version_Tasks)
+                                {
+                                    var taskHistory = positionTask.Task.Task_Histories.Where(r => r.Version_TaskId == versionTask.Id).FirstOrDefault();
+                                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                                    <div id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                                        <div style="padding: 10px;">
+
+                                            <table class="table" style="table-layout:fixed">
+                                                <tr>
+                                                    @{
+                                                        var dutyArea = versionTask?.Task?.SubdutyArea?.DutyArea;
+                                                    }
+
+                                                    @if (dutyArea != null)
+                                                    {
+                                                        <td style="border: none;vertical-align:top;" colspan="2">
+                                                            <span><b>@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #</b> : </span>
+                                                        </td>
+                                                        <td style="border: none;" colspan="2">
+                                                            <span>@dutyArea.Letter@dutyArea.Number.@versionTask.Task?.SubdutyArea?.SubNumber.@versionTask.Task.Number</span>
+                                                        </td>
+                                                    }
+
+                                                    <td style="border: none; vertical-align: top;" colspan="3">
+                                                        <span><b>History Date</b> : </span>
+                                                        <span>@versionTask?.EffectiveDate?.ToShortDateString()</span>
+                                                    </td>
+                                                    <td style="border: none; vertical-align: top;" colspan="5">
+                                                        <span><b>User Name</b> :</span>
+                                                        <span>@versionTask?.CreatedBy</span>
+                                                    </td>
+
+                                                </tr>
+                                                <tr>
+                                                    <td style="border: none; vertical-align: top;" colspan="2">
+                                                        <span style="white-space: nowrap;"><b>@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Statement</b> : </span>
+                                                    </td>
+                                                    <td style="border: none;" colspan="10">
+                                                        <span>@versionTask.Description</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border: none; vertical-align: top;" colspan="2">
+                                                        <span style="white-space: nowrap;"><b>Inactive</b> : </span>
+                                                    </td>
+                                                    <td style="border: none;" colspan="10">
+                                                        <span>@(!versionTask.Active)</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    @{
+                                                        var changeNotes = taskHistory?.ChangeNotes ?? "";
+
+                                                        // Perform the case logic
+                                                        var result = "M"; // Default value if none of the conditions match
+
+
+                                                        if (changeNotes.IndexOf("r-r", StringComparison.OrdinalIgnoreCase) != -1)
+                                                        {
+                                                            result = "R";
+                                                        }
+                                                        else if (changeNotes.IndexOf("position", StringComparison.OrdinalIgnoreCase) != -1 && changeNotes.IndexOf("unlin", StringComparison.OrdinalIgnoreCase) == -1)
+                                                        {
+                                                            result = "A";
+                                                        }
+                                                        else if (changeNotes.IndexOf("position", StringComparison.OrdinalIgnoreCase) != -1 && changeNotes.IndexOf("unlin", StringComparison.OrdinalIgnoreCase) != -1)
+                                                        {
+                                                            result = "D";
+                                                        }
+                                                        else if (changeNotes.IndexOf("baseline", StringComparison.OrdinalIgnoreCase) != -1)
+                                                        {
+                                                            result = "B";
+                                                        }
+                                                        else if (changeNotes.IndexOf("inactive", StringComparison.OrdinalIgnoreCase) != -1)
+                                                        {
+                                                            result = "D";
+                                                        }
+                                                    }
+                                                    <td style="border: none;" colspan="2">
+                                                        <span style="white-space: nowrap; vertical-align: top;"><b>Type of Change</b> : </span>
+
+                                                    </td>
+                                                    <td style="border:0;" colspan="2"> <span>@result</span></td>
+                                                    <td style="border: none; vertical-align: top;" colspan="8">
+                                                        <span><b>Requalification</b> : </span>
+                                                        <span>@versionTask.RequalificationRequired</span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border: none !important; text-align: left; vertical-align: top;" colspan="2">
+                                                        <div style="display: -webkit-box;display: flex; align-items: flex-start">
+                                                            <span style="flex: 1 1 8%;"><b>Conditions : </b></span>
+                                                        </div>
+                                                    </td>
+                                                    <td style="border: none !important; text-align: left;" colspan="10">
+                                                        <div style="display: -webkit-box;display: flex; align-items: flex-start">
+                                                            <span style="flex: 1 1 80%">@(new RawString(versionTask.Task.Conditions))</span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border: none !important;" colspan="2">
+                                                        <div style="display: -webkit-box; display: flex; vertical-align: top;">
+                                                            <span style="flex: 1 1 8%;"><b>@("Tool".ReplaceLabel(Model.ClientSettings_LabelReplacements))s :</b></span>
+                                                        </div>
+                                                    </td>
+                                                    <td style="border: none !important;" colspan="10">
+                                                        <div style="display: -webkit-box; display: flex">
+                                                            <span style=" flex: 1 1 80%;margin-top:0px!important;padding-top:0px!important">
+                                                                @{
+                                                                    var taskTools = versionTask.Task.Task_Tools;
+                                                                    if (taskTools.Count() > 0)
+                                                                    {
+                                                                        foreach (var tasksTool in taskTools)
+                                                                        {
+                                                                            <span style="display:block;margin-bottom:0">@tasksTool.Tool.Name</span>
+                                                                        }
+                                                                    }
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border: none; vertical-align: top;" colspan="2">
+                                                        <span><b>Notes</b> : </span>
+
+                                                    </td>
+                                                    <td style="border: none;" colspan="10">
+                                                        @foreach (var taskHistories in positionTask.Task.Task_Histories.Where(r => r.Version_TaskId == versionTask.Id))
+                                                        {
+                                                            <p>@taskHistories.ChangeNotes</p>
+                                                        }
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border: none; vertical-align: top;" colspan="2">
+                                                        <span><b>R-R</b> : </span>
+                                                    </td>
+                                                    <td style="border: none;" colspan="10">
+                                                        <span>@versionTask.IsReliability</span>
+                                                    </td>
+                                                </tr>
+                                                <tr></tr>
+                                            </table>
+                                        </div>
+                                    </div>
+
+                                }
+                                @if (positionTask != groupedPositionTasks.Last())
+                                {
+                                    <div style="page-break-after:always"></div>
+                                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                                }
+                                @{
+                                    j++;
+                                }
+                            }
+                        }
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+    @{
+        var allGroupedTasks = Model.Positions.SelectMany(position => position.Position_Tasks).GroupBy(task => task.TaskId).ToList();
+    }
+    @for (int i = 1; i <= allGroupedTasks.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

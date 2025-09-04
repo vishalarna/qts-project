@@ -1,0 +1,123 @@
+<!--Heading starts-->
+<div class="flex flex-col px-12 py-12">
+    <form class="flex flex-col" [formGroup]="linkForm">
+        <ng-container *ngIf="linkPos">
+            <div class="flex flex-row justify-between">
+                <h2>Link  {{("Employee" | labelReplacement)| async}} to {{("Position" | labelReplacement)| async}}</h2>
+                <app-button ButtonType="icon" icon="close" (clicked)="closed.emit('fp-task-pos-link-closed')"></app-button>
+
+            </div>
+            <div class="flex flex-row items-center border-b-0.8 border-gray-one">
+                <div class="flex flex-grow">
+                    <app-icon icon="search"></app-icon>
+                    <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+                        (input)="filterData($event)" formControlName="search">
+                        <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+
+                </div>
+
+            </div>
+
+            <!--Heading ends-->
+
+            <div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+
+                <div class="cursor-pointer">
+                    <span> Showing:
+                        <label mat-button class="mb-0">
+                            <p *ngIf="showActive" class="font-bold">
+                                Active
+                            </p>
+                           <!--  <p *ngIf="!showActive" class="font-bold">
+                                Inactive
+                            </p> -->
+
+                        </label>
+<!--                         <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+ -->                    </span>
+
+                   <!--  <mat-menu #menu="matMenu">
+                        <label mat-menu-item *ngIf="!showActive" (click)="filterStatus(true)">
+                            Active</label>
+
+                        <label mat-menu-item *ngIf="showActive" (click)="filterStatus(false)">
+                            Inactive</label>
+                    </mat-menu> -->
+                </div>
+
+            </div>
+
+            <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="linkedIds.length > 0">
+                <div class="flex flex-row w-full justify-between mb-3">
+                    <p class="text-xs text-gray-four pt-2">{{linkedIds.length}}  {{("Employee" | labelReplacement)| async}}(s) selected</p>
+                    <app-button [spinner]="isLoading" class="mb-2" type="button" color="secondary" size="sm"
+                        (clicked)="linkToPosition()" text="Link to {{('Position' | labelReplacement)| async}}">
+                    </app-button>
+
+                </div>
+                <div class="flex flex-row w-full justify-between mb-3">
+                <mat-checkbox (change)="traineehecked($event.checked)">
+                        Trainee
+                    </mat-checkbox>
+                </div>
+                <div class="flex flex-row w-full justify-between mb-3">
+                    <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+                    <app-label [for]="'startDate'" [text]="'Start Date '" class="label required"></app-label>
+                    <app-date   formControlName="startDate" placeholder="Select Date">
+                    </app-date>
+                    <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+                    </app-input-error>
+                    <p class="text-xs text-gray-four pt-2">The selected Start Date will apply to all selected  {{("Employee" | labelReplacement)| async}}.</p>
+                    </div>
+
+                </div>
+            </div>
+            <!-- *ngIf="active_tasks"
+
+            -->
+
+            <app-spinner *ngIf="employees === undefined"></app-spinner>
+            <ng-container *ngIf="employees && employees.length < 1 || filteredList.length < 1">
+                <div>No Data Found</div>
+            </ng-container>
+            <ng-container *ngIf="employees && employees.length > 0">
+                <div class="flex flex-col ">
+                    <div class="flex flex-row mb-3" *ngFor="let p of filteredList" [hidden]="!p.active">
+                        <ng-container  *ngIf="!alreadyLinkedIds.includes(p.id)">
+                            <mat-checkbox (change)="positionChecked($event.checked, p.id)" class="pt-3"> </mat-checkbox>
+                        <div class="flex flex-row">
+                            <img *ngIf="p.image" style="border-radius: 50%;width: 50px;height: 50px;" class="img-fluid mr-2 ml-2 mb-2" [src]="p.image"
+                            onerror="this.src='assets/img/ImageNotFound.jpg'">
+                           <div class="flex flex-col " >
+                            <span class="font-bold"> {{p.lastName}} - {{p.firstName}} </span>
+                            <span class="text-gray-400">{{p.userName}}</span>
+
+                        </div>
+                        </div>
+                        </ng-container>
+
+
+                        <ng-container *ngIf="alreadyLinkedIds.includes(p.id)">
+                            <div class="flex flex-row">
+                                <div class="flex flex-row">
+                                    <app-icon class="mr-1 pt-3" icon="link" style="color: rgb(92, 155, 49);"></app-icon>
+                                    <img *ngIf="p.image" style="border-radius: 50%;width: 50px;height: 50px;" class="img-fluid mr-2 ml-2 mb-2" [src]="p.image"
+                                    onerror="this.src='assets/img/ImageNotFound.jpg'">
+                                </div>
+
+                                <div class="flex flex-col" style="color: rgb(92, 155, 49);" >
+                                    <span class="font-bold"> {{p.lastName}} - {{p.firstName}} </span>
+                                    <span>{{p.userName}}</span>
+
+                                </div>
+                            </div>
+
+                        </ng-container>
+                    </div>
+
+                </div>
+            </ng-container>
+        </ng-container>
+    </form>
+    <!-- Here goes the add position flypanel once it is ready -->
+</div>

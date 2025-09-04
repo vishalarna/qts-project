@@ -1,0 +1,232 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+  <app-button
+    type="button"
+    ButtonType="icon"
+    icon="menu"
+    (clicked)="toggleMainMenu()"
+  >
+  </app-button>
+  <app-button
+    type="button"
+    ButtonType="icon"
+    icon="arrow_back"
+    (clicked)="goBack()"
+  >
+  </app-button>
+  <div class="flex flex-row items-center space-x-4 w-full justify-between">
+    <h1>Student Evaluation Question Bank</h1>
+    <div class="justify-between">
+      <app-button
+        type="button"
+        color="secondary"
+        text="Close"
+        (clicked)="goBack()"
+      >
+      </app-button>
+    </div>
+  </div>
+</mat-toolbar>
+<div class="w-full flex" style="justify-content: center">
+  <div class="flex-col mt-5" style="width: 70%">
+    <div class="flex flex-row justify-between mb-3" style="align-items: center">
+      <div>
+        <p class="font-bold text-lg mb-0">Evaluation Questions</p>
+        <!-- <p class="text-gray-three">Link or add new Positions to the training program by clicking the link icon</p> -->
+      </div>
+      <div class="d-flex flex-row">
+        <app-button
+          class="mr-2"
+          color="secondary"
+          text="Filters"
+          size="sm"
+          leftIcon="filter_alt"
+          rightIcon="expand_more"
+          [matMenuTriggerFor]="FilterMenu"
+        >
+        </app-button>
+        <mat-menu #FilterMenu="matMenu">
+          <label mat-menu-item (click)="dataSourceStatusFilter('Inactive')">Inactive</label>
+          <label mat-menu-item (click)="dataSourceStatusFilter('Active')">Active</label>
+        </mat-menu>
+
+        <app-button
+          text="Add New Question"
+          size="sm"
+          class="ml-2"
+          (click)="openFlyInPanel(questionflypanel, 'Add', 0)"
+        >
+        </app-button>
+      </div>
+    </div>
+    <div class="flex w-full">
+      <div
+        class="w-full flex border-0.5 bg-white-one rounded shadow-sm"
+        style="justify-content: center"
+      >
+        <div style="width: 100%">
+          <div class="flex-row bg-white-one rounded-b-md shadow-sm">
+            <div class="flex flex-col mt-3">
+              <!-- search and buttons starts -->
+              <div
+                class="
+                  flex flex-row
+                  bg-white-one
+                  rounded-t-md
+                  py-4
+                  px-6
+                  space-x-2
+                  border-b-0.8 border-gray-one
+                  w-full
+                "
+              >
+                <svg
+                  class="flex-none w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  ></path>
+                </svg>
+                <input
+                  class="text-sm flex-grow focus:outline-none"
+                  placeholder="Enter keywords to search"
+                  type="text"
+                  (keyup)="filterQuestions($event)"
+                />
+                <div class="flex flex-row space-x-4 text-sm"></div>
+              </div>
+            </div>
+            <div class="flex w-full" style="justify-content: center">
+              <table
+                [dataSource]="dataSource"
+                mat-table
+                style="border: 1px solid #e5e7eb; width: 100%"
+              >
+                <!-- Position Column -->
+                <ng-container matColumnDef="id">
+                  <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                    Question Id
+                  </th>
+                  <td mat-cell *matCellDef="let element">
+                    {{ element.questionId }}
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="active">
+                  <th mat-header-cell [hidden]="true" *matHeaderCellDef mat-sort-header>
+                    Active
+                  </th>
+                  <td mat-cell [hidden]="true" *matCellDef="let element">
+                    {{ element.active }}
+                  </td>
+                </ng-container>
+
+                <!-- Name Column -->
+                <ng-container matColumnDef="question">
+                  <th mat-header-cell *matHeaderCellDef>
+                    Student Evaluation Question Stem
+                  </th>
+
+        <td mat-cell *matCellDef="let element">
+          <div class="flex flex-row"
+          [innerHTML]="element.stem"
+          >
+
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="action">
+          <th mat-header-cell *matHeaderCellDef></th>
+          <td mat-cell *matCellDef="let row">
+            <div class="flex flex-row items-center text-gray-four btn-group">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <app-icon icon="more_horiz"></app-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <!--     <label (click)="openEmpPage('view',row.id)" mat-menu-item translate>L.Open</label> -->
+                <label
+
+                  mat-menu-item
+                  translate
+                  (click)="openFlyInPanel(questionflypanel,'Edit',row.id)"
+                  [disabled]="row.active === false"
+                  >Edit</label
+                >
+                <label
+                  mat-menu-item
+                  translate
+                  (click)="openFlyInPanel(questionflypanel,'Copy',row.id)"
+                  [disabled]="row.active === false"
+                  >Copy</label
+                >
+                <label
+                  mat-menu-item
+                  translate
+                  [disabled]="row.active === false"
+                  (click)="deleteStudentEvaluationQuestion(unlinkModal, row)"
+                  >Delete</label
+                >
+                <label
+                  mat-menu-item
+                  translate
+                  (click)="changeStatus(statusModal,row)"
+                  >{{ row.active === true ? "Make Inactive" : "Make Active" }}</label
+                >
+              </mat-menu>
+            </div>
+          </td>
+        </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+      <tr class="mat-row text-center" *matNoDataRow>
+  <td [attr.colspan]="displayedColumns.length" class="mat-cell text-center mt-2">No questions present in student evaluation</td>
+  </tr>
+    </table>
+  </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #statusModal>
+  <app-qtd-dialogue
+    [header]="modalHeader"
+    [description]="modalDescription"
+    cancelText="No"
+    confirmText="Yes"
+    [showEffectiveDateAndReason]="true"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="MakeActive($event, !isActive)"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #questionflypanel>
+  <app-fly-panel-add-question
+    (closed)="flyPanelService.close()"
+    (refresh)="getAllQuestions()"
+    [mode]="mode"
+    [questionId]="questionId"
+  >
+  </app-fly-panel-add-question>
+</ng-template>
+<ng-template #unlinkModal>
+  <app-qtd-dialogue
+    header="Delete Student Evaluation Question"
+    [description]="deleteDescription"
+    cancelText="No"
+    confirmText="Yes"
+    [showEffectiveDateAndReason]="true"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="Delete($event)"
+  >
+  </app-qtd-dialogue>
+</ng-template>

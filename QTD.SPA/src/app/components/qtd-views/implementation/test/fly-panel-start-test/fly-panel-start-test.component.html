@@ -1,0 +1,425 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+    <!-- <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBack()">
+    </app-button> -->
+    <div class="flex flex-row items-center space-x-4 w-full justify-between">
+        <h1>Test</h1>
+        <div class="justify-between">
+
+            <app-button type="button" color="blueBorder" text="Exit"
+                (clicked)="exitDialog(exitTest)">
+            </app-button>
+            <app-button color="blue" class="blue" type="button" text="Submit" (clicked)="submitTestRef = submitTest;openSubmitDialogue()" [disabled]="isReviewVisible===false || submitEnable" style="margin-left: 10px;">
+            </app-button>
+            <!-- <app-button type="button" text="Submit" (clicked)="submitTestRef = submitTest;openSubmitDialogue()" style="margin-left: 10px;">
+            </app-button> -->
+            <!-- testResult() -->
+        </div>
+    </div>
+</mat-toolbar>
+
+
+<div class="mt-5 flex justify-center" style="align-items:center;">
+    <section class="mb-5 mt-4" *ngIf="testItemsVM && testItemsVM.length < 1">
+        <div>No Test Questions Found</div>
+    </section>
+    <div style="width:50%;" *ngIf="!isReviewVisible || submitEnable">
+        <!-- Top Header Section -->
+        <section style="border-bottom:0.8px solid #E1E5E4" class="flex flex-col pb-5">
+            <span class="font-bold mb-4 text-3xl"> {{testInfoObject?.ila==null ?'N/A':testInfoObject?.ila}}</span>
+            <span class="text-sm mb-4" style="color:#4D4D4D;">{{testInfoObject?.instructions}}</span>
+            <div class="flex flex-row justify-between">
+                <div>
+                    <span class="text-color">NO. OF QUESTIONS :<i> {{testItemsVM.length}}</i></span>
+                </div>
+                <div>
+                    <app-icon icon="access_time"></app-icon>
+                    <span class="text-color">
+                        TIME: <span style="color:red;">{{getHours() | number:'2.0-0'}}</span> H :<span style="color:red;">{{getMinutes() | number:'2.0-0'}}</span> M : <span style="color:red;">{{remainingTime%60}}</span> S
+                    </span>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Section With Test Data -->
+        <div [@animSlider]="counter">
+            <ng-container *ngFor="let testItem of testItemsVM,index as i">
+                <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm"
+                    style="margin-bottom: 5rem;" *ngIf="i===counter">
+
+                    <div>
+                        <div style="border-bottom:0.8px solid #E1E5E4;" class="pb-2 flex flex-row mt-2 mb-4">
+                            <span style="color:#7A807E;" class="mr-4 font-medium question-label">Question : {{i+1}}</span>
+                            <div [ngClass]="testItem.description.trim().toLowerCase().includes('<p>') ? '':'mb-3'"
+                                class="font-normal input question-text" (change)="testItem.testItemType.trim().toLowerCase() === 'fill in the blank' ? commentContentClicked($event,testItem):null"
+                                [innerHTML]="testItem.testItemType.trim().toLowerCase() === 'fill in the blank' ? testItem.descriptionForFillBlanks :testItem.description">
+
+
+                            </div>
+
+                            <!-- <input
+                                  matInput
+                                  type="text"
+                                  required
+                                  /> -->
+                        </div>
+
+                        <!-- For Fill In Blank -->
+                        <!-- <div class="mb-4"
+                            *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'fill in the blank'">
+                            <div class="flex flex-col" *ngFor="let fib of testItem.testItemFillBlanks">
+                                <div class="flex flex-row mb-2">
+                                    <div class="mr-3">{{fib.correctIndex}} )</div>
+                                    <div>{{fib.correct}}</div>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- For MCQ -->
+                        <div *ngIf="testItem.testItemType.trim().toLowerCase() === 'multiple choice questions'"
+                            class="mb-4">
+                            <mat-radio-group [value]="getMCQCorrect(testItem.testItemMCQs)">
+                                <div *ngFor="let mcq of testItem.testItemMCQs">
+                                    <mat-radio-button class="mb-2" [value]="mcq"
+                                        (change)="radioChange($event,testItem)">
+                                        <div [innerHTML]="mcq.choiceDescription" class="ml-3 font-normal white-space-reset wrap-text"></div>
+                                    </mat-radio-button>
+                                </div>
+                            </mat-radio-group>
+                        </div>
+
+                        <!-- Multiple Correct -->
+                        <div *ngIf="testItem.testItemType.trim().toLowerCase() === 'multiple correct answers'"
+                            class="mb-4">
+                            <div *ngFor="let mca of testItem.testItemMCQs">
+                                <mat-checkbox [checked]="checkValueForCheckbox(mca)"
+                                    (change)="checkBoxChange($event,mca)">
+                                    <div [innerHTML]="mca.choiceDescription" class="white-space-reset wrap-text"></div>
+                                  </mat-checkbox>
+                            </div>
+                        </div>
+
+                        <!-- For True False -->
+                        <div class="mb-4"
+                            *ngIf="testItem.testItemType.trim().toLowerCase() === 'true / false'">
+                            <mat-radio-group [value]="getTFCorrect(testItem.testItemTrueFalses)">
+                                <div *ngFor="let tf of testItem.testItemTrueFalses">
+                                    <mat-radio-button class="mb-2" [value]="tf" (change)="radioChange($event,testItem)">
+                                        <span class="ml-3 font-normal">{{tf.choices}}</span>
+                                    </mat-radio-button>
+                                </div>
+                            </mat-radio-group>
+                        </div>
+
+                        <!-- For Match The Column -->
+                        <div style="display: grid;row-gap: 0.6rem;" class="mb-4"
+                            *ngIf="testItem.testItemType.trim().toLowerCase() === 'match the column'">
+                            <section class="w-full mt-3">
+                                <!-- Top Grid with Headers -->
+                                <div style="display: grid; grid-template-columns: 16% 39% 6% 39%;">
+                                    <div class="pt-3 pb-3"
+                                    style="grid-column: 1; border: 1px solid lightgray; border-top-right-radius: 0.2rem; text-align: center;">
+                                    Correct Answer
+                                </div>
+                                    <div class="flex pt-3 pb-3"
+                                    style="grid-column: 2; align-items: center; justify-content: center; border: 1px solid lightgray;">
+                                        Questions
+                                    </div>
+                                    <div class="pt-3 pb-3"
+                                    style="grid-column: 3; border: 1px solid lightgray; border-top-left-radius: 0.2rem;">
+                                </div>
+                                    <div class="flex pt-3 pb-3"
+                                    style="grid-column: 4; align-items: center; justify-content: center; border: 1px solid lightgray;">
+                                        Choices
+                                    </div>
+                                </div>
+
+                                <!-- Middle grid with Data -->
+                                <form *ngFor="let mq of testItem.testItemMatches,index as i"
+                                style="display: grid; grid-template-columns: 16% 39% 6% 39%;">
+                                    <div class="flex pt-3 pb-3"
+                                    style="grid-column: 1; align-items: center; justify-content: center; border: 1px solid lightgray;">
+                                    <!-- <input [attr.disabled]="!mq.hasChoice ? true:null" formControlName="correct{{i}}" (input)="getKey(i,$event);"
+                                  maxlength="1" type="text" style="width: 100%;height: 100%;text-align: center;outline:none"> -->
+                                    <mat-select *ngIf="mq.choiceDescription" (selectionChange)="onDropDownChange($event,mq,testItem.testItemMatches)"
+                                        [value]="compareItems(mq,testItem.testItemMatches)" style="text-align: center;">
+                                        <mat-option [value]="item" *ngFor="let item of correctAnswers">
+                                            {{item}}
+                                        </mat-option>
+                                    </mat-select>
+                                </div>
+                                    <div class="pt-3 pb-3 pl-2" style="grid-column: 2; border: 1px solid lightgray;">
+                                        <textarea value="{{mq.choiceDescription}}" disabled type="text"
+                                            style="width: 100%;height: 100%;outline:none;resize: none;"></textarea>
+                                    </div>
+                                    <div class="flex pt-3 pb-3"
+                                    style="grid-column: 3; align-items: center; justify-content: center; border: 1px solid lightgray;">
+
+                                    {{mq.matchValue}}
+                                </div>
+                                    <div class="pl-2 pt-2" class="pt-3 pb-3"
+                                    style="grid-column: 4; border: 1px solid lightgray;">
+                                        <textarea value="{{mq.matchDescription}}" type="text" disabled
+                                            style="width: 100%;height: 100%;outline:none;resize: none;"></textarea>
+                                    </div>
+
+                                </form>
+                            </section>
+                            <!-- <div *ngFor="let mtc of testItem.testItemMatches">
+                                <div style="display:grid;grid-template-columns: repeat(3, 1fr);row-gap:1rem;">
+                                    <div class="mr-2">{{mtc.choiceDescription}}</div>
+                                    <div class="mr-2">{{mtc.matchDescription}}</div>
+                                    <div>{{mtc.correctValue}}</div>
+                                </div>
+                            </div> -->
+                        </div>
+
+                        <!-- Short Answers -->
+                        <div class="mb-4"
+                            *ngIf="testItem.testItemType.trim().toLowerCase() === 'short answers'">
+                            <div>
+                                <div class="flex flex-row mb-3">
+                                    <textarea class="p-2 textAreaStyle" placeholder="fill text area"
+                                        [(ngModel)]="shotAnswerDescription"></textarea>
+                                    <!-- <div class="mr-3">{{i + 1}} )</div>
+                                    <div>{{sa.responses}}</div> -->
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex flex-row justify-between">
+                            <div>
+                                <app-button *ngIf="allowBack" type="button" color="blueBorder" size="sm" class="mr-5" text="Back"
+                                    (click)="onPrevious()" [disabled]="counter===0">
+                                </app-button>
+                            </div>
+                            <div>
+                                <app-button type="button" size="sm" color="blueBorder" [disabled]="this.counter == this.testItemsVM.length - 1" text="Skip" class="mr-2"
+                                    (click)="getTestItem(testItem,false)">
+                                </app-button>
+
+                                <app-button color="blue" class="blue" type="button" size="sm" text="Next" (click)="getTestItem(testItem)"
+                                    [hidden]="this.counter == this.testItemsVM.length - 1">
+                                </app-button>
+                                <app-button color="blue" class="blue" type="button" size="sm" text="Review Test"
+                                    (clicked)="reviewTest(testItem,true,'review')"
+                                    *ngIf="this.counter == this.testItemsVM.length - 1 && answerCheck === true">
+                                </app-button>
+
+                                <app-button color="blue" class="blue" type="button" size="sm" text="Done"
+                                (clicked)="reviewTest(testItem,false,'done')"
+                                *ngIf="this.counter == this.testItemsVM.length - 1 && answerCheck === false">
+                            </app-button>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </section>
+            </ng-container>
+        </div>
+
+
+    </div>
+
+
+    <div style="width:50%;" *ngIf="isReviewVisible">
+        <!-- Top Header Section -->
+        <section style="border-bottom:0.8px solid #E1E5E4" class="flex flex-col pb-5">
+            <span class="font-bold mb-4 text-3xl">{{testInfoObject?.ila==null ?'N/A':testInfoObject?.ila}}</span>
+            <div class="flex flex-row justify-between">
+                <div>
+                    <span class="text-color">NO. OF QUESTIONS :<i> {{testItemsVM.length}}</i></span>
+                </div>
+                <div>
+                    <app-icon icon="access_time"></app-icon>
+                    <span class="text-color">
+                      TIME: <span style="color:red;">{{getHours() | number:'2.0-0'}}</span> H :<span style="color:red;">{{getMinutes() | number:'2.0-0'}}</span> M : <span style="color:red;">{{remainingTime%60}}</span> S
+                  </span>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Section With Test Data -->
+        <div [@animSlider]="counter">
+            <ng-container *ngFor="let testItem of reviewTestInfo,index as i">
+                <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm"
+                    style="margin-bottom: 5rem;">
+
+                    <div>
+                        <div style="border-bottom:0.8px solid #E1E5E4;align-items: center;" class="pb-2 flex flex-row mt-2 mb-4 justify-between">
+                            <div class="flex flex-row">
+                              <span style="color:#7A807E;" class="mr-4 font-medium question-label">Question : {{i+1}}</span>
+                            <div class="font-normal question-text" (change)="testItem.testItem.testItemType.trim().toLowerCase() === 'fill in the blank' ? commentContentClicked($event,testItem):null"
+                                [innerHTML]="testItem.testItem.testItemType.trim().toLowerCase() === 'fill in the blank' ? testItem.testItem.descriptionForFillBlanks :testItem.testItem.description">
+                            </div>
+                            </div>
+                            <div class="flex justify-end ml-2">
+                                <mat-chip-list>
+                                    <mat-chip  *ngIf="testItem.status==='Incomplete'"
+                                        style="background-color: #fff3f2; color: #fa5943;">
+                                        <mat-icon style="color: #fa5943;">highlight_off</mat-icon>
+                                        {{testItem.status}}
+
+                                    </mat-chip>
+                                    <mat-chip *ngIf="testItem.status==='Complete'"
+                                        style="background-color: #effbf1; color: #34c34b;">
+                                        <mat-icon style="color: #34c34b;">check_circle</mat-icon>
+                                        {{testItem.status}}
+
+                                    </mat-chip>
+                                </mat-chip-list>
+                                <app-icon style="color:#456FA5;border:solid 1px #456FA5;padding:0.2rem;border-radius:4px;" class="ml-2" icon="edit" (click)="counter=i;isReviewVisible = false;allowBack=false;getTestQuestionInformation(testItemsVM[this.counter].id);"></app-icon>
+                            </div>
+                        </div>
+
+                        <!-- For Fill In Blank -->
+                        <!-- <div class="mb-4"
+                            *ngIf="testItem.testItem.testItemType.description.trim().toLowerCase() === 'fill in the blank'">
+                            <div class="flex flex-col" *ngFor="let fib of testItem.testItem.testItemFillBlanks">
+                                <div class="flex flex-row mb-2">
+                                    <div class="mr-3">{{fib.correctIndex}} )</div>
+                                    <div>{{fib.correct}}</div>
+                                </div>
+                            </div>
+                        </div> -->
+
+                        <!-- For MCQ -->
+                        <div *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'multiple choice questions'"
+                            class="mb-4">
+                            <mat-radio-group
+                                [value]="getReviewMCQCorrect(testItem.testItem.testItemMCQs,testItem.userAnswer)">
+                                <div *ngFor="let mcq of testItem.testItem.testItemMCQs">
+                                    <mat-radio-button class="mb-2" [value]="mcq"  [disabled]="true"
+                                        (change)="radioChange($event,testItem)">
+                                        <div [innerHTML]="mcq.choiceDescription" class="ml-3 font-normal white-space-reset wrap-text"></div>
+                                    </mat-radio-button>
+                                </div>
+                            </mat-radio-group>
+                        </div>
+
+                        <!-- Multiple Correct -->
+                        <div *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'multiple correct answers'"
+                            class="mb-4">
+                            <div *ngFor="let mca of testItem.testItem.testItemMCQs">
+                                <mat-checkbox  [disabled]="true" [checked]="getReviewValueForCheckbox(mca,testItem.multipleCorrectAnswer)"
+                                    (change)="checkBoxChange($event,mca)">
+                                  <div [innerHTML]="mca.choiceDescription" class=" white-space-reset wrap-text"></div>
+                                  </mat-checkbox>
+                            </div>
+                        </div>
+
+                        <!-- For True False -->
+                        <div class="mb-4"
+                            *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'true / false'">
+                            <mat-radio-group
+                                [value]="getReviewTFCorrect(testItem.testItem.testItemTrueFalses,testItem.userAnswer)">
+                                <div *ngFor="let tf of testItem.testItem.testItemTrueFalses">
+                                    <mat-radio-button  [disabled]="true" class="mb-2" [value]="tf"
+                                        (change)="radioChange($event,testItem.testItem)">
+                                        <span class="ml-3 font-normal">{{tf.choices}}</span>
+                                    </mat-radio-button>
+                                </div>
+                            </mat-radio-group>
+                        </div>
+
+                        <!-- For Match The Column -->
+                        <div style="display: grid;row-gap: 0.6rem;" class="mb-4"
+                            *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'match the column'">
+                            <section class="w-full mt-3">
+                                <!-- Top Grid with Headers -->
+                                <div style="display: grid; grid-template-columns: 16% 39% 6% 39%;">
+                                    <div class="pt-3 pb-3"
+                                    style="grid-column: 1; border: 1px solid lightgray; border-top-right-radius: 0.2rem; text-align: center;">
+                                    Correct Answer
+                                </div>
+                                    <div class="flex pt-3 pb-3"
+                                    style="grid-column: 2; align-items: center; justify-content: center; border: 1px solid lightgray;">
+                                        Questions
+                                    </div>
+                                    <div class="pt-3 pb-3"
+                                    style="grid-column: 3; border: 1px solid lightgray; border-top-left-radius: 0.2rem;">
+                                    </div>
+                                    <div class="flex pt-3 pb-3"
+                                    style="grid-column: 4; align-items: center; justify-content: center; border: 1px solid lightgray;">
+                                        Choices
+                                    </div>
+                                </div>
+
+                                <!-- Middle grid with Data -->
+                                <form *ngFor="let mq of testItem.testItem.testItemMatches,index as i"
+                                style="display: grid; grid-template-columns: 16% 39% 6% 39%;">
+                                    <div class="flex pt-3 pb-3"
+                                    style="grid-column: 1; align-items: center; justify-content: center; border: 1px solid lightgray;">
+                                    <!-- <input [attr.disabled]="!mq.hasChoice ? true:null" formControlName="correct{{i}}" (input)="getKey(i,$event);"
+                              maxlength="1" type="text" style="width: 100%;height: 100%;text-align: center;outline:none"> -->
+                                    <mat-select *ngIf="mq.choiceDescription"  [disabled]="true" (selectionChange)="onDropDownChange($event,mq,testItem.testItem.testItemMatches)"
+                                        [value]="compareReviewItems(mq,testItem.matchValueWithCorrectValue,testItem.testItem.testItemMatches)"
+                                        style="text-align: center;">
+                                        <mat-option [value]="item" *ngFor="let item of getCorrectAnswers(testItem.testItem.testItemMatches)">
+                                            {{item}}
+                                        </mat-option>
+                                    </mat-select>
+                                </div>
+                                    <div class="pt-3 pb-3 pl-2" style="grid-column: 2; border: 1px solid lightgray;">
+                                        <textarea value="{{mq.choiceDescription}}" disabled type="text"
+                                            style="width: 100%;height: 100%;outline:none;resize: none;"></textarea>
+                                    </div>
+                                    <div class="flex pt-3 pb-3"
+                                    style="grid-column: 3; align-items: center; justify-content: center; border: 1px solid lightgray;">
+
+                                        {{mq.matchValue}}
+                                    </div>
+                                    <div class="pl-2 pt-2" class="pt-3 pb-3"
+                                    style="grid-column: 4; border: 1px solid lightgray;">
+                                        <textarea value="{{mq.matchDescription}}" type="text" disabled
+                                            style="width: 100%;height: 100%;outline:none;resize: none;"></textarea>
+                                    </div>
+                                </form>
+                            </section>
+                            <!-- <div *ngFor="let mtc of testItem.testItemMatches">
+                            <div style="display:grid;grid-template-columns: repeat(3, 1fr);row-gap:1rem;">
+                                <div class="mr-2">{{mtc.choiceDescription}}</div>
+                                <div class="mr-2">{{mtc.matchDescription}}</div>
+                                <div>{{mtc.correctValue}}</div>
+                            </div>
+                        </div> -->
+                        </div>
+
+                        <!-- Short Answers -->
+                        <div class="mb-4"
+                            *ngIf="testItem.testItem.testItemType.trim().toLowerCase() === 'short answers'">
+                            <div>
+                                <div class="flex flex-row mb-3">
+                                    <textarea class="p-2 textAreaStyle" placeholder="" [disabled]="true"
+                                        [value]="testItem.userAnswer"></textarea>
+                                    <!-- <div class="mr-3">{{i + 1}} )</div>
+                                    <div>{{sa.responses}}</div> -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+                </section>
+            </ng-container>
+        </div>
+
+
+    </div>
+</div>
+
+<ng-template #exitTest>
+    <app-qtd-dialogue header="Exit Test" [description]="exitDescription" confirmText="Yes"
+        [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()" (confirmed)="exitConformation($event)">
+    </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #submitTest>
+
+    <app-submit-test-dialogue (close)="dialog.closeAll()" (save)="testResult()" [testType]="testType">
+
+    </app-submit-test-dialogue>
+        </ng-template>

@@ -1,0 +1,65 @@
+<div class="p-4">
+    <app-icon (click)="closed.emit()" icon="close" class="text-gray-500 cursor-pointer float-right"></app-icon>
+    <div class="container p-0 mt-3">
+        <!-- <h2 class="navbar-heading m-0">{{reportSkeletonFilter.name}}</h2> -->
+        <div class="d-block su pb-3" *ngIf="getPropertyTypeName(reportSkeletonFilter.propertyType) === 'boolean' && !reportSkeletonFilter.filterOption">
+            <div class="form-check pl-0">
+                <input type="checkbox" id="{{reportSkeletonFilter.name}}" 
+                [checked]="this.reportsData === 'true' ? true : this.reportsData === 'false' ? false : this.reportsData"
+                (change)="onFilterSelectChange($event, 'boolean')">
+                <label class="form-check-label pl-4" for="{{reportSkeletonFilter.name}}">{{(reportSkeletonFilter.name | dynamicLabelReplacement) | async}}</label>
+            </div>
+        </div>
+        <div class="d-block pb-3"  *ngIf="getPropertyTypeName(reportSkeletonFilter.propertyType) === 'int' && !reportSkeletonFilter.filterOption">
+            <div class="form-check pl-0">
+                <div class="col-md-6 p-0 report-comp-section-padding">
+                    <label class="report-comp-section-label">{{(reportSkeletonFilter.name| dynamicLabelReplacement) | async}}</label>
+                    <input type="number" class="form-control" [value]="this.reportsData" (change)="onFilterSelectChange($event, 'int')" />
+                </div>
+            </div>
+        </div>
+        <div class="d-block pb-3" *ngIf="getPropertyTypeName(reportSkeletonFilter.propertyType) === 'date' && !reportSkeletonFilter.filterOption">
+            <div class="form-check pl-0">
+                <div class="col-md-6 p-0 report-comp-section-padding">
+                    <label class="report-comp-section-label">{{(reportSkeletonFilter.name | dynamicLabelReplacement) | async}}</label>
+                    <input type="date" class="form-control" [value]="this.reportsData | date: 'yyyy-MM-dd'" (change)="onFilterSelectChange($event, 'date')" />
+                </div>
+            </div>
+        </div>
+        <div class="d-block pb-3" *ngIf="getPropertyTypeName(reportSkeletonFilter.propertyType) === 'string'">
+            <div class="form-check pl-0" *ngIf="!isFilterOptionParent">
+                <div class="col-md-6 p-0 report-comp-section-padding">
+                    <label class="report-comp-section-label">{{(reportSkeletonFilter.name | dynamicLabelReplacement) | async}}</label>
+                     <mat-select class="form-control" [value]="this.reportsData" (selectionChange)="onFilterSelectChange($event, 'string')">
+                        <input *ngIf = "filterOption == 'employeename'" matInput class="pt-3 pb-3 pl-3 w-100" type="text"  [value] = "searchText" (input)="dropDownSearch($event)" (blur) = "resetDropDownSearch()" (keydown)="handleKeydown($event)" placeholder="Enter Text to Search" >
+                        <mat-option *ngFor="let item of filterOptionData" [value]="item.value"><div class="option-list">{{item.name}}</div></mat-option>
+                    </mat-select> 
+                </div>
+            </div>
+            <div class="form-check pl-0"  *ngIf="isFilterOptionParent">
+                <div class="col-md-12 p-0 report-comp-section-padding">
+                    <label class="report-comp-section-label" style="font-size: 18px;font-weight: 500;margin-bottom: 16px;">{{(reportSkeletonFilter.name| dynamicLabelReplacement) | async}}</label>
+                    <div class="d-flex" style="gap: 5px;">
+                        <div *ngFor="let filterOptionParent of filterOptionData[0]?.filterOptionParents" class="w-100">
+                            <label class="report-comp-section-label">{{(filterOptionParent?.name | dynamicLabelReplacement) | async}}</label>
+                            <mat-select  [placeholder]="'Select '+ filterOptionParent?.name | dynamicLabelReplacement | async" [disabled]="getCurrentState(filterOptionParent?.name)"  [value]="getSelectedValue(filterOptionParent?.name)" (selectionChange)="setDropdownValue($event,filterOptionParent?.name)" class="appearance-none rounded border w-full px-4 py-2.5 mt-2 mb-3">
+                                <mat-option *ngFor="let value of this.optionDropdownObj.get(filterOptionParent.name)" [value]="value" >
+                                  {{value}}
+                                </mat-option>
+                            </mat-select>
+                        </div>
+                    </div>
+                    <div>
+                        <mat-select class="form-control mb-3" [value]="this.reportsData" (selectionChange)="onFilterSelectChange($event, 'string')">
+                            <mat-option *ngFor="let item of positionFilterOptionData" [disabled] = "item.value==''" [value]="item.value"><div class="option-list">{{item.name}}</div></mat-option>
+                        </mat-select> 
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="save-btn-div">
+            <app-button *ngIf="getPropertyTypeName(reportSkeletonFilter.propertyType) === 'string'" type="button" text="Clear" size="sm" (clicked)="clearSelection()" color = "secondary" class="pr-3"> </app-button>
+            <app-button type="button" text="Save" size="sm" customClasses="save-filter-button" [disabled] = "noneSelectedFlag" (clicked)="filterSave()" > </app-button>
+        </div>
+    </div>
+</div>

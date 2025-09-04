@@ -1,0 +1,144 @@
+<ng-container *ngIf="openPanel === 'main'">
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <div>
+      <p class="text-xl font-bold text-gray-900">Add {{('Employee' | labelReplacement)| async}}s</p>
+      <div class="flex flex-row" style="align-items:center;">
+        <span class="text-sm text-gray-500">Class start/end date: </span>
+        <span class="text-sm linkText ml-1">{{classData.date}}</span>
+      </div>
+    </div>
+    <app-button [disabled]="showSpinner" (click)="closeProvider()" ButtonType="icon" icon="close"></app-button>
+  </div>
+
+  <div class="flex flex-col px-12 pb-12 mt-12">
+    <!-- search and buttons starts -->
+    <div class="
+          flex flex-row
+          items-center
+          bg-white-one
+          rounded-t-md
+          py-4
+          px-6
+          space-x-2
+          border-b-0.8 border-gray-one
+        ">
+      <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+           xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <input [(ngModel)]="searchString" class="text-sm flex-grow focus:outline-none" placeholder="Search"
+             type="text" (input)="filterEmployees()"/>
+             <span *ngIf="isEmployeeFilterLabel" class="employee-filter-label">Filtered By : {{employeeFilterLabelValue}}</span>
+      <div class="flex flex-row space-x-4 text-sm">
+        <app-button color="primary" text="Clear Filter" size="sm" (click)="clearFilters()">
+        </app-button>
+        <app-button color="secondary" text="Filters" size="sm" icon="filter_alt" iconPosition="left"
+                    [matMenuTriggerFor]="filterMenu">
+        </app-button>
+        <mat-menu #filterMenu="matMenu">
+          <label (click)="openPanel = 'pos'" mat-menu-item>Filter by {{("Position" | labelReplacement)| async}}</label>
+          <label (click)="openPanel = 'org'" mat-menu-item>Filter by Organization</label>
+        </mat-menu>
+      </div>
+    </div>
+
+    <div class="rounded-t-md py-4 space-x-2" *ngIf="selection.selected.length > 0">
+      <mat-toolbar class="h-28 app-toolbar-sticky w-full">
+        <div class="flex flex-row items-center space-x-4 w-full justify-between">
+                    <span class="text-sm">
+                        {{ selection.selected.length }} {{("Employee" | labelReplacement)| async}} has been selected
+                    </span>
+          <br>
+          <span *ngIf="(selection.selected.length + empIds.length > this.classData.classSize)" class="text-sm mat-background-warn">
+                    You have selected more than {{this.classData.classSize}} {{("Employee" | labelReplacement)| async}}s.
+                  </span>
+          <div class="flex flex-row space-x-4 m-3 text-sm float-right">
+            <!-- <app-button color="secondary" text="Remove" size="sm"> </app-button> -->
+            <app-button
+              color="secondary"
+              text="Add to Class"
+              [disabled]="spinner || (selection.selected.length + empIds.length > this.classData.classSize) "
+              [spinner]="spinner"
+              (clicked)="enrollStudents()"
+              size="sm"
+              icon="link"
+              iconPosition="left">
+            </app-button>
+          </div>
+        </div>
+      </mat-toolbar>
+    </div>
+    <!-- search and button ends -->
+    <app-data-loader *ngIf="!employeeData"></app-data-loader>
+    <div *ngIf="employeeData" class="flex flex-col">
+      <div *ngIf="employeeData.length > 0"  class="flex flex-row my-4">
+        <mat-checkbox (change)="$event ? masterToggle() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()" class="mr-3"></mat-checkbox>
+        <span class="font-bold text-gray-500">All {{("Employee" | labelReplacement)| async}}s</span>
+      </div>
+      <div class="flex" *ngFor="let emp of employeeData">
+        <div *ngIf="!empIds.includes(emp.id)" class="flex flex-row" style="align-items:center;">
+          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(emp) : null"
+                        [checked]="selection.isSelected(emp)"></mat-checkbox>
+          <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 ml-2 mb-2"
+               [src]="emp.person.image" onerror="this.src='assets/img/ImageNotFound.jpg'"/>
+          <div class="flex flex-col">
+            <span>{{ emp.person.firstName + ' ' + emp.person.lastName }}</span>
+            <span>{{ emp.person.username }}</span>
+          </div>
+        </div>
+
+        <div *ngIf="empIds.includes(emp.id)" class="flex flex-row justify-between w-full"
+             style="align-items: center;">
+          <div class="flex flex-row" style="align-items:center;">
+            <app-icon icon="link" class="linkText"></app-icon>
+            <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 ml-2 mb-2"
+                 [src]="emp.person.image" onerror="this.src='assets/img/ImageNotFound.jpg'"/>
+            <div class="flex flex-col">
+              <span class="linkText">{{ emp.person.firstName + ' ' + emp.person.lastName }}</span>
+              <span class="linkText">{{ emp.person.username }}</span>
+            </div>
+          </div>
+          <div (click)="removeEMPDialog(deleteDialog,emp)" style="align-items: baseline;"
+               class="flex flex-row cursor-pointer">
+            <app-icon class="linkText" icon="delete"></app-icon>
+            <span class="linkText text-xs">Remove</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="employeeData?.length<1 && !showSpinner" class="no-employees-linked">
+      <span><i>No {{("Employee" | labelReplacement)| async}}s Linked</i></span>
+    </div>
+
+  </div>
+</ng-container>
+
+
+<ng-container *ngIf="openPanel === 'assign'">
+  <app-fly-panel-assign-score (closed)="openPanel = 'main'"></app-fly-panel-assign-score>
+</ng-container>
+
+<ng-container *ngIf="openPanel === 'org'">
+  <app-flypanel-filter-emp-by-org (closed)="openPanel = 'main'"
+                                  (orgSelected)="filterByOrg($event)"
+                                  (selectedOrganization)="selectedOrganization($event)"
+                                  [selectedOrg]="orgId"></app-flypanel-filter-emp-by-org>
+</ng-container>
+
+<ng-container *ngIf="openPanel === 'pos'">
+  <app-flypanel-filter-tq-emp-by [mode]="'Position'" (closed)="openPanel = 'main'"
+                                 (filterSelected)="filterByPos($event)"
+                                 (positionSelected)="positionSelected($event)"
+                                 [selectedPos]="posId"></app-flypanel-filter-tq-emp-by>
+</ng-container>
+
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue [header]="'Remove ' + ('Employee' | labelReplacement | async)" [description]="description" [confirmText]="'Yes'" [cancelText]="'No'"
+                    (canceled)="dialog.closeAll()" [showEffectiveDateAndReason]="false"
+                    (confirmed)="removeEMP()"></app-qtd-dialogue>
+</ng-template>

@@ -1,0 +1,104 @@
+<!--Header Code Starts-->
+<app-header title="Training Map" [canGoBack]="true" routerLink="/dnd/trainingmap"></app-header>
+<!--Header Code Ends-->
+
+<div class="flex flex-col px-12 pb-12">
+  <!--Heading and Subheading Start-->
+  <p class="w-21/24 font-bold text-2xl text-gray-five mb-6">
+    Create your training map
+  </p>
+  <p class="text-sm text-gray-four">Setup your training map to continue.</p>
+  <!--Heading and Subheading End-->
+
+  <div class="w-8/12">
+    <!--Position Starts-->
+    <div class="flex flex-row justify-between mb-2">
+      <span>{{("Position" | labelReplacement)| async}}s</span>
+      <app-button variant="text" text="Add new {{('Position' | labelReplacement)| async}}" (clicked)="openFlyInPanel(posPanel,'pos')"></app-button>
+    </div>
+
+    <div>
+      <mat-form-field appearance="fill" class="dropdown">
+        <mat-label>Select {{("Position" | labelReplacement)| async}}s</mat-label>
+        <mat-select [(ngModel)]="selectedPositionId" (ngModelChange)="getTrainingPrograms()">
+          <mat-option *ngFor="let item of position" [value]="item.id">
+            {{ item.name }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+    <!--Position Ends-->
+
+    <!--Training Program Starts-->
+    <div class="flex flex-row justify-between mb-2">
+      <span>Training Program</span>
+      <app-button variant="text" text="Add new training program" (click)="openFlyInPanel(addTpPanel,'tp')">
+      </app-button>
+    </div>
+
+    <div>
+      <mat-form-field appearance="fill" class="dropdown">
+        <mat-label>Select Training Program</mat-label>
+        <mat-select [(ngModel)]="selectedTrainingProgram" [(ngModel)]="valueselected">
+          <mat-option *ngFor="let d of training_program" [value]="d.id">
+            {{ d.programTitle }}
+          </mat-option>
+        </mat-select>
+        <mat-hint>You can add new training program for selected {{("Position" | labelReplacement)| async}}s</mat-hint>
+      </mat-form-field>
+    </div>
+    <!--Training Program Ends-->
+
+    <!--Div for Version Number(Initial Training Program) and Year(Continuing Training program) Starts -->
+    <!--Initial Training Map-->
+    <ng-container *ngIf="valueselected == 'Intial Training Map'">
+      <span class="mb-2">Version Number</span>
+      <mat-form-field appearance="fill" class="dropdown">
+        <mat-label>Version Number</mat-label>
+        <mat-select [(ngModel)]="selectedVersionNumber" [(ngModel)]="defaultvalueversion">
+          <mat-option *ngFor="let d of version_number" [value]="d.title">
+            {{ d.title }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+
+    <!--Conitnue Training Map-->
+    <ng-container *ngIf="valueselected == 'Continue Training Map'">
+      <span class="mb-2">Year</span>
+      <mat-form-field appearance="fill" class="dropdown">
+        <mat-label>Year</mat-label>
+        <mat-select [(ngModel)]="selectedYear" [(ngModel)]="defaultvalue">
+          <mat-option *ngFor="let d of year" [value]="d.title">
+            {{ d.title }}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>
+
+    <!--Div for Version Number(Initial Training Program) and Year(Continuing Training program) Ends -->
+
+    <!--Cancel and Continue Button Start-->
+    <div class="flex flex-row justify-between">
+      <app-button color="grey" text="Cancel" size="sm" (clicked)="router.navigate(['dnd','trainingmap'])"></app-button>
+      <app-button text="Continue" size="sm" [disabled]="
+          !selectedPositionId ||
+          !selectedTrainingProgram ||
+          (!selectedVersionNumber &&
+            !selectedYear &&
+            !defaultvalue &&
+            !defaultvalueversion)" (clicked)="GoToDesignBoard()">
+      </app-button>
+    </div>
+    <!--Cancel and Continue Button End-->
+  </div>
+</div>
+
+<ng-template #posPanel>
+  <app-fly-panel-positions (closed)="flyPanelService.close()"></app-fly-panel-positions>
+</ng-template>
+
+<ng-template #addTpPanel>
+  <app-fly-panel-add-training-program (cancel)="flyPanelService.close()" [positionIdChild]="selectedPositionId">
+  </app-fly-panel-add-training-program>
+</ng-template>

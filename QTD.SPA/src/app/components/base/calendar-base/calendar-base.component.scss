@@ -1,0 +1,49 @@
+.toggleILA {
+    outline: none;
+    color: rgba(122, 128, 126, 1);
+    font-weight: medium;
+    border: 1px solid rgba(122, 128, 126, 0.2);
+    border-bottom-right-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    width: 40%;
+  }
+  .toggleCalender {
+    outline: none;
+    color: rgba(122, 128, 126, 1);
+    font-weight: medium;
+    border: 1px solid rgba(122, 128, 126, 0.2);
+    border-bottom-left-radius: 0.25rem;
+    border-top-left-radius: 0.25rem;
+    width: 40%;
+  }
+  .cal-month-view {
+    width: 369% !important;
+  }
+  
+  .action {
+    float: right !important;
+    margin-right: 5px !important;
+  }
+  
+  :host ::ng-deep .cal-event-title .nonGreen {
+    color: rgb(153 159 156);
+  }
+  
+  :host ::ng-deep .cal-week-view .cal-time-events {
+    max-height: 30rem;
+    overflow-y: auto;
+  }
+  
+  :host ::ng-deep .cal-day-headers {
+    margin-right: 14.5px;
+  }
+  
+  :host ::ng-deep .cal-day-columns {
+    height: 100%;
+  }
+  
+  :host ::ng-deep .breakText{
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  

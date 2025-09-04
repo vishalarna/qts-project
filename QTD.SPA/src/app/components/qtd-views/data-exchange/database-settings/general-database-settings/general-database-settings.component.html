@@ -1,0 +1,132 @@
+<div class="row">
+  <div class="flex w-full" style="justify-content: center">
+    <div style="width: 100%" class="flex flex-col design-general">
+      <form class="flex flex-row border-gray-one pt-4 pb-4 rounded-sm" [formGroup]="generalSettingsFormGroup">
+        <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 100%">
+          <div class="row flex flex-row justify-content-between">
+            <div class="panel-heading">
+              General Database Settings
+            </div>
+          </div>
+
+          <div class="flex flex-row align-items-center">
+            <app-label text="Company Name" class="text-gray-300 company-text"></app-label>
+            <div class="flex flex-col float-left mb-6 w-full">
+              <input type="text" class="form-control" formControlName="companyName"
+                     (change)="updateGeneralSettingModel('companyName', $any($event).target.value)"/>
+            </div>
+          </div>
+          <div class="flex flex-row align-items-center">
+            <app-label text="Company Logo" class="text-gray-300 company-text"></app-label>
+            <div class="flex flex-col float-left mb-6 w-full input-length">
+
+              <div draggable="true" ngClass="{{dragAreaClass}}">
+                <div class="row">
+                  <div class="col-md-12 drag-area text-center">
+                    <div *ngIf="isImage">
+                      <mat-icon>cloud_upload</mat-icon>
+                      <p class="drag-caption">Drag and Drop your file here<a
+                        href="javascript:void(0)" (click)="file.click()">&nbsp;
+                        or Browse
+                      </a></p>
+                      <p class="supported-caption">Supported Format: png, jpg </p>
+                    </div>
+                    <input type="file" #file [multiple]="false" (change)="onFileChange($event)"
+                           style="display:none"/>
+                    <img class="genral-setting-img-upload" [src]="imagePath">
+                  </div>
+                </div>
+              </div>
+              <div class="error" *ngIf="error">
+                Only one file at time allow
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-row align-items-center">
+            <app-label text="Date Format" class="text-gray-300 company-text"></app-label>
+            <div class="flex flex-col float-left mb-6 w-full">
+              <div class="d-flex align-items-center select-flexdata">
+                <select class="form-control" formControlName="dateFormat"
+                        (change)="updateGeneralSettingModel('dateFormat', $any($event).target.value)">
+                  <option>MM/dd/yyyy</option>
+                  <option>dd/MM/yyyy</option>
+                  <option>yyyy/MM/dd</option>
+                </select>
+                <div class="tooltip-pro">
+                  <app-icon icon="help_outline" matTooltipClass="w-full"
+                            style="color: rgba(122, 128, 126, 0.49);">
+                  </app-icon>
+                  <span class="tooltiptext">The selected date format will be applied to all front end
+                                        screens, email notifications, and reports</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-row align-items-center">
+            <app-label text="Class Start & End Time Format" class="text-gray-300 company-text"></app-label>
+            <div class="flex flex-col float-left mb-6 w-full">
+              <div class="d-flex align-items-center select-flexdata">
+                <select class="form-control" formControlName="classStartEndTimeFormat"
+                        (change)="updateGeneralSettingModel('classStartEndTimeFormat', $any($event).target.value)">
+                  <option>24-hour clock</option>
+                  <option>12-hour clock</option>
+                </select>
+                <div class="tooltip-pro">
+                  <app-icon icon="help_outline" matTooltipClass="w-full"
+                            style="color: rgba(122, 128, 126, 0.49);">
+                  </app-icon>
+                  <span class="tooltiptext">The selected date format will be applied to all front end
+                                        screens, email notifications, and reports</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-row align-items-center">
+            <app-label text="Default Time Zone" class="text-gray-300 company-text"></app-label>
+              <div class="flex flex-col float-left mb-6 w-full">
+                <select class="form-control" formControlName="defaultTimeZone"
+                       (change) = "onTimeZoneChange('defaultTimeZone', $any($event).target.value)"  [disabled] = "isTimeZone">
+                  <option *ngFor="let timezone of timeZones" [value]="timezone.id">{{timezone.displayName}}</option>
+                </select>               
+            </div>
+          </div>
+          <div class="flex flex-row align-items-center">
+            <app-label text="Company Specific Course Passing Score"
+                       class="text-gray-300 company-text"></app-label>
+            <div class="flex flex-col float-left mb-6 w-full">
+              <input
+                (change)="updateGeneralSettingModel('companySpecificCoursePassingScore', $any($event).target.value)"
+                type="number"
+                min="0"
+                max="100"
+                class="form-control"
+                formControlName="passingScore"/>
+            </div>
+          </div>
+          <div *ngIf="isChecked" class="flex flex-row align-items-center">
+            <app-label text="Public Class Url"
+                       class="text-gray-300 company-text"></app-label>
+            <div class="flex flex-row float-left mb-6 w-full">
+              <app-label text="{{domain}}/{{instanceName}}/"  class="text-gray-300 public-label"></app-label>
+              <input
+                type="string"
+                class="form-control"
+                formControlName="publicUrl"/>
+            </div>
+          </div>
+          <div class="flex flex-row justify-content-end gap-2 mt-5">
+            <app-button type="button" color="secondary" size="md" text="Cancel" *ngIf="mode == 'write'"
+                        (clicked)="OnCancelButtonClick()" class="cancel-btn mr-2 border-0">
+            </app-button>
+            <app-button type="submit" color="primary" (clicked)="OnSaveButtonClick()"
+                        *ngIf="mode == 'write'" size="md" text="Save" class="save-btn">
+            </app-button>
+            <app-button type="submit" color="secondary" (clicked)="OnEditButtonClick()"
+                        *ngIf="mode == 'read'" size="md" text="Edit" class="save-btn">
+            </app-button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

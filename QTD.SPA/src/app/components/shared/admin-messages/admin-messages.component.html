@@ -1,0 +1,9 @@
+<div class="message-wrapper mt-4">
+  <div class="message-header">Messages From Admin</div>
+  <div class="message-list">
+    <div *ngFor="let msg of messages" class="message-row">
+      <span>{{ msg.message }}</span>
+      <app-button ButtonType="icon" icon="close" (click)="onDismiss(msg.id)"></app-button>
+    </div>
+  </div>
+</div>

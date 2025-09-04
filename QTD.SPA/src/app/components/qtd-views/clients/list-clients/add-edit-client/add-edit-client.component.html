@@ -1,0 +1,24 @@
+<h2 mat-dialog-title translate>{{mode == 'add'?'L.Add':'L.Edit'}}Client</h2>
+<form [formGroup]="clientForm" autocomplete="on" (ngSubmit)="addUpdateClient()" class="block text-sm">
+    <mat-dialog-content class="mat-typography">
+
+
+        <div class="flex flex-col">
+
+            <label translate>L.ClientName</label>
+            <app-textbox name="name" formControlName="name" placeholder="Client Name"></app-textbox>
+            <small class="text-danger"
+                *ngIf="clientForm.get('name')?.dirty && clientForm.get('name')?.hasError('required')"
+                translate>L.ClientNameRequired</small>
+
+        </div>
+
+
+    </mat-dialog-content>
+    <mat-dialog-actions align="end">
+        <app-button type="button" text="Cancel" color="secondary" size="sm" class="mr-2" mat-dialog-close></app-button>
+        <app-button type="submit" size="sm" [disabled]="clientForm.invalid" cdkFocusInitial [text]="mode ==
+                'add'?'Add':'Update'">
+        </app-button>
+    </mat-dialog-actions>
+</form>

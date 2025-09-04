@@ -1,0 +1,285 @@
+<form [formGroup]="ilaForm">
+  <section class="bg-white section p-4 mt-4">
+    <div class="flex flex-row justify-between w-full space-x-4 text-sm mb-3">
+      <div>
+        <p class="font-bold text-lg">{{ "ILA" | labelReplacement | async }}s</p>
+      </div>
+      <div *ngIf="mode !== 'view'">
+        <div  class="add-requisites-button" (click)="openFlypanel(addILA)" [ngClass]="{'disabled-pointer': mode === 'view'}" >
+          <img src="./assets/icons/icon-link-item.svg" alt="icon_link_svg" style="margin-right: 10px" />
+          <span style="cursor: pointer">Link {{ "ILA" | labelReplacement | async }}s</span>
+        </div>
+      </div>
+    </div>
+    <div class="mt-4 ml-4">
+      <mat-checkbox formControlName="isAvailableForAll" [disabled]="mode === 'view'" >
+        Make Available For All {{ "ILA" | labelReplacement | async }}s
+      </mat-checkbox>
+    </div>
+    <div class="rounded-t-md py-2 space-x-2" *ngIf="ilaSelection.hasValue() && !isILAUnlink">
+      <mat-toolbar class="h-28 app-toolbar-sticky w-full h-100-important d-block px-3 py-1 ">
+        <div class="flex flex-row items-center space-x-4 w-full justify-between">
+          <span class="text-sm">
+            {{ ilaSelection.selected.length }} {{("ILA" | labelReplacement)| async}}{{ ilaSelection.selected.length > 1 ? 's' : '' }} selected
+          </span>
+          <div class="flex flex-row space-x-4 m-3 text-sm float-right">
+            <app-button color="secondary" text="Unlink {{('ILA' | labelReplacement)| async}}s" (clicked)="unlinkILAsModalAsync(unlinkILAs)" size="sm" icon="link_off"
+              iconPosition="left">
+            </app-button>
+          </div>
+        </div>
+      </mat-toolbar>
+    </div>
+    <div *ngIf="isILALinkUnlink" class="d-flex justify-content-center align-items-center">
+      <app-spinner ></app-spinner>
+    </div>
+    <ng-container *ngIf="!isILALinkUnlink" >
+      <div class="table-list" >
+        <mat-table [dataSource]="ilaDataSource" matSort >
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                (change)="$event ? masterToggleILAs() : null"
+                [checked]="ilaSelection.hasValue() && isAllILAsSelected()"
+                [indeterminate]="ilaSelection.hasValue() && !isAllILAsSelected()"
+                [disabled]="mode === 'view'"
+              >
+              </mat-checkbox>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="$event ? ilaSelection.toggle(row) : null"
+                [checked]="ilaSelection.isSelected(row)"
+                [disabled]="mode === 'view'"
+              >
+              </mat-checkbox>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="number">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              #
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{ row.number }}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Description
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row"> {{ row.description }} </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <button mat-icon-button *ngIf="mode !== 'view'" (click)="unlinkIlaModal(unlinkIla, row)">
+                <mat-icon>link_off</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row
+            mat-header-row
+            *matHeaderRowDef="displayILAsColumns"
+          ></mat-header-row>
+          <mat-row
+            mat-row
+            *matRowDef="let row; columns: displayILAsColumns"
+          ></mat-row>
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full mt-2">No Data</td>
+        </tr>
+        </mat-table>
+        <mat-paginator
+          #metaPaginator="matPaginator"
+          [pageSizeOptions]="[20, 40, 60]"
+          showFirstLastButtons
+          aria-label="Select page of periodic elements"
+        ></mat-paginator>
+      </div>
+    </ng-container>
+  </section>
+  <section class="bg-white section p-4 mt-4">
+    <div class="flex flex-row justify-between w-full space-x-4 text-sm mb-3">
+      <div>
+        <p class="font-bold text-lg">Pre-requisites</p>
+      </div>
+      <div *ngIf="mode !== 'view'">
+      <div
+        class="add-requisites-button"
+        (click)="openFlypanel(addPrerequisites)"
+        [ngClass]="{'disabled-pointer': mode === 'view'}"
+      >
+        <img
+          src="./assets/icons/icon-link-item.svg"
+          alt="icon_link_svg"
+          style="margin-right: 10px"
+        />
+        <span style="cursor: pointer">Link Pre-requisites</span>
+      </div>
+    </div>
+    </div>
+    <div class="rounded-t-md py-2 space-x-2" *ngIf="preReqSelection.hasValue() && !isPreReqUnlink">
+      <mat-toolbar class="h-28 app-toolbar-sticky w-full h-100-important d-block px-3 py-1 ">
+        <div class="flex flex-row items-center space-x-4 w-full justify-between">
+          <span class="text-sm">
+            {{ preReqSelection.selected.length }} Pre-requisite{{ preReqSelection.selected.length > 1 ? 's' : '' }} selected
+          </span>
+          <div class="flex flex-row space-x-4 m-3 text-sm float-right">
+            <app-button color="secondary" text="Unlink Pre-requisites" (clicked)="unlinkPreRequisitesModal(unlinkPreRequisites)" size="sm" icon="link_off" iconPosition="left">
+            </app-button>
+          </div>
+        </div>
+      </mat-toolbar>
+    </div>
+    <div *ngIf="isPreReqLinkUnlink" class="d-flex justify-content-center align-items-center">
+      <app-spinner ></app-spinner>
+    </div>
+    <ng-container *ngIf="!isPreReqLinkUnlink">
+      <div class="table-list">
+        <mat-table [dataSource]="preRequisitesDataSource" matSort #prerequisiteSort="matSort" >
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                (change)="$event ? masterTogglePreReqs() : null"
+                [checked]="preReqSelection.hasValue() && isAllPreReqsSelected()"
+                [indeterminate]="preReqSelection.hasValue() && !isAllPreReqsSelected()"
+                [disabled]="mode === 'view'"
+              >
+              </mat-checkbox>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="$event ? preReqSelection.toggle(row) : null"
+                [checked]="preReqSelection.isSelected(row)"
+                [disabled]="mode === 'view'"
+              >
+              </mat-checkbox>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="number">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              #
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row">
+              {{ row.number }}</mat-cell
+            >
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Description
+            </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row">
+              {{ row.description }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+            <mat-cell mat-cell *matCellDef="let row">
+              <button
+                mat-icon-button *ngIf="mode !== 'view'"
+                (click)="unlinkPreRequisiteModal(unlinkPreRequisite, row)"
+              >
+                <mat-icon>link_off</mat-icon>
+              </button>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row
+            mat-header-row
+            *matHeaderRowDef="displayRequisitesColumns"
+          ></mat-header-row>
+          <mat-row
+            mat-row
+            *matRowDef="let row; columns: displayRequisitesColumns"
+          ></mat-row>
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full mt-2">No Data</td>
+        </tr>
+        </mat-table>
+        <mat-paginator
+          #prerequisitePaginator="matPaginator"
+          [pageSizeOptions]="[20, 40, 60]"
+          showFirstLastButtons
+          aria-label="Select page of periodic elements"
+        ></mat-paginator>
+      </div>
+    </ng-container>
+  </section>
+</form>
+
+<ng-template #addILA>
+  <app-fly-panel-add-ila-ila
+    (closed)="flyPanelService.close()"
+    [inputSimScenariosId]="inputSimScenariosId"
+    (newILAsLinked)="handleILAsLinked($event)"
+    [linkedILAIds]="linkedILAIds"
+  >
+  </app-fly-panel-add-ila-ila>
+</ng-template>
+
+<ng-template #addPrerequisites>
+  <app-fly-panel-add-prerequisites-ila
+    (closed)="flyPanelService.close()"
+    [inputSimScenariosId]="inputSimScenariosId"
+    (newPreRequisitesLinked)="handlePreRequisitesLinked($event)"
+    [linkedPreRequisitesIds]="linkedPreRequisitesIds"
+  >
+  </app-fly-panel-add-prerequisites-ila>
+</ng-template>
+
+<ng-template #unlinkIla>
+    <app-qtd-dialogue
+      header="Unlink {{ 'ILA' | labelReplacement | async }}"
+      [isHTML]="true"
+      [isQuestion]="true"
+      [description]="unlinkILADesc"
+      cancelText="No"
+      confirmText="Yes"
+      (canceled)="dialog.closeAll()"
+      (confirmed)="unlinkIlaAsync()"
+    >
+    </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #unlinkPreRequisite>
+  <app-qtd-dialogue
+    header="Unlink PreRequisite"
+    [isHTML]="true"
+    [isQuestion]="true"
+    [description]="unlinkPreReqDesc"
+    cancelText="No"
+    confirmText="Yes"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="unlinkPreReqAsync()"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #unlinkILAs>
+  <app-dialogue-unlink-multiple-records
+    header="Unlink {{('ILA' | labelReplacement)| async}}s"
+    [description]="unlinkILADesc"
+    cancelText="No"
+    confirmText="Yes"
+    (canceled)="isILAUnlink=false;dialog.closeAll()"
+    (confirmed)="isILAUnlink = true; removeILAAsync();dialog.closeAll()"
+    [recordsToUnlink] = "ilaSelection.selected"
+  >
+  </app-dialogue-unlink-multiple-records>
+</ng-template>
+<ng-template #unlinkPreRequisites>
+  <app-dialogue-unlink-multiple-records
+    header="Unlink Pre-requisites"
+    [description]="unlinkPreReqDesc"
+    cancelText="No"
+    confirmText="Yes"
+    (canceled)="isPreReqUnlink=false;dialog.closeAll()"
+    (confirmed)="isPreReqUnlink = true; removePreRequisitesAsync();dialog.closeAll()"
+    [recordsToUnlink] = "preReqSelection.selected"
+  >
+  </app-dialogue-unlink-multiple-records>
+</ng-template>

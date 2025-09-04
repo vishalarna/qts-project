@@ -1,0 +1,352 @@
+<div *ngIf="mainSpinner" class="flex mt-4" style="justify-content: center;align-items:center;">
+  <app-spinner></app-spinner>
+</div>
+<div *ngIf="!mainSpinner" class="w-full flex flex-row mt-16">
+  <form class="block text-sm h-auto w-full" [formGroup]="createILAForm">
+    <div class="flex flex-col pb-12">
+      <div class="border-0.5 bg-white-one rounded shadow-sm px-2">
+
+        <table class="w-5/6 ml-20 mt-32 mr-32">
+          <tr>
+            <td>
+              <!--image-->
+              <div style="width:230px; height:150px" class="pt-4">
+                <div *ngIf="!url">NO IMAGE SELECTED</div>
+                <img style="width:230px; height:90px" [src]="url" *ngIf="url">
+              </div>
+            </td>
+            <td>
+              <!--change button-->
+              <div class="float-right">
+
+                <input type="file" (change)="selectFile($event)" accept="image/*" class="align-right float-right"
+                       title=" " id="upload-file" hidden/>
+                <p>{{image_name}}</p>
+                <label for="upload-file" class="text-green-800 align-right">Upload Image</label>
+
+              </div>
+
+            </td>
+          </tr>
+
+          <tr>
+            <td class="w-1/2 mt-8">
+              <div>
+                <app-label [for]="'ILAName'" [text]="'Official Name '" class="label required"></app-label>
+                <app-textbox type="text" [name]="'ILAName'" formControlName="ILAName" [defaultValue]="ILAName"
+                             [placeholder]="'Name'">
+                </app-textbox>
+
+              </div>
+            </td>
+            <td>
+              <div>
+                <app-label [for]="'nickName'" [text]="'Nick Name'"></app-label>
+                <app-textbox formControlName="nickName" type="text" [name]="'nickName'" [placeholder]="'Nick Name'"
+                             class="w-5">
+                </app-textbox>
+              </div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <app-input-error
+                *ngIf="createILAForm.get('ILAName')?.invalid && createILAForm.get('ILAName')?.hasError('required')"
+                text="{{('ILA' | labelReplacement)| async}} Name is Required">
+              </app-input-error>
+            </td>
+            <td><app-input-error
+                *ngIf="createILAForm.get('nickName')?.invalid && createILAForm.get('nickName')?.hasError('required')"
+                text="{{('ILA' | labelReplacement)| async}} Nick Name is Required">
+              </app-input-error></td>
+          </tr>
+
+          <tr>
+            <td colspan="2">
+              <div class="mt-6">
+                <app-label [for]="'ILANumber'" text="{{('ILA' | labelReplacement)| async}} Number" class="label required"></app-label>
+
+                <app-textbox type="text" [name]="'ILANumber'"
+                             formControlName="ILANumber" [defaultValue]="ILANumber" placeholder="Enter {{('ILA' | labelReplacement)| async}}  Number">
+                </app-textbox>
+                <app-input-error
+                  *ngIf="createILAForm.get('ILANumber')?.invalid && createILAForm.get('ILANumber')?.hasError('required')"
+                  text="{{('ILA' | labelReplacement)| async}}  Number is Required">
+                </app-input-error>
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td colspan="2">
+              <div class="mt-6">
+                <app-label for="'ILADescription'" text="{{('ILA' | labelReplacement)| async}} Description"></app-label>
+                <app-textarea formControlName="ILADescription" [value]="createILAForm.get('ILADescription')?.value??''" type="text" placeholder="{{('ILA' | labelReplacement)| async}}  Description">
+                </app-textarea>
+
+                <!--<app-textarea formControlName="ILADescription" name="ILADescription"
+                   [placeholder]="'Enter ILA Description'"
+                   type="text"
+                   [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+                 </app-textarea> -->
+                <!--  <app-input-error *ngIf="createILAForm.get('ILADescription')?.invalid" text="Description is required">
+                 </app-input-error> -->
+              </div>
+            </td>
+          </tr>
+
+          <tr>
+            <td colspan="2">
+              <div class="flex flex-row justify-between">
+                <div class="sm:w-full">
+                  <div class="flex justify-between w-full">
+                    <app-label [for]="'Provider'" [text]="'Provider'" class="mt-6"></app-label>
+                    <app-button variant="text" class="pt-4" text="Add New Provider"
+                                (clicked)="openFlyInPanel(addNewProvider,'Provider')">
+                    </app-button>
+                    <!--   <button (click)="openFlyInPanel(addNewProvider)" type="button"
+                      class="focus:outline-none text-lightGreen text-sm">
+                      Add New Provider
+                    </button> -->
+                  </div>
+                  <!--  <select id="provider name" name="provider name"
+                      class="appearance-none rounded border bg-gray-50 w-full px-4 py-2.5 mt-2">
+                      <option [value]='undefined'>Select Provider</option>
+                      -->
+                  <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                    <mat-select #provSelect="matSelect" formControlName="provider" placeholder="Select Provider" (click)="filterData()">
+                      <input matInput class="pt-3 pb-3 pl-3 w-100" type="text"  formControlName="searchTxt" (keyup)="providerSearch()" placeholder="Enter Text to Search">
+                      <mat-option [hidden]="!i.active" *ngFor="let i of provider_list" (onSelectionChange)="selectProvider($event,i.isNERC)"
+                                  [value]="i.id">
+                        {{i.name}}
+                      </mat-option>
+                    </mat-select>
+                    <app-spinner *ngIf="isProviderLoading" class="spinner internal-spinner"></app-spinner>
+                  </mat-form-field>
+                  <app-input-error *ngIf="createILAForm.get('provider')?.invalid" text="Provider Is Required">
+                  </app-input-error>
+                  <!--                 </select> -->
+                </div>
+              </div>
+
+            </td>
+          </tr>
+
+          <tr>
+            <td colspan="2">
+              <div class="flex flex-row justify-between">
+                <div class="sm:w-full">
+                  <div class="flex justify-between w-full">
+                    <app-label [for]="'Topic'" [text]="'Topic'" class="mt-6"></app-label>
+                    <app-button variant="text" class="pt-4" text="Add New Topic"
+                                (clicked)="openFlyInPanel(addNewTopic,'Topic')">
+                    </app-button>
+                    <!-- <button (click)="openFlyInPanel(addNewTopic)" type="button"
+                          class="focus:outline-none text-lightGreen text-sm">
+
+                      </button> -->
+                  </div>
+                  <!-- <select id="topic name" name="topic name"
+                      class="appearance-none rounded border bg-gray-50 w-full px-4 py-2.5 mt-2">
+                      <option [value]='undefined'>Select Topic</option>
+
+                  </select> -->
+                  <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                    <mat-select [formControl]="topicsControl" multiple placeholder="Select Topic">
+                      <mat-select-trigger>
+                        <mat-chip-list>
+                          <mat-chip *ngFor="let i of topicsControl.value" [removable]="true"
+                                    (removed)="removeTopic(i)"
+                                    [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                                    selected>
+                            {{ i.name }}
+                            <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                            </app-icon>
+                          </mat-chip>
+                        </mat-chip-list>
+                      </mat-select-trigger>
+                      <mat-option [hidden]="!i.active" *ngFor="let i of topic_list" #matTopicOption (click)="OnTopicClick(matTopicOption.selected)" [value]="i">
+                        {{i.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+              </div>
+
+            </td>
+          </tr>
+
+          <tr>
+            <td colspan="2">
+              <div class="flex flex-row justify-between">
+
+                <div class="sm:w-full">
+                  <div class="flex justify-between w-full">
+                    <app-label [for]="'Position'" text="{{('Position' | labelReplacement)| async}}"
+                               class="mt-6"></app-label>
+                    <app-button variant="text" class="pt-4" text=" Add New {{('Position' | labelReplacement)| async}}"
+                                (clicked)="openFlyInPanel(posContainer,'Position')">
+                    </app-button>
+                    <!--        <button (click)="openFlyInPanel(posContainer)" type="button"
+                          class="focus:outline-none text-lightGreen text-sm mt-6">
+                          Add New Position
+                      </button> -->
+                  </div>
+                  <div>
+                    <!--   <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                        <mat-select [formControl]="positionsControl" multiple placeholder="Select Position" required >
+                          <mat-select-trigger>
+                            <mat-chip-list>
+                              <mat-chip *ngFor="let i of positionsControl.value" [removable]="true"
+                                (removed)="removePosition(i)"
+                                [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                                selected>
+                                {{i}}
+                                <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                                </app-icon>
+                              </mat-chip>
+                            </mat-chip-list>
+                          </mat-select-trigger>
+
+                          <mat-option *ngFor="let i of positions" [value]="i.name" #matOption
+                            (click)="OnClick(matOption.selected)">
+
+                            {{i.name}}
+                          </mat-option>
+                        </mat-select>
+                      </mat-form-field> -->
+                    <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                      <mat-select [formControl]="positionsControl" multiple
+                                  placeholder="Select {{('Position' | labelReplacement)| async}}">
+                        <mat-select-trigger>
+                          <mat-chip-list>
+                            <mat-chip *ngFor="let i of positionsControl.value" [removable]="true"
+                                      (removed)="removePosition(ConfirmPossitionRemoval,i)"
+                                      [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                                      selected>
+                              {{ i.positionTitle }}
+                              <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                              </app-icon>
+                            </mat-chip>
+                          </mat-chip-list>
+                        </mat-select-trigger>
+
+                        <mat-option [hidden]="!i.active" *ngFor="let i of positions" [value]="i" #matOption
+                                    (click)="OnClick(matOption.selected)">
+                          {{i.positionTitle}}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <app-input-error *ngIf="positionsControl?.invalid"
+                                     text="{{('Position' | labelReplacement)| async}} is required">
+                    </app-input-error>
+                  </div>
+                </div>
+              </div>
+            </td>
+          </tr>
+
+
+          <tr>
+            <td colspan="2">
+              <mat-checkbox formControlName="IsSelfPacedILA" name="selfPaced">
+                Self Paced
+              </mat-checkbox>
+            </td>           
+          </tr>          
+          <!-- <tr>
+            <td>
+              <mat-checkbox class="mt-4" name="isMetaILA" [checked]="true">
+                Is a META ILA
+                <app-icon icon="help_outline"
+                  matTooltip="Selecting this checkbox indicates that this ILA can be linked to other ILAs to form a group, or bundle, of ILAs that Trainees must complete for credit.">
+                </app-icon>
+
+              </mat-checkbox>
+            </td>
+          </tr> -->
+        </table>
+        <div class="ml-20 mt-8">
+          <app-label text="Delivery Methods" class="label required"></app-label>
+          <app-icon icon="help_outline"></app-icon>
+        </div>
+
+        <div class="border-0.5 rounded h-auto w-5/6 ml-20 bg-white-one px-8 mb-3">
+          <mat-radio-group formControlName="deliveryMethode" (change)="deliveryMethodSelected()">
+            <mat-tab-group mat-align-tabs="start">
+              <mat-tab label="NERC" *ngIf="isNercBit">
+                <app-label text="Select one delivery method for this {{('ILA' | labelReplacement)| async}}"></app-label>
+                <br/>
+                <div>
+                  <div class="flex-col flex-warp justify-evenly">
+                    <ng-container *ngFor="let ndm of NERCMethods; index as i;">
+                      <mat-radio-button [hidden]="!ndm.active" [value]="ndm.id" class="p-3">
+                        {{ndm.name}}
+                      </mat-radio-button>
+                    </ng-container>
+                  </div>
+                  <div class="float-left ml-6">
+                    <app-textbox formControlName="other" (changed)="deliveryMethodTextSelected()">Others</app-textbox>
+                    <mat-checkbox formControlName="IsAvailableForAllIla" class="mt-4" name="allILAs">
+                      Make available for all {{("ILA" | labelReplacement)| async}}s
+                    </mat-checkbox>
+                  </div>
+                </div>
+              </mat-tab>
+              <mat-tab label="GENERAL" *ngIf="!isNercBit">
+                <app-label text="Select that applies"></app-label>
+                <br/>
+                <div class="flex flex-row flex-wrap mt-4">
+                  <mat-radio-button *ngFor="let gdm of GeneralDeliveryMethod; index as i;" [value]="gdm.id"
+                                    class="p-3 break-all">
+                    {{gdm.name}}
+                  </mat-radio-button>
+                  <div class="float-right ml-6">
+                    <app-textbox formControlName="other" (changed)="deliveryMethodTextSelected()">Others</app-textbox>
+                    <mat-checkbox formControlName="IsAvailableForAllIla" class="mt-4" name="allILAs">
+                      Make available for all {{("ILA" | labelReplacement)| async}}s
+                    </mat-checkbox>
+                  </div>
+                </div>
+              </mat-tab>
+            </mat-tab-group>
+          </mat-radio-group>
+
+        </div>
+        <div class="h-auto w-5/6 ml-20 bg-white-one mb-5">
+          <app-input-error class="ml-2" *ngIf="createILAForm.get('deliveryMethode')?.invalid || createILAForm.get('other')?.invalid"
+        text="Delivery Method Is Required"></app-input-error>
+        </div>
+        <!-- <div class="flex flex-row items-center float-right mr-24 mt-4">
+          <app-button type="button" color="secondary" size="lg" text="Save">
+          </app-button>
+        </div> -->
+      </div>
+    </div>
+  </form>
+</div>
+
+
+<ng-template #addNewProvider>
+  <!-- <app-fly-panel-provider [provider_edit_mode]="provider_edit_mode" [provider_change_mode]="provider_change_mode"></app-fly-panel-provider> -->
+  <app-fly-panel-provider (closed)="flyPanelService.close()" [provider_edit_mode]="true" [provider_change_mode]="false"
+                          [oldProvider]="undefined"></app-fly-panel-provider>
+</ng-template>
+
+<ng-template #addNewTopic>
+  <app-fly-panel-topic (closed)="flyPanelService.close()" [edit_topic]="true" [change_topic]="false"
+                       [oldTopic]="undefined"></app-fly-panel-topic>
+  <!-- <app-fly-panel-topic [change_topic]="change_topic" [edit_topic]="edit_topic"></app-fly-panel-topic> -->
+</ng-template>
+
+<ng-template #posContainer>
+  <app-fly-panel-add-position (closed)="flyPanelService.close()" showlistPosition="false"
+                              (refreshNavBar)="getPositions()"></app-fly-panel-add-position>
+</ng-template>
+
+<ng-template #ConfirmPossitionRemoval>
+  <app-qtd-dialogue [header]="'Confirm Possition Removal'" description="You are selecting to remove a position which currently has {{('Employee' | labelReplacement)| async}}s enrolled and completely the {{('ILA' | labelReplacement)| async}}, are you sure you want to remove this position and the {{('ILA' | labelReplacement)| async}} from all enrolled {{('Employee' | labelReplacement)| async}}s EMP dashboards"
+    [cancelText]="'Cancel'" [confirmText]="'Confirm'"  (canceled)="dialog.closeAll()">
+  </app-qtd-dialogue>
+</ng-template>
+

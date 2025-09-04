@@ -1,0 +1,310 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    .table-header-row th {
+        border: 1px solid #000;
+        color: #000;
+        font-size: 18px;
+        font-weight: 800;
+    }
+
+        .table-header-row th:first-child {
+            border-left: 0px
+        }
+
+        .table-header-row th:last-child {
+            border-right: 0px
+        }
+
+    .table-data-row {
+        border-bottom: 1px solid #000;
+    }
+
+        .table-data-row td {
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    .expired-row {
+        color: lightgray;
+        font-style: italic;
+    }
+
+</style>
+<table id="content-table" class="table" style="width: 100%; border-collapse: collapse; margin-bottom: 0px">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0;padding-left:0">
+            <div  class="repeatedReportHeader" style="display: flex; display: -webkit-box; -webkit-box-pack: justify; align-items: center; justify-content: space-between; border-bottom: 3px solid #020378; margin: 0 0 10px 0; ">
+
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+
+                <div style="text-align: center; ">
+                    <b style="font-size: 1.5rem; color: #0000a6;">@Model.Title </b>
+                    <h3 style="margin-bottom:0"><b style="color: #0000a6;">@Model.DateRange[0].ToShortDateString() - @Model.DateRange[1].ToShortDateString()</b></h3>                    
+                </div>
+                <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+    @{
+        var procedures = Model.Procedures.Where(x => x.ProcedureReviews.Any(y => y.ProcedureReview_Employee.Any()));
+    }
+    @if (procedures.Count() > 0)
+    {
+        <tr>
+            <td class="strip-container" colspan="12" style="border: none;">
+                @{int j = 1;}
+                @foreach (var procedure in procedures)
+                {
+                    @if (procedure.ProcedureReviews.Where(r => r.ProcedureReview_Employee.Any()).Any())
+                    {
+
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                            <table style="width:100% ;border-collapse:collapse;">
+                                <tbody>
+                                    <tr>
+                                        @if (Model.DisplayColumns.Where(r => r == "Issuing Authority").Count() > 0)
+                                        {
+                                            <td colspan="12" style="border: none;font-size: 1.4rem; padding:0.3rem;padding-bottom:10px; padding-top:15px">
+                                                <b style="font-size:24px;display:inline-block; width:250px;">Issuing Authority:</b> @procedure.Procedure_IssuingAuthority.Title
+                                            </td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        @if (Model.DisplayColumns.Where(r => r == "Procedure number").Count() > 0)
+                                        {
+                                            <td colspan="12" style="border: none; font-size: 1.4rem; padding: 0.3rem; padding-bottom: 10px; ">
+                                                <b style="font-size: 24px; display: inline-block; width: 250px;">@("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Number:</b> @procedure.Number
+                                            </td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        @if (Model.DisplayColumns.Where(r => r == "Procedure Title").Count() > 0)
+                                        {
+                                            <td colspan="12" style="border: none; font-size: 1.4rem; padding: 0.3rem; padding-bottom: 10px; ">
+                                                <b style="font-size:24px;display:inline-block; width:250px;">@("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title:</b>  @procedure.Title
+                                            </td>
+                                        }
+                                    </tr>
+                                    <tr>
+                                        @if (Model.DisplayColumns.Where(r => r == "Positions").Count() > 0)
+                                        {
+
+                                            <td colspan="12" style="border: none; font-size: 1.4rem; padding: 0.3rem; padding-bottom: 10px; ">
+                                                <b style="font-size:24px;display:inline-block; width:250px;">
+                                                    @("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:
+                                                </b>
+                                                @{
+                                                    var positionAbbreviationString = string.Join(", ", Model.Positions.Select(x => x.PositionTitle));
+                                                }
+                                                @if (Model.Positions.Any())
+                                                {
+                                                    <span>@positionAbbreviationString</span>
+                                                }
+                                                else
+                                                {
+                                                    <span>All</span>
+                                                }
+                                            </td>
+
+                                        }
+                                    </tr>
+                                    <tr>
+                                        @if (Model.DisplayColumns.Where(r => r == "Organizations").Count() > 0)
+                                        {
+
+                                        <td colspan="12" style="border: none; font-size: 1.4rem; padding: 0.3rem; padding-bottom: 10px; ">
+                                            <b style="font-size:24px;display:inline-block; width:250px;">
+                                                Organizations:
+                                            </b>
+                                            @{
+                                                var organizationNamesString = string.Join(", ", Model.Organizations.Select(x => x.Name));
+                                            }
+                                            @if (Model.Organizations.Count > 0)
+                                            {
+                                                <span>@organizationNamesString</span>
+                                            }
+                                            else
+                                            {
+                                                 <span>All</span>
+                                            }
+                                        </td>
+
+                                        }
+                                    </tr>
+
+                                    <tr style="border-bottom: 2px solid #000; border-top:none" class="table-header-row">
+                                        @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                        {
+                                            <th style="text-align: left;border:0;border-bottom: 2px solid #000;padding:0 5px 2px 0px;">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name</th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Positions Abbreviation").Count() > 0)
+                                        {
+                                            <th style="text-align: left; border: 0; border-bottom: 2px solid #000;padding:0 5px 2px 5px; ">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s Abbr</th>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Release Date").Count() > 0)
+                                        {
+                                            <th style="text-align: left; border: 0; border-bottom: 2px solid #000; padding: 0 5px 2px 5px;">Release Date</th>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Completed Date").Count() > 0)
+                                        {
+                                            <th style="text-align: left; border: 0; border-bottom: 2px solid #000; padding: 0 5px 2px 5px; ">Completed Date</th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Status").Count() > 0)
+                                        {
+                                            <th style="text-align: left; border: 0; border-bottom: 2px solid #000; padding: 0 5px 2px 5px; ">Status</th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Procedure Review Response").Count() > 0)
+                                        {
+                                            <th style="text-align: left; border: 0; border-bottom: 2px solid #000; padding: 0 5px 2px 5px;">Proc Review Response</th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Comments").Count() > 0)
+                                        {
+                                            <th style="text-align: left; border: 0; border-bottom: 2px solid #000; padding: 0 5px 2px 5px;">Comments</th>
+                                        }
+                                    </tr>
+
+                                    @{
+                                        var procedureReviews = procedure.ProcedureReviews;
+                                        if (procedureReviews != null)
+                                        {
+                                            var proceduresEmployees = procedureReviews.SelectMany(x => x.ProcedureReview_Employee).OrderBy(x => x.Employee.Person.LastName).ToList();
+
+                                            @foreach (var emp in proceduresEmployees)
+                                            {
+
+                                                <tr class="table-data-row @(!emp.Employee.Active ? "expired-row" : "")" style="border:0;">
+                                                    @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                                    {
+                                                        <td style=" text-align: left; border: none; padding: 5px 5px 5px 0px;">
+                                                            <span> @emp.Employee.Person.LastName, @emp.Employee.Person.FirstName </span>
+                                                        </td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Positions Abbreviation").Count() > 0)
+                                                    {
+                                                        <td style="text-align: left; border: none; padding:5px;">
+                                                            @{
+                                                                var employeePositions = emp?.Employee?.EmployeePositions;
+                                                                if (employeePositions != null)
+                                                                {
+                                                                    var positionAbbreviations = new HashSet<string>();
+
+                                                                    foreach (var employeePosition in employeePositions)
+                                                                    {
+                                                                        var position = employeePosition?.Position;
+                                                                        if (position != null)
+                                                                        {
+                                                                            positionAbbreviations.Add(position.PositionAbbreviation);
+                                                                        }
+                                                                    }
+
+                                                                    var positionAbbreviationData = string.Join(", ", positionAbbreviations);
+                                                                    <span>@positionAbbreviationData</span>
+                                                                }
+                                                            }
+                                                        </td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Release Date").Count() > 0)
+                                                    {
+                                                        <td style="text-align: left; border: none; padding: 5px;">@emp.ProcedureReview.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Completed Date").Count() > 0)
+                                                    {
+                                                        <td style="text-align: left; border: none; padding:5px; ">@(emp.IsCompleted && emp.CompletedDate.HasValue ? emp.CompletedDate.Value.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString() : "N/A")</td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Status").Count() > 0)
+                                                    {
+                                                        <td style="text-align: left; border: none; padding: 5px;">@(emp.IsCompleted ? "Completed" : "Pending")</td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Procedure Review Response").Count() > 0)
+                                                    {
+                                                       <td style="text-align: left; border: none; padding: 5px;">@(emp.IsCompleted && emp.ProcedureReviewResponse.HasValue ? emp.ProcedureReviewResponse.GetValueOrDefault().ToString() : "N/A")</td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Comments").Count() > 0)
+                                                    {
+                                                        <td style="text-align: left; border: none; padding: 5px;">@emp.Comments</td>
+                                                    }
+                                                </tr>
+                                            }
+
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    @if (!procedure.Equals(procedures.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= procedures.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>
+

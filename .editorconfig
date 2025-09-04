@@ -1,0 +1,42 @@
+﻿[*.cs]
+
+# Note:  I took the line of "if i'm not sure what I want to do, then supress the error."  its easier to do that than to undo some mass edit"
+
+# SA1200: Using directives should be placed correctly
+dotnet_diagnostic.SA1200.severity = none
+
+# SA1101: Prefix local calls with this
+dotnet_diagnostic.SA1101.severity = none
+
+# private/protected should be lowercase
+# SA1300: Element should begin with upper-case letter
+dotnet_diagnostic.SA1300.severity = none
+
+# The following errors should revert to default and be corrected
+
+# Default severity for analyzer diagnostics with category 'StyleCop.CSharp.DocumentationRules'
+dotnet_analyzer_diagnostic.category-StyleCop.CSharp.DocumentationRules.severity = none
+
+# SA1118: Parameter should not span multiple lines
+dotnet_diagnostic.SA1118.severity = none
+
+# SA1201: Elements should appear in the correct order
+dotnet_diagnostic.SA1201.severity = none
+
+# This needs to be fixed but I want this rule not enforced.  Private fields should ALWAYS begin with underscore.
+# This rule relates to the supression of using "this". Its a style choice by stylecop to use name rather than _name.
+# SA1309: Field names should not begin with underscore
+dotnet_diagnostic.SA1309.severity = none
+
+# CA1707: Identifiers should not contain underscores
+dotnet_diagnostic.CA1707.severity = none
+
+
+dotnet_diagnostic.CS1591.severity = none
+dotnet_diagnostic.CS1591.severity = none
+
+# IDE1006: Naming Styles
+dotnet_diagnostic.IDE1006.severity = none
+
+# CA1305: Specify IFormatProvider
+dotnet_diagnostic.CA1305.severity = none

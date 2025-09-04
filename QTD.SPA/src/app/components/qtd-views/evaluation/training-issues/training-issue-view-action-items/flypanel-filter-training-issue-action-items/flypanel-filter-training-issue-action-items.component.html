@@ -1,0 +1,95 @@
+<div class="flex flex-row justify-between border-b items-center header-spacing">
+    <h1 class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+      Filter
+    </h1>
+    <button class="focus:outline-none" (click)="closeFlyPanel()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" ></path>
+      </svg>
+    </button>
+</div>
+
+<div *ngIf = "isLoading" class="filter-spinner">
+  <app-spinner></app-spinner>
+</div>
+
+<div class="p-3" [formGroup] = "filterActionItemForm" *ngIf = "!isLoading">
+  <div class="flex flex-row w-100">
+    <div class="flex flex-col ml-3 w-50">
+      <div class="input-box position-relative w-full">
+        <app-label text="Assignee(s)" class="font-weight-bold" ></app-label>
+        <div class="flex position-relative">
+          <app-textbox formControlName="assigneeName" class="w-100" ></app-textbox>
+          <button *ngIf="filterActionItemForm.get('assigneeName').value" class="close-icon" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('assigneeName'); $event.stopPropagation()" >
+            <mat-icon class="icon">close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col ml-3 w-50">
+      <app-label text = "Priority" class="font-weight-bold "></app-label>
+      <mat-form-field appearance="outline" class="dropdown mt-1">
+        <mat-select formControlName = "priorityId" placeholder = "Select Priority">
+          <mat-option *ngFor = "let actionItemPriority of actionItemPriorities" [value] = "actionItemPriority.id">{{actionItemPriority.priority}}</mat-option>
+        </mat-select>
+        <button *ngIf="filterActionItemForm.get('priorityId').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('priorityId'); $event.stopPropagation()" >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="flex flex-row mb-2 w-100">
+    <div class="flex flex-col ml-3 w-50">
+      <div class="input-box position-relative w-full">
+        <app-label text ="Assigned Date"  class="font-weight-bold "></app-label>
+        <div class="flex position-relative">
+          <app-date formControlName="dateAssigned" placeholder="Select Date" class="w-100" >
+          </app-date>
+          <button *ngIf="filterActionItemForm.get('dateAssigned').value" class="close-icon" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('dateAssigned'); $event.stopPropagation()" >
+            <mat-icon class="icon">close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col ml-3 w-50">
+      <div class="input-box position-relative w-full">
+        <app-label text="Due Date" class="font-weight-bold" ></app-label>
+        <div class="flex position-relative">
+          <app-date formControlName="dueDate" placeholder="Select Date" class="w-100" >
+          </app-date>
+          <button *ngIf="filterActionItemForm.get('dueDate').value" class="close-icon" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('dueDate'); $event.stopPropagation()" >
+            <mat-icon class="icon">close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="flex flex-row mb-2 w-100 pt-3">
+    <div class="flex flex-col ml-3 w-50">
+      <div class="input-box position-relative w-full">
+        <app-label text ="Completed Date"  class="font-weight-bold "></app-label>
+        <div class="flex position-relative">
+          <app-date formControlName="dateCompleted" placeholder="Select Date" class="w-100" >
+          </app-date>
+          <button *ngIf="filterActionItemForm.get('dateCompleted').value" class="close-icon" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('dateCompleted'); $event.stopPropagation()" >
+            <mat-icon class="icon">close</mat-icon>
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col ml-3 w-50">
+      <app-label text = "Status" class="font-weight-bold "></app-label>
+      <mat-form-field appearance="outline" class="dropdown mt-1">
+        <mat-select formControlName = "statusId" placeholder = "Select Priority">
+          <mat-option *ngFor = "let actionItemStatus of actionItemStatuses" [value] = "actionItemStatus.id">{{actionItemStatus.status}}</mat-option>
+        </mat-select>
+        <button *ngIf="filterActionItemForm.get('statusId').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('statusId'); $event.stopPropagation()" >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="flex justify-end mt-3 m-2 pt-2">
+    <app-button text="Apply Filter" size="sm" (clicked) = "applyFilterClick()" type="submit" ></app-button>
+  </div>
+</div>

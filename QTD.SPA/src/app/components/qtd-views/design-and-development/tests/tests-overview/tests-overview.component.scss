@@ -1,0 +1,69 @@
+// .mat-cell{
+//   padding:0 0 0 0;
+// }
+
+.prevent_selection {
+  user-select: none; /* standard syntax */
+  -webkit-user-select: none; /* webkit (safari, chrome) browsers */
+  -moz-user-select: none; /* mozilla browsers */
+  -khtml-user-select: none; /* webkit (konqueror) browsers */
+  -ms-user-select: none; /* IE10+ */
+}
+
+.publish {
+  background-color: #eef7ff;
+  color: #4284c0;
+}
+
+.develop {
+  background-color: #fff9e8;
+  color: #ffcf5c;
+}
+
+.inactive {
+  background-color: #7a807e33;
+  color: #7a807e;
+}
+
+.mat-row::after,
+mat-header-row::after,
+mat-footer-row::after {
+  display: none;
+  min-height: inherit;
+  content: "";
+}
+
+.selected {
+  background: rgba(92, 155, 49, 0.1);
+  border: 1px solid #5c9b31;
+  color: #5c9b31;
+}
+
+.basic {
+  border: 1px solid #e4e6e5;
+  color: #7a807e;
+  cursor: pointer;
+}
+
+:host ::ng-deep .mat-form-field-appearance-outline.mat-form-field-disabled,
+:host ::ng-deep .mat-form-field-outline {
+  opacity: 0;
+  outline: none;
+}
+
+:host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: white !important;
+}
+
+:host th.mat-header-cell:first-of-type, td.mat-cell:first-of-type, td.mat-footer-cell:first-of-type {
+  padding-left: 10rem;
+}
+
+:host ::ng-deep .arrowButton button{
+  outline: none;
+}
+
+.label_style:hover {
+  background-color: #5c9b31;
+  color: white;
+}

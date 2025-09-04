@@ -1,0 +1,88 @@
+<form [formGroup]="userForm" class="flex flex-col px-12 py-12">
+    <ng-container>
+        <div class="flex flex-row justify-between">
+            <p *ngIf="mode == 'create'" class="font-bold text-lg m-0 p-0">Add User</p>
+            <p *ngIf="mode == 'edit' && !readding" class="font-bold text-lg m-0 p-0">Edit User</p>
+            <p *ngIf="mode == 'edit' && readding" class="font-bold text-lg m-0 p-0">Readd User</p>
+            <app-button ButtonType="icon" icon="close" (clicked)="closed.emit()"></app-button>
+        </div>
+    </ng-container>
+    <div class="mt-4">
+        <label>Username</label>
+        <div class="d-flex align-items-end gap-3">
+            <app-textbox type="text" placeholder="Enter Username" formControlName="username" [ngClass]="{'alreadyInUse' : userNameAlreadyExists}" class="username-textbox"></app-textbox>
+            <app-button (clicked)="getUserIdentityProvider()" ButtonType="button" color="secondary" size="sm" text="Check Provider" class="check-provider-button" [disabled] = "userForm.get('username')?.invalid || providerChecked"></app-button>
+        </div>
+        <app-input-error *ngIf="userForm.get('username')?.invalid" text="Username required"></app-input-error>
+        <app-input-error *ngIf="userNameAlreadyExists" text="Username already exists."></app-input-error>
+    </div>
+    <app-spinner *ngIf="isLoading"></app-spinner>
+    <ng-container *ngIf = "providerEverChecked && !isLoading">
+        <div class="mt-4">
+            <label>Identity Provider</label>
+            <mat-form-field appearance="outline" class="text-sm dropdown w-100 select-identity-provider-dropdown">
+                <mat-select placeholder="Select Identity Provider" formControlName="identityProvider" [disabled] = "isExternalProvider || !providerChecked">
+                    <mat-option *ngIf = "isExternalProvider" value="external">External Provider</mat-option>
+                    <mat-option *ngFor = "let idp of instanceIdentityProviders" [value]="idp.id">{{idp.name}}</mat-option>
+                </mat-select>
+            </mat-form-field>
+            <app-input-error *ngIf="userForm.get('identityProvider')?.invalid" text="Identity Provider required"></app-input-error>
+        </div>
+        <div class="mt-4">
+            <label>First Name</label>
+            <app-textbox type="text" placeholder="Enter First Name" formControlName="firstName"></app-textbox>
+            <app-input-error *ngIf="userForm.get('firstName')?.invalid" text="First Name required"></app-input-error>
+        </div>
+        <div class="mt-4">
+            <label>Last Name</label>
+            <app-textbox type="text" placeholder="Enter Last Name" formControlName="lastName"></app-textbox>
+            <app-input-error *ngIf="userForm.get('lastName')?.invalid" text="Last Name required"></app-input-error>
+        </div>
+
+        <mat-checkbox [disabled]="licenseDetail.employeeRecordsUsed >= licenseDetail.totalEmployeeRecordsAvailable"
+            formControlName="isEmployee" class="mt-4">Is Employee</mat-checkbox>
+
+        <div class="ml-4" *ngIf="isEmployee">
+            <div class="mt-2">
+                <label>Employee Number</label>
+                <app-textbox type="text" placeholder="Enter Employee Number" formControlName="employeeNumber" [ngClass]="{'alreadyInUse' : employeeNumberAlreadyExists}"></app-textbox>
+                <app-input-error *ngIf="employeeNumberAlreadyExists" text="Employee Number already exists."></app-input-error>
+            </div>
+            <div>
+                <mat-checkbox formControlName="isTQEvaluator" class="mt-4">Is TQ Evaluator</mat-checkbox>
+            </div>
+        </div>
+        <mat-checkbox formControlName="isInstructor" class="mt-4">Is Instructor</mat-checkbox>
+
+        <div class="ml-4" *ngIf="isInstructor">
+            <div class="mt-2">
+                <label>Category</label>
+                <mat-form-field appearance="outline" class="text-sm dropdown w-100">
+                    <mat-select placeholder="Select Instructor Category" formControlName="instructorCategoryId">
+                        <mat-option *ngFor="let category of instructorCategoryList" [value]="category.id">{{
+                            category.iCategoryTitle
+                            }}</mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <app-input-error *ngIf="userForm.get('instructorCategoryId')?.invalid"
+                    text="Instructor Category required"></app-input-error>
+            </div>
+            <div class="mt-4">
+                <label>Instructor Number</label>
+                <app-textbox type="text" placeholder="Enter Instructor Number"
+                    formControlName="instructorNumber"></app-textbox>
+                <app-input-error *ngIf="userForm.get('instructorNumber')?.invalid"
+                    text="Instructor Number required"></app-input-error>
+            </div>
+        </div>
+        <mat-checkbox formControlName="isQTDUser" class="mt-4">Is QTD User</mat-checkbox>
+    </ng-container>
+    <section class="flex w-full ml-2 mt-3" style="justify-content:flex-end;">
+        <app-button *ngIf="mode == 'create'" [spinner]="loader" [disabled]="isDisableSaveButton()" (clicked)="persistUserAsync()"
+            ButtonType="button" color="secondary" size="sm" text="Save"></app-button>
+        <app-button *ngIf="mode == 'edit' && !readding" [spinner]="loader" [disabled]="isDisableSaveButton()" (clicked)="persistUserAsync()"
+            ButtonType="button" color="secondary" size="sm" text="Update"></app-button>
+        <app-button *ngIf="readding" [spinner]="loader" [disabled]="isDisableSaveButton()" (clicked)="persistUserAsync()"
+            ButtonType="button" color="secondary" size="sm" text="Update"></app-button>
+    </section>
+</form> 

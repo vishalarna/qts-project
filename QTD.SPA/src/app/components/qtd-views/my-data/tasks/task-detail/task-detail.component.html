@@ -1,0 +1,558 @@
+<app-data-loader *ngIf="this.task === undefined"></app-data-loader>
+<ng-container *ngIf="this.task !== undefined && !editView">
+  <div class="ml-4 mr-4 ">
+    <div class="flex flex-row mt-2">
+      <label (click)="changeView()" class="defaultLabel" [ngClass]="{'greenText': editView,'grayText':!editView}"><span
+          class="mr-1" style="color:green" *ngIf="editView">●</span>Edit View</label>
+      <span class="mx-2 text-gray-400"><strong>|</strong></span>
+      <label class="defaultLabel" (click)="editView = false"
+        [ngClass]="{'greenText': !editView,'grayText':editView}"><span class="mr-1" style="color:green"
+          *ngIf="!editView">●</span>Live View</label>
+    </div>
+    <div class="flex flex-row flex-wrap mt-3 justify-between border-b-2 pb-4">
+      <div class="flex flex-row w-9/12 flex-nowrap break-all">
+        <p *ngIf="task.isMeta" class="mr-3 qtd-meta-box p-2 font-bold">{{'meta'|titlecase}}</p>
+
+        <p class="ml-2 text-lg break-all font-normal"><strong>{{number}}</strong>&nbsp;&nbsp;<span
+            class="text-gray-500">{{this.task.description}}</span>
+            <span *ngIf="task.isReliability" class="ml-3 qtd-meta-box p-2 font-bold">{{'R-R'|uppercase}}</span>
+        </p>
+      </div>
+      <div class="flex flex-row  items-center text-gray-four btn-group">
+        <div class="cursor-pointer bg-gray-200 p-2 rounded">
+          <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+            <span *ngIf="isActive" class="font-bold">
+              <span style="color:green" class="mr-1">●</span>
+              Active
+            </span>
+            <span *ngIf="!isActive" class="font-bold">
+              <span style="color:red" class="mr-1">●</span>
+              Inactive
+            </span>
+
+          </label>
+          <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+          <mat-menu #menu="matMenu">
+            <label (click)="openActiveDialog(activeInactive)" mat-menu-item *ngIf="!isActive">
+              <span style="color:green" class="mr-1">●</span>Make
+              Active</label>
+            <!-- <span [matTooltip]="hasLinks > 0 ?'The Make Inactive option is not available due to linked data':''"> -->
+              <span class="flex flex-row" style="align-items:baseline;">
+              <!-- <label [disabled]="hasLinks>0 || !subDutyAreaDisable" (click)="openActiveDialog(activeInactive)" -->
+                <label [disabled]="canNotMakeTaskInactive" (click)="openActiveDialog(activeInactive)"
+                mat-menu-item *ngIf="isActive">
+                <span style="color:red" class="mr-1">●</span> Make
+                Inactive</label>
+                <app-icon *ngIf="isActive && canNotMakeTaskInactive" icon="help_outline" [matTooltip]="'The Make Inactive option is not available due to linked data in EMP.'"></app-icon>
+              </span>
+          </mat-menu>
+        </div>
+        <div class="ml-2 cursor-pointer ">
+          <app-icon icon="more_horiz" [matMenuTriggerFor]="options"></app-icon>
+          <mat-menu #options="matMenu">
+            <label [disabled]="!isActive"
+              (click)="openEditOrCopy(addTask,false,'edit')" mat-menu-item> Edit</label>
+            <label [disabled]="!isActive"
+              (click)="openEditOrCopy(addTask,false,'change')" mat-menu-item> Change Duty Area/ Sub
+              Duty Area</label>
+            <label [disabled]="!isActive"
+              (click)="openEditOrCopy(addTask,true,'copy')" mat-menu-item>
+              Copy</label>
+              <div class="flex fex-col">
+                <label [disabled]="!isActive || hasLinks > 0"
+                  (click)="openDeleteDialog(deleteDialog)" mat-menu-item>
+                  Delete</label>
+
+                  <app-icon class="pt-2" icon="help_outline"  *ngIf="hasLinks > 0"
+                    matTooltip="The Delete option is not available due to linked data.">
+                  </app-icon>
+              </div>
+
+          </mat-menu>
+        </div>
+
+      </div>
+      <div class="flex flex-col font-bold" style="color: red;">
+        <span *ngIf="requalInfo && requalInfo.requalRequired">Requalification Required: Due Date - {{requalInfo.requalDueDate === null ? "N/A":(requalInfo.requalDueDate | date:'MM/dd/yyyy')}}</span>
+      </div>
+      </div>
+    <div class="flex flex-col mt-4">
+      <div class="flex flex-row justify-between">
+        <div class="flex flex-row">
+          <div class="mt-2 mr-3 iconSize">
+            <app-icon icon="history"></app-icon>
+          </div>
+          <div class="flex flex-col space-y-0">
+            <div class="flex flex-row space-x-2 space-y-0">
+              <p class="font-bold text-sm mb-0">{{lastModified?.name}}</p>
+              <span class="font-light text-gray-400 text-sm">Last Modified {{lastModified?.dt_stamp | date:
+                "medium"}}</span>
+            </div>
+            <div>
+              <app-button variant="text" text="View All History/Requalification" (clicked)="openflyPanel(taskHistory)">
+              </app-button>
+            </div>
+          </div>
+        </div>
+        <!-- <div>
+          <app-button [disabled]="!isActive" (clicked)="collaborate()" type="button" color="secondary" size="sm"
+            text="Collaborate">
+          </app-button>
+        </div> -->
+      </div>
+      <ng-container *ngIf="task.isMeta">
+        <app-data-loader *ngIf="!DataSource"></app-data-loader>
+        <div class="flex flex-row flex-wrap justify-between mb-1 mt-3  px-3 py-3">
+          <p class="text-xs text-gray-four pt-2">{{srcList.length}} {{("Task" | labelReplacement)| async}}s linked to Selected Meta {{("Task" | labelReplacement)| async}}</p>
+          <app-button [disabled]="!isActive" variant="text" icon="link" iconPosition="left" size="sm" text="Link {{('Task' | labelReplacement)| async}}s"
+            (clicked)="openflyPanel(linkTask)">
+          </app-button>
+        </div>
+        <div class="flex flex-row flex-wrap bg-gray-one justify-between mb-3 mt-3  px-3 py-3 rounded"
+          *ngIf="unlinkIds.length > 0">
+          <p class="text-xs text-gray-four pt-2">{{unlinkIds.length}} {{("Task" | labelReplacement)| async}} selected</p>
+          <app-button [disabled]="!isActive || spinner" [spinner]="spinner" icon="link_off" iconPosition="left" size="sm" color="secondary" text="Unlink {{('Task' | labelReplacement)| async}}(s)"
+            (clicked)="unlinkItemsModal(unlinkModal)">
+          </app-button>
+        </div>
+        <div *ngIf="isReordered" class="flex flex-row justify-between mb-2">
+          <p class="text-xs text-gray-four pt-2">Confirm applying the current reorder?</p>
+          <div class="flex flex-row">
+            <app-button size="sm" text="Apply" class="mr-3" (clicked)="linkTasksToMetaTask()"></app-button>
+            <app-button size="sm" color="secondary" text="Cancel" (clicked)="getLinkedTask()"></app-button>
+          </div>
+        </div>
+        <div class="shadow-md mt-2" *ngIf="DataSource">
+          <mat-table #metaTaskTbl [dataSource]="DataSource" matSort class="table-bordered" cdkDropList
+            [cdkDropListData]="DataSource" (cdkDropListDropped)="dropTable($event)" (matSortChange)="sortData($event)">
+            <ng-container matColumnDef="order">
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <app-icon [cdkDragHandleDisabled]="!isActive" cdkDragHandle matTooltip="Drag to reorder the row"
+                  style="pointer-events:all;color: darkgrey!important;cursor:move" icon="drag_indicator">
+                </app-icon>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="id">
+              <mat-header-cell *matHeaderCellDef>
+                <mat-checkbox [disabled]="!isActive" (change)="$event ? masterToggle() : null"
+                  [checked]="selection.hasValue() && isAllSelected()"
+                  [indeterminate]="selection.hasValue() && !isAllSelected()">
+                </mat-checkbox>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <mat-checkbox [disabled]="!isActive" (click)="$event.stopPropagation()" (change)="$event ? selectrow(row) : null"
+                  [checked]="selection.isSelected(row)">
+                </mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="number">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> #
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{row.number}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="description">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> Description
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                {{row.description}} </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="isRR">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> R-R Status
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="justify-between">
+                {{row.isRR ? 'Yes' : 'No'}}
+                <app-button [disabled]="!isActive" ButtonType="icon" icon="link_off" style="color:lightgray"
+                  (clicked)="unlinkItemsModal(unlinkModal,row.id)"></app-button>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+            <mat-row [cdkDragDisabled]="!isActive" *matRowDef="let row; columns: displayColumns;" cdkDrag [cdkDragData]="row" [class.inActiveItem]="!row.active"></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+              <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+
+          </mat-table>
+        </div>
+        <mat-paginator [hidden]="!DataSource" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+            aria-label="Select page of periodic elements">
+          </mat-paginator>
+      </ng-container>
+
+      <ng-container *ngIf="stats" class="mb-3">
+        <div class="flex flex-row flex-wrap mt-5 ml-3 pb-2 bg-white w-full justify-between">
+          <div>
+            <div class="ml-5 mt-3 mb-1 w-fit mainBorder pr-4">
+              <p class="mb-1"> {{("Position" | labelReplacement)| async}}s</p>
+              <h2>{{stats.positions | number:'2.0'}}</h2>
+            </div>
+          </div>
+          <div>
+            <div class="ml-5 mt-3 mb-1 w-fit mainBorder pr-4">
+              <p class="mb-1">{{("ILA" | labelReplacement)| async}}/Courses</p>
+              <h2 class="mb-0">{{stats.ila | number:'2.0'}}</h2>
+            </div>
+          </div>
+          <div>
+            <div class="ml-5 mt-3 mb-3 w-fit mainBorder pr-4">
+              <p class="mb-1">{{("Enabling Objective" | labelReplacement)| async}}</p>
+              <h2>{{stats.enablingObjectives | number:'2.0'}}</h2>
+            </div>
+          </div>
+          <div>
+            <div class="ml-5 mt-3 mb-3 w-fit mainBorder pr-4">
+              <p class="mb-1"> {{("Procedure" | labelReplacement)| async}}s</p>
+              <h2>{{stats.procedures | number:'2.0'}}</h2>
+            </div>
+          </div>
+          <div>
+            <div class="ml-5 mt-3 mb-3 w-fit mainBorder pr-4">
+              <p class="mb-1">{{("Safety Hazard" | labelReplacement)| async}}s</p>
+              <h2>{{stats.safetyHazards | number:'2.0'}}</h2>
+            </div>
+          </div>
+          <div>
+            <div class="ml-5 mt-3 mb-3 w-fit mainBorder pr-4">
+              <p class="mb-1">Regulation</p>
+              <h2>{{stats.regulations | number:'2.0'}}</h2>
+            </div>
+          </div>
+          <div>
+            <div class="ml-3 mt-3 mb-3 w-fit mr-5">
+              <p class="mb-1">Training Groups</p>
+              <h2>{{stats.trainingGroups | number:'2.0'}}</h2>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+    </div>
+    <ng-container >
+      <mat-tab-group class="mt-5">
+
+        <mat-tab [label]="'OJT' | uppercase">
+          <ng-template matTabContent>
+            <app-task-ojt-guide *ngIf="!task.isMeta" [isActive]="!isActive" [taskNumber]="number"></app-task-ojt-guide>
+            <app-task-meta-ojt-guide *ngIf="task.isMeta && showMeta"[isActive]="!isActive"></app-task-meta-ojt-guide>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="{{(('Employee'| labelReplacement)| async) | uppercase}}">
+          <ng-template matTabContent>
+            <app-task-employee  [isMeta]=" !task.isMeta"></app-task-employee>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="{{(('Position'| labelReplacement)| async) | uppercase}}">
+          <ng-template matTabContent>
+            <app-task-positions [isMeta]=" !task.isMeta"
+              [taskTitle]="number + ' - ' +task.description" [isActive]="isActive"></app-task-positions>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="{{(('Enabling Objective' | labelReplacement)| async) | uppercase}}">
+          <ng-template matTabContent>
+            <app-task-enabling-objectives [isMeta]=" !task.isMeta"
+              [taskTitle]="number + ' - ' +task.description" [isActive]="!isActive"></app-task-enabling-objectives>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="{{(('Procedure'| labelReplacement)| async)| uppercase}}s">
+          <ng-template matTabContent>
+            <app-task-procedures [isActive]="dutyAreaDisable && subDutyAreaDisable" [isMeta]=" !task.isMeta"
+              [taskTitle]="number + ' - ' +task.description" [isActive]="isActive"></app-task-procedures>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="{{(('Safety Hazard' | labelReplacement)| async)| uppercase}}s">
+          <ng-template matTabContent>
+            <app-task-safety-hazards [isActive]="dutyAreaDisable && subDutyAreaDisable" [isMeta]=" !task.isMeta"
+              [taskTitle]="number + ' - ' +task.description" [isActive]="isActive"></app-task-safety-hazards>
+          </ng-template>
+        </mat-tab>
+        <mat-tab label="{{(('ILA' | labelReplacement)| async)| uppercase}}s">
+          <ng-template matTabContent>
+            <app-task-ilas [isActive]="dutyAreaDisable && subDutyAreaDisable" [isMeta]=" !task.isMeta"
+              [taskTitle]="number + ' - ' +task.description" [isActive]="isActive"></app-task-ilas>
+          </ng-template>
+        </mat-tab>
+        <mat-tab [label]="'Regulatory Req.' | uppercase">
+          <ng-template matTabContent>
+            <app-task-regulatory-requirements [isActive]="dutyAreaDisable && subDutyAreaDisable"
+              [taskTitle]="number + ' - ' +task.description"  [isMeta]=" !task.isMeta" [isActive]="isActive"></app-task-regulatory-requirements>
+          </ng-template>
+        </mat-tab>
+      </mat-tab-group>
+    </ng-container>
+  </div>
+
+</ng-container>
+
+
+<ng-container *ngIf="this.task !== undefined && editView">
+  <div class="ml-4 mr-4 ">
+    <div class="flex flex-row mt-2">
+      <label class="defaultLabel" (click)="editView = true"
+        [ngClass]="{'greenText': editView,'grayText':!editView}"><span class="mr-1" style="color:green"
+          *ngIf="editView">●</span>Edit View</label>
+      <span class="mx-2 text-gray-400"><strong>|</strong></span>
+      <label class="defaultLabel" (click)="editView = false"
+        [ngClass]="{'greenText': !editView,'grayText':editView}"><span class="mr-1" style="color:green"
+          *ngIf="!editView">●</span>Live View</label>
+    </div>
+    <div class="flex flex-col mt-2">
+      <div class="flex flex-row justify-between p-3">
+        <div class="flex flex-row mt-2">
+          <div class="mt-2 mr-3 iconSize">
+            <app-icon icon="history"></app-icon>
+          </div>
+          <div class="flex flex-col space-y-0">
+            <div class="flex flex-row space-x-2 space-y-0">
+              <p class="font-bold text-sm mb-0">{{lastModified.name}}</p>
+              <span class="font-light text-gray-400 text-sm">Last Modified {{lastModified.dt_stamp |
+                date:"medium"}}</span>
+            </div>
+            <div>
+              <app-button variant="text" text="View All History">
+              </app-button>
+            </div>
+          </div>
+        </div>
+        <div class="mt-2 flex flex-row gap-4">
+          <label style="color:#5C9B31;" mat-button [matMenuTriggerFor]="export" class="mb-0 mt-2 mr-5 cursor-pointer">
+            <app-icon icon="save_alt" class="mr-1"></app-icon>
+            <span>Download As</span>
+            <app-icon icon="keyboard_arrow_down"></app-icon>
+          </label>
+          <mat-menu #export="matMenu">
+            <label [disabled]="editLoader" (click)="downloadPdf()" class="label_style" mat-menu-item>PDF</label>
+            <label [disabled]="editLoader" (click)="downloadDocs()" class="label_style" mat-menu-item>Doc</label>
+          </mat-menu>
+          <div>
+            <app-button [disabled]="!isActive" (clicked)="collaborate()" type="button" color="secondary" size="sm"
+              text="Collaborate">
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <app-data-loader *ngIf="editLoader"></app-data-loader>
+      <div *ngIf="!editLoader" #pdf class="bg-white m-4 shadow-sm p-4 flex flex-col">
+        <div *ngIf="this.task.subdutyArea.dutyArea" class="ml-2 pb-4">
+          <h2>DutyArea</h2>
+          <ol class="ml-4">
+            <li>
+              <div>{{this.task.subdutyArea.dutyArea.title}}</div>
+            </li>
+          </ol>
+        </div>
+        <div *ngIf="this.task.subdutyArea" class="ml-2 pb-4">
+          <h2>Sub Category</h2>
+          <ol class="ml-4">
+            <li>
+              <div>
+                {{this.task.subdutyArea.title}}
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2>{{("Task" | labelReplacement)| async}}</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <ol class="ml-4">
+            <li>
+              <div>
+                {{number}} - {{this.task.description}}
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div *ngIf="allTaskData.task_Steps.length > 0" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2>Steps</h2>
+          </div>
+          <ol class="ml-4">
+            <li *ngFor="let step of allTaskData.task_Steps">
+              <div class="flex flex-row justify-between w-full">
+                <div [innerHTML]="step.description.split(regex)[0]"></div>
+                <!-- <img [src]="step.description.split(regex)[1]"> -->
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div *ngIf="task.conditions" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2>Conditions</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <p [innerHTML]="task.conditions" class="ml-4">
+          </p>
+        </div>
+        <div *ngIf="task.criteria" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2>Criteria</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <p [innerHTML]="task.criteria" class="ml-4">
+
+          </p>
+        </div>
+        <div *ngIf="allTaskData.tools.length > 0" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2>{{("Tool" | labelReplacement)| async}}s</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <ol class="ml-4">
+            <li *ngFor="let tool of allTaskData.tools">
+              <div class="flex flex-row justify-between w-full">
+                <p>{{tool.name}}</p>
+                <!-- <app-icon style="color:lightgray;" icon="link_off"></app-icon> -->
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div *ngIf="allTaskData.proceduresWithLinkCounts.length > 0" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2> {{("Procedure" | labelReplacement)| async}}s</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <ol class="ml-4">
+            <li *ngFor="let proc of allTaskData.proceduresWithLinkCounts">
+              <div class="flex flex-row justify-between w-full">
+                <p>{{proc.description}}</p>
+                <!-- <app-icon style="color:lightgray;" icon="link_off"></app-icon> -->
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div *ngIf="allTaskData.enablingObjectiveWithCountOptions.length > 0" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2>{{("Enabling Objective" | labelReplacement)| async}}</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <ol class="ml-4">
+            <li *ngFor="let eo of allTaskData.enablingObjectiveWithCountOptions">
+              <div class="flex flex-row justify-between w-full">
+                <p>{{eo.description}}</p>
+                <!-- <app-icon style="color:lightgray;" icon="link_off"></app-icon> -->
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div *ngIf="allTaskData.safetyHazardWithLinkCounts.length > 0" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2>{{("Safety Hazard" | labelReplacement)| async}}s</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <ol class="ml-4">
+            <li *ngFor="let sh of allTaskData.safetyHazardWithLinkCounts">
+              <div class="flex flex-row justify-between w-full">
+                <p>{{sh.description}}</p>
+                <!-- <app-icon style="color:lightgray;" icon="link_off"></app-icon> -->
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div *ngIf="allTaskData.regulatoryRequirementWithLinkCounts.length > 0" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2>{{("Regulatory Requirement" | labelReplacement)| async}}s</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <ol class="ml-4">
+            <li *ngFor="let rr of allTaskData.regulatoryRequirementWithLinkCounts">
+              <div class="flex flex-row justify-between w-full">
+                <p>{{rr.description}}</p>
+                <!-- <app-icon style="color:lightgray;" icon="link_off"></app-icon> -->
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div *ngIf="allTaskData.ilaWithCountOptions.length > 0" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2>{{("ILA" | labelReplacement)| async}}s</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <ol class="ml-4">
+            <li *ngFor="let ila of allTaskData.ilaWithCountOptions">
+              <div class="flex flex-row justify-between w-full">
+                <p>{{ila.description}}</p>
+                <!-- <app-icon style="color:lightgray;" icon="link_off"></app-icon> -->
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div *ngIf="allTaskData.taskPositionWithCount.length > 0" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2> {{("Position" | labelReplacement)| async}}s</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <ol class="ml-4">
+            <li *ngFor="let pos of allTaskData.taskPositionWithCount">
+              <div class="flex flex-row justify-between w-full">
+                <p>{{pos.position.positionDescription}}</p>
+                <!-- <app-icon style="color:lightgray;" icon="link_off"></app-icon> -->
+              </div>
+            </li>
+          </ol>
+        </div>
+        <div *ngIf="allTaskData.trainingGroups.length > 0" class="ml-2 pb-4">
+          <div class="flex flex-row justify-between">
+            <h2>Training Groups</h2>
+            <!-- <app-icon icon="link" style="color:#5C9B31;"></app-icon> -->
+          </div>
+          <ol class="ml-4">
+            <li *ngFor="let tg of allTaskData.trainingGroups">
+              <div class="flex flex-row justify-between w-full">
+                <p>{{tg.groupName}}</p>
+                <!-- <app-icon style="color:lightgray;" icon="link_off"></app-icon> -->
+              </div>
+            </li>
+          </ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+
+
+<ng-template #addTask>
+  <div class="px-12 py-12">
+    <app-flypanel-add-task [shouldNavigate]="true" [checkChange]="checkChange" [oldTask]="task" [isCopy]="makeCopy"
+      (refresh)=" dataBroadcastService.updateMyDataNavBar.next(null);getTaskData();" (closed)="flyPanelService.close();">
+    </app-flypanel-add-task>
+  </div>
+</ng-template>
+
+<ng-template #activeInactive>
+  <app-qtd-dialogue [header]="dialogTitle" [description]="dialogDesc" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="toggleActive($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue [header]="dialogTitle" [description]="dialogDesc" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="getDeleteData($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+
+<ng-template #unlinkModal>
+  <app-qtd-dialogue header="Unlink {{('Task' | labelReplacement)| async}}" [description]="unlinkDescription" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="getData($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #linkTask>
+  <app-fly-panel-meta-task-link (refresh)="getLinkedTask()" [alreadyLinked]="linkedMetaTaskIds"
+    (closed)="flyPanelService.close();">
+  </app-fly-panel-meta-task-link>
+</ng-template>
+
+<ng-template #taskHistory>
+  <app-fly-panel-task-history [number]="number" [task]="task" (refresh)="refreshTask()"
+    (closed)="flyPanelService.close();" [TaskId]="taskId">
+  </app-fly-panel-task-history>
+</ng-template>

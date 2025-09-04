@@ -1,0 +1,43 @@
+.greenText {
+  color: green;
+}
+
+.defaultLabel {
+  font-weight: 400;
+  font-size: small;
+  cursor: pointer;
+}
+
+.grayText {
+  color: gray;
+}
+
+.iconSize {
+  transform: scale(1.5);
+  color: gray;
+  font-weight: 400;
+}
+
+.mainBorder {
+  border-right: 2px #f2f2f2 solid;
+}
+
+.mat-column-id,
+.mat-column-order,
+.mat-column-number {
+  flex: 0 0 120px;
+}
+
+.mat-column-description {
+  flex: 1 0 300px;
+}
+
+.inActiveItem mat-cell {
+  color: gray !important;
+  font-style: italic !important;
+}
+
+ol{
+  list-style: decimal !important;
+}
+

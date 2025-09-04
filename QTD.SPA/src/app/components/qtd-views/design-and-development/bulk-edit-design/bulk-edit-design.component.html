@@ -1,0 +1,341 @@
+<div class="w-full flex flex-col" style="height:100%;">
+  <header class="flex flex-row w-full justify-between pt-4 pb-4 bg-white">
+    <div class="flex flex-row header pl-3" style="align-items: center;">
+      <button class="backButton" [disabled]="actionSpinner" (click)="redirectBack()" type="button" variant="contained"
+        size="sm">
+        <mat-icon class="mt-2 backIcon">keyboard_arrow_left</mat-icon>
+      </button>
+      <p class="font-bold text-2xl mb-0 pt-1 ml-2">
+        {{header}}
+      </p>
+    </div>
+    <div class="flex flex-row">
+      <!-- <app-button class="mr-2" ButtonType="button" color="secondary" size="sm" text="Cancel">
+
+      </app-button> -->
+      <app-button *ngIf="stepper.selectedIndex !== 2" (clicked)="stepper.next()"
+        [disabled]="selection.selected.length < 1 || actionId === 0 || (type === 'test' && testStatus === '' && actionId === 1)"
+        class="mr-4" ButtonType="button" size="sm" text="Continue">
+      </app-button>
+      <app-button [disabled]="actionSpinner" [spinner]="actionSpinner" (clicked)="changeStatus()" class="mr-4"
+        *ngIf="stepper.selectedIndex === 2" ButtonType="button" size="sm" text="Change Status"></app-button>
+    </div>
+  </header>
+  <section class="w-full pt-5 flex" style="height:100%;justify-content: center;background: #FCFCFC;">
+    <mat-stepper (selectionChange)="stepChanged($event)" style="width: 70%;" #stepper labelPosition="bottom"
+      [linear]="true" [orientation]="(stepperOrientation | async)!">
+      <ng-template matStepperIcon="edit">
+        <app-icon icon="done"></app-icon>
+      </ng-template>
+      <mat-step [completed]="selection.selected.length > 0 && actionId !== 0">
+        <ng-template matStepLabel>{{stepHeader}}</ng-template>
+        <ng-template matStepContent>
+          <div class="flex flex-col">
+            <div class="w-full">
+              <div class="flex flex-col flex-wrap mb-3 mt-3 px-3 rounded"
+                style="background:#F5F5F5;padding-top: 0.5rem !important;padding-bottom:0;"
+                *ngIf="selection.selected.length > 0">
+                <div class="flex flex-row w-full justify-between mb-3" style="align-items: baseline;">
+                  <p class="text-xs text-gray-four pt-2"><b>{{selection.selected.length}}</b> {{moduleName | titlecase
+                    }}(s)
+                    selected</p>
+
+                  <div *ngIf="type === 'questions'" class="flex flex-col ">
+                    <mat-select placeholder="Select Edit Option" style="margin-right:0px; width:20rem;"
+                      [(ngModel)]="actionId"
+                      class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+                      <mat-option [value]="1">
+                        Change Active / Inactive Status
+                      </mat-option>
+                      <mat-option (click)="openFlyPanel(changeEO)" [value]="2">
+                        Change EO
+                      </mat-option>
+                      <mat-option [value]="3">
+                        Delete Test Items
+                      </mat-option>
+                    </mat-select>
+                    <app-input-error class="mt-2" *ngIf="actionId === 0"
+                      text="Please Select Action To Perform"></app-input-error>
+                  </div>
+
+                  <div *ngIf="type === 'test'" class="flex flex-col">
+                    <mat-select placeholder="Select Edit Option" style="margin-right:0px; width:20rem;"
+                      [(ngModel)]="actionId"
+                      class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+                      <mat-option [value]="1">
+                        <label (click)="setValue(statusFilter ? 'inactive':'active')">Change Status To {{statusFilter ?
+                          'Inactive':'Active'}}</label>
+                        <!-- <mat-menu (close)="menuClosed($event)" #test="matMenu">
+                          <label mat-menu-item (click)="setValue('draft')" class="label_style">Draft</label>
+                          <label mat-menu-item (click)="setValue('publish')" class="label_style">Publish</label>
+                          <label mat-menu-item (click)="setValue(this.statusFilter ? 'Inactive':'Active')"
+                            class="label_style">{{this.statusFilter ? 'Inactive':'Active'}}</label>
+                        </mat-menu> -->
+                      </mat-option>
+                      <mat-option (click)="openFlyPanel(changeILA)" [value]="2">
+                        Change {{("ILA" | labelReplacement)| async}}
+                      </mat-option>
+                      <mat-option [value]="3">
+                        Delete Test
+                      </mat-option>
+                    </mat-select>
+                    <app-input-error class="mt-2" *ngIf="actionId === 0"
+                      text="Please Select Action To Perform"></app-input-error>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div>
+              <div class="m-0 flex flex-row justify-between mb-3 pb-0"
+                style="align-items: baseline;border-bottom: 2px solid #F2F2F2;">
+                <mat-form-field class="flex flex-grow" appearance="outline">
+                  <mat-icon matPrefix>search</mat-icon>
+                  <input (input)="filterData()" [(ngModel)]="filterString" type="text" matInput
+                    placeholder="Enter keywords to search">
+                </mat-form-field>
+              </div>
+            </div>
+            <div class="flex flex-row justify-between">
+              <div class="flex flex-row">
+                <p class="text-gray-400 text-xs mt-1">Showing {{statusFilter ? 'Active':'Inactive'}} {{moduleName}} </p>
+                <app-icon class="text-gray-400 cursor-pointer" icon="expand_more"
+                  [matMenuTriggerFor]="status"></app-icon>
+                <mat-menu #status="matMenu">
+                  <label class="label_style" *ngIf="!statusFilter"
+                    (click)="statusFilter = !statusFilter;toggleStatusFilter();" mat-menu-item class="label_style">
+                    Active
+                  </label>
+                  <label class="label_style" *ngIf="statusFilter"
+                    (click)="statusFilter = !statusFilter;toggleStatusFilter();" mat-menu-item class="label_style">
+                    Inactive
+                  </label>
+                </mat-menu>
+              </div>
+              <div *ngIf="type && type === 'questions'" class="flex flex-row cursor-pointer">
+                <p class="text-gray-400 text-xs mt-1">Showing Test Questions of Type : </p>
+                <span class="ml-2 text-xs mt-1">{{typeFilter === '' ? 'All':typeFilter}}</span>
+                <app-icon class="text-gray-400" icon="expand_more" [matMenuTriggerFor]="type"></app-icon>
+                <mat-menu #type="matMenu">
+                  <label (click)="typeFilter = 'Multiple Choice Questions';filterData();" mat-menu-item
+                    class="label_style">
+                    Multiple Choice
+                  </label>
+                  <label (click)="typeFilter = 'Multiple Correct Answers';filterData();" mat-menu-item
+                    class="label_style">
+                    Multiple Correct Answer
+                  </label>
+                  <label (click)="typeFilter = 'True / False';filterData();" mat-menu-item class="label_style">
+                    True/False
+                  </label>
+                  <label (click)="typeFilter= 'Match The Column';filterData();" mat-menu-item class="label_style">
+                    Matching
+                  </label>
+                  <label (click)="typeFilter = 'Fill in the Blank';filterData();" mat-menu-item class="label_style">
+                    Fill-in-the-Blank
+                  </label>
+                  <label (click)="typeFilter = 'Short Answers';filterData();" mat-menu-item class="label_style">
+                    Short Answer
+                  </label>
+                  <label (click)="typeFilter = '';filterData();" mat-menu-item class="label_style">
+                    All
+                  </label>
+                </mat-menu>
+              </div>
+            </div>
+            <app-data-loader *ngIf="isLoading"></app-data-loader>
+            <table *ngIf="!isTree && !isLoading" mat-table [dataSource]="dataSource" class="w-full tableStyle">
+              <ng-container class="w-1/2" matColumnDef="cb">
+                <th style="width: 2%;height: 0px;" mat-header-cell *matHeaderCellDef>
+                  <!-- <mat-checkbox (change)="masterToggle($event)"
+                    [checked]="selection.selected.length > 0 && selection.selected.length === dataSource.data.length"
+                    [indeterminate]="selection.selected.length > 0 && selection.selected.length < dataSource.data.length"></mat-checkbox> -->
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  <mat-checkbox [checked]="selection.selected.includes(row)"
+                    (change)="$event.checked ? selection.select(row):selection.deselect(row)"></mat-checkbox>
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="number">
+                <th style="width: 3%;height: 0px;" mat-sort-header mat-header-cell *matHeaderCellDef>
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  {{row.number}}
+                </td>
+              </ng-container>
+
+              <ng-container matColumnDef="description">
+                <th class="height: 0px;" mat-sort-header mat-header-cell *matHeaderCellDef>
+                </th>
+                <td style="width: 30%;word-wrap: break-word;" class="pt-3" mat-cell *matCellDef="let row">
+                  <p [innerHTML]="row.description"></p>
+                </td>
+              </ng-container>
+              <!-- <ng-container matColumnDef="type">
+                <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                  Type
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  {{row.type}}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="taxonomy">
+                <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                  Taxonomy Level
+                </th>
+                <td mat-cell *matCellDef="let row">
+                  {{row.taxonomy}}
+                </td>
+              </ng-container> -->
+
+              <tr class="noBorder" mat-header-row *matHeaderRowDef="displayedColumns">
+              </tr>
+              <tr class="noBorder" mat-row *matRowDef="let row; columns : displayedColumns">
+              </tr>
+              <tr class="mat-row" *matNoDataRow>
+                <td *ngIf="!isLoading" class="mat-cell text-center" [attr.colSpan]="displayedColumns.length">
+                  No data Found.
+                </td>
+              </tr>
+            </table>
+
+            <div *ngIf="(isTree) && !isLoading">
+              <mat-tree [dataSource]="treeDataSource" [treeControl]="treeControl" class="qtd-tree">
+                <!-- This is the tree node template for leaf nodes -->
+                <!-- There is inline padding applied to this node using styles.
+            This padding value depends on the mat-icon-button width. -->
+                <div>HERE</div>
+                <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                  <ng-container *ngIf="node.checkbox">
+                    <mat-checkbox *ngIf="node.canSelect" (change)="onCheckChange($event,node)"
+                      [checked]="node.selected">
+                      {{node.number}} -  {{node.description}}</mat-checkbox>
+                    <mat-checkbox class="ml-4" *ngIf="!node.canSelect" (change)="onCheckChange($event,node)"
+                      [checked]="node.selected">
+                      {{node.number}} -   {{node.description}}</mat-checkbox>
+                  </ng-container>
+                  <ng-container *ngIf="!node.checkbox">
+                    <app-icon style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;<span
+                      style="color: rgb(92, 155, 49);">{{node.number}} - {{node.description}}</span>
+                  </ng-container>
+                  <!-- <ng-container *ngIf="!node.checkbox && filtered(node) && node.HasChild">
+                <span>{{node.description}}</span>
+              </ng-container> -->
+                </mat-tree-node>
+
+                <!-- This is the tree node template for expandable nodes -->
+                <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+
+                  <div class="mat-tree-node">
+                    <button style="outline:none; cursor: pointer;" mat-icon-button matTreeNodeToggle
+                      [attr.aria-label]="'Toggle ' + node.description">
+                      <app-icon [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'expand_less'">
+                      </app-icon>
+                    </button>
+
+                    <mat-checkbox [checked]="node.selected" [indeterminate]="node.indeterminate && !node.selected"
+                      (change)="itemToggle($event.checked,node)">{{node.description}}</mat-checkbox>
+                  </div>
+
+                  <div [class.qtd-tree-invisible]="!treeControl.isExpanded(node)" role="group">
+                    <ng-container matTreeNodeOutlet></ng-container>
+                  </div>
+                </mat-nested-tree-node>
+              </mat-tree>
+              <div class="flex justify-center mt-3" *ngIf="treeDataSource && treeDataSource.data.length < 1">
+                <span>No Data Found</span>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </mat-step>
+      <mat-step [completed]="stepHistoryForm.valid">
+        <ng-template matStepLabel>History</ng-template>
+        <ng-template matStepContent>
+          <h2 class="border-b p-2">History</h2>
+          <form [formGroup]="stepHistoryForm">
+            <div class="flex flex-row px-2">
+              <div class="flex flex-col float-left pr-4 mb-6" style="width: 25vw;">
+                <app-label [for]="'EffectiveDate'" text="Effective Date"></app-label>
+                <app-date formControlName="EffectiveDate"></app-date>
+                <app-input-error *ngIf="stepHistoryForm.get('EffectiveDate')?.invalid"
+                  text="Required"></app-input-error>
+
+              </div>
+            </div>
+
+            <div class="flex flex-row px-2 ">
+              <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+                <app-label [for]="'reason'" text="Reason for Revision"></app-label>
+                <app-textarea [value]="this.stepHistoryForm.get('reason')?.value || ''" formControlName="reason">
+                </app-textarea>
+                <app-input-error *ngIf="stepHistoryForm.get('reason')?.invalid" text="Required"></app-input-error>
+              </div>
+            </div>
+          </form>
+        </ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Review & Save</ng-template>
+        <ng-template matStepContent>
+          <p *ngIf="type === 'questions'" class="text-small">By selecting Save, you are {{message}}.<br />
+            Review the table below to confirm whether the actions can be completed.</p>
+
+            <p *ngIf="type !== 'questions'" class="text-small">By selecting Save, you are changing the status for the
+              following {{moduleName |
+              titlecase }} to
+              {{actionId === 1 ? "Active":actionId === 2 ?"Change {{('ILA' | labelReplacement)| async}}" : actionId === 3 ? "Delete" : "Inactive"}}.<br />
+              Review the table below to confirm whether the actions can be completed.</p>
+          <mat-table [dataSource]="condirmDataSource" matSort class="table-bordered ">
+            <ng-container matColumnDef="number">
+              <mat-header-cell *matHeaderCellDef> #
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row;let i = index">
+                <p>{{row.number}}</p>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="description">
+              <mat-header-cell *matHeaderCellDef> Description
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <p [innerHTML]="row.description"></p>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="action">
+              <mat-header-cell *matHeaderCellDef> Action
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <p [innerHTML]="row.action"></p>
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+              <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+
+          </mat-table>
+
+          <p class="text-small mt-3">
+            These updates will be saved with an effective date <span class="font-bold">
+              {{datepipe.transform(stepHistoryForm.get("EffectiveDate")?.value,"MM-dd-yyyy")}} </span>.
+          </p>
+        </ng-template>
+      </mat-step>
+    </mat-stepper>
+  </section>
+</div>
+
+<ng-template #changeEO>
+  <app-flypanel-select-eo (idSelected)="eoSelected($event)"
+    (closed)="flyPanelService.close();actionId=0"></app-flypanel-select-eo>
+</ng-template>
+
+<ng-template #changeILA>
+  <app-flypanel-change-ila [saveHere]="false" [fromBulkEdit]="fromBulkEdit" [filterProvider]="false" (closed)="flyPanelService.close();actionId=0"
+    (ilaIdSelected)="ilaSelected($event);flyPanelService.close();"></app-flypanel-change-ila>
+</ng-template>

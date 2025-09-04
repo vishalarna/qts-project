@@ -1,0 +1,77 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using System.Text.RegularExpressions
+<table id="content-table" class="table" style="width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="display: -webkit-box; -webkit-box-pack: justify;display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #020378; margin: 0 0 10px 0;">
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center; "><b>@Model.Title </b></div>
+                <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.Positions.Count() > 0)
+    {
+        <tr style=" border-bottom: 2px solid #000;">
+            @if (Model.DisplayColumns.Where(r => r == "Position Abbreviation").Count() > 0)
+            {
+                <th style=" border: none !important;" align="left">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Abbr.</th>
+            }
+            <th style=" border: none !important;" align="left">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title</th>
+            @if (Model.DisplayColumns.Where(r => r == "Position Description").Count() > 0)
+            {
+                <th style=" border: none !important;" align="left">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Description</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Effective Date").Count() > 0)
+            {
+                <th style=" border: none !important;" align="left">Effective Date</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Note").Count() > 0)
+            {
+                <th style=" border: none !important;" align="left">Note</th>
+            }
+        </tr>
+
+        @foreach (var position in Model.Positions)
+        {
+            <tr>
+                @if (Model.DisplayColumns.Where(r => r == "Position Abbreviation").Count() > 0)
+                {
+                    <td style=" border: none !important;">@position.PositionAbbreviation</td>
+                }
+                <td style=" border: none !important;">@position.PositionTitle</td>
+                @if (Model.DisplayColumns.Where(r => r == "Position Description").Count() > 0)
+                {
+                    <td style=" border: none !important;">@position.PositionDescription</td>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Effective Date").Count() > 0)
+                {
+                    <td style=" border: none !important;">@position.EffectiveDate.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</td>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Note").Count() > 0)
+                {
+                    <td style=" border: none !important;">??</td>
+                }
+            </tr>
+        }
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>

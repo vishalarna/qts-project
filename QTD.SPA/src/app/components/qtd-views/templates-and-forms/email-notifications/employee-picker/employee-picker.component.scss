@@ -1,0 +1,134 @@
+
+
+.schedule-header {
+    position: absolute;
+    width: 852px;
+    height: 39px;
+    left: 488px;
+    top: 130px;
+}
+
+.btn-cls {
+    width: 138px;
+    height: 38px;
+}
+
+.enabled-button {
+    box-sizing: border-box;
+
+    position: absolute;
+    left: 33.89%;
+    right: 6.67%;
+    top: 11.22%;
+    bottom: 84.46%;
+
+    background: #FFFFFF;
+    border: 0.5px solid #E1E5E4;
+    box-shadow: 0px 0px 30px rgba(122, 128, 126, 0.1);
+    border-radius: 4px;
+}
+.section-header {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.15000000596046448px;
+    text-align: left;
+ }
+
+.edit-area {
+    height: 260px;
+    width: 750px;
+    border-radius: 4px;
+}
+
+.heighttop {
+    width: 100%;
+    box-shadow: 0px 0px 30px rgb(122 128 126 / 10%);
+    border-radius: 4px;
+    background: #fff;
+    padding: 1.375em 3.31em;
+    margin: 0 0 0.5em;
+    align-items: center;
+}
+
+.panel-heading {
+    font-size: 1.375em;
+    line-height: 143%;
+    letter-spacing: 0.15px;
+    color: #7A807E;
+    border-bottom: 1px solid rgba(122, 128, 126, 0.2);
+    padding: 0 0 0.5em;
+    margin: 0em 0 0.81em;
+}
+.table-data-wrap table,
+.table-data-wrap,
+.table-data-wrap .dataTables_scrollHeadInner {
+  width: 100% !important;
+}
+
+.dataTables_wrapper .dataTables_filter input {
+    width: 100% !important;
+    height: 67px;
+    border-radius: 0 !important;
+    border: 0.5px solid #E1E5E4 !important;
+    color: #000;
+    border-width: 0 0 0.5px 0 !important;
+    font-size: 14px;
+  }
+
+  .table-data-wrap .dataTables_scrollBody {
+    border: 0 !important;
+  }
+  
+  .table-data-wrap thead tr td,
+  .table-data-wrap thead tr th {
+    border-bottom: 0.5px solid #E1E5E4 !important;
+    position: relative;
+    z-index: 5;
+  }
+  
+.table-data-wrap thead tr {
+    position: relative;
+    z-index: 5;
+  }
+  
+  .table-data-wrap {
+    margin-top: 13px;
+    border: 0.5px solid #E1E5E4 !important;
+  }
+  
+  .table-data-wrap #DataTables_Table_0_wrapper label {
+    width: 100% !important;
+    color: #fff;
+    text-align: left;
+    font-size: 0;
+  }
+  
+  .table-data-wrap #DataTables_Table_0_wrapper {
+    width: 100% !important;
+  }
+  
+  div#DataTables_Table_0_filter {
+    width: 100% !important;
+  }
+
+  .table-data-wrap td,
+  .table-data-wrap th {
+    vertical-align: middle;
+  }
+  
+  .table-data-wrap tbody td,
+  .table-data-wrap thead th {
+    height: 40px;
+    padding: 10px 18px !important;
+  }
+  
+  .flex-datatwrap {
+    align-items: center;
+  }
+  
+  table#DataTables_Table_0 thead {
+    display: none;
+  }
+  
+  

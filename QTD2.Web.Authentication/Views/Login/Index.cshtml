@@ -1,0 +1,10 @@
+﻿@model QTD2.Web.Authentication.Models.LoginModel
+
+@if (TempData.ContainsKey("Message") && !string.IsNullOrWhiteSpace(TempData["Message"].ToString()))
+{
+    <div class="alert alert-success" role="alert">
+        <i class="fa fa-check"></i>
+        @TempData["Message"]
+    </div>
+}
+@Html.Partial("Partials/_Login", Model)

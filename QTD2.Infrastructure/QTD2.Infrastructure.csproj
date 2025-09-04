@@ -1,0 +1,412 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Configurations>Debug;Release;UAT</Configurations>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="Reports\Generation\Templates\EnablingObjectivesByPosition.cshtml" />
+    <None Remove="Reports\Generation\Templates\EnablingObjectivesBySafetyHazard.cshtml" />
+    <None Remove="Reports\Generation\Templates\EnablingObjectivesByTask.cshtml" />
+    <None Remove="Reports\Generation\Templates\EOPHoursForDesignatedYears.cshtml" />
+    <None Remove="Reports\Generation\Templates\ILAByProviders.cshtml" />
+    <None Remove="Reports\Generation\Templates\JTAByTask.cshtml" />
+    <None Remove="Reports\Generation\Templates\MyData\EmployeeCertificationHistory.cshtml" />
+    <None Remove="Reports\Generation\Templates\NERCILAApplicationReportVersion.cshtml" />
+    <None Remove="Reports\Generation\Templates\OJTGuideTemplate.cshtml" />
+    <None Remove="Reports\Generation\Templates\OJTTrainingLog.cshtml" />
+    <None Remove="Reports\Generation\Templates\RecordOfTaskEOQualifications.cshtml" />
+    <None Remove="Reports\Generation\Templates\StudentEvaluationForm.cshtml" />
+    <None Remove="Reports\Generation\Templates\TaskandEOByILA.cshtml" />
+    <None Remove="Reports\Generation\Templates\TrainingIssueActionItems.cshtml" />
+    <None Remove="Reports\Generation\Templates\TrainingIssueDetails.cshtml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Reports\Generation\Templates\TrainingIssueActionItems.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\TrainingIssueDetails.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\EnablingObjectivesBySafetyHazard.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\OJTTrainingLog.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\RecordOfTaskEOQualifications.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\NERCILAApplicationReportVersion.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\TaskandEOByILA.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\EnablingObjectivesByPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\EOPHoursForDesignatedYears.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\EnablingObjectivesByTask.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\OJTGuideTemplate.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Reports\Generation\Templates\MyData\EmployeeCertificationHistory.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.104.1" />
+    <PackageReference Include="hashids.net" Version="1.7.0" />
+    <PackageReference Include="Haukcode.WkHtmlToPdfDotNet" Version="1.5.93" />
+    <PackageReference Include="HtmlAgilityPack" Version="1.11.67" />
+    <PackageReference Include="MailKit" Version="4.8.0" />
+    <PackageReference Include="MediatR" Version="12.4.1" />
+    <PackageReference Include="Microsoft.AspNetCore.Authorization" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Proxies" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.10" />
+    <PackageReference Include="Microsoft.Extensions.Configuration" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="8.0.2" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="8.0.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.FileExtensions" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+    <PackageReference Include="MimeKit" Version="4.8.0" />
+    <PackageReference Include="Quartz" Version="3.13.0" />
+    <PackageReference Include="RazorEngine.NetCore" Version="3.1.0" />
+    <PackageReference Include="Select.HtmlToPdf.NetCore" Version="24.1.0" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QTD2.Data\QTD2.Data.csproj" />
+    <ProjectReference Include="..\QTD2.Domain\QTD2.Domain.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="Notification\Content\Views\EmpLoginNotification.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Notification\Content\Views\AccountLockedNotifcation.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Notification\Content\Views\ForgotPassword.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Notification\Content\Views\SendReport.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Notification\Content\Views\TwoFactorToken.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Notification\Content\Views\_EmailLayout.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\CertifiedEmployeesforGivenCertificate.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EnablingObjectivesByPositionMatrix.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ProceduresByEnablingObjectives.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TrainingProgramQualificationCard.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TasksByPositionMatrix.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\SafetyHazardsByTask.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TrainingIssuesList.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TestList.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ILAsByMetaILA.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TasksByProcedure.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TasksNotLinkedToPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TasksNotLinkedToILA.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\SafetyHazardsByCategory.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\SafetyHazardsByPositionMatrix.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\PretestAndFinalTestComparison.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\SkillQualificationAssessmentByPositionOrTask.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\SkillQualificationTrainingGuideByPositionOrSkill.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ILAsByPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ILAsByEnablingObjective.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ILAsByTask.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ClassCertificates.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TestReportPaperBasedVersion.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TasksByEnablingObjectives.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EnablingObjectivesNotLinkedToILA.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EnablingObjectivesByCategory.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\MyData\ProceduresByTask.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\MyData\ProceduresByIssuingAuthority.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EnablingObjectivesNotLinkedToTasks.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\SCORMCompletionSummaryByClasses.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\SCORMTestCompletionStatistics.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\DIFSurveyAggregateResults.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\DIFSurveyIndividualFeedback.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\DIFSurveyBlankForm.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ClassSignInSheet.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeActiveInactiveHistory.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeIDPCompletionStatus.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeCourseScheduleforGivenYear.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeDelinquency.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EMPTestStatistics.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ProcedureAndRegulatoryRequirementTrainingSummarybyPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeTrainingTowardProceduresAndRegulatoryRequirements.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\SummaryOfTaskQualificationBySubDutyArea.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeTaskQualificationDatesByTask.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\MyData\TasksByDutyArea.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TaskHistoryByTask.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeTrainingTowardCertandAllRequiredTrainingSummary.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeTrainingTowardCertandAllRequiredTrainingSummary.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeTrainingTowardCertandAllRequiredTraining.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeTrainingTowardNercRecertification.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EMPTaskQualificationDetails.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EMPTestSummarybyClasses.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ProcedureReviewCompletionHistorybyEmployee.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ReliabilityRelatedTaskImpactMatrixR5.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TasksMetByEmployee.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TasksMetbyPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TotalNERCCEHsfortheYeartoDate.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeTaskQualificationRecordsforGivenPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\YearToDateHoursForCertifiedEmployees.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeTrainingStatus.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TaskByPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TaskQualificationSheets.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TaskRequalificationByEmployee.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TrainingModuleCompletionHistory.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TrainingProgramCompletionHistory.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TrainingModuleCompletionHistoryByEmployee.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\InitialTrainingByPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TaskHistoryByPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\AnnualPositionsTaskListReview.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeTrainingNeedsAssessments.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ClassRoster.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TrainingMaterialForTaskEOByPositions.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TrainingProgramReview.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ProcedureReviewCompletionHistory.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeByOrganization.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ListOfCertifiedOperators.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ListOfTaskEvaluators.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ILALessonPlan.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\StudentEvalutationResultsInstructorLed.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TestItems.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ILACompletionHistory.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\MyData\ClassesByILA.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ReportScheduleByClass.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\StudentEvaluationResults.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\MyData\TrainingQualificationRecords.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\MyData\EmployeePositionHistory.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\MyData\PositionLinkage.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EmployeeByPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\MyData\PositionDetails.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\IDPReviewCompletionHistory.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\ILAByProvider.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\EvaluationFormTemplate.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\MyData\TaskQualificationEvaluators.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\MyData\TaskRequalificationByPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TasksByTaskGroup.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TestSpecifications.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Reports\Generation\Templates\TrainingSummaryByPosition.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Identity\Extensions\" />
+    <Folder Include="Model\ClassSchedule\ClassScheduleTODOModels\" />
+    <Folder Include="Model\ILATestSettings\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Reports\Generation\Templates\ILAByProviders.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Reports\Generation\Templates\StudentEvaluationForm.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Reports\Generation\Templates\JTAByTask.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+</Project>

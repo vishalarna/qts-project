@@ -1,0 +1,54 @@
+<div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-bold text-gray-900">Add Meta {{("ILA" | labelReplacement)| async}}s </p>
+    <app-button (click)="closed.emit()" ButtonType="icon" icon="close" ></app-button>
+</div>
+<div class="mt-4 flex flex-row justify-around px-2 w-100" *ngIf="selectedMetaILAIds.length>0">  
+    <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded w-100">
+      <div class="flex flex-row w-full justify-between align-items-center" >
+        <p class="text-xs text-gray-four pt-2">
+          {{selectedMetaILAIds.length +" Meta "+ ("ILA" | labelReplacement|async) + "(s) selected"}}
+        </p>
+        <app-button (clicked)="addMetaILA()"  class="mb-2" type="button" color="secondary" size="sm" text="Add">
+        </app-button>
+      </div>
+    </div>
+</div> 
+<div class=" flex flex-row items-center bg-white-one rounded-t-md py-4 search-wrap space-x-2 border-b-0.8 border-gray-one ">
+    <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" ></path>
+    </svg>
+    <input (keyup)="searchMetaILA($event)" class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text" [value] ="searchText" />
+</div>
+<div class="flex-row bg-white-one rounded-b-md m-2 px-4 space-x-2">
+    <app-data-loader *ngIf="!metaILAData"></app-data-loader>
+    <div class="meta-ila-list-data">
+        <mat-table *ngIf = "metaILAData"  matSort  style="max-height: 74vh;" mat-table [dataSource] ="metaILADataSource">
+            <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox (change)="masterToggle()" [checked]="isAllSelected()" [indeterminate]="selectedMetaILAIds.length > 0 && !isAllSelected()">
+                  </mat-checkbox>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <ng-container *ngIf="!isLinked(row.id); else linkedIcon">
+                    <mat-checkbox [checked]="isSelected(row.id)" (change)="metaILASelectionChange(row.id)">
+                    </mat-checkbox>
+                  </ng-container>
+                  <ng-template #linkedIcon>
+                    <app-icon class="mr-2" style="color: rgb(92, 155, 49);" icon="link"></app-icon>
+                  </ng-template>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef mat-sort-header class="ilanum-title-nickname-provider p-lr-5">Meta {{("ILA" | labelReplacement)| async}} Title
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" class="ilanum-title-nickname-provider p-lr-5">{{row.name}}</mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full m-2 no-data-cell" >No Data Found</td>
+            </tr>
+        </mat-table>
+    </div>
+</div>

@@ -1,0 +1,169 @@
+<div *ngIf="cehEnabled">
+<app-header *ngIf="!isTableVisible"
+  [toggleMenuIcon]="false"
+  breadcrumbs="NERC / CEH Upload"
+></app-header>
+<section class="ceh-upload-wraper" *ngIf="!isTableVisible">
+  <h6 class="heading-title">CEH Upload</h6>
+  <form [formGroup]="cehUploadForm">
+    <div class="form-wraper">
+      <div class="card-wraper">
+        <div class="mb-3">
+          <app-label
+            [for]="'nercProvider'"
+            text="NERC Provider "
+            class="label required"
+          ></app-label>
+          <mat-select
+            formControlName="provider"
+            (selectionChange)="getILAsByProvider($event)"
+            placeholder="Select Provider"
+            class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+          >
+          <input matInput class="pt-3 pb-3 pl-3" type="text" formControlName="searchTxt" (keyup)="providerSearch($event.target)" placeholder="Enter Text to Search">
+            <mat-option
+              *ngFor="let provider of providersList"
+              [value]="provider?.id"
+            >
+              {{ provider?.name }}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="cehUploadForm.get('provider').hasError('required')">
+            Provider is required.
+          </mat-error>
+        </div>
+        <div>
+          <mat-radio-group (change)="radioChange($event)" formControlName="isSelfPaced" >
+              <div class="inlineBlock ceh-radio-btn-wraper">
+                  <div>
+                    <mat-radio-button [value]="false" class="flex-row flex flex-wrap mr-3">
+                      Class based {{("ILA" | labelReplacement)| async}}s
+                    </mat-radio-button>
+                  </div>
+                  <div>
+                    <mat-radio-button [value]="true" class="ml-4 flex flex-wrap mr-3">
+                      Self-paced {{("ILA" | labelReplacement)| async}}s
+                    </mat-radio-button>
+                  </div>
+              </div>
+          </mat-radio-group>
+        </div>
+        <div class="pt-3">
+          <app-label
+            [for]="'ila'"
+            text="{{('ILA' | labelReplacement)| async}}"
+            class="label required"
+          ></app-label>
+          <mat-select
+            formControlName="ila"
+            placeholder="select {{('ILA' | labelReplacement)| async}}"
+            class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+            (selectionChange)="getClassScheduleByILAId()"
+          >
+          <input matInput class="pt-3 pb-3 pl-3" type="text" (keyup)="onSearchInput($event.target)"  (keydown)="onSearchKeydown($event)" formControlName="ilaSearch"  placeholder="Enter Text to Search">
+            <mat-option *ngFor="let val of ilaList" [value]="val.id">
+              {{ val.name }} - {{val.number}}
+            </mat-option>
+          </mat-select>
+          <mat-error *ngIf="cehUploadForm.get('ila').hasError('required')">
+            {{("ILA" | labelReplacement)| async}} is required.
+          </mat-error>
+        </div>
+      </div>
+      <div class="card-wraper ila-section">
+        <div class="pt-3">
+          <app-label
+            text="Date Range:"
+            class="show-record"
+          ></app-label>
+          <div class="flex mr-2">
+            <div class="flex flex-col w-1/2 mr-2 date-picker-wraper">
+              <app-date (ngModelChange)="filterClassSchedule()" formControlName="startDate" placeholder="Select Date">
+              </app-date>
+            </div>
+            <div class="date-space">-</div>
+            <div class="flex flex-col w-1/2 date-picker-wraper">
+              <app-date (ngModelChange)="filterClassSchedule()" formControlName="endDate"></app-date>
+            </div>
+          </div>
+        </div>
+        <div class="d-flex justify-content-between align-items-center pt-3">
+          <span class="caption-text"
+            >Select the classes you would like to include in the file:
+          </span>
+          <span>
+            <app-button
+            [disabled]="!selection_CehUploads.hasValue() || selection_CehUploads.selected.length === 0 || loader"
+            variant="outlined"
+            (clicked)="setUploadOptions()"
+            position="right"
+            size="sm"
+            text="Create CEH Upload File"
+            color="primary"
+            [spinner] = "loader"
+          ></app-button>
+
+          </span>
+        </div>
+        <app-data-loader *ngIf = "loader"></app-data-loader>
+        <div class="container-fluid ceh-table-spacing" *ngIf = "!loader">
+          <mat-table [dataSource]="dataSource" matSort>
+            <ng-container matColumnDef="index">
+              <mat-header-cell *matHeaderCellDef>
+                <mat-checkbox class="p-3 mt-2" (change)="$event ? masterToggleProviderList() : null"
+                  [checked]="selection_CehUploads.hasValue() && isAllSelectedProviderList()"
+                  [indeterminate]="selection_CehUploads.hasValue() && !isAllSelectedProviderList()"></mat-checkbox>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <mat-checkbox class="p-3 mt-2 " (click)="$event.stopPropagation()"
+                  (change)="$event ? selection_CehUploads.toggle(row) : null" [checked]="selection_CehUploads.isSelected(row)" [disabled]="isDateInFuture(row.startDateTime)">
+                </mat-checkbox>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="Start Date">
+              <mat-header-cell *matHeaderCellDef>Start Date</mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ datePipe.transform(row.startDateTime + 'Z', 'MM-dd-yyyy') }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="End Date">
+              <mat-header-cell *matHeaderCellDef>End Date</mat-header-cell>
+              <mat-cell *matCellDef="let row">{{ datePipe.transform(row.endDateTime + 'Z', 'MM-dd-yyyy') }}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="Locations">
+              <mat-header-cell *matHeaderCellDef>{{("Location" | labelReplacement)| async}}s</mat-header-cell>
+              <mat-cell *matCellDef="let row">{{row.location}}</mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="Instructor">
+              <mat-header-cell *matHeaderCellDef>{{("Instructor" | labelReplacement)| async}}</mat-header-cell>
+              <mat-cell *matCellDef="let row">{{row.instructor}}</mat-cell>
+            </ng-container>
+            <mat-header-row
+              *matHeaderRowDef="classesColumns"
+            ></mat-header-row>
+            <mat-row *matRowDef="let row; columns: classesColumns" [ngClass]="{ 'greyed-out-row': isDateInFuture(row.startDateTime) }"></mat-row>
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center" *matNoDataRow>
+              <td class="mat-cell w-full m-2">No {{("ILA" | labelReplacement)| async}}s linked</td>
+            </tr>
+          </mat-table>
+        </div>
+      </div>
+    </div>
+  </form>
+</section>
+
+<app-ceh-upload-export *ngIf="isTableVisible" [tableData]="cehUploadData" (goBackevent)="getBackValue($event)"></app-ceh-upload-export>
+
+<ng-template #createFile>
+  <div class="ceh-dialog">
+    <app-qtd-dialogue
+      [header]="dialogHeader"
+      [isHTML]="true"
+      [description]="dialogDescription"
+      [confirmText]="'OK'"
+      [isQuestion]="false"
+      (confirmed) = "allInvalid ? isTableVisible = false : isTableVisible = true"
+    >
+    </app-qtd-dialogue>
+  </div>
+</ng-template>
+</div>

@@ -1,0 +1,30 @@
+<div class="step-container">
+  <form [formGroup]="purposeReviewForm">
+    <div class="mat-step-section">
+      <div class="step-header-section">
+        <h2 class="step-main-header">Purpose of Program Review</h2>
+        <p class="step-header-caption">Enter the purpose, method and background for the Training Program</p>
+      </div>
+      <div class="step-controls-section">
+        <div class="step-control-container mb-5">
+          <div class="step-control-label">Purpose</div>
+          <div class="step-control">
+            <ckeditor formControlName="purpose" (change)="purposeChange()" [config]="configCKEditor" [editor]="Editor" ></ckeditor>
+          </div>
+        </div>
+        <div class="step-control-container mb-5" >
+          <div class="step-control-label">Method</div>
+          <div class="step-control">
+            <ckeditor formControlName="method" (change)="methodChange()" [config]="configCKEditor" [editor]="Editor" ></ckeditor>
+          </div>
+        </div>
+        <div class="step-control-container mb-5">
+          <div class="step-control-label">Historical Background</div>
+          <div class="step-control">
+            <ckeditor formControlName="historicalBackground" (change)="historicalBackChange()" [config]="configCKEditor" [editor]="Editor" ></ckeditor>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

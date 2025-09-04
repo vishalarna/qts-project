@@ -1,0 +1,27 @@
+
+<ng-container>
+    <mat-dialog-content>
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p mat-dialog-title>Publish Evaluation</p>
+            <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+        </div>
+        <hr class="mt-1 mb-4">
+        <p  class="mb-4 text-sm">Please provide Effective Date and Note</p>
+        <hr *ngIf="reasonDescription" class="mt-1 mb-8">
+        <div class="flex flex-col">
+            <app-label style="color: #7A807E;" text="Effective Date"></app-label>
+            <app-date [(ngModel)]="effectiveDate"></app-date>
+            <app-label style="color: #7A807E;" text="Note/Reason" class="mt-2"></app-label>
+            <app-textarea [(ngModel)]="reason"></app-textarea>
+        </div>
+        <!-- header ends here -->
+    </mat-dialog-content>
+
+
+    <mat-dialog-actions class="flex flex-row justify-end">
+
+        <app-button type="button" (clicked)="onSaveReason($event)" text="Save" color="primary" size="sm" class="mr-2">
+        </app-button>
+    </mat-dialog-actions>
+</ng-container>

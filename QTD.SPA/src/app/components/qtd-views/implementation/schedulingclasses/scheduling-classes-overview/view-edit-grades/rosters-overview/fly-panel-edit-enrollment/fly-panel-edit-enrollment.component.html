@@ -1,0 +1,112 @@
+<app-data-loader *ngIf = "loader"></app-data-loader>
+<ng-container *ngIf = "!loader">
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900" >Update Enrollment</p>
+      <app-button [disabled]="showSpinner" (click)="closeProvider()" ButtonType='icon' icon="close"></app-button>
+    </div>
+    <div [formGroup]="updateForm">
+  
+      <div class="px-12 mt-4">
+        <app-label class="label" [for]="'FinalScore'" [text]="'Final Score'"></app-label>
+        <app-textbox type="text" formControlName="FinalScore"
+        [placeholder]="'Final Score'" [maxLength] = "3" (keypress)="keyPressNumbers($event)" >
+        </app-textbox>
+        </div>
+    <div class="px-12 mt-4">
+        <app-label class="label" [for]="'FinalGrade'" [text]="'Final Grade'"></app-label>
+            <app-textbox type="text" [name]="'FinalGrade'"
+              formControlName="FinalGrade" [placeholder]="'FinalGrade'" (input)="checkInputTbl($event)" [maxLength] = "1">
+            </app-textbox> 
+            <app-input-error          
+            style="top: 60px"
+            *ngIf="GradeError"
+            text="Please Enter a Valid Grade i.e. P, F, W, O"
+          ></app-input-error>         
+    </div>
+    <div class="px-12 mt-4">
+        <app-label [for]="'ClassCompletionDate'" text="Class Completion Date"></app-label>
+        <app-date formControlName="ClassCompletionDate"></app-date>        
+    </div>
+    <div class="px-12 mt-4">
+        <app-label [for]="'GradeNotes'" [text]="'Grade Notes'"></app-label>
+                    <app-textarea required type="text"  [placeholder]="'Grade Notes'"
+                      formControlName="GradeNotes" [value] = "currrentEmployee.gradeNotes"
+                      [customClasses]="'text-base border w-full h-auto py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+                    </app-textarea>                    
+    </div>
+
+  <div *ngIf = "ilaCertData != null && ilaCertData.length > 0">
+      <div class="px-12 mt-4">
+        <p class="credit-info">Partial Credit was enabled for one or more certificates linked to this course. Award partial credit hours below.</p>
+        <p class="credit-info">Leaving the field blank will award the Employee the full credit hours assigned to this course</p>
+      </div>
+
+      <div class="px-12 mt-4">
+        <table class="styled-table">
+          <thead>
+            <tr>
+              <th>{{ 'Employee' | labelReplacement | async }}</th>
+              <th>NERC CEH</th>
+              <th *ngFor="let certSub of ilaCertData[0]?.ilaCertificationSubRequirementLinkVM">
+                NERC {{ certSub.reqName }}
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>{{ currrentEmployee.employeeName }}</td>
+              <td (click)="$event.stopPropagation();onEditCeh()" class="editable-column">
+                <ng-container *ngIf="editedCell === 'ceh'; else viewCeh">
+                  <div class="d-flex align-items-center">
+                    <input #cehInput type="text" [value]="cehHrValue" (input)="onCehHrInput($event)" (click)="$event.stopPropagation()"/>
+                  </div>
+                </ng-container>
+                <ng-template #viewCeh>
+                  <app-label [text]="cehHrValue !== null && cehHrValue !== undefined ? cehHrValue : ''"></app-label>
+                </ng-template>
+              </td>
+              <td *ngFor="let certSub of ilaCertData[0]?.ilaCertificationSubRequirementLinkVM; let i = index"
+                  (click)="onEditSub(i); $event.stopPropagation()" class="editable-column">
+                <ng-container *ngIf="editedCell === i; else viewCeh">
+                  <div class="d-flex align-items-center">
+                    <input #subInput type="text" [value]="subCreditValues[i]??''" (input)="onSubCreditInput($event, i)" (click)="$event.stopPropagation()"/>
+                  </div>
+                </ng-container>
+                <ng-template #viewCeh>
+                  <app-label [text]="subCreditValues[i] !== null && subCreditValues[i] !== undefined ? subCreditValues[i] : ''"></app-label>
+                </ng-template>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="px-12 mt-4">
+      <mat-checkbox class="text-base" formControlName="isQualificationCompleted" [disabled] = "populateOjtDisable">
+          Record {{("Task" | labelReplacement)| async}} Qualification Completion
+      </mat-checkbox >
+      <app-icon icon="help_outline" class="p-2" [matTooltip]="helpString"></app-icon>
+    </div>
+   
+      <!-- Form Ends Here-->
+    </div>
+    <div class="px-12 mt-8 float-right">
+      <app-button [spinner]="showSpinner" [disabled]="checkDisable(updateForm.get('FinalGrade')?.value)" type="button" size="sm"
+        color="secondary" text="Update" (click)="submitData(submitDialog)">
+      </app-button>
+    </div>
+  </ng-container>
+
+  <ng-template #submitDialog>
+    <app-qtd-dialogue
+      header="Submit"
+      [isHTML]="true"
+      [description]="warningDialogDescription"
+      cancelText="No"
+      confirmText="Yes"
+      (canceled)="dialog.closeAll()"
+      (confirmed)="updateClassEnrollment()"
+    >
+    </app-qtd-dialogue>
+  </ng-template>

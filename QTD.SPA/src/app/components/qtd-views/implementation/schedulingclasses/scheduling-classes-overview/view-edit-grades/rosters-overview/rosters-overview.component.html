@@ -1,0 +1,284 @@
+<div *ngIf="!hideChart" class="flex flex-row">
+  <ng-container>
+    <div class="flex flex-row bg-white rounded mt-3 mr-3 pt-3 pl-3 shadow-sm w-fit mb-4"
+      style="width: 50%;align-items: center;justify-content: center;">
+      <div style="display: flex">
+        <canvas *ngIf="!hideChart && !pieChartData['datasets'][0]['data'].every(zeroCheck)" #pie baseChart
+          [type]="'pie'" [data]="pieChartData" [labels]="pieChartLabels" [options]="pieChartOptions"
+          [plugins]="pieChartPlugins" [legend]="pieChartLegend">
+        </canvas>
+        <span class="p-4" *ngIf="pieChartData['datasets'][0]['data'].every(zeroCheck)"> No Data for Pie Chart</span>
+      </div>
+    </div>
+    <div class="
+        flex flex-row
+        bg-white
+        rounded
+        mt-3
+        pt-3
+        pl-3
+        shadow-sm
+        w-fit
+        mb-4
+      " style="width: 50%; align-items: center; justify-content: center">
+      <div style="display: flex">
+        <canvas *ngIf="!hideChart && !barChartData['datasets'][0]['data'].every(zeroCheck)" baseChart
+          [data]="barChartData" [options]="barChartOptions" [plugins]="barChartPlugins" [legend]="barChartLegend"
+          [type]="'bar'">
+        </canvas>
+        <span class="p-4" *ngIf="barChartData['datasets'][0]['data'].every(zeroCheck)"> No Data for Bar Chart</span>
+      </div>
+    </div>
+  </ng-container>
+</div>
+<div class="flex flex-row my-3" style="align-items: baseline;justify-content: flex-end;">
+  <app-button text="Bulk Edit Final Grade" size="sm" (clicked)="openBulkUpdateDialog(bulkUpdateDialog)"></app-button>
+</div>
+<div>
+  <div class="flex flex-col mt-4">
+    <div class="flex flex-row flex-wrap bg-gray-one justify-between mb-3 mt-3  px-3 py-3 rounded"
+    *ngIf="unlinkIds.length !== 0">
+    <p class="text-xs text-gray-four pt-2">{{unlinkIds.length}} Students Selected</p>
+    <app-button (clicked)="removeEMPDialog(deleteDialog,true,'button')" size="sm" color="secondary" text="Remove Student"
+     >
+    </app-button>
+</div>
+    <table [dataSource]="dataSourceOverview" mat-table matSort style="border: 1px solid #e5e7eb" class="w-full">
+
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+          <!--   <mat-checkbox (change)="$event ? masterToggle() : null"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()">
+            </mat-checkbox> -->
+          </th>
+        <td *matCellDef="let row">
+            <mat-checkbox style="margin-left: 5px;" (click)="$event.stopPropagation()" (change)="$event ? selectrow(row) : null"
+                [checked]="selection.isSelected(row)">
+            </mat-checkbox>
+          </td>
+    </ng-container>
+
+      <ng-container matColumnDef="employeeName">
+        <th style="padding: 3px;" mat-header-cell *matHeaderCellDef mat-sort-header>
+          {{("Employee" | labelReplacement)| async}}
+        </th>
+        <td mat-cell *matCellDef="let row">
+
+          <div class="flex flex-row" style="align-items:center;">
+            <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 ml-2 mb-2"
+              [src]="row.employeeImage" onerror="this.src='assets/img/ImageNotFound.jpg'" />
+            <div class="flex flex-col">
+              <span style="line-break:anywhere;">{{row.employeeName}}</span>
+              <span style="line-break:anywhere;">{{row.employeeEmail}}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="preTestStatus">
+        <th style="padding: 3px; text-align: center;" mat-header-cell *matHeaderCellDef mat-sort-header>Pretest Status
+        </th>
+        <td mat-cell style="text-align: center;" *matCellDef="let row">
+          <div class="d-inline-block">
+            <span class="
+                py-2
+                px-4
+                rounded
+                flex flex-row
+                text-center text-xs
+                font-medium
+              "
+              [ngClass]="{'customcolororange':(row.pretestStatus).toUpperCase() === 'NOT STARTED'
+              ,'customcolorBlue':row.pretestStatus.toUpperCase() === 'IN PROGRESS',
+              'customcolorgreen':row.pretestStatus.toUpperCase() === 'COMPLETED',
+              'customcolorlightGreen':row.pretestStatus.toUpperCase() === 'RELEASED' || row.pretestStatus.toUpperCase() === 'STARTED'}">
+              {{ row.pretestStatus | uppercase }}
+            </span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="cbtStatus">
+        <th style="padding: 3px; text-align: center;" mat-header-cell *matHeaderCellDef mat-sort-header>CBT Status
+        </th>
+        <td mat-cell style="text-align: center;" *matCellDef="let row">
+          <div class="d-inline-block">
+            <span class="
+                py-2
+                px-4
+                rounded
+                flex flex-row
+                text-center text-xs
+                font-medium
+              "
+              [ngClass]="{'customcolororange':(row.cbtStatus).toUpperCase() === 'NOT STARTED',
+              'customcolorBlue':row.cbtStatus.toUpperCase() === 'IN PROGRESS',
+              'customcolorgreen':row.cbtStatus.toUpperCase() === 'COMPLETED',
+              'customcolorlightGreen':row.cbtStatus.toUpperCase() === 'RELEASED' || row.cbtStatus.toUpperCase() === 'STARTED'}">
+              {{ row.cbtStatus | uppercase }}
+            </span>
+          </div>
+
+          <!-- {{row.cbtStatus}}  -->
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="testStatus">
+        <th style="padding: 3px; text-align: center;" mat-header-cell *matHeaderCellDef mat-sort-header>
+          Test Status
+        </th>
+        <td mat-cell style="text-align: center;" *matCellDef="let row">
+          <!-- {{row.testStatus}} -->
+          <div class="d-inline-block">
+            <span class="
+                py-2
+                px-4
+                rounded
+                flex flex-row
+                text-center text-xs
+                font-medium
+              "
+              [ngClass]="{'customcolororange':(row.testStatus).toUpperCase() === 'NOT STARTED',
+              'customcolorBlue':row.testStatus.toUpperCase() === 'IN PROGRESS'}">
+              {{ row.testStatus | uppercase }}
+            </span>
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="retakeCount">
+        <th style="padding: 3px; text-align: center;" mat-header-cell *matHeaderCellDef mat-sort-header>
+          Retakes Linked
+        </th>
+        <td mat-cell style="text-align: center;" *matCellDef="let row">
+          <div class="d-inline-block">
+              <span class="cursor-pointer linkText" (click)="openRetakeStatusPanel(retakestatuses,row)">{{ row.retakeCount | number:'2.0' }}</span>
+          </div>
+          <!-- {{row.reTakeStatus}} -->
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="evaluationCompletedDate">
+        <th style="padding: 3px; text-align: center;" mat-header-cell *matHeaderCellDef mat-sort-header>
+          Class Completion Date
+        </th>
+        <td mat-cell style="text-align:center;" *matCellDef="let row">         
+          <div style="width:70%;align-items: center;" class="flex flex-row mat-elevation-z3 p-2"
+            *ngIf="editType === 'completionDate' && editId === row.classEmployeeId">
+            <input type="date" [value]="row.evaluationCompletedDate?this.datePipe.transform(row.evaluationCompletedDate, 'yyyy-MM-dd'):''" [(ngModel)] = "valueToSave"/>
+            <app-button [disabled]="isSaving || valueToSave === null || valueToSave === ''" (click)="isSaving || valueToSave === null || valueToSave === ''? false:updateValue(row.classEmployeeId);" ButtonType="icon" icon="check"
+              class="mx-3 linkText"></app-button>
+            <mat-icon class="linkText" (click)="editType = 'none';editId = ''">close</mat-icon>
+          </div>
+          <div style="width:fit-content; margin: 0px auto;" class="cursor-pointer"
+            *ngIf="editType !== 'completionDate' || editId !== row.classEmployeeId"
+            (click)="editId = row.classEmployeeId;editType = 'completionDate';valueToSave=row.evaluationCompletedDate === null || row.evaluationCompletedDate === '' ? null:this.datePipe.transform(row.evaluationCompletedDate, 'yyyy-MM-dd');">
+            {{ row.evaluationCompletedDate === null ? 'N/A':  (row.evaluationCompletedDate| dateFormat | async)}}
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="score">
+        <th style="padding: 3px; text-align: center;" mat-header-cell *matHeaderCellDef mat-sort-header>
+          Final Score
+        </th>
+        <td mat-cell style="text-align: center;" *matCellDef="let row">
+          <div style="width:70%;align-items: center;" class="flex flex-row mat-elevation-z3 p-2"
+            *ngIf="editType === 'score' && editId === row.classEmployeeId">
+            <input [(ngModel)]="valueToSave" (keypress)="keyPressNumbers($event)" style="outline:none;" class="w-full"
+              [value]="row.score === null || row.score === '' ? 0:row.score" type="text" maxlength="3">
+            <app-button [disabled]="isSaving || valueToSave === null || valueToSave === ''" (click)="isSaving || valueToSave === null || valueToSave === '' ? false:updateValue(row.classEmployeeId);" ButtonType="icon" icon="check"
+              class="mx-3 linkText"></app-button>
+            <mat-icon class="linkText" (click)="editType = 'none';editId = ''">close</mat-icon>
+          </div>
+          <div style="width:fit-content; margin: 0px auto;" class="cursor-pointer"
+            *ngIf="editType !== 'score' || editId !== row.classEmployeeId"
+            (click)="editId = row.classEmployeeId;editType = 'score';valueToSave=row.score === null || row.score === '' ? 0:row.score;">
+            {{ row.score === null || row.score === '' ? "N/A":row.score }}
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="grade">
+        <th style="padding: 3px; text-align: center;" mat-header-cell *matHeaderCellDef mat-sort-header>
+          Final Grade
+        </th>
+        <td mat-cell style="text-align: center;" *matCellDef="let row">
+          <div style="width:70%;" class="flex flex-col" *ngIf="editType === 'grade' && editId === row.classEmployeeId">
+            <div class="flex flex-row mat-elevation-z3 p-2" style="align-items:center;">
+              <input [(ngModel)]="valueToSave" (input)="checkInputTbl($event)" style="outline:none;" class="w-full"
+                [value]="row.grade === null || row.grade === '' ? '':row.grade" [maxLength]="1">
+              <app-button [disabled]="isSaving || tblGradeError" (click)="isSaving || tblGradeError ? false:updateValue(row.classEmployeeId);" ButtonType="icon"
+               icon="check" class="mx-3 linkText"></app-button>
+              <mat-icon class="linkText" (click)="editType = 'none';editId = '';tblGradeError=false;">close</mat-icon>
+            </div>
+            <app-input-error *ngIf="tblGradeError;" text="Only P, F, W, O grades allowed"></app-input-error>
+          </div>
+          <div style="width:fit-content; margin: 0px auto;" class="cursor-pointer"
+            *ngIf="editType !== 'grade' || editId !== row.classEmployeeId"
+            (click)="editId = row.classEmployeeId;editType = 'grade';valueToSave=(row.grade === null || row.grade === '' ? '':row.grade);validGrades.includes(valueToSave.trim().toUpperCase()) ? tblGradeError = false:tblGradeError=true">
+            {{ row.grade === null || row.grade === '' ? "N/A" : row.grade }}
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="gradeNotes">
+        <th style="padding: 3px; text-align: center;" mat-header-cell *matHeaderCellDef mat-sort-header>
+          Grade Notes
+        </th>
+        <td mat-cell style="text-align: center;" *matCellDef="let row">
+          <div   class="flex flex-col" *ngIf="editType === 'notes' && editId === row.classEmployeeId">
+            <div class="flex flex-row mat-elevation-z3 p-2" style="align-items:center;">
+              <app-textarea [(ngModel)]="valueToSave" style="outline:none;"
+                [value]="row.gradeNotes === null || row.gradeNotes === '' ? '':row.gradeNotes"></app-textarea>
+              <app-button [disabled]="isSaving" (clicked)="updateValue(row.classEmployeeId);" ButtonType="icon" icon="check"
+                class="mx-3 linkText"></app-button>
+              <mat-icon class="linkText" (click)="editType = 'none';editId = '';tblGradeError=false;">close</mat-icon>
+            </div>
+          </div>
+          <div style="width:fit-content; margin: 0px auto;" class="cursor-pointer"
+            *ngIf="editType !== 'notes' || editId !== row.classEmployeeId"
+            (click)="editId = row.classEmployeeId;editType = 'notes';valueToSave=(row.gradeNotes === null || row.gradeNotes === '' ? '':row.gradeNotes)">
+            {{ row.gradeNotes === null || row.gradeNotes === '' ? "N/A":row.gradeNotes }}
+          </div>
+        </td>
+      </ng-container>
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header>
+        </th>
+        <td mat-cell style="text-align: center;" *matCellDef="let row">
+          <app-icon class="cursor-pointer" [mat-menu-trigger-for]="options" icon="more_vert"></app-icon>
+          <mat-menu backdropClass="qtd__menu" #options>
+            <label mat-menu-item (click) = "openFlyInPanelUpdateEnrollment(updateEnrollment,row)">Update Enrollment</label>
+            <label mat-menu-item (click)="removeEMPDialog(deleteDialog,row,'unenroll')">Unenroll</label>
+          </mat-menu>
+        </td>
+      </ng-container>
+      <tr mat-header-row *matHeaderRowDef="displayOverviewColumns"></tr>
+      <tr mat-row *matRowDef="let row; columns: displayOverviewColumns"></tr>
+
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row text-center" *matNoDataRow>
+        <td [colSpan]="displayOverviewColumns.length" class="mat-cell w-full m-2">No data matching the filter</td>
+      </tr>
+    </table>
+  </div>
+</div>
+
+<ng-template #editScore>
+  <app-fly-panel-edit-score (closed)="flyPanelSrvc.close()"></app-fly-panel-edit-score>
+</ng-template>
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue [header]="'Remove ' + (('Employee' | labelReplacement)| async)" [description]="description" [confirmText]="'Yes'" [cancelText]="'No'"
+    (canceled)="dialog.closeAll()" [showEffectiveDateAndReason]="false"
+    (confirmed)="unenrollStudent(doUnEnrollFor)"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #retakestatuses>
+  <app-flypanel-retake-status [classId]="classId" [empId]="selectedEMPId"></app-flypanel-retake-status>
+</ng-template>
+
+<ng-template #updateEnrollment>
+  <app-fly-panel-edit-enrollment (updateEnrollment) = "updateClassScheduleEnrollment($event)" [classId] = "classId" [currrentEmployee] = "currrentEmployee" (closed)="flyPanelSrvc.close()" [ilaId] = "ilaId"></app-fly-panel-edit-enrollment>
+</ng-template>
+
+<ng-template #bulkUpdateDialog>
+  <app-roster-bulk-update-dialog (bulkUpdateGrade) = "bulkGradeUpdate($event)"  (canceled)="dialog.closeAll()" [ilaId] = "ilaId" [employeesDetail] = "overviewEmployeeDetails" [classId] = "classId" ></app-roster-bulk-update-dialog>
+</ng-template>
+
+

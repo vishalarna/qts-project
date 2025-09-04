@@ -1,0 +1,2150 @@
+﻿[
+  {
+    "Id": 1,
+    "ReportSkeletonId": 1,
+    "OfficialReportTitle": "Tasks by Positions",
+    "InternalReportTitle": "Tasks for Operators",
+    "Category": "JTA Positions",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 1,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Positions"
+      },
+      {
+        "ReportId": 1,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,12/31/2022",
+        "Name": "Date Range"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 1,
+        "ColumnName": "DutyArea",
+        "Display": true
+      },
+      {
+        "ReportId": 1,
+        "ColumnName": "SubDutyArea",
+        "Display": true
+      },
+      {
+        "ReportId": 1,
+        "ColumnName": "Topic",
+        "Display": true
+      },
+      {
+        "ReportId": 1,
+        "ColumnName": "TaskId",
+        "Display": true
+      },
+      {
+        "ReportId": 1,
+        "ColumnName": "TaskDescription",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "ReportSkeletonId": 1,
+    "OfficialReportTitle": "Tasks by Positions",
+    "InternalReportTitle": "Tasks for Supervisors",
+    "Category": "JTA Positions",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 2,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "3",
+        "Name": "Positions"
+      },
+      {
+        "ReportId": 2,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,12/31/2022",
+        "Name": "Date Range"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 2,
+        "ColumnName": "DutyArea",
+        "Display": true
+      },
+      {
+        "ReportId": 2,
+        "ColumnName": "SubDutyArea",
+        "Display": true
+      },
+      {
+        "ReportId": 2,
+        "ColumnName": "Topic",
+        "Display": true
+      },
+      {
+        "ReportId": 2,
+        "ColumnName": "TaskId",
+        "Display": true
+      },
+      {
+        "ReportId": 2,
+        "ColumnName": "TaskDescription",
+        "Display": false
+      }
+    ]
+  },
+  {
+    "Id": 3,
+    "ReportSkeletonId": 2,
+    "OfficialReportTitle": "IDP Review Completion History",
+    "InternalReportTitle": "IDP Review",
+    "Category": "Employee Data",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 3,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1",
+        "Name": "IDP Reviewers"
+      },
+      {
+        "ReportId": 3,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,12/31/2022",
+        "Name": "Date Range"
+      },
+      {
+        "ReportId": 3,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "3",
+        "Name": "IDP Status"
+      },
+      {
+        "ReportId": 3,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "true",
+        "Name": "Include Inactive Employees"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 3,
+        "ColumnName": "Employee Name",
+        "Display": true
+      },
+      {
+        "ReportId": 3,
+        "ColumnName": "Position Abbreviation",
+        "Display": true
+      },
+      {
+        "ReportId": 3,
+        "ColumnName": "Release Date",
+        "Display": true
+      },
+      {
+        "ReportId": 3,
+        "ColumnName": "Completed Date",
+        "Display": true
+      },
+      {
+        "ReportId": 3,
+        "ColumnName": "Completion Status",
+        "Display": true
+      },
+      {
+        "ReportId": 3,
+        "ColumnName": "IDP Review Response",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 4,
+    "ReportSkeletonId": 3,
+    "OfficialReportTitle": "Training Schedule by Class",
+    "InternalReportTitle": "Training Schedule by Class",
+    "Category": "Training Delivery",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 4,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Employee Active Status"
+      },
+      {
+        "ReportId": 4,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "2,3,4",
+        "Name": "Class"
+      }
+    ],
+    "DisplayColumns": []
+  },
+  {
+    "Id": 5,
+    "ReportSkeletonId": 4,
+    "OfficialReportTitle": "ILA By Provider",
+    "InternalReportTitle": "ILA By Providers",
+    "Category": "ILAs, Programs, & Evals",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 5,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "2,3",
+        "Name": "Providers"
+      },
+      {
+        "ReportId": 5,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "ILA Status"
+      },
+      {
+        "ReportId": 5,
+        "PropertyType": "int",
+        "ValueType": "single",
+        "Value": "1",
+        "Name": "ILAs with Approvals expiring within Months"
+      },
+      {
+        "ReportId": 5,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "2,3",
+        "Name": "Delivery Method"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 5,
+        "ColumnName": "ILA Number",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "ILA Title",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Self-paced ?",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Partial Credit?",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "ILA Application Date",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Approval Date",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Total CEHs",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Standards",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Operational Topic",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Simulator",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Nerc - EOPs",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Per-005 EOPs",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Regional",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Regional 2",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Other",
+        "Display": true
+      },
+      {
+        "ReportId": 5,
+        "ColumnName": "Total",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 6,
+    "ReportSkeletonId": 5,
+    "OfficialReportTitle": "Task by Task Group",
+    "InternalReportTitle": "Task for Task Group",
+    "Category": "JTA Tasks",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 6,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "All Assigned Task Groups",
+        "Name": "Task Group Range"
+      },
+      {
+        "ReportId": 6,
+        "PropertyType": "Int",
+        "ValueType": "single",
+        "Value": "1",
+        "Name": "Task Group Id"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 6,
+        "ColumnName": "DutyArea",
+        "Display": true
+      },
+      {
+        "ReportId": 6,
+        "ColumnName": "SubDutyArea",
+        "Display": true
+      },
+      {
+        "ReportId": 6,
+        "ColumnName": "Topic",
+        "Display": true
+      },
+      {
+        "ReportId": 6,
+        "ColumnName": "TaskId",
+        "Display": true
+      },
+      {
+        "ReportId": 6,
+        "ColumnName": "TaskDescription",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 7,
+    "ReportSkeletonId": 6,
+    "OfficialReportTitle": "Student Evaluation Form",
+    "InternalReportTitle": "Classroom Student Evaluation Form",
+    "Category": "Student Evaluations",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 7,
+        "PropertyType": "int",
+        "ValueType": "single",
+        "Value": "1",
+        "Name": "Evaluation Form"
+      }
+    ],
+    "DisplayColumns": [
+
+    ]
+  },
+  {
+    "Id": 8,
+    "ReportSkeletonId": 7,
+    "OfficialReportTitle": "Positions",
+    "InternalReportTitle": "Position Details",
+    "Category": "MyData",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 8,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Active Only/Inactive Only/All Positions"
+      },
+      {
+        "ReportId": 8,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "2,3",
+        "Name": "Positions"
+      },
+      {
+        "ReportId": 8,
+        "PropertyType": "Int",
+        "ValueType": "single",
+        "Value": "1",
+        "Name": "Select Position Version"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 8,
+        "ColumnName": "Position Abbreviation",
+        "Display": true
+      },
+      {
+        "ReportId": 8,
+        "ColumnName": "Position Description",
+        "Display": true
+      },
+      {
+        "ReportId": 8,
+        "ColumnName": "Effective Date",
+        "Display": true
+      },
+      {
+        "ReportId": 8,
+        "ColumnName": "Note",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 9,
+    "ReportSkeletonId": 8,
+    "OfficialReportTitle": "Employees By Position",
+    "InternalReportTitle": "Employee Positions",
+    "Category": "Employees by Position",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 9,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "By Position"
+      },
+      {
+        "ReportId": 9,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Active Only/Inactive Only/All Employees"
+      },
+      {
+        "ReportId": 9,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Current Position Only"
+      },
+      {
+        "ReportId": 9,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Trainees"
+      },
+      {
+        "ReportId": 9,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Employee Notes"
+      },
+      {
+        "ReportId": 9,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,12/31/2022",
+        "Name": "Date Range"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 9,
+        "ColumnName": "Employee Number",
+        "Display": true
+      },
+      {
+        "ReportId": 9,
+        "ColumnName": "Position Qualification Date",
+        "Display": true
+      },
+      {
+        "ReportId": 9,
+        "ColumnName": "Task Qualification Evaluator",
+        "Display": true
+      },
+      {
+        "ReportId": 9,
+        "ColumnName": "NERC Cert Type",
+        "Display": true
+      },
+      {
+        "ReportId": 9,
+        "ColumnName": "NERC Cert #",
+        "Display": true
+      },
+      {
+        "ReportId": 9,
+        "ColumnName": "NERC Cert Issue Date",
+        "Display": true
+      },
+      {
+        "ReportId": 9,
+        "ColumnName": "NERC Cert Recert Date",
+        "Display": true
+      },
+      {
+        "ReportId": 9,
+        "ColumnName": "NERC Cert Expiration Date",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 10,
+    "ReportSkeletonId": 9,
+    "OfficialReportTitle": "Position Linkages",
+    "InternalReportTitle": "Position Linkages",
+    "Category": "My Data",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 10,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Select Positions"
+      },
+      {
+        "ReportId": 10,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Tasks Linked to Position"
+      },
+      {
+        "ReportId": 10,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Enabling Objectives Linked to Position"
+      },
+      {
+        "ReportId": 10,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "EOs flagged as Skills Linked to Position"
+      },
+      {
+        "ReportId": 10,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Meta EOs"
+      },
+      {
+        "ReportId": 10,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Employee"
+      },
+      {
+        "ReportId": 10,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "All"
+      },
+      {
+        "ReportId": 10,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,12/31/2022",
+        "Name": "Select Date Range"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 10,
+        "ColumnName": "Start Date",
+        "Display": true
+      },
+      {
+        "ReportId": 10,
+        "ColumnName": "Trainee Status",
+        "Display": true
+      },
+      {
+        "ReportId": 10,
+        "ColumnName": "Position Qualification Date",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 11,
+    "ReportSkeletonId": 10,
+    "OfficialReportTitle": "Employees By Organization",
+    "InternalReportTitle": "Employee Organizations",
+    "Category": "Employees by Organization",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 11,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "By Organization"
+      },
+      {
+        "ReportId": 11,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Active Only/Inactive Only/All Employees"
+      },
+      {
+        "ReportId": 11,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Current Position Only"
+      },
+      {
+        "ReportId": 11,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Trainees"
+      },
+      {
+        "ReportId": 11,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Employee Notes"
+      },
+      {
+        "ReportId": 11,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,12/31/2022",
+        "Name": "Date Range"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 11,
+        "ColumnName": "Employee Number",
+        "Display": true
+      },
+      {
+        "ReportId": 11,
+        "ColumnName": "Position Qualification Date",
+        "Display": true
+      },
+      {
+        "ReportId": 11,
+        "ColumnName": "Task Qualification Evaluator",
+        "Display": true
+      },
+      {
+        "ReportId": 11,
+        "ColumnName": "NERC Cert Type",
+        "Display": true
+      },
+      {
+        "ReportId": 11,
+        "ColumnName": "NERC Cert #",
+        "Display": true
+      },
+      {
+        "ReportId": 11,
+        "ColumnName": "NERC Cert Issue Date",
+        "Display": true
+      },
+      {
+        "ReportId": 11,
+        "ColumnName": "NERC Cert Recert Date",
+        "Display": true
+      },
+      {
+        "ReportId": 11,
+        "ColumnName": "NERC Cert Expiration Date",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 12,
+    "ReportSkeletonId": 11,
+    "OfficialReportTitle": "Employee Position History",
+    "InternalReportTitle": "Employee Position History",
+    "Category": "Employee Training",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 12,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Select Employees"
+      },
+      {
+        "ReportId": 12,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Employee"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 12,
+        "ColumnName": "Start Date",
+        "Display": true
+      },
+      {
+        "ReportId": 12,
+        "ColumnName": "End Date",
+        "Display": true
+      },
+      {
+        "ReportId": 12,
+        "ColumnName": "Qualification Date",
+        "Display": true
+      },
+      {
+        "ReportId": 12,
+        "ColumnName": "Positions",
+        "Display": true
+      },
+      {
+        "ReportId": 12,
+        "ColumnName": "Employee",
+        "Display": true
+      },
+      {
+        "ReportId": 12,
+        "ColumnName": "Current Positions",
+        "Display": true
+      },
+      {
+        "ReportId": 12,
+        "ColumnName": "Organization",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 13,
+    "ReportSkeletonId": 12,
+    "OfficialReportTitle": "Employee Certification History",
+    "InternalReportTitle": "NERC Certification History",
+    "Category": "Employee Training",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 13,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Employee Filter"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 13,
+        "ColumnName": "Employee",
+        "Display": true
+      },
+      {
+        "ReportId": 13,
+        "ColumnName": "Positions",
+        "Display": true
+      },
+      {
+        "ReportId": 13,
+        "ColumnName": "Organization",
+        "Display": true
+      },
+      {
+        "ReportId": 13,
+        "ColumnName": "Issue Date",
+        "Display": true
+      },
+      {
+        "ReportId": 13,
+        "ColumnName": "Cert Area",
+        "Display": true
+      },
+      {
+        "ReportId": 13,
+        "ColumnName": "Certification #",
+        "Display": true
+      },
+      {
+        "ReportId": 13,
+        "ColumnName": "Recert. Date",
+        "Display": true
+      },
+      {
+        "ReportId": 13,
+        "ColumnName": "Expiration Date",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 14,
+    "ReportSkeletonId": 13,
+    "OfficialReportTitle": "ILA Completion History",
+    "InternalReportTitle": "ILA Completion History",
+    "Category": "Training Delivery",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 14,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "2,3,4",
+        "Name": "ILA"
+      },
+      {
+        "ReportId": 14,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,12/31/2022",
+        "Name": "Date Range"
+      },
+      {
+        "ReportId": 14,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "All Enrolled Students",
+        "Name": "Enrollment Status"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 14,
+        "ColumnName": "ILA Provider",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "ILA ID",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "ILA Title",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "Employee ID",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "NERC Cert #",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "Certification Area",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "Course Start Date",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "Course End Date",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "Instructor",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "Course Location",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "Score",
+        "Display": true
+      },
+      {
+        "ReportId": 14,
+        "ColumnName": "Grade",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 15,
+    "ReportSkeletonId": 14,
+    "OfficialReportTitle": "Classes by ILA",
+    "InternalReportTitle": "Classes by ILA",
+    "Category": "Training Delivery",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 15,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "2,3,4",
+        "Name": "ILA"
+      },
+      {
+        "ReportId": 15,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,12/31/2022",
+        "Name": "Date Range"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 15,
+        "ColumnName": "Prov. ID",
+        "Display": true
+      },
+      {
+        "ReportId": 15,
+        "ColumnName": "ILA",
+        "Display": true
+      },
+      {
+        "ReportId": 15,
+        "ColumnName": "Year",
+        "Display": true
+      },
+      {
+        "ReportId": 15,
+        "ColumnName": "Class Start Date",
+        "Display": true
+      },
+      {
+        "ReportId": 15,
+        "ColumnName": "Class End Date",
+        "Display": true
+      },
+      {
+        "ReportId": 15,
+        "ColumnName": "Instructor",
+        "Display": true
+      },
+      {
+        "ReportId": 15,
+        "ColumnName": "Location",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 16,
+    "ReportSkeletonId": 15,
+    "OfficialReportTitle": "ILA Design Specifications",
+    "InternalReportTitle": "ILA Design Specifications",
+    "Category": "ILAs, Programs, & Evals",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 16,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "2,3,4",
+        "Name": "ILA"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 16,
+        "ColumnName": "ILA Procedures",
+        "Display": true
+      },
+      {
+        "ReportId": 16,
+        "ColumnName": "Safety Hazards",
+        "Display": true
+      },
+      {
+        "ReportId": 16,
+        "ColumnName": "ILA Segment and Content",
+        "Display": true
+      },
+      {
+        "ReportId": 16,
+        "ColumnName": "List of Objectives",
+        "Display": true
+      },
+      {
+        "ReportId": 16,
+        "ColumnName": "Use Sequenced List",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 17,
+    "ReportSkeletonId": 16,
+    "OfficialReportTitle": "List of Task Qualification Evaluators",
+    "InternalReportTitle": "List of Task Qualification Evaluators",
+    "Category": "Employee Training",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 17,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Select Employees"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 17,
+        "ColumnName": "Employee Name",
+        "Display": true
+      },
+      {
+        "ReportId": 17,
+        "ColumnName": "Organization",
+        "Display": true
+      },
+      {
+        "ReportId": 17,
+        "ColumnName": "Custom Position Abbreviation",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 18,
+    "ReportSkeletonId": 18,
+    "OfficialReportTitle": "Task Requalification by Position",
+    "InternalReportTitle": "Task Requalification by Position",
+    "Category": "Employee Training",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 18,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "1",
+        "Name": "Position"
+      },
+      {
+        "ReportId": 18,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2001,06/20/2023",
+        "Name": "Time Period for Task Revisions"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 18,
+        "ColumnName": "Employee",
+        "Display": true
+      },
+      {
+        "ReportId": 18,
+        "ColumnName": "Positions Qualification Date",
+        "Display": true
+      },
+      {
+        "ReportId": 18,
+        "ColumnName": "Requalification Date",
+        "Display": true
+      },
+      {
+        "ReportId": 18,
+        "ColumnName": "ILA Name/ID",
+        "Display": true
+      },
+      {
+        "ReportId": 18,
+        "ColumnName": "Requalification Status",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 19,
+    "ReportSkeletonId": 19,
+    "OfficialReportTitle": "Training Qualification Records",
+    "InternalReportTitle": "Employeee Task Qualification Records (All)",
+    "Category": "Employee Training",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 19,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Employees"
+      },
+      {
+        "ReportId": 19,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "true",
+        "Name": "Active Positions Only"
+      },
+      {
+        "ReportId": 19,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2023,07/31/2023",
+        "Name": "Date Range"
+      },
+      {
+        "ReportId": 19,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Reliability Related Tasks"
+      },
+      {
+        "ReportId": 19,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "true",
+        "Name": "Active Tasks Only"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 19,
+        "ColumnName": "Task Number",
+        "Display": true
+      },
+      {
+        "ReportId": 19,
+        "ColumnName": "Task Description",
+        "Display": true
+      },
+      {
+        "ReportId": 19,
+        "ColumnName": "Evaluator",
+        "Display": true
+      },
+      {
+        "ReportId": 19,
+        "ColumnName": "Evaluation Method",
+        "Display": true
+      },
+      {
+        "ReportId": 19,
+        "ColumnName": "Date",
+        "Display": true
+      },
+      {
+        "ReportId": 19,
+        "ColumnName": "Met Criteria",
+        "Display": true
+      },
+      {
+        "ReportId": 19,
+        "ColumnName": "Comments",
+        "Display": true
+      },
+      {
+        "ReportId": 19,
+        "ColumnName": "Evaluator and Mode of Qualification",
+        "Display": true
+      },
+      {
+        "ReportId": 19,
+        "ColumnName": "Pseudo Tasks",
+        "Display": true
+      },
+      {
+        "ReportId": 19,
+        "ColumnName": "Trainees",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 20,
+    "ReportSkeletonId": 17,
+    "OfficialReportTitle": "Self Paced by Date Range",
+    "InternalReportTitle": "Self Paced by Date Range",
+    "Category": "Training Delivery",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 20,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "1",
+        "Name": "ILA"
+      },
+      {
+        "ReportId": 20,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,07/31/2023",
+        "Name": "Date Range"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 20,
+        "ColumnName": "Class End Date",
+        "Display": true
+      },
+      {
+        "ReportId": 20,
+        "ColumnName": "Instructor",
+        "Display": true
+      },
+      {
+        "ReportId": 20,
+        "ColumnName": "Location",
+        "Display": true
+      },
+      {
+        "ReportId": 20,
+        "ColumnName": "Forms Completed",
+        "Display": true
+      },
+      {
+        "ReportId": 20,
+        "ColumnName": "#Participants",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 21,
+    "ReportSkeletonId": 20,
+    "OfficialReportTitle": "Test Items",
+    "InternalReportTitle": "Test Items By Enabling Objective",
+    "Category": "TDT",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 21,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Enabling Objective"
+      }
+    ],
+    "DisplayColumns": []
+  },
+  {
+    "Id": 22,
+    "ReportSkeletonId": 21,
+    "OfficialReportTitle": "Test Specifications",
+    "InternalReportTitle": "Test Specifications",
+    "Category": "TDT",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 22,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Tests"
+      },
+      {
+        "ReportId": 22,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Finished Test Statistic"
+      }
+    ],
+    "DisplayColumns": []
+
+  },
+  {
+    "Id": 23,
+    "ReportSkeletonId": 20,
+    "OfficialReportTitle": "Test Items",
+    "InternalReportTitle": "All Test Items",
+    "Category": "TDT",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 23,
+        "PropertyType": "Boolean",
+        "ValueType": "Single",
+        "Name": "All",
+        "Value": true
+      }
+    ],
+    "DisplayColumns": []
+  },
+  {
+    "Id": 24,
+    "ReportSkeletonId": 20,
+    "OfficialReportTitle": "Test Items",
+    "InternalReportTitle": "Test Items by ILA",
+    "Category": "TDT",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 24,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "2,3,4",
+        "Name": "ILA"
+      }
+    ],
+    "DisplayColumns": []
+  },
+  {
+    "Id": 25,
+    "ReportSkeletonId": 22,
+    "OfficialReportTitle": "Task Requalification by Employee",
+    "InternalReportTitle": "Task Requalification Status by Employee",
+    "Category": "Employee Training",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 25,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "2",
+        "Name": "Employee"
+      },
+      {
+        "ReportId": 25,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,08/22/2023",
+        "Name": "Time Period for Task Revisions"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 25,
+        "ColumnName": "Position",
+        "Display": true
+      },
+      {
+        "ReportId": 25,
+        "ColumnName": "Qualification Date",
+        "Display": true
+      },
+      {
+        "ReportId": 25,
+        "ColumnName": "Task Number",
+        "Display": true
+      },
+      {
+        "ReportId": 25,
+        "ColumnName": "Task Description",
+        "Display": true
+      },
+      {
+        "ReportId": 25,
+        "ColumnName": "Task Revision Date",
+        "Display": true
+      },
+      {
+        "ReportId": 25,
+        "ColumnName": "Requalification Date",
+        "Display": true
+      },
+      {
+        "ReportId": 25,
+        "ColumnName": "ILA ID",
+        "Display": true
+      },
+      {
+        "ReportId": 25,
+        "ColumnName": "Requalification Status",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 26,
+    "ReportSkeletonId": 23,
+    "OfficialReportTitle": "List of Task Evaluators",
+    "InternalReportTitle": "List of Task Evaluators (Active Only)",
+    "Category": "Employee Training",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 26,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "2,3,4",
+        "Name": "Evaluators To Filter"
+      },
+      {
+        "ReportId": 26,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Trainees"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 26,
+        "ColumnName": "Employee Name",
+        "Display": true
+      },
+      {
+        "ReportId": 26,
+        "ColumnName": "Organizations",
+        "Display": true
+      },
+      {
+        "ReportId": 26,
+        "ColumnName": "Positions",
+        "Display": true
+      },
+      {
+        "ReportId": 26,
+        "ColumnName": "Show Assigned Task Qualifications",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 27,
+    "ReportSkeletonId": 24,
+    "OfficialReportTitle": "Student Evaluation Summary - ILA",
+    "InternalReportTitle": "Student Evaluation Summary - ILA",
+    "Category": "Training Delivery",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 27,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "2",
+        "Name": "Class"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 27,
+        "ColumnName": "Class End Date",
+        "Display": true
+      },
+      {
+        "ReportId": 27,
+        "ColumnName": "Instructor",
+        "Display": true
+      },
+      {
+        "ReportId": 27,
+        "ColumnName": "Location",
+        "Display": true
+      },
+      {
+        "ReportId": 27,
+        "ColumnName": "Forms Completed",
+        "Display": true
+      },
+      {
+        "ReportId": 27,
+        "ColumnName": "#Participants",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 28,
+    "ReportSkeletonId": 25,
+    "OfficialReportTitle": "List of Certified Operators",
+    "InternalReportTitle": "List of Certified Operators (Active Only)",
+    "Category": "Employee Training",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 28,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Organization"
+      },
+      {
+        "ReportId": 28,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Active Only/Inactive Only/All Employees"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 28,
+        "ColumnName": "Employee Name",
+        "Display": true
+      },
+      {
+        "ReportId": 28,
+        "ColumnName": "Organization",
+        "Display": true
+      },
+      {
+        "ReportId": 28,
+        "ColumnName": "NERC Cert #",
+        "Display": true
+      },
+      {
+        "ReportId": 28,
+        "ColumnName": "Recert Date",
+        "Display": true
+      },
+      {
+        "ReportId": 28,
+        "ColumnName": "Cert Area",
+        "Display": true
+      },
+      {
+        "ReportId": 28,
+        "ColumnName": "Expiration Date",
+        "Display": true
+      },
+      {
+        "ReportId": 28,
+        "ColumnName": "Position",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 29,
+    "ReportSkeletonId": 26,
+    "OfficialReportTitle": "Issues List",
+    "InternalReportTitle": "Issues List",
+    "Category": "ILAs, Programs, & Evals",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 29,
+        "Name": "Program Type",
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "2"
+      },
+      {
+        "ReportId": 29,
+        "Name": "ILA",
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "2"
+      },
+      {
+        "ReportId": 29,
+        "Name": "OJT / Task Qualification",
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "2"
+      },
+      {
+        "ReportId": 29,
+        "Name": "Open Only",
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "true"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 29,
+        "ColumnName": "Issue ID",
+        "Display": true
+      },
+      {
+        "ReportId": 29,
+        "ColumnName": "Issue Date",
+        "Display": true
+      },
+      {
+        "ReportId": 29,
+        "ColumnName": "Issue Type",
+        "Display": true
+      },
+      {
+        "ReportId": 29,
+        "ColumnName": "Component Type",
+        "Display": true
+      },
+      {
+        "ReportId": 29,
+        "ColumnName": "Severity",
+        "Display": true
+      },
+      {
+        "ReportId": 29,
+        "ColumnName": "Status",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 30,
+    "ReportSkeletonId": 27,
+    "OfficialReportTitle": "Training Summary by Position",
+    "InternalReportTitle": "Training Summary by Position",
+    "Category": "Training Delivery",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 30,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Position"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 30,
+        "ColumnName": "Employee Name / Number",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Cert Area",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Cert Date",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Cert Number",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Total CEHs",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "NERC Standards",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Simulation Hours",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Met Annual Requirement",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Regional",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Regional - Met Annual Requirement",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Regional 2",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Prof",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Other",
+        "Display": true
+      },
+      {
+        "ReportId": 30,
+        "ColumnName": "Total Training Hours",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 31,
+    "ReportSkeletonId": 28,
+    "OfficialReportTitle": "OJT Guide By Position",
+    "InternalReportTitle": "OJT Guide By Position",
+    "Category": "ILAs, Programs, & Evals",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 31,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "1",
+        "Name": "Position"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 31,
+        "ColumnName": "Show only if R-R* for any of the Positions",
+        "Display": true
+      },
+      {
+        "ReportId": 31,
+        "ColumnName": "Include Pseudo Tasks",
+        "Display": true
+      },
+      {
+        "ReportId": 31,
+        "ColumnName": "Show Task Details",
+        "Display": true
+      },
+      {
+        "ReportId": 31,
+        "ColumnName": "Show EO linked to the Tasks",
+        "Display": true
+      },
+      {
+        "ReportId": 31,
+        "ColumnName": "Show Procedures linked to the Tasks",
+        "Display": true
+      },
+      {
+        "ReportId": 31,
+        "ColumnName": "Sub-steps",
+        "Display": true
+      },
+      {
+        "ReportId": 31,
+        "ColumnName": "Cover Sheet",
+        "Display": true
+      },
+      {
+        "ReportId": 31,
+        "ColumnName": "Include Safety Hazards",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 32,
+    "ReportSkeletonId": 29,
+    "OfficialReportTitle": "OJT Guide By Task",
+    "InternalReportTitle": "OJT Guide By Task",
+    "Category": "ILAs, Programs, & Evals",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 32,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Tasks"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 32,
+        "ColumnName": "Show only if R-R* for any of the Positions",
+        "Display": true
+      },
+      {
+        "ReportId": 32,
+        "ColumnName": "Include Pseudo Tasks",
+        "Display": true
+      },
+      {
+        "ReportId": 32,
+        "ColumnName": "Show Task Details",
+        "Display": true
+      },
+      {
+        "ReportId": 32,
+        "ColumnName": "Show EO linked to the Tasks",
+        "Display": true
+      },
+      {
+        "ReportId": 32,
+        "ColumnName": "Show Procedures linked to the Tasks",
+        "Display": true
+      },
+      {
+        "ReportId": 32,
+        "ColumnName": "Sub-steps",
+        "Display": true
+      },
+      {
+        "ReportId": 32,
+        "ColumnName": "Cover Sheet",
+        "Display": true
+      },
+      {
+        "ReportId": 32,
+        "ColumnName": "Include Safety Hazards",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 33,
+    "ReportSkeletonId": 30,
+    "OfficialReportTitle": "OJT Guide By ILA",
+    "InternalReportTitle": "OJT Guide By ILA",
+    "Category": "ILAs, Programs, & Evals",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 33,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "1",
+        "Name": "ILA"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 33,
+        "ColumnName": "Show only if R-R* for any of the Positions",
+        "Display": true
+      },
+      {
+        "ReportId": 33,
+        "ColumnName": "Include Pseudo Tasks",
+        "Display": true
+      },
+      {
+        "ReportId": 33,
+        "ColumnName": "Show Task Details",
+        "Display": true
+      },
+      {
+        "ReportId": 33,
+        "ColumnName": "Show EO linked to the Tasks",
+        "Display": true
+      },
+      {
+        "ReportId": 33,
+        "ColumnName": "Show Procedures linked to the Tasks",
+        "Display": true
+      },
+      {
+        "ReportId": 33,
+        "ColumnName": "Sub-steps",
+        "Display": true
+      },
+      {
+        "ReportId": 33,
+        "ColumnName": "Cover Sheet",
+        "Display": true
+      },
+      {
+        "ReportId": 33,
+        "ColumnName": "Include Safety Hazards",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 34,
+    "ReportSkeletonId": 31,
+    "OfficialReportTitle": "Task Qualification Sheets by Position",
+    "InternalReportTitle": "Task Qualification Sheets by Position",
+    "Category": "ILAs, Programs, & Evals",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 34,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "1",
+        "Name": "Position"
+      },
+      {
+        "ReportId": 34,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Only R-R* for any of the Positions"
+      },
+      {
+        "ReportId": 34,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Pseudo Tasks"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 34,
+        "ColumnName": "Task Details",
+        "Display": true
+      },
+      {
+        "ReportId": 34,
+        "ColumnName": "EOs linked to Task",
+        "Display": true
+      },
+      {
+        "ReportId": 34,
+        "ColumnName": "Procedures linked to Task",
+        "Display": true
+      },
+      {
+        "ReportId": 34,
+        "ColumnName": "Sub-steps",
+        "Display": true
+      },
+      {
+        "ReportId": 34,
+        "ColumnName": "Safety Hazards",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 35,
+    "ReportSkeletonId": 32,
+    "OfficialReportTitle": "Task Qualification Sheets by Task",
+    "InternalReportTitle": "Task Qualification Sheets by Task",
+    "Category": "ILAs, Programs, & Evals",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 35,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Task"
+      },
+      {
+        "ReportId": 35,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Only R-R* for any of the Positions"
+      },
+      {
+        "ReportId": 35,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Pseudo Tasks"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 35,
+        "ColumnName": "Task Details",
+        "Display": true
+      },
+      {
+        "ReportId": 35,
+        "ColumnName": "EOs linked to Task",
+        "Display": true
+      },
+      {
+        "ReportId": 35,
+        "ColumnName": "Procedures linked to the Task",
+        "Display": true
+      },
+      {
+        "ReportId": 35,
+        "ColumnName": "Sub-steps",
+        "Display": true
+      },
+      {
+        "ReportId": 35,
+        "ColumnName": "Safety Hazards",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 36,
+    "ReportSkeletonId": 33,
+    "OfficialReportTitle": "Task Qualification Sheets by ILA",
+    "InternalReportTitle": "Task Qualification Sheets by ILA",
+    "Category": "ILAs, Programs, & Evals",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 36,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "1",
+        "Name": "ILA"
+      },
+      {
+        "ReportId": 36,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Only R-R* for any of the Positions"
+      },
+      {
+        "ReportId": 36,
+        "PropertyType": "boolean",
+        "ValueType": "single",
+        "Value": "false",
+        "Name": "Include Pseudo Tasks"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 36,
+        "ColumnName": "Task Details",
+        "Display": true
+      },
+      {
+        "ReportId": 36,
+        "ColumnName": "EOs linked to Task",
+        "Display": true
+      },
+      {
+        "ReportId": 36,
+        "ColumnName": "Procedures linked to Task",
+        "Display": true
+      },
+      {
+        "ReportId": 36,
+        "ColumnName": "Sub-steps",
+        "Display": true
+      },
+      {
+        "ReportId": 36,
+        "ColumnName": "Safety Hazards",
+        "Display": true
+      }
+    ]
+  },
+  {
+    "Id": 37,
+    "ReportSkeletonId": 34,
+    "OfficialReportTitle": "Procedure Review Completion History",
+    "InternalReportTitle": "Procedure Review Completion History",
+    "Category": "Job and Task Analysis",
+    "ClientUserId": 1,
+    "Filters": [
+      {
+        "ReportId": 37,
+        "PropertyType": "date",
+        "ValueType": "range",
+        "Value": "01/01/2022,12/31/2022",
+        "Name": "Date Range"
+      },
+      {
+        "ReportId": 37,
+        "PropertyType": "int",
+        "ValueType": "array",
+        "Value": "1,2,4,7",
+        "Name": "Procedures"
+      },
+      {
+        "ReportId": 37,
+        "PropertyType": "string",
+        "ValueType": "single",
+        "Value": "Active Only",
+        "Name": "Employee Status"
+      }
+    ],
+    "DisplayColumns": [
+      {
+        "ReportId": 37,
+        "ColumnName": "Issuing Authority",
+        "Display": true
+      },
+      {
+        "ReportId": 37,
+        "ColumnName": "Procedure number",
+        "Display": true
+      },
+      {
+        "ReportId": 37,
+        "ColumnName": "Procedure Title",
+        "Display": true
+      },
+      {
+        "ReportId": 37,
+        "ColumnName": "Employee Name",
+        "Display": true
+      },
+      {
+        "ReportId": 37,
+        "ColumnName": "Positions Abbreviation",
+        "Display": true
+      },
+      {
+        "ReportId": 37,
+        "ColumnName": "Release Date",
+        "Display": true
+      },
+      {
+        "ReportId": 37,
+        "ColumnName": "Completed Date",
+        "Display": true
+      },
+      {
+        "ReportId": 37,
+        "ColumnName": "Status",
+        "Display": true
+      },
+      {
+        "ReportId": 37,
+        "ColumnName": "Procedure Review Response",
+        "Display": true
+      }
+    ]
+  }
+]

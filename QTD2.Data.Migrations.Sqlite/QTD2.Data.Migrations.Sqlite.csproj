@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Configurations>Debug;Release;UAT</Configurations>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LegacyToQtd2Migrator\LegacyToQtd2Migrator.csproj" />
+    <ProjectReference Include="..\QTD2.Data\QTD2.Data.csproj" />
+    <ProjectReference Include="..\QTD2.Infrastructure\QTD2.Infrastructure.csproj" />
+  </ItemGroup>
+</Project>

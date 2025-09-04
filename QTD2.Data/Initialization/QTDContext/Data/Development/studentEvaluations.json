@@ -1,0 +1,26 @@
+[
+  {
+    "RatingScaleId": 1,
+    "Title": "Demo1",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "RatingScaleId": 2,
+    "Title": "Demo2",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "RatingScaleId": 3,
+    "Title": "Demo3",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "RatingScaleId": 4,
+    "Title": "Demo4",
+    "Deleted": false,
+    "Active": true
+  }
+]

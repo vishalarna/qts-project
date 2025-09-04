@@ -1,0 +1,36 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+        <p class="text-xl font-bold text-gray-900">Edit Score/Grade</p>
+        <app-button [disabled]="showSpinner" (click)="closeProvider()" ButtonType='icon' icon="close"></app-button>
+    </div>
+    <div [formGroup]="scoreForm">
+
+        <div class="flex flex-row px-12">
+            <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+                <app-label class="mt-6 float-left label " [for]="'finalScore'" [text]="'Final Score'"></app-label>
+                <app-textbox type="number" formControlName="finalScore" [placeholder]="'Final Score'">
+                </app-textbox>
+           </div>
+           <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+            <app-label class="mt-6 float-left label " [for]="'finalGrade'" [text]="'Final Grade'"></app-label>
+            <app-textbox type="text" [name]="'finalGrade'" formControlName="finalGrade"
+                [placeholder]="'Final Grade'">
+            </app-textbox>
+       </div>
+       
+       </div>
+        <div class="px-12 mt-4">
+            <app-label [for]="'gradeNotes'" [text]="'Grade Notes'"></app-label>
+            <app-textarea required type="text" [placeholder]="'Notes'" formControlName="gradeNotes"
+                [customClasses]="'text-base border w-full h-auto py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+            </app-textarea>
+        </div>
+
+        <!-- Form Ends Here-->
+    </div>
+    <div class="px-12 mt-8 float-right">
+        <app-button [spinner]="showSpinner" [disabled]="scoreForm.invalid || showSpinner" type="button" size="sm"
+            color="secondary" text="Save Changes">
+        </app-button>
+    </div>
+</ng-container>

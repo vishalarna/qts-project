@@ -1,0 +1,171 @@
+<!--container for details info coming from emp student evaluation start/resume evaluation done/submit button-->
+<ng-container *ngIf="detailsInfo">
+    <div class="flex flex-row justify-between">
+        <span class=" text-gray-400 text-lg">{{("ILA" | labelReplacement)| async}} Details</span>
+        <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+      </div>
+    <div class="mt-4 mb-4" style="display:grid;row-gap: 2rem;">
+        <div style="grid-row: 2;grid-column: 1;">
+          <div class="flex flex-col">
+            <span class="font-bold">
+              {{detailsInfo.providerName}}
+            </span>
+            <span class="text-gray-400">
+              Provider Name
+            </span>
+          </div>
+        </div>
+        <div style="grid-row: 2;grid-column: 2;">
+          <div class="flex flex-col">
+            <span class="font-bold">
+              {{detailsInfo.ilaNumber}}
+            </span>
+            <span class="text-gray-400">
+              {{("ILA" | labelReplacement)| async}} NO.
+            </span>
+          </div>
+        </div>
+        <div style="grid-row: 3;grid-column: 1;">
+          <div class="flex flex-col">
+            <span class="font-bold">
+              {{detailsInfo.ilaTitleOnly}}
+            </span>
+            <span class="text-gray-400">
+              {{("ILA" | labelReplacement)| async}} Title
+            </span>
+          </div>
+        </div>
+        <div style="grid-row: 3;grid-column: 2;">
+          <div class="flex flex-col">
+            <span class="font-bold">
+              {{detailsInfo.instructorName}}
+            </span>
+            <span class="text-gray-400">
+              {{("Instructor" | labelReplacement)| async}}
+            </span>
+          </div>
+        </div>
+        <div style="grid-row: 4;grid-column: 1;">
+          <div class="flex flex-col">
+            <span class="font-bold">
+              {{detailsInfo.locationName}}
+            </span>
+            <span class="text-gray-400">
+              {{("Location" | labelReplacement)| async}}s
+            </span>
+          </div>
+        </div>
+        <div style="grid-row: 4;grid-column: 2;">
+          <div class="flex flex-col">
+            <span class="font-bold">
+              {{detailsInfo.completionDate===null || detailsInfo.completionDate===undefined?datePipe.transform(this.effectiveDate, "MM-dd-yyyy"):datePipe.transform(detailsInfo.completionDate, "MM-dd-yyyy")}}
+            </span>
+            <span class="text-gray-400">
+              Completion Date
+            </span>
+          </div>
+        </div>
+
+        <div style="grid-row: 5;grid-column: 1;">
+          <div class="flex flex-col">
+            <span class="font-bold">
+              {{datePipe.transform(detailsInfo.classStartDate, "MM-dd-yyyy")}}
+            </span>
+            <span class="text-gray-400">
+             Start Date
+            </span>
+          </div>
+        </div>
+        <div style="grid-row: 5;grid-column: 2;">
+          <div class="flex flex-col">
+            <span class="font-bold">
+              {{datePipe.transform(detailsInfo.classEndDate, "MM-dd-yyyy")}}
+            </span>
+            <span class="text-gray-400">
+              End Date
+            </span>
+          </div>
+        </div>
+      </div>
+
+</ng-container>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ng-container *ngIf="(!showReasonModal && !reasonOnly)">
+    <mat-dialog-content>
+
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p mat-dialog-title [textContent]="header"></p>
+            <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+            <app-button *ngIf="!detailsInfo" ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+
+        </div>
+        <hr class="mt-1 mb-8">
+        <!--  <app-textbox [(ngModel)]="description" [disabled]="true"></app-textbox> -->
+        <div *ngIf="reasonName && !isHTML  && !detailsInfo" class="flex flex-row">
+            <textarea cdkTextareaAutosize rows="auto" [disabled]="true" style="background-color: white;resize: none;border: none;width: 50%;min-height: fit-content;max-height: fit-content ;overflow: hidden;white-space: nowrap;" [textContent]="description"></textarea>
+            <span class="font-bold" [textContent]="reasonName"></span>
+        </div>
+        <textarea *ngIf="!reasonName && !isHTML && !detailsInfo" cdkTextareaAutosize [disabled]="true" style="background-color: white;resize: none;border: none;width: 100%;min-height: fit-content;overflow: hidden;" [textContent]="description"></textarea>
+        <textarea *ngIf="!reasonName && !isHTML && detailsInfo" cdkTextareaAutosize [disabled]="true" style="color:orange; background-color: white;resize: none;border: none;width: 100%;min-height: fit-content;overflow: hidden;" [textContent]="description"></textarea>
+
+        <div *ngIf="!reasonName && isHTML  && !detailsInfo" cdkTextareaAutosize class="rich-html" style="background-color: white;resize: none;border: none;width: 100%;min-height: fit-content;overflow: hidden;" [innerHTML]="description"></div>
+
+        <p class="mt-3" *ngIf="isQuestion">Are you sure you want to continue?</p>
+        <!-- header ends here -->
+    </mat-dialog-content>
+
+
+    <mat-dialog-actions class="flex flex-row justify-end">
+        <!-- (clicked)="confirm()"
+        (clicked)="cancel()" -->
+        <app-button type="button" (clicked)="closeDialog()" [text]="cancelText" color="grey" size="sm" class="mr-2">
+        </app-button>
+        <app-button type="button" (clicked)="onConfirm($event)" [text]="confirmText" color="secondary" size="sm"
+            class="mr-2" [mat-dialog-close]="!showEffectiveDateAndReason"></app-button>
+    </mat-dialog-actions>
+</ng-container>
+
+<ng-container *ngIf="(showReasonModal || reasonOnly)">
+    <mat-dialog-content>
+
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p mat-dialog-title [textContent]="header"></p>
+            <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+        </div>
+        <hr class="mt-1 mb-4">
+        <p  class="mb-4 text-sm" [textContent]="reasonDescription"></p>
+        <hr *ngIf="reasonDescription" class="mt-1 mb-8">
+        <div class="flex flex-col">
+            <app-label style="color: #7A807E;" text="Effective Date"></app-label>
+            <app-date  [(ngModel)]="effectiveDate"></app-date>
+            <app-label style="color: #7A807E;" text="Note/Reason " class="mt-2 label required"></app-label>
+            <app-textarea [(ngModel)]="reason" #textInput (input)="checkWhitespace(textInput.value)" required></app-textarea>
+            <app-input-error *ngIf="!reason || isWhitespace" text="Note/Reason is Required Or Contains WhiteSpace"></app-input-error>
+
+        </div>
+        <!-- header ends here -->
+    </mat-dialog-content>
+    <mat-dialog-actions class="flex flex-row justify-end">
+        <app-button type="button" (clicked)="onSaveReason($event)" [disabled]="!reason || isWhitespace" text="Save" color="primary" size="sm" class="mr-2">
+        </app-button>
+    </mat-dialog-actions>
+</ng-container>
+
+

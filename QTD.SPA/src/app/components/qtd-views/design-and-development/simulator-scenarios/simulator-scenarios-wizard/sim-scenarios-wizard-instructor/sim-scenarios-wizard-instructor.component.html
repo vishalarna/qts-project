@@ -1,0 +1,36 @@
+<form [formGroup]="ratingScaleForm">
+    <section class="bg-white section p-4 mt-4">
+        <div class="flex flex-row justify-between w-full space-x-4 text-sm mb-3">
+            <div>
+                <p class="font-bold text-lg">Select Rating Scale</p>
+            </div>
+        </div>
+        <div class="step-control">
+            <div>
+                <mat-select [disabled]="mode === 'view'" placeholder="Select Rating Scale" formControlName="ratingScaleId"
+                    (selectionChange)="onRatingScaleChange($event)"
+                    class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white">
+                    <mat-option *ngFor="let rating of ratingScaleList" [value]="rating.id">
+                        {{ rating.ratingScaleDescription }}
+                    </mat-option>
+                </mat-select>
+            </div>
+        </div>
+    </section>
+    <section class="bg-white section p-4 mt-4">
+        <div>
+            <p class="font-bold text-lg">Operating Skills Evaluation Method</p>
+        </div>
+        <div>
+            <app-textarea formControlName="operatingSkills" type="text" (input)="onOperatingSkillsInput()" [isDisabled]="mode === 'view'"
+                [value]="ratingScaleForm.get('operatingSkills')?.value">
+            </app-textarea>
+        </div>
+    </section>
+    <section class="bg-white section p-4 mt-4">
+        <div>
+            <p class="font-bold text-lg">Notes</p>
+        </div>
+        <ckeditor [editor]="editor" [disabled]="mode === 'view'" name="notes" formControlName="notes" (input)="onNotesInput()"></ckeditor>
+    </section>
+</form>

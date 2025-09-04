@@ -1,0 +1,180 @@
+<div class="flex">
+  <form class="flex flex-col w-full" [formGroup]="cbtForm">
+    <app-label [text]="'Select CBT to view '+ (('Employee' | labelReplacement)| async) +' Results'"  class="label required"></app-label>
+    <mat-select formControlName="test" [ngClass]="{'disable-select': !scormForms || scormForms.length === 0 }"
+    (selectionChange)="emitChange()"
+      style="width: 49%"
+      class="
+        appearance-none
+        rounded
+        border
+        w-full
+        px-4
+        py-2.5
+        align-item-end
+        bg-white
+        " [disabled]="!scormForms || scormForms.length === 0
+      "
+    >
+    <mat-option [value]="scormForm.id" *ngFor="let scormForm of scormForms">
+      {{scormForm.name}}
+    </mat-option>
+    </mat-select>
+  </form>
+</div>
+<div *ngIf="!scormForms || scormForms.length === 0" class="flex flex-row mt-4" style="align-items:center;justify-content: center;">
+  <span>No CBT Selected for {{("ILA" | labelReplacement)| async}}</span>
+</div>
+<div class="flex w-full mt-5" style="align-items:center; justify-content: center;" *ngIf="!cbtForm.invalid && rosterData && rosterData.length < 1">
+  No {{("Employee" | labelReplacement)| async}} Enrolled In Roster
+</div>
+<div class="flex flex-col w-full" *ngIf="!cbtForm.invalid && rosterData && rosterData.length > 0">
+  <div class="flex flex-row">
+
+    <app-data-loader *ngIf="hideChart"></app-data-loader>
+    <ng-container *ngIf="!hideChart">
+      <div
+        class="flex flex-row bg-white rounded mt-3 mr-3 pt-3 pl-3 shadow-sm w-fit mb-4"
+        style="width: 50%;align-items: center;justify-content: center;"
+      >
+        <div style="display: block;">
+          <canvas
+            baseChart
+            [type]="'pie'"
+            [data]="pieChartData"
+            [labels]="pieChartLabels"
+            [options]="pieChartOptions"
+            [plugins]="pieChartPlugins"
+            [legend]="pieChartLegend"
+          >
+          </canvas>
+        </div>
+      </div>
+      <div
+        class="flex flex-row bg-white rounded mt-3 pt-3 pl-3 shadow-sm w-fit mb-4"
+        style="width: 50%;align-items: center;justify-content: center;"
+      >
+        <div style="display: block;">
+          <canvas
+            baseChart
+            [data]="barChartData"
+            [options]="barChartOptions"
+            [plugins]="barChartPlugins"
+            [legend]="barChartLegend"
+            [type]="'bar'"
+          >
+          </canvas>
+        </div>
+      </div>
+    </ng-container>
+  </div>
+  <div>
+    <div class="flex mt-4">
+      <table
+        [dataSource]="dataSourcePreTest"
+        mat-table
+        matSort
+        style="border: 1px solid #e5e7eb"
+        class="w-full"
+      >
+
+        <ng-container matColumnDef="employee">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{("Employee" | labelReplacement)| async}}
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <div class="flex flex-row" style="align-items:center;">
+              <img
+              style="border-radius: 50%; width: 50px; height: 50px"
+              class="img-fluid mr-2 mt-2 ml-2 mb-2"
+              [src]="row.image"
+              onerror="this.src='assets/img/ImageNotFound.jpg'"
+            />
+              <div class="flex flex-col">
+                <span style="line-break:anywhere;">{{row.employeeName}}</span>
+                <span style="line-break:anywhere;">{{row.empEmail}}</span>
+              </div>
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="releaseDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Release Date
+          </th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.releaseDate === null ? 'N/A':   (row.releaseDate | dateFormat | async)  }}
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="cbtScore">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            CBT Score
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <div style="width:70%;align-items: center;" class="flex flex-row mat-elevation-z3 p-2" *ngIf="editType === 'score' && editId === row.empId">
+              <input [(ngModel)]="valueToSave" (keypress)="keyPressNumbers($event)" style="outline:none;" class="w-full" [value]="row.score === null || row.score === '' ? 0:row.score" type="text" maxlength="3">
+              <app-button [disabled]="isSaving" (clicked)="updateValue(row.empId);" ButtonType="icon" icon="check" class="mx-3 linkText"></app-button>
+              <mat-icon class="linkText" (click)="editType = 'none';editId = ''">close</mat-icon>
+            </div>
+            <div style="width:fit-content;" class="cursor-pointer" *ngIf="editType !== 'score' || editId !== row.empId" (click)="editId = row.empId;editType = 'score';valueToSave=row.score === null || row.score === '' ? 0:row.score;">
+              {{ row.score === null || row.score === '' ? "N/A":row.score }}
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="cbtGrade">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            CBT Grade
+          </th>
+          <td mat-cell *matCellDef="let row">
+            <div style="width:70%;" class="flex flex-col" *ngIf="editType === 'grade' && editId === row.empId">
+              <div class="flex flex-row mat-elevation-z3 p-2" style="align-items:center;">
+                <input [(ngModel)]="valueToSave" (input)="checkInputTbl($event)" style="outline:none;" class="w-full" [value]="row.grade === null || row.grade === '' ? '':row.grade" [maxLength]="1">
+                <app-button [disabled]="isSaving" (clicked)="updateValue(row.empId);" ButtonType="icon" [disabled]="tblGradeError" icon="check" class="mx-3 linkText"></app-button>
+                <mat-icon class="linkText" (click)="editType = 'none';editId = '';tblGradeError=false;">close</mat-icon>
+              </div>
+              <app-input-error *ngIf="tblGradeError;" text="Only P,F,W grades allowed"></app-input-error>
+            </div>
+            <div style="width:fit-content;" class="cursor-pointer" *ngIf="editType !== 'grade' || editId !== row.empId" (click)="editId = row.empId;editType = 'grade';valueToSave=(row.grade === null || row.grade === '' ? '':row.grade)">
+              {{ row.grade === null || row.grade === '' ? "N/A":row.grade }}
+            </div>
+          </td>
+        </ng-container>
+        <ng-container matColumnDef="completedDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+            Completed Date</th>
+          <td mat-cell *matCellDef="let row">
+            <div style="width:83%;" class="flex flex-col" *ngIf="editType === 'compDate' && editId === row.empId">
+              <div class="flex flex-row mat-elevation-z3 p-2" style="align-items:center;">
+                <app-date [(defaultValue)]="compDate" [(ngModel)]="compDate"></app-date>
+                <app-button [disabled]="isSaving" (clicked)="updateValue(row.empId);" ButtonType="icon"
+                   icon="check" class="mx-3 linkText"></app-button>
+                <mat-icon class="linkText"
+                  (click)="editType = 'none';editId = '';">close</mat-icon>
+              </div>
+            </div>
+            <div style="width:fit-content;" class="cursor-pointer" *ngIf="editType !== 'compDate' || editId !== row.empId"
+              (click)="editId = row.empId;editType = 'compDate';compDate=(row.completedDate === null ? null:(datePipe.transform(row.completedDate,'yyyy-MM-dd')).toString())">
+              <span>{{ row.completedDate === null ? 'N/A': (row.completedDate | dateFormat | async)  }}</span>
+            </div>
+          </td>
+        </ng-container>
+        <tr mat-header-row *matHeaderRowDef="displayedAllColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedAllColumns"></tr>
+
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row flex text-center" *matNoDataRow>
+          <td class="mat-cell w-full m-2">No data matching the filter</td>
+        </tr>
+      </table>
+    </div>
+  </div>
+  <div class="flex flex-row my-3" style="align-items:baseline;">
+    <app-textbox [(ngModel)]="gradeValue" [maxLength]="1" (input)="checkInput($event);"></app-textbox>
+    <app-button (clicked)="bulkUpdate()" [disabled]="gradeError || spinner" [spinner]="spinner" ButtonType="button" size="sm" text="Enter Grade" class="ml-3"></app-button>
+  </div>
+  <app-input-error *ngIf="gradeError" text="Please Enter a Valid Grade i.e. P, F, W"></app-input-error>
+</div>
+
+<ng-template #editGrades>
+  <app-fly-panel-edit-grades (closed)="flyPanelSrvc.close()">
+  </app-fly-panel-edit-grades>
+</ng-template>

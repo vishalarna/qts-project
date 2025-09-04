@@ -1,0 +1,56 @@
+[
+  {
+    "Name": "Training Program Reviews",
+    "LinkedDataType": "TrainingProgramReviews",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "Employee Details",
+    "LinkedDataType": "Employees",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "DIF Survey",
+    "LinkedDataType": "Positions",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "OJT",
+    "LinkedDataType": "Employees",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "Other Employee Course Completion Info",
+    "LinkedDataType": "Employees",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "Sign In Sheet",
+    "LinkedDataType": "ILAs",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "Student Evaluation",
+    "LinkedDataType": "ILAs",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "Task Qualification",
+    "LinkedDataType": "Employees",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Name": "Test",
+    "LinkedDataType": "Employees",
+    "Deleted": false,
+    "Active": true
+  }
+]

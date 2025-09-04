@@ -1,0 +1,137 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using System.Text.RegularExpressions;
+<style>
+    .expired-row {
+        color: lightgray;
+        font-style: italic;
+    }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        border-collapse : collapse;
+    }
+</style>
+<table id="content-table" class="table" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !    important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center;word-break:break-word;width:60%;">
+                    <b style="display: block; color: #020378; font-weight: bold; font-size: 16px; text-align: center; margin-top: 8px;">@Model.Title </b>
+                </div>
+                <div><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.AllTestItems.Count() > 0)
+    {
+        <tr>
+            <td style="border:none">
+                <table style="margin-left:10px;margin-right:10px;border-collapse : collapse;width:100%">
+                    <tr>
+                        @if (Model.DisplayColumns.Where(r => r == "Item ID").Count() > 0)
+                        {
+                            <th style="border: 2px solid #000;border-left:0;padding:7px; padding-left:3px;width:4%" align="left">Item Id</th>
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "EO #").Count() > 0)
+                        {
+                            <th style="border: 2px solid #000;border-left:0;padding:7px; padding-left:3px;width:4%" align="left">EO Id</th>
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "EO Description").Count() > 0)
+                        {
+                            <th style="border: 2px solid #000;border-left:0;padding:7px; padding-left:3px;width:33%" align="left">EO Description</th>
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "Item Type").Count() > 0)
+                        {
+                            <th style="border: 2px solid #000;border-left:0;padding:7px; padding-left:3px;width:8%" align="left">Item Type</th>
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "Taxonomy Level").Count() > 0)
+                        {
+                            <th style="border: 2px solid #000;border-left:0;padding:7px; padding-left:3px;width:7%" align="left">Taxonomy Level</th>
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "Item Stem").Count() > 0)
+                        {
+                            <th style="border: 2px solid #000;border-left:0;padding:7px; padding-left:3px;width:40%" align="left">Item Stem</th>
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "Status").Count() > 0)
+                        {
+                            <th style="border: 2px solid #000;border-right:0;padding:7px; padding-left:3px;width:4%" align="left">Status</th>
+                        }
+                    </tr>
+                    @foreach (var testItem in Model.AllTestItems.OrderBy(t => t.Number))
+                    {
+                        <tr class="@(!testItem.Active ? "expired-row" : "")">
+                            @if (Model.DisplayColumns.Where(r => r == "Item ID").Count() > 0)
+                            {
+                                <td style="border: none; border-bottom: 1px solid #000; padding:7px; padding-left:3px;width:4%">
+                                    @testItem.Number
+                                </td>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "EO #").Count() > 0)
+                            {
+                                <td style="border: none; border-bottom: 1px solid #000; padding:7px; padding-left:3px;width:4%">
+                                    @(testItem.EnablingObjective != null ? testItem.EnablingObjective.FullNumber : "")
+                                </td>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "EO Description").Count() > 0)
+                            {
+                                <td style="border: none; border-bottom: 1px solid #000; padding:7px; padding-left:3px;width:33%">
+                                    @(testItem.EnablingObjective != null ? testItem.EnablingObjective.Description :"")
+                                </td>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Item Type").Count() > 0)
+                            {
+                                <td style="border: none; border-bottom: 1px solid #000; padding:7px; padding-left:3px;width:8%">
+                                    @testItem?.TestItemType?.Description
+                                </td>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Taxonomy Level").Count() > 0)
+                            {
+                                <td style="border: none; border-bottom: 1px solid #000; padding:7px; padding-left:3px;width:7%">
+                                    @testItem?.TaxonomyLevel?.Description
+                                </td>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Item Stem").Count() > 0)
+                            {
+                                <td style="border: none; border-bottom: 1px solid #000; padding:7px; padding-left:3px;width:40%">
+                                    @(testItem.TestItemTypeId == 2 ? new RawString(Regex.Replace(testItem.Description, @"<u>(.*?)<\/u>", "_______")) : (new RawString(testItem.Description)))
+                                </td>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Status").Count() > 0)
+                            {
+                                <td style="border: none; border-bottom: 1px solid #000; padding:7px; padding-left:3px;width:4%">
+                                    @(testItem.Active ? "Active" : "Inactive")
+                                </td>
+                            }
+                        </tr>
+                    }
+                </table>
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+@if (Model.AllTestItems.Count() > 0)
+{
+    <div class="table" style="border-collapse: collapse; width:98%;margin:auto;margin-top:10px;">Note: Inactive Test Items will appear in <span class="expired-row" style="padding-left:10px">gray, italicized font</span></div>
+}

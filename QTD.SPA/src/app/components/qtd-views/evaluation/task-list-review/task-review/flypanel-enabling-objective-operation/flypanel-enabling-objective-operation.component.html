@@ -1,0 +1,54 @@
+<div class="flex flex-row justify-between items-center px-12 mt-5 mb-3">
+  <p class="text-xl font-bold text-gray-900 mb-0">{{('Enabling Objective' | labelReplacement)| async}} Operation</p>
+  <app-button
+    (click)="closeFlyPanel()"
+    ButtonType="icon"
+    icon="close"
+  ></app-button>
+</div>
+<div *ngIf = "isLoading" class="operation-spinner">
+  <app-spinner></app-spinner>
+</div>
+<div class="m-3" [formGroup]="enabObjOperationForm" *ngIf = "!isLoading">
+  <div class="flex flex-col ml-5 mt-3">
+    <app-label text="Operation Type" class="font-weight-bold label required"></app-label>
+    <mat-select placeholder = "Select Operation Type"
+      formControlName="operation" (selectionChange) = "onOperationTypeChange($event.value)"
+      class="appearance-none rounded border w-full px-4 py-2.5 mt-2" >
+      <mat-option *ngFor="let item of operationType" [value]="item.id">
+        {{ item.type }}
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <ng-container *ngIf="enabObjOperationForm.get('operation').value">
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label text="{{('Enabling Objective' | labelReplacement)| async}}" class="font-weight-bold label required"></app-label>
+      <ng-container *ngIf="operationTypeName == 'CreateLink'">
+      <mat-select placeholder = "Select {{('Enabling Objective' | labelReplacement)| async}}" #select="matSelect"
+        formControlName="enablingObjective"
+        class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+        <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="searchText" (input)="enablingObjectiveSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)">
+        <ng-container *ngFor = "let ec of filteredAllEo">
+          <ng-container *ngFor = "let es of ec.enablingObjective_SubCategories">
+            <ng-container *ngFor = "let et of es.enablingObjective_Topics">
+              <mat-option *ngFor = "let eo of getFilteredEo(et.enablingObjectives)" [value] = "eo.id">{{ec.number ?? 0}}.{{es.number ?? 0}}.{{et.number ?? 0}}.{{eo.number ?? 0}} - {{eo.description}}</mat-option>
+            </ng-container>
+          </ng-container>
+        </ng-container>
+      </mat-select>
+    </ng-container>
+  <ng-container *ngIf="operationTypeName == 'RemoveLink'">
+      <mat-select placeholder = "Select {{('Enabling Objective' | labelReplacement)| async}}" #select="matSelect"
+        formControlName="enablingObjective"
+        class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+        <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="searchText" (input)="enablingObjectiveSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)">
+          <mat-option *ngFor = "let eo of filtered_taskEo" [value] = "eo.id">{{eo.number}} - {{eo.description}}</mat-option>
+      </mat-select>
+  </ng-container>
+</div>
+  <div class="flex justify-end mt-3">
+    <app-button size="sm" text="Save" [disabled] = "!this.enabObjOperationForm.get('enablingObjective')?.value" (clicked) = "onEOSave()" type="submit"></app-button>
+  </div>
+</ng-container>
+</div>

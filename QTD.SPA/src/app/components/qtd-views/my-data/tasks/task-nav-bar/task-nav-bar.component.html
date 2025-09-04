@@ -1,0 +1,132 @@
+<aside class="sidebar h-screen sticky top-0 flex flex-col overflow-auto px-4">
+
+    <div class="items-centers ml-12 mt-4 mb-4 ">
+        <div class="float-left mt-4">
+            <app-button type="button" ButtonType='icon' icon='menu' (clicked)="toggleMainMenu()"
+                class="float-left btn-text">
+            </app-button>
+        </div>
+        <div class="ml-4">
+            <img class="flex-auto w-1/2 h-auto" src="./assets/img/qtd.png">
+        </div>
+    </div>
+
+    <h3><b class="cursor-pointer" routerLink="/my-data/tasks/overview">{{("Task" | labelReplacement)| async}}</b></h3>
+    <div class="mr-4 mb-2 flex flex-row">
+        <input [(ngModel)]="textSearch" #search (keyup.enter)="textFilter(search.value)" placeholder="Search {{('Task' | labelReplacement)| async}}s" class="py-2 px-2 w-full" />
+        <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+        <app-icon icon="search" class="ml-2 cursor-pointer" (click)="textFilter(search.value)"></app-icon>
+    </div>
+    <div class="flex flex-row  items-center text-gray-four  text-xs btn-group">
+        <div class="flex flex-row cursor-pointer">
+            <span> Showing:
+                <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+                    <p *ngIf="showActive" class="font-bold">
+                        Active
+                    </p>
+                    <p *ngIf="!showActive" class="font-bold">
+                        Inactive
+                    </p>
+
+                </label>
+                <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+            </span>
+        </div>
+        <mat-menu #menu="matMenu">
+            <label mat-menu-item *ngIf="!showActive" (click)="filterData(true)">
+                Active</label>
+
+            <label mat-menu-item *ngIf="showActive" (click)="filterData(false)">
+                Inactive</label>
+        </mat-menu>
+    </div>
+    <div class="flex flex-row space-x-4 text-sm  mb-3">
+      <app-button text="Add New" size="sm" leftIcon="add" rightIcon="expand_more" [matMenuTriggerFor]="addMenu">
+      </app-button>
+      <mat-menu #addMenu="matMenu">
+          <label mat-menu-item (click)="openFlyInPanel(addNewTask,'Task')">{{("Task" | labelReplacement)| async}}</label>
+          <label mat-menu-item (click)="openFlyInPanel(addNewDA,'DutyArea')">Duty Area</label>
+          <label mat-menu-item (click)="openFlyInPanel(addNewSDA,'SubDutyArea')">Sub Duty Area</label>
+      </mat-menu>
+
+      <app-button variant="text" class="mt-2" text="Bulk Edit" icon="edit" iconPosition="left"
+          routerLink="/my-data/bulkedit/task"></app-button>
+  </div>
+    <div class="flex flex-col text-sm text-black">
+        <h5 id="loading" *ngIf="navList === undefined">Loading ...</h5>
+        <ng-container *ngIf="navList && navList.length > 0 || toFilter.length>0">
+            <!-- <span *ngFor="let m of toFilter">
+                <app-menu-item (click)="emitLetter(m)" [HasChildren]="m.Children!=undefined && m.Children.length>0"
+                    [Title]="m.Title" [RoutePath]="m.RoutePath" [RouteParams]="m.RouteParams" [Children]="m.Children">
+                </app-menu-item>
+            </span> -->
+            <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="qtd-tree">
+                <!-- This is the tree node template for leaf nodes -->
+                <!-- There is inline padding applied to this node using styles.
+                  This padding value depends on the mat-icon-button width. -->
+                <mat-tree-node [ngClass]="selectedItem && selectedItem.id === node.id && selectedItem.type === node.type ? 'active_menu':''" *matTreeNodeDef="let node" matTreeNodeToggle class="mb-3 mt-3 greenHover task-box">
+                    <ng-container *ngIf="!node.RoutePath">
+                        <app-label [text]="node.Title " customClasses="cursor-pointer">
+                        </app-label>
+                    </ng-container>
+                    <div (click)="itemClicked(node)" class="cursor-pointer" *ngIf="node.RoutePath">
+                        <app-link class="p-2" [disabled]="false" [routerLink]="node.RoutePath" [text]="node.Title " customClasses="cursor-pointer link">
+                        </app-link>
+                        <span *ngIf="node.IsMeta && !node.IsRR" class="ml-1 qtd-meta-box p-1 font-bold">{{'meta'|titlecase}}</span>
+                        <span *ngIf="node.IsRR" class="ml-1 qtd-meta-box p-1 font-bold"
+                        [ngClass]="{'qtd-meta-box': !(selectedItem && selectedItem.id === node.id && selectedItem.type === node.type),'alt-meta-box': selectedItem && selectedItem.id === node.id && selectedItem.type === node.type }">{{'R-R'}}</span>
+                    </div>
+
+
+
+                </mat-tree-node>
+                <!-- This is the tree node template for expandable nodes -->
+                <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+                    <div class="mat-tree-node greenHover" [ngClass]="{'active_menu':(selectedItem && selectedItem.id === node.id && selectedItem.type === node.type)}">
+                        <button style="outline:none;" mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+                            <app-icon [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'">
+                            </app-icon>
+                        </button>
+                        <ng-container *ngIf="!node.RoutePath">
+                            <app-label [text]="node.Title " customClasses="cursor-pointer">
+                            </app-label>
+                        </ng-container>
+                        <ng-container *ngIf="node.RoutePath">
+                            <app-link (clicked)="treeControl.expand(node);testClick(node);" [routerLink]="node.RoutePath" [text]="node.Title " customClasses="cursor-pointer">
+                            </app-link>
+                        </ng-container>
+                    </div>
+                    <!-- There is inline padding applied to this div using styles.
+                        This padding value depends on the mat-icon-button width.  -->
+                    <div *ngIf="treeControl.isExpanded(node)" role="group">
+                        <ng-container matTreeNodeOutlet></ng-container>
+                    </div>
+                </mat-nested-tree-node>
+            </mat-tree>
+        </ng-container>
+        <ng-container *ngIf="navList && navList.length === 0 || dataSource.data.length === 0">
+            <h5>No Data Found</h5>
+        </ng-container>
+    </div>
+
+
+
+</aside>
+
+<ng-template #addNewTask>
+    <div class="px-12 py-12">
+        <app-flypanel-add-task [shouldNavigate]="true" [isMetaCheck]="isMetaCheck" (closed)="flyPanelService.close();createList()"></app-flypanel-add-task>
+    </div>
+</ng-template>
+
+<ng-template #addNewDA>
+    <div class="px-12 py-12">
+        <app-flypanel-add-dutyarea [shouldNavigate]="true" (closed)="flyPanelService.close();createList()"></app-flypanel-add-dutyarea>
+    </div>
+</ng-template>
+
+<ng-template #addNewSDA>
+    <div class="px-12 py-12">
+        <app-flypanel-add-subdutyarea [shouldNavigate]="true" (closed)="flyPanelService.close();createList()"></app-flypanel-add-subdutyarea>
+    </div>
+</ng-template>

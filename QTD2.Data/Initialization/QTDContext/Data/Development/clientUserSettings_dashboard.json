@@ -1,0 +1,140 @@
+﻿[
+  {
+    "Id": 1,
+    "ClientUserId": 1,
+    "DashboardSettingId": 1,
+    "Enabled": "true"
+  },
+  {
+    "Id": 2,
+    "ClientUserId": 1,
+    "DashboardSettingId": 2,
+    "Enabled": "false"
+  },
+  {
+    "Id": 3,
+    "ClientUserId": 1,
+    "DashboardSettingId": 3,
+    "Enabled": "true"
+  },
+  {
+    "Id": 4,
+    "ClientUserId": 1,
+    "DashboardSettingId": 4,
+    "Enabled": "false"
+  },
+  {
+    "Id": 5,
+    "ClientUserId": 1,
+    "DashboardSettingId": 5,
+    "Enabled": "false"
+  },
+  {
+    "Id": 6,
+    "ClientUserId": 1,
+    "DashboardSettingId": 6,
+    "Enabled": "false"
+  },
+  {
+    "Id": 7,
+    "ClientUserId": 1,
+    "DashboardSettingId": 7,
+    "Enabled": "false"
+  },
+  {
+    "Id": 8,
+    "ClientUserId": 1,
+    "DashboardSettingId": 8,
+    "Enabled": "false"
+  },
+  {
+    "Id": 9,
+    "ClientUserId": 1,
+    "DashboardSettingId": 9,
+    "Enabled": "false"
+  },
+  {
+    "Id": 10,
+    "ClientUserId": 1,
+    "DashboardSettingId": 10,
+    "Enabled": "false"
+  },
+  {
+    "Id": 11,
+    "ClientUserId": 1,
+    "DashboardSettingId": 11,
+    "Enabled": "false"
+  },
+  {
+    "Id": 12,
+    "ClientUserId": 1,
+    "DashboardSettingId": 12,
+    "Enabled": "false"
+  },
+  {
+    "Id": 13,
+    "ClientUserId": 1,
+    "DashboardSettingId": 13,
+    "Enabled": "false"
+  },
+  {
+    "Id": 14,
+    "ClientUserId": 1,
+    "DashboardSettingId": 14,
+    "Enabled": "false"
+  },
+  {
+    "Id": 15,
+    "ClientUserId": 1,
+    "DashboardSettingId": 15,
+    "Enabled": "false"
+  },
+  {
+    "Id": 16,
+    "ClientUserId": 1,
+    "DashboardSettingId": 16,
+    "Enabled": "false"
+  },
+  {
+    "Id": 17,
+    "ClientUserId": 1,
+    "DashboardSettingId": 17,
+    "Enabled": "false"
+  },
+  {
+    "Id": 18,
+    "ClientUserId": 1,
+    "DashboardSettingId": 18,
+    "Enabled": "false"
+  },
+  {
+    "Id": 19,
+    "ClientUserId": 1,
+    "DashboardSettingId": 19,
+    "Enabled": "false"
+  },
+  {
+    "Id": 20,
+    "ClientUserId": 1,
+    "DashboardSettingId": 20,
+    "Enabled": "true"
+  },
+  {
+    "Id": 21,
+    "ClientUserId": 1,
+    "DashboardSettingId": 21,
+    "Enabled": "true"
+  },
+  {
+    "Id": 22,
+    "ClientUserId": 1,
+    "DashboardSettingId": 22,
+    "Enabled": "false"
+  },
+  {
+    "Id": 23,
+    "ClientUserId": 1,
+    "DashboardSettingId": 23,
+    "Enabled": "true"
+  }
+]

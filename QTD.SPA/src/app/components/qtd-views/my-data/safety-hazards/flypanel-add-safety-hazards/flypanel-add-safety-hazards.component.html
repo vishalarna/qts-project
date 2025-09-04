@@ -1,0 +1,211 @@
+<ng-container *ngIf="mainSpinner" class="flex w-screen place-items-center">
+  <app-spinner></app-spinner>
+</ng-container>
+
+<div class="flex flex-col px-12 py-12" *ngIf="!mainSpinner && addSH">
+
+  <div class="flex flex-row justify-between items-center px-3 mt-2">
+    <p *ngIf="oldSHId === undefined" class="text-xl font-bold text-gray-900">Add New {{("Safety Hazard" | labelReplacement)| async}}s</p>
+    <p *ngIf="oldSHId !== undefined && !makeCopy" class="text-xl font-bold text-gray-900">Edit {{("Safety Hazard" | labelReplacement)| async}}s</p>
+    <p *ngIf="makeCopy" class="text-xl font-bold text-gray-900">Copy {{("Safety Hazard" | labelReplacement)| async}}s</p>
+    <app-button [disabled]="showSpinner" (clicked)="closed.emit('fp-add-sh-closed')" ButtonType='icon' icon="close">
+    </app-button>
+  </div>
+
+  <mat-stepper [linear]="true" #stepper (selectionChange)="selectedChanged($event)"
+  labelPosition="bottom" [orientation]="(stepperOrientation | async)!">
+    <!-- Change edit icon -->
+    <ng-template matStepperIcon="edit">
+      <app-icon icon="done"></app-icon>
+    </ng-template>
+    <mat-step label="Assign Category" [stepControl]="step1Form" [completed]="step1Form.valid">
+      <form class="flex flex-col" [formGroup]="step1Form">
+        <div class="flex-col mt-3">
+          <div *ngIf="oldSHId === undefined" class="flex flex-row justify-between">
+            <app-label [for]="'categoryId'" [text]="'Category'"></app-label>
+            <app-button variant="text" (clicked)="openCategoryPanel()" text="Add new Category" icon="add"
+              iconPosition="left">
+            </app-button>
+          </div>
+
+          <mat-select [disabled]="oldSHId !== undefined" formControlName="categoryId" placeholder="Select Category"
+            (selectionChange)="getCategories($event.value)"
+            class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+            <mat-option *ngFor="let d of categories" [value]="d.id" [hidden]="!d.active">
+              {{d.title}}
+            </mat-option>
+          </mat-select>
+          <app-input-error *ngIf="step1Form.get('categoryId')?.invalid" text="Category Is Required">
+          </app-input-error>
+        </div>
+
+        <div class="self-end pt-12">
+          <app-button color="secondary" [disabled]="step1Form.invalid" text="Continue" size="sm"
+            (clicked)="stepper.next()"></app-button>
+        </div>
+      </form>
+    </mat-step>
+    <mat-step label="{{('Safety Hazard' | labelReplacement)| async}}s Information" [stepControl]="step2Form" [completed]="step2Form.valid">
+      <div class="flex flex-col">
+        <form class="flex flex-col" [formGroup]="step2Form">
+          <div class="flex flex-row mt-3 justify-between">
+            <div class="flex flex-col mr-2">
+              <app-label [for]="'SHNumber'" text="{{('Safety Hazard' | labelReplacement)| async}}s Number " class="label required"></app-label>
+              <app-textbox [maxLength]="20" formControlName="SHNumber" placeholder="Enter alpha/numeric"></app-textbox>
+              <app-input-error *ngIf="step2Form.get('SHNumber')?.invalid || step2Form.get('SHNumber')?.hasError('whitespaceOnly')" text="{{('Safety Hazard' | labelReplacement)| async}}s Number is Required Or Contains White Spaces">
+              </app-input-error>
+            </div>
+
+            <div class="flex flex-col flex-grow">
+              <app-label [for]="'SHName'" text="{{('Safety Hazard' | labelReplacement)| async}}s Name " class="label required"></app-label>
+              <app-textbox [maxLength]="200" placeholder="Please Enter {{('Safety Hazard' | labelReplacement)| async}}s Name" formControlName="SHName"></app-textbox>
+              <app-input-error *ngIf="step2Form.get('SHName')?.invalid || step2Form.get('SHName')?.hasError('whitespaceOnly')" text="{{('Safety Hazard' | labelReplacement)| async}}s Name is Required Or Contains White Spaces">
+              </app-input-error>
+            </div>
+          </div>
+          <div class="mt-3">
+            <app-label [for]="'SHDesc'" text="{{('Safety Hazard' | labelReplacement)| async}}s Description"></app-label>
+            <app-textarea  [value]="step2Form.get('SHDesc')?.value || ''" formControlName="SHDesc"
+              placeholder="Please enter {{('Safety Hazard' | labelReplacement)| async}}s Description here">
+            </app-textarea>
+            <!-- <app-input-error *ngIf="step2Form.get('SHDesc')?.invalid" text="Safety Hazard Description Is Required">
+            </app-input-error> -->
+            <div class="mt-3 mb-3">
+              <app-label [for]="'RevisionNumber'" text="Revision Number"></app-label>
+             <!--  <app-textarea [value]="this.step2Form.get('RevisionNumber')?.value || ''" formControlName="RevisionNumber">
+              </app-textarea> -->
+              <app-textbox formControlName="RevisionNumber" placeholder="Enter Revision Number"></app-textbox>
+            </div>
+          </div>
+        </form>
+        <div class="flex flex-col">
+          <form [formGroup]="setForm">
+            <div *ngFor="let set of setList,index as i" class="mt-3 border-gray-one img border-1 p-1">
+              <p class="font-bold">Hazard Set-{{(i+1)}}</p>
+              <div class="mt-3">
+                <app-label [for]="'Abatement'" text="Abatement"></app-label>
+                <ckeditor #ckeditor style="min-height: 200px;" [editor]="Editor" formControlName="Abatement{{i}}" placeholder="Please enter Abatement">
+                </ckeditor>
+              </div>
+              <div class="mt-3">
+                <app-label [for]="'Controls{{i}}'" text="Controls"></app-label>
+                <ckeditor #ckeditor [editor]="Editor" formControlName="Controls{{i}}" placeholder="Please enter Controls">
+                </ckeditor>
+              </div>
+            </div>
+          </form>
+          <div class="flex flex-row mt-3 justify-between">
+            <ng-container class="float-left"  class="mt-3">
+              <app-button (clicked)="addSet()" iconPosition="left" icon="add" variant="text"
+                text="Add Another Hazard Set"></app-button>
+            </ng-container>
+            <ng-container class="float-right" *ngIf="setList.length > 1">
+              <app-button (clicked)="removeSet()" iconPosition="left" icon="delete" variant="text" text="Remove Set">
+
+              </app-button>
+            </ng-container>
+
+          </div>
+        </div>
+        <div class="mt-3">
+          <div class="flex flex-row justify-between">
+            <app-label [for]="'PPE'" text="PPE"></app-label>
+            <app-button variant="text" (clicked)="openToolPanel()" text="Add new {{('Tool' | labelReplacement)| async}}s" icon="add"
+            iconPosition="left">
+            </app-button>
+          </div>
+          <mat-select class="appearance-none rounded border w-full px-4 py-2.5 mt-2" multiple [formControl]="PPEControl"
+            placeholder="Select PPE">
+            <mat-select-trigger>
+              <mat-chip-list>
+                <mat-chip *ngFor="let i of PPEControl.value" [removable]="true" (removed)="removePPE(i)"
+                  [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                  selected>
+                  {{i.name}}
+                  <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                  </app-icon>
+                </mat-chip>
+              </mat-chip-list>
+            </mat-select-trigger>
+
+            <mat-option *ngFor="let i of PPEs" [value]="i" #matOption (click)="OnClick(matOption.selected)">
+              {{i.name}}
+            </mat-option>
+
+          </mat-select>
+        </div>
+        <div class="mt-3">
+          <div class="flex flex-grow">
+            <app-label [for]="'hyperlink'" text="Hyperlink"></app-label>
+            <p class="text-xs text-gray-400 ml-2">upload a PDF copy of the regulation or enter a
+              hyperlink for
+              the regulation</p>
+          </div>
+          <input type="file" (change)="fileChange(file.files)" [hidden]="true" #file>
+          <app-button *ngIf="!fileUploaded" (clicked)="file.click()" variant="text" icon="upload" iconPosition="left"
+            text="Upload PDF"></app-button>
+          <ng-container class="border-2 border-black" *ngIf="fileUploaded">
+            <span>{{fileName}}</span>
+            <button (click)="removeFile()">
+              <app-icon icon="close"></app-icon>
+            </button>
+          </ng-container>
+          <form [formGroup]="step2Form">
+            <app-textbox [maxLength]="200" *ngIf="!fileUploaded" formControlName="hyperlink" placeholder="Enter Hyperlink">
+            </app-textbox>
+          </form>
+        </div>
+
+
+        <div class="self-end pt-12">
+          <app-button color="secondary" [disabled]="step2Form.invalid" text="Continue" size="sm"
+            (clicked)="stepper.next()"></app-button>
+        </div>
+      </div>
+    </mat-step>
+    <mat-step label="Revision and Date" [stepControl]="step3Form">
+      <form class="flex flex-col" [formGroup]="step3Form">
+        <div class="mt-3">
+          <app-label [for]="'effectiveDate'" text="Effective Date"></app-label>
+          <app-date  formControlName="effectiveDate"></app-date>
+         <!--  <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+          </app-input-error> -->
+        </div>
+        <div class="mt-3">
+          <app-label [for]="'reason'" text="Reason" class="label required"></app-label>
+          <app-textarea [value]="step3Form.get('reason')?.value || ''" formControlName="reason" placeholder="Please enter Reasons for Revision here">
+          </app-textarea>
+          <app-input-error *ngIf="step3Form.get('reason')?.invalid || step3Form.get('reason')?.hasError('whitespaceOnly')" text="Reason for Revision is Required Or Contains White Spaces">
+          </app-input-error>
+        </div>
+        <div class="flex flex-row justify-between pt-12">
+          <div *ngIf="oldSHId === undefined && addAnotherCheck===true" class="flex flex-row">
+            <mat-checkbox  formControlName="addNew"></mat-checkbox>
+            <span class="ml-1 pt-1">Add new {{("Safety Hazard" | labelReplacement)| async}}s</span>
+          </div>
+
+          <app-button [spinner]="showSpinner" *ngIf="oldSHId === undefined" [disabled]="step2Form.invalid || step3Form.invalid || showSpinner" (clicked)="saveSafetyHazard()"
+            text="Save" size="sm"></app-button>
+        </div>
+
+        <div class="flex flex-row-reverse" >
+          <app-button [spinner]="showSpinner" *ngIf="oldSHId !== undefined && !makeCopy" [disabled]="step2Form.invalid || step3Form.invalid ||  showSpinner" (clicked)="updateSafetyHazard()"
+          text="Update" size="sm"></app-button>
+
+          <app-button [spinner]="showSpinner" *ngIf="makeCopy" [disabled]="step2Form.invalid || step3Form.invalid ||showSpinner" (clicked)="copySafetyHazard()"
+          text="Copy" size="sm"></app-button>
+        </div>
+      </form>
+
+    </mat-step>
+
+  </mat-stepper>
+
+
+
+</div>
+
+<app-fly-panel-sh-category (refreshCategories)="refreshCategoryList()" *ngIf="addCategory" (closed)="closePanel()">
+</app-fly-panel-sh-category>
+
+<app-fly-panel-add-tool *ngIf="addTool" (refreshCategories)="readyTools()" (closed)="closeToolPanel()"></app-fly-panel-add-tool>

@@ -1,0 +1,233 @@
+<app-header [toggleMenuIcon]="true" breadcrumbs="{{ 'Task' | labelReplacement | async }}  List Reviews" ></app-header>
+<div *ngIf = "isOverviewLoading" class="overview-spinner">
+  <app-spinner></app-spinner>
+</div>
+<div *ngIf = "!isOverviewLoading" >
+<div class="px-10 pb-3 card-wrap">
+  <div class="sm-container-card bg-white rounded m-3">
+    <div class="d-flex align-items-center gap-2">
+      <div>
+        <p>Active {{ "Task" | labelReplacement | async }} List Reviews</p>
+        <p class="status">{{getTaskListReviewsCountByStatus(true)}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="sm-container-card bg-white rounded m-3">
+    <div class="d-flex align-items-center gap-2">
+      <div>
+        <p>Inactive {{ "Task" | labelReplacement | async }} List Reviews</p>
+        <p class="status">{{getTaskListReviewsCountByStatus(false)}}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="lg-container-card bg-white rounded m-3">
+    <div class="d-flex align-items-center gap-2">
+      <div>
+        <p>
+          {{ "Position" | labelReplacement | async }}s Without
+          {{ "Task" | labelReplacement | async }} List Reviews
+        </p>
+        <p class="status">{{taskLisReviewtOverview_VM?.positionsWithoutTaskListReview ?? 0}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="sm-container-card bg-white rounded m-3">
+    <div class="d-flex align-items-center gap-2">
+      <div>
+        <p>My Pending {{ "Task" | labelReplacement | async }} Reviews</p>
+        <p class="status">{{taskLisReviewtOverview_VM?.myPendingTaskReviews ?? 0}}</p>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="flex flex-row space-x-4 text-sm flex-end px-10 m-3">
+  <div class="dropdown">
+    <app-button color="secondary" text="Filter" size="sm" icon="filter_alt" iconPosition="left" (click)="openFlyInPanel(filterTaskListReview)" >
+    </app-button>
+  </div>
+  <app-button text="Add New" icon="add" iconPosition="left" size="sm" (click)="openTaskListReviewWizard()" >
+  </app-button>
+</div>
+
+<div class="card-wrap-filter d-flex" *ngIf="appliedFilters.length > 0">
+  <div class="container-card w-1/5">
+    <div class="flex flex-col justify-between px-2 py-2 bg-white-one pt-2">
+      <span class="font-bold mb-4">Filter(s) Applied</span>
+      <div class="flex flex-col space-y-1">
+        <ng-container *ngFor="let filter of appliedFilters">
+          <ng-container *ngFor="let line of formatFilter(filter)">
+            <span>{{ line }}</span>
+          </ng-container>
+        </ng-container>
+      </div>
+    </div>
+  </div>
+</div>    
+<app-button variant="text" *ngIf="appliedFilters.length > 0" class="mt-2 ml-2 filter-clear-button" (clicked)="clearAllFilters()" text="Clear Filter" icon="clear" iconPosition="right"></app-button>
+<div class="d-flex justify-content-end mb-4 mx-12">
+  <app-button
+    text="Create QTD User"
+    size="sm"
+    color="secondary"
+    (clicked)="openFlyInPanel(createQTDUserFlyin)"
+  ></app-button>
+</div>
+
+<div class="px-10">
+  <div class="bg-white rounded m-3 py-3 pl-3 shadow-sm">
+    <section class="panel-section">
+      <div class=" flex flex-row bg-white-one rounded-t-md py-2.5 px-6 space-x-2 border-b-0.8 border-gray-one w-full " >
+        <div class="flex flex-grow keyword-input">
+          <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" ></path>
+          </svg>
+          <input class="text-sm flex-grow focus:outline-none" placeholder="Enter keywords to search" type="text" (keyup)="searchUpdate($event)" [value]="searchText" />
+        </div>
+      </div>
+      <mat-table [dataSource]="dataSource"  [multiTemplateDataRows]="true" matSort>
+        <ng-container matColumnDef="expandIcon">
+          <mat-header-cell *matHeaderCellDef style="max-width: 100px">
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" style="max-width: 100px">
+            <app-button variant="text" [icon]="expandedData === row ? 'expand_less' : 'expand_more'" (clicked)="expandedData = expandedData === row ? null : row; $event.stopPropagation()">
+            </app-button>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="title">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="text-gray-400 text-sm font-weight-normal">
+              {{ "Task" | labelReplacement | async }} List Review Title
+            </div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            {{row.title}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="position">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="text-gray-400 text-sm font-weight-normal">
+              {{ "Position" | labelReplacement | async }}(s)
+            </div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            {{row.positions.join(", ")}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="type">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="text-gray-400 text-sm font-weight-normal">Type</div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            {{row.type}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="startDate">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="text-gray-400 text-sm font-weight-normal">
+              Review Period Start Date
+            </div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            {{(row.startDate | dateFormat )| async}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="endDate">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="text-gray-400 text-sm font-weight-normal">
+              Review Period End Date
+            </div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            {{(row.endDate | dateFormat )| async}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="reviewStatus">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="text-gray-400 text-sm font-weight-normal">
+              Review Status
+            </div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <p class="py-2 px-4 m-0 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+            [ngClass]="{'customcolorblue': row.status == 'Published', 'customcolorpink': row.status == 'Draft'}">
+            {{ row.status == 'Published' ? 'Published' : 'Draft' }}</p>
+           </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="approvalDate">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="text-gray-400 text-sm font-weight-normal">
+              Review Approval Date
+            </div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> 
+            {{row.approvalDate == null ? 'N/A' : (row.approvalDate | dateFormat )| async}}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            <div class="text-gray-400 text-sm font-weight-normal">Status</div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <p class="py-2 px-4 m-0 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+            [ngClass]="{'customcolorgreen': row.active === true, 'bg-gray-100': row.active !== true}">
+            {{ row.active ? 'ACTIVE' : 'INACTIVE' }}
+          </p>  
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="action">
+          <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="flex flex-row items-center text-gray-four btn-group">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <app-icon icon="more_vert"></app-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <label mat-menu-item translate (click)="openTaskListReviewEditWizard(row.id)"> Edit</label>
+                <label mat-menu-item translate mat-menu-item translate (click)="copyTaskListReview(row.id)"> Copy </label>
+                <label mat-menu-itemtranslate mat-menu-item translate (click)="deleteTaskListReview(row.id)"> Delete </label>
+                <label *ngIf="!row.active" mat-menu-item translate mat-menu-item translate (click)="activateTaskListReview(row)"> Make Active </label>
+                <label *ngIf="row.active" mat-menu-item translate mat-menu-item translate (click)="inactivateTaskListReview(row)"> Make Inactive </label>
+                <label mat-menu-itemtranslate mat-menu-item translate (click)="openFlyInPanel(generateTaskListReviewReport);currentTaskListReviewId = row.id;currentTaskListReviewStatus = row.active">Generate Report</label>
+              </mat-menu>
+            </div>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="expandedDetail">
+          <mat-cell *matCellDef="let row" [attr.colspan]="tableColumns" [class.sub-table-cell]="true" class="py-0">
+            <div style="width: 100%">
+              <div>
+                <ng-container class="mt-4" *ngTemplateOutlet="expandedTable"></ng-container>
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+        <mat-row [ngStyle]="{ display: expandedData === row ? 'block' : 'none' }" *matRowDef="let row; columns: ['expandedDetail']" class="overview-detail-row"></mat-row>
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row flex text-center" *matNoDataRow>
+          <td class="mat-cell w-full">No Data</td>
+        </tr>
+      </mat-table>
+    </section>
+  </div>
+</div>
+</div>
+<ng-template #expandedTable>
+  <app-data-loader *ngIf="!expandedData"></app-data-loader>
+  <app-task-review-table *ngIf="expandedData" [inputTaskReviewVMs] ="getTaskReviewFilterValues()" [inputTaskListReviewId]="this.expandedData?.id"></app-task-review-table>
+</ng-template>
+
+<ng-template #filterTaskListReview>
+  <app-fly-panel-filter-task-list-review [taskListReviewFilterValue]="filterValues" (taskListReviewFilterChange)="setFilters($event)"></app-fly-panel-filter-task-list-review>
+</ng-template>
+
+<ng-template #generateTaskListReviewReport>
+<app-task-list-review-generate-report [inputTaskListReviewId] = "currentTaskListReviewId" [inputTaskListReviewStatus] = "currentTaskListReviewStatus" (closed) = "flyPanelService.close()"></app-task-list-review-generate-report>
+</ng-template>
+
+<ng-template #createQTDUserFlyin>
+  <app-fly-panel-create-qtd-user (closed)="flyPanelService.close()"></app-fly-panel-create-qtd-user>
+</ng-template>

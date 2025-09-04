@@ -1,0 +1,163 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.Position_Tasks.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0 !important;" class="strip-container">
+                @{int j = 1;}
+                @foreach (var positionTasks in Model.Position_Tasks)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            <tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Positions").Count() > 0)
+                                {
+                                    var posList = @positionTasks.Position != null ? @positionTasks.Position.PositionTitle : "";
+
+                                    <td colspan="12" style="border: none !important; font-size:1rem;">
+                                        <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b>
+                                        <span style="font-size: 1rem; margin-left: 5px"><b>@(new RawString(string.Join(",", posList)))</b></span>
+                                    </td>
+                                }
+                            </tr>
+                            <tr>
+                                <td colspan="1" style="border: none !important; font-size:1rem;">
+                                    <span style="font-size: 1rem; margin-left: 5px"><b>@positionTasks.Task.FullNumber</b></span>
+                                </td>
+                                <td colspan="11" style="border: none !important; font-size:1rem;">
+                                    <span style="font-size: 1rem;"><b>@positionTasks.Task.Description</b></span>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 2px solid #000; border-collapse: collapse;">
+                                @if (Model.DisplayColumns.Where(r => r == "Linked Tasks Positions").Count() > 0)
+                                {
+                                    <th style="border-bottom: 2px solid #000; text-align: left; border-top: 2px solid #000; border-right: 1px solid #000; border-collapse: collapse; vertical-align: bottom; padding: 5px; width:10%">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Linked Task #").Count() > 0)
+                                {
+                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 10% ">
+                                        @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #
+                                    </th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Linked Task Description").Count() > 0)
+                                {
+                                    <th style="border-bottom: 2px solid #000; border-right: 0; border-top: 2px solid #000; text-align: left; vertical-align: bottom; padding: 5px; width: 80%">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Description</th>
+                                }
+                            </tr>
+                            @foreach (var r5Tasks in positionTasks.R5ImpactedTasks.Where(r => r.ImpactedTask != null))
+                            {
+                                <tr style="padding: 10px;">
+                                    @if (Model.DisplayColumns.Where(r => r == "Linked Tasks Positions").Count() > 0)
+                                    {
+                                        var positionAbbreviations = r5Tasks.ImpactedTask?.Position_Tasks?.Select(pt => pt.Position.PositionAbbreviation).Where(abbr => !string.IsNullOrEmpty(abbr)).ToList();
+                                        var abbreviationString = positionAbbreviations != null && positionAbbreviations.Any() ? string.Join(", ", positionAbbreviations) : string.Empty;
+
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: left; padding: 5px;">
+                                        @(new RawString(abbreviationString))
+                                    </td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Linked Task #").Count() > 0)
+                                    {
+                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: left; padding: 5px; ">@r5Tasks.ImpactedTask?.FullNumber</td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Linked Task Description").Count() > 0)
+                                    {
+                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: left; padding: 5px; ">@r5Tasks.ImpactedTask?.Description</td>
+                                    }
+                                </tr>
+                            }
+                            <tr></tr>
+                        </table>
+                    </div>
+                    @if (!positionTasks.Equals(Model.Position_Tasks.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{j++;}
+                }
+            </td>
+        </tr>
+       
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Position_Tasks.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

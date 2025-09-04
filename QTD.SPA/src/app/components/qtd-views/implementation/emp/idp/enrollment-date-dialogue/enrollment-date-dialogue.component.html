@@ -1,0 +1,51 @@
+
+
+<ng-container>
+    <form  [formGroup]="dateForm">
+
+    <mat-dialog-content>
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p mat-dialog-title>Enrollment Option</p>
+            <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()" ></app-button>
+        </div>
+        <hr class="mt-1 mb-4">
+        <p  class="mb-4 text-sm">To change the current enrollment, select the new start and end date below:</p>
+        <hr  class="mt-1 mb-8">
+    <div class="flex">
+        <div class="flex flex-col" style="width: 250px;">
+            <app-label style="color: #7A807E;" text="Start Date"></app-label>
+            <app-date formControlName="startDate" style="width: 200px;"></app-date>
+        </div>
+        <div class="flex flex-col" style="width: 250px;">
+            <app-label style="color: #7A807E;" text="End Date"></app-label>
+            <app-date formControlName="endDate" style="width: 200px;"></app-date>
+        </div>
+    </div>
+    <br>
+    <div class="flex flex-col" style="width: 500px;">
+        <app-label style="color: #7A807E;" text="{{('Instructor' | labelReplacement)| async}}"></app-label>
+        <mat-select placeholder={{selectedClassitem.instructorName}} style="width: 450px;"
+            class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+        </mat-select>
+    </div>
+
+    <br>
+    <div class="flex flex-col" style="width: 500px;">
+        <app-label style="color: #7A807E;" text="{{('Location' | labelReplacement)| async}}s"></app-label>
+        <mat-select placeholder={{selectedClassitem.location}} style="width: 450px;"
+            class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+        </mat-select>
+    </div>
+    <hr  class="mt-1 mb-8">
+
+    </mat-dialog-content>
+
+
+    <mat-dialog-actions class="flex flex-row justify-end">
+        <app-button (click)="submitFormData()"  type="button"  text="Save" color="primary" size="sm" class="mr-2">
+        </app-button>
+    </mat-dialog-actions> 
+
+</form>
+</ng-container>

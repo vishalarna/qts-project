@@ -1,0 +1,95 @@
+<app-data-loader *ngIf="this.sh === undefined"></app-data-loader>
+<ng-container *ngIf="this.sh !== undefined">
+  <div class="ml-4 mr-4 ">
+    <div class="flex flex-row flex-wrap mt-3 justify-between">
+      <div class="flex flex-col">
+        <p class="text-xs text-gray-four">Category; {{this.sh.saftyHazard_Category.title}}</p>
+        <p class="font-bold text-lg">{{this.sh.number}} - {{this.sh.title}}</p>
+      </div>
+      <div class="flex flex-row  items-center text-gray-four btn-group">
+        <div class="cursor-pointer bg-gray-200 p-2 rounded">
+          <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+            <span *ngIf="isActive" class="font-bold">
+              <span style="color:green" class="mr-1">●</span>
+              Active
+            </span>
+            <span *ngIf="!isActive" class="font-bold">
+              <span style="color:red" class="mr-1">●</span>
+              Inactive
+            </span>
+
+          </label>
+          <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+          <mat-menu #menu="matMenu">
+            <label (click)="openActiveDialog(activeInactive)" mat-menu-item *ngIf="!isActive">
+              <span style="color:green" class="mr-1">●</span>Make
+              Active</label>
+
+            <label (click)="openActiveDialog(activeInactive)" mat-menu-item *ngIf="isActive">
+              <span style="color:red" class="mr-1">●</span> Make
+              Inactive</label>
+          </mat-menu>
+        </div>
+        <div class="ml-2 cursor-pointer ">
+          <app-icon icon="more_horiz" [matMenuTriggerFor]="options"></app-icon>
+          <mat-menu #options="matMenu">
+            <label [disabled]="!isActive" (click)="openEditOrCopy(editOrCopy,false)" mat-menu-item> Edit</label>
+            <label [disabled]="!isActive" (click)="openEditOrCopy(editOrCopy,true)" mat-menu-item> Copy</label>
+            <label [disabled]="!isActive || taskDeleteCheck" (click)="openDeleteDialog(deleteDialog)" mat-menu-item> Delete</label>
+          </mat-menu>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="flex flex-row flex-wrap bg-white shadow-xs border-0.5 rounded px-2 pt-2">
+      <p class="text-xs text-gray-four mr-4 ">Revision Number: {{this.sh.revisionNumber}}</p>
+      <p class="text-xs text-gray-four mr-4 ">Effective Date: {{this.datePipe.transform(this.sh.effectiveDate, 'yyyy-MM-dd')}}</p>
+      <p class="text-xs text-gray-four mr-4 ">Hyperlink: <app-link class="text-qtd" [text]="this.sh.hyperLinks || ''">
+        </app-link>
+      </p>
+      <p class="text-xs text-gray-four mr-4 ">PDF: {{this.sh.fileName}}</p>
+    </div>
+
+    <mat-tab-group class="mt-5">
+
+      <mat-tab  [label]="'Detail' | uppercase">
+        <app-sh-detail-tab (taskDeleteCheck)="taskDeleteCheck = $event" [isActive]="isActive" [shDescription]="sh.text"></app-sh-detail-tab>
+      </mat-tab>
+      <mat-tab label="{{(('Task'| labelReplacement)| async) | uppercase}}">
+        <app-sh-task (taskDeleteCheck)="taskDeleteCheck = $event" [isActive]="isActive" [shTitle]="shTitle"></app-sh-task>
+      </mat-tab>
+      <mat-tab label="{{(('Enabling Objective'| labelReplacement)| async) | uppercase}}">
+        <app-sh-enabling-objective (taskDeleteCheck)="taskDeleteCheck = $event" [isActive]="isActive" [shTitle]="shTitle"></app-sh-enabling-objective>
+      </mat-tab>
+      <mat-tab label="{{(('Procedure'| labelReplacement)| async) | uppercase}}s">
+        <app-sh-procedure (taskDeleteCheck)="taskDeleteCheck = $event" [isActive]="isActive" [shTitle]="shTitle"></app-sh-procedure>
+      </mat-tab>
+      <mat-tab label="{{(('Regulatory Requirement'| labelReplacement)| async) | uppercase}}s">
+        <app-sh-rr (taskDeleteCheck)="taskDeleteCheck = $event" [isActive]="isActive" [shTitle]="shTitle"></app-sh-rr>
+      </mat-tab>
+      <mat-tab label="{{(('ILA' | labelReplacement)| async) | uppercase}}s">
+        <app-sh-ila (taskDeleteCheck)="taskDeleteCheck = $event" [isActive]="isActive" [shTitles]="shTitle"></app-sh-ila>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+
+</ng-container>
+
+<!-- <ng-container *ngIf="this.sh === undefined">
+  <app-spinner></app-spinner>
+</ng-container> -->
+
+<ng-template #activeInactive>
+  <app-qtd-dialogue [header]="dialogTitle" [description]="dialogDesc" cancelText="No" confirmText="Yes" [showEffectiveDateAndReason]="true"
+    (canceled)="dialog.closeAll()" (confirmed)="toggleActive($event)"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue [header]="dialogTitle" [description]="dialogDesc" cancelText="No" confirmText="Yes" [showEffectiveDateAndReason]="true"
+    (canceled)="dialog.closeAll()" (confirmed)="getDeleteData($event)"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #editOrCopy>
+  <app-flypanel-add-safety-hazards (refreshSHTreeData)="refreshData()" [makeCopy]="makeCopy" [oldSHId]="sh?.id" (closed)="flyPanelService.close()"></app-flypanel-add-safety-hazards>
+</ng-template>

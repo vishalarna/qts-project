@@ -1,0 +1,203 @@
+<div class="flex flex-row justify-between border-b items-center header-spacing">
+  <h1 class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+    Filter DIF Survey
+  </h1>
+  <button class="focus:outline-none" (click)="closeFlyPanel()">
+    <svg
+      class="w-6 h-6"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M6 18L18 6M6 6l12 12"
+      ></path>
+    </svg>
+  </button>
+</div>
+
+<form [formGroup]="filterDifSurveyForm" class="container-spacing">
+  <div class="form-wraper">
+    <div class="card-wraper">
+      <div class="flex flex-row">
+        <div class="flex flex-col float-left w-100">
+          <app-label
+            [for]="'position'"
+            text="{{('Position' | labelReplacement)| async}}"
+            class="mt-6 float-left label label-style"
+          ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select
+              formControlName="position"
+              placeholder="Select {{('Position' | labelReplacement)| async}}"
+            >
+              <mat-option
+                *ngFor="let i of positions"
+                [value]="i.positionTitle"
+                >{{ i.positionTitle }}</mat-option
+              >
+            </mat-select>
+            <button
+              *ngIf="filterDifSurveyForm.get('position').value"
+              matSuffix
+              mat-icon-button
+              type="button"
+              aria-label="Clear"
+              (click)="clearPositionSelection(); $event.stopPropagation()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="pt-3">
+        <div class="flex input-box-wrap">
+          <div class="input-box">
+            <app-label text="Start Date" class="font-weight-bold"></app-label>
+            <div class="flex date-picker-wraper"  style="position: relative;">
+              <app-date
+                formControlName="startDate"
+                placeholder="Select Date"
+                class="w-100"
+                style="position: relative;" 
+              >
+              </app-date>
+              <button
+                *ngIf="filterDifSurveyForm.get('startDate').value"
+                matSuffix
+                mat-icon-button
+                type="button"
+                aria-label="Clear"
+                class="close-icon"
+                (click)="clearStartDateSelection(); $event.stopPropagation()"
+              >
+                <mat-icon>close</mat-icon>
+              </button>
+            </div>
+          </div>
+          <div class="input-box date-picker-wraper">
+            <app-label text="Due Date" class="font-weight-bold "></app-label>
+            <div class="flex date-picker-wraper">
+              <app-date
+                formControlName="dueDate"
+                placeholder="Select Date"
+                class="w-100"
+              >
+              </app-date>
+              <button
+                *ngIf="filterDifSurveyForm.get('dueDate').value"
+                matSuffix
+                mat-icon-button
+                class="close-icon"
+                type="button"
+                aria-label="Clear"
+                (click)="clearDueDateSelection(); $event.stopPropagation()"
+              >
+                <mat-icon class="icon">close</mat-icon>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex input-box-wrap pt-6">
+        <div class="flex flex-col float-left mb-3 input-box">
+          <app-label
+            [for]="'Survey Status'"
+            text="Survey Status"
+            class="font-weight-bold"
+          ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select
+              formControlName="surveyStatus"
+              placeholder="Select Survey Status"
+            >
+              <mat-option value="Scheduled">Scheduled </mat-option>
+              <mat-option value="Open">Open </mat-option>
+              <mat-option value="Closed">Closed </mat-option>
+            </mat-select>
+            <button
+              *ngIf="filterDifSurveyForm.get('surveyStatus').value"
+              matSuffix
+              mat-icon-button
+              type="button"
+              aria-label="Clear"
+              (click)="clearSurveyStatusSelection(); $event.stopPropagation()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+        <div class="mb-3 input-box">
+          <app-label
+            [for]="'Dev Status'"
+            text="Dev Status"
+            class="font-weight-bold"
+          ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select
+              formControlName="devStatus"
+              placeholder="Select Dev Status"
+            >
+              <mat-option value="Draft">Draft</mat-option>
+              <mat-option value="Published">Published</mat-option>
+            </mat-select>
+            <button
+              *ngIf="filterDifSurveyForm.get('devStatus').value"
+              matSuffix
+              mat-icon-button
+              type="button"
+              aria-label="Clear"
+              (click)="clearDevStatusSelection(); $event.stopPropagation()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field> 
+        </div>
+        <div class="mb-3 input-box">
+          <app-label
+            [for]="'Active Status'"
+            text="Active Status"
+            class="font-weight-bold"
+          ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select
+              formControlName="activeStatus"
+              placeholder="Select Active Status"
+            >
+              <mat-option value="Active">Active</mat-option>
+              <mat-option value="Inactive">Inactive</mat-option>
+            </mat-select>
+            <button
+              *ngIf="filterDifSurveyForm.get('activeStatus').value"
+              matSuffix
+              mat-icon-button
+              type="button"
+              aria-label="Clear"
+              (click)="clearActiveStatusSelection(); $event.stopPropagation()"
+            >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field> 
+        </div>
+      </div>
+
+      
+    </div>
+  </div>
+  <div class="d-flex justify-content-between align-items-center pt-3">
+    <app-button
+      variant="outlined"
+      (clicked)="applyFiltersClick()"
+      position="right"
+      size="sm"
+      text="Apply Filters"
+      color="primary"
+      class="font-weight-normal"
+    ></app-button>
+  </div>
+</form>

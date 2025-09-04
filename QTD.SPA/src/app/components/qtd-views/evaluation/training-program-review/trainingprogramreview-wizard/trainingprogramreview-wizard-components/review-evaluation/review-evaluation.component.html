@@ -1,0 +1,24 @@
+<div class="step-container">
+  <form [formGroup]="reviewEvaluationForm">
+    <div class="mat-step-section">
+      <div class="step-header-section">
+        <h2 class="step-main-header">Training Program Evaluation</h2>
+        <p class="step-header-caption">Enter the program evaluation and results</p>
+      </div>
+      <div class="step-controls-section">
+        <div class="step-control-container mb-5">
+          <div class="step-control-label">Evaluation of Trainee Learning</div>
+          <div class="step-control">
+            <ckeditor formControlName="evaluationOfTraineeLearning" (change)="evalOfTraineeLearningChange()" [config]="configCKEditor" [editor]="Editor" ></ckeditor>
+          </div>
+        </div>
+        <div class="step-control-container mb-5" >
+          <div class="step-control-label">Student Evaluation Results</div>
+          <div class="step-control">
+            <ckeditor formControlName="studentEvaluationResults" (change)="studentEvalResultsChange()" [config]="configCKEditor" [editor]="Editor" ></ckeditor>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

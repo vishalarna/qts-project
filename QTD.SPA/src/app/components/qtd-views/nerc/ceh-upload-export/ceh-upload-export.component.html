@@ -1,0 +1,68 @@
+<div>
+  <div class="nav-wrap">
+    <div class="container-fluid">
+      <div class="row nav-bar-inner-wrap">
+        <div class="navbrand-wrap col-md-6">
+          <div class="d-flex align-items-center">
+            <div class="back-icon" (click)="goBack()">
+              <mat-icon>arrow_back_ios</mat-icon>
+            </div>
+            <h2 class="navbar-heading m-0">CEH Upload File</h2>
+          </div>
+        </div>
+        <div class="navbrand-wrap col-md-6">
+          <div class="d-flex justify-content-end align-items-center">
+            <app-button size="sm" class="mr-3" text="Export" (clicked)="downloadCSV()"></app-button>
+            <app-button
+              color="secondary"
+              variant="outlined"
+              size="sm"
+              class="mr-0"
+              text="Close"
+              (clicked)="goBack()"
+            >
+            </app-button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="container-fluid ceh-table-spacing">
+  <mat-table [dataSource]="dataSource"  matSort>
+    <ng-container matColumnDef="courseId">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Course ID</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{row.courseNumber}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="enrollmentDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Enrollment Date</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{ datePipe.transform(row.enrollmentDate + 'Z', 'yyyy-MM-dd') }}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="certificationNumber">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Certification Number</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{row.certificationNumber}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="operatingTopicsCEH">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Operating Topics CEH</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{row.operatingTopicsCEH}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="standards">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Standards</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{row.standards}}</mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="simulations">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>Simulations</mat-header-cell>
+      <mat-cell *matCellDef="let row">{{row.simulations}}</mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedExpandedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedExpandedColumns"></mat-row>
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center" *matNoDataRow>
+      <td class="mat-cell w-full m-2">No CEH linked</td>
+    </tr>
+  </mat-table>
+</div>
+
+
+

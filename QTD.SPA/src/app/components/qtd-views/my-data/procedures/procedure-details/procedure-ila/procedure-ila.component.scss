@@ -1,0 +1,22 @@
+.mat-column-id {
+  flex: 0 0 100px;
+}
+.mat-column-number {
+  flex: 0 0 100px;
+}
+.mat-column-description {
+  flex: 1 0 300px;
+}
+
+
+mat-row,
+mat-header-row {
+  padding: 6px;
+}
+
+
+
+.inActiveItem mat-cell {
+  color: gray !important;
+  font-style: italic !important;
+}

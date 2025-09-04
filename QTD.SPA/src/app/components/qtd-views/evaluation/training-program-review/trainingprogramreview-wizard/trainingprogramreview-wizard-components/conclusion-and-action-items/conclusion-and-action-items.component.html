@@ -1,0 +1,32 @@
+<div class="step-container">
+  <form [formGroup]="concAndActionItemsForm">
+    <div class="mat-step-section with-bottom-border">
+      <div class="step-header-section">
+        <h2 class="step-main-header">Conclusion</h2>
+        <p class="step-header-caption">Summarize the review for the selected {{("Position" | labelReplacement)| async}}</p>
+      </div>
+      <div class="step-controls-section">
+        <div class="step-control-container mb-5">
+          <div class="step-control-label">Conclusion</div>
+          <div class="step-control">
+            <ckeditor formControlName="conclusion" (change)="conclusionChange()" [config]="configCKEditor"  [editor]="Editor"  (ready)="onReady($event)"></ckeditor>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="mat-step-section">
+      <div class="step-header-section">
+        <h2 class="step-main-header">Executive Summary</h2>
+        <p class="step-header-caption">Provide an overview summary of the training program review</p>
+      </div>
+      <div class="step-controls-section">
+        <div class="step-control-container mb-5">
+          <div class="step-control-label">Summary</div>
+          <div class="step-control">
+            <ckeditor formControlName="summary" (change)="summaryChange()" [config]="configCKEditor" [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

@@ -1,0 +1,149 @@
+.schedule-header {
+  position: absolute;
+  width: 852px;
+  height: 39px;
+  left: 488px;
+  top: 130px;
+}
+
+.enabled-button {
+  box-sizing: border-box;
+
+  position: absolute;
+  left: 33.89%;
+  right: 6.67%;
+  top: 11.22%;
+  bottom: 84.46%;
+
+  background: #ffffff;
+  border: 0.5px solid #e1e5e4;
+  box-shadow: 0px 0px 30px rgba(122, 128, 126, 0.1);
+  border-radius: 4px;
+}
+
+// .btn-label {
+//     font-family: Roboto;
+//     font-size: 12px;
+//     font-weight: 400;
+//     line-height: 20px;
+//     letter-spacing: 0em;
+//     text-align: left;
+// }
+.ck-editor {
+  height: 260px;
+  margin: 0.875em 0 0;
+  background: #ffffff;
+  border: 0.8px solid #e1e5e4;
+  border-radius: 4px;
+  font-family: Roboto;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 20px;
+  letter-spacing: 0.15000000596046448px;
+  text-align: left;
+  width: 100%;
+}
+
+.section-header {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: 0.15000000596046448px;
+  text-align: left;
+}
+
+.edit-area {
+  height: 260px;
+  width: 750px;
+  border-radius: 4px;
+}
+
+.heighttop {
+  width: 100%;
+  box-shadow: 0px 0px 30px rgb(122 128 126 / 10%);
+  border-radius: 4px;
+  background: #fff;
+  padding: 1.375em 3.31em;
+  margin: 0 0 0.5em;
+}
+
+.panel-heading {
+  font-size: 1.375em;
+  line-height: 143%;
+  letter-spacing: 0.15px;
+  color: #7a807e;
+  border-bottom: 1px solid rgba(122, 128, 126, 0.2);
+  padding: 0 0 0.5em;
+  margin: 0em 0 0.81em;
+}
+
+.align-icon {
+  padding: 20px 25px 0 0;
+}
+
+.dropdown-size {
+  padding-top: 1rem;
+}
+
+.time-input-container {
+  gap: 0.5rem;
+}
+
+.time-input {
+  width: 54px;
+  height: 33px;
+  text-align: center;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 5px;
+}
+
+.no-arrows::-webkit-inner-spin-button,
+.no-arrows::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.no-arrows[type="number"] {
+  -moz-appearance: textfield;
+}
+
+.time-separator {
+  font-size: 18px;
+  font-weight: bold;
+  margin: 0 0.5rem;
+}
+
+.template-bottom select.form-control.options-list {
+  width: 75px;
+  font-size: 14px;
+  line-height: 143%;
+  color: #7a807e;
+  text-align: left;
+  padding-left: 0.75em;
+}
+
+.disabled {
+  pointer-events: none;
+}
+
+.notifcation-panel{
+  width:100%;
+}
+
+:host ::ng-deep .data .mat-form-field-appearance-outline .mat-form-field-infix {
+  padding: 0em 0 0em 0 !important;
+  width:129px !important;
+  height:35px !important;
+}
+:host ::ng-deep .data .mat-form-field-appearance-outline .mat-form-field-wrapper{
+  width: 129px;
+  padding-bottom: 0;
+  margin-bottom: 0;
+}
+
+:host ::ng-deep .data input{
+  width: 120px;
+}
+

@@ -1,0 +1,91 @@
+
+<app-spinner style="margin-left: 49%;" *ngIf="showLoader"></app-spinner>
+<div class="flex flex-col pb-12 mt-8" *ngIf="!showLoader">
+
+  <!--Buttons Starts-->
+  <div class="flex justify-between pt-2 pb-4">
+    <div class="flex items-center">
+      <app-button *ngIf="!hasAddedEvaluation" text= "Add Evaluation to {{('ILA' | labelReplacement)| async}}" size = "sm" type = "button" (clicked) = "addEvaluationForm()"></app-button>
+    </div>
+    <button type="text" class="btn btn-success mr-4" (click)="openFlyInPanelCreateNewStudentEvaluation(addCreateEvaluation)"><app-icon icon="add" class="mr-2"></app-icon>New Student Evaluation Form</button>
+  </div>
+  <!--Buttons Ends-->
+
+  <!--Forms Starts-->
+  <ng-container *ngIf="hasAddedEvaluation">
+    <form [formGroup]="ilaStudentEvaluationForm">
+        <div class="border-gray-one rounded mat-elevation-z8 px-2 py-2 mb-4">
+          <!--Link Student evaluation form starts-->
+          <div class="flex flex-col ml-12 mr-16 mb-2 mt-4">
+            <div class="flex flex-row justify-between">
+              <div>
+                <p class="font-medium">Link Student Form Evaluation</p>
+              </div>
+              <div>
+                <app-button (click)="openFlyInPanelPreviewStudentEvaluation(addCreateEvaluation)" variant="text" size="sm" icon="remove_red_eye" iconPosition="left" text="Preview {{('ILA' | labelReplacement)| async}} Evaluation Questions"></app-button>
+              </div>
+            </div>
+            <div>
+              <mat-form-field appearance="outline" class="text-sm dropdown w-23/24" [class.mat-form-field-invalid]="ilaStudentEvaluationForm.get('linkStudentFormEvauation')?.invalid" >
+                <mat-label class="text-sm">Student Evaluation Form</mat-label>
+                <mat-select formControlName="linkStudentFormEvauation" (selectionChange)="onStudentEvalChange()">
+                  <mat-option *ngFor="let i of allStudentEvaluations" [value]="i.id">{{i.title}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </div>
+          <!--Link Student evaluation form ends-->
+
+          <!--Audience Starts-->
+          <div class="flex flex-col ml-12 mr-16 mb-3">
+            <div>
+              <p class="font-medium">Audience</p>
+            </div>
+            <div class="w-23/24">
+              <app-textbox type="text" [name]="'audience'" formControlName="audience" [disabled] ="true">
+              </app-textbox>
+            </div>
+          </div>
+          <!--Audience Ends-->
+
+          <!--Make all EMP avaliable starts-->
+          <!-- <div class="flex flex-col ml-12 mr-16">
+            <div>
+              <p class="font-medium">Make evaluation available in EMP</p>
+            </div>
+            <div>
+              <mat-form-field appearance="outline" class="text-sm dropdown w-23/24">
+                <mat-label class="text-sm">All Employees and Classes</mat-label>
+                <mat-select formControlName="makeEvauationAvailableForEmp">
+                  <mat-option *ngFor="let i of employees" [value]="i.id">{{i.name}}</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div>
+              <mat-checkbox formControlName="isEmployeeRequired">Require Employees to provide response to all Evaluation questions</mat-checkbox>
+            </div>
+          </div> -->
+          <div class="flex flex-row-reverse flex flex-col ml-12 mr-16 mb-3">
+            <app-button text = "Remove" size = "sm" type = "button" (clicked)="deleteEvaluationForm()"></app-button>
+          </div>
+        </div>
+        <!--Make all EMP avaliable ends-->
+      </form>
+  </ng-container>
+
+</div>
+<!--Forms Ends-->
+
+
+<!--fly in for evaluation settings-->
+<ng-template #addEvaluationSettings>
+  <app-fly-panel-settings >
+  </app-fly-panel-settings>
+</ng-template>
+
+<!--fly in for create new student evaluation-->
+<ng-template #addCreateEvaluation>
+  <app-fly-panel-create (refreshEvals)="readyEvaluationForms()" [preview_evaluation]="preview_evaluation">
+  </app-fly-panel-create>
+</ng-template>
+

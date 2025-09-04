@@ -1,0 +1,60 @@
+<h1>CBT Release Demo Page</h1>
+<ul>
+    <li>
+        <h3>Attach Course Begin Event Value : </h3>
+    </li>
+    <p style="color: green;"> {{this.scormAttachBeginMsg}}</p>
+    <li>
+        <h3>Attach Course Success Event Value : </h3>
+    </li>
+    <p style="color: green;"> {{this.scormAttachSuccessMsg}}</p>
+    <li>
+        <h3>Attach Course Error Event Value : </h3>
+    </li>
+    <p style="color: red;">{{this.scormAttachErrorMsg}}</p>
+    <li>
+        <h3>Attach Disconnect Begin Event Value : </h3>
+    </li>
+    <p style="color: green;">{{this.scormDisconnectBeginMsg}}</p>
+    <li>
+        <h3>Attach Disconnect Success Event Value : </h3>
+    </li>
+    <p style="color: green;">{{this.scormDisconnectSuccessMsg}}</p>
+    <li>
+        <h3>Attach Disconnect Error Event Value : </h3>
+    </li>
+    <p style="color: red;">{{this.scormDisconnectErrorMsg}}</p>
+    <li>
+      <div class="p-2 mb-2 d-flex align-items-center ">
+        <h3 class="mb-0">Class Schedule ID : </h3>
+        <input class="form-control w-25 mx-2" type="text"  name="text" placeholder="Enter scheduleId" #scheduleId />
+        <button class="btn btn-primary custom-btn-sm py-2" (click)="startCourse(scheduleId.value)" >Start Course</button>
+      </div>
+    </li>
+</ul>
+
+<app-spinner style="position: absolute; left: 50%;" *ngIf="spinner"></app-spinner>
+
+<table class="table">
+    <thead>
+      <tr>
+        <th>{{("Employee" | labelReplacement)| async}} Name</th>
+        <th>CBT Status</th>
+        <th>Add to CBT</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let employee of employees">
+        <td>{{employee.person.firstName}} {{employee.person.lastName}}</td>
+        <td>CBT Status Value</td>
+        <td>
+          <button class="btn btn-primary custom-btn-sm" (click)="addToCbtClick(1)">Add to CBT</button>
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+<app-cbt-manager *ngIf="!spinner" [ila]="ila" (OnAttachCourseBegin)="getAttachBeginEvent($event)" (OnAttachCourseSuccess)="getAttachCourseSuccessEvent($event)"
+    (OnAttachCourseError)="getAttachCourseError($event)" (OnDisconnectBegin)="getDisconnectBeginEvent($event)" (OnDisconnectSuccess)="getDisconnectSuccessEvent($event)"
+    (OnDisconnectError)="getDisconnectError($event)">
+</app-cbt-manager>

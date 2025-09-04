@@ -1,0 +1,609 @@
+<app-header [title]="title" [canGoBack]="true" prevUrl='/implementation/employees'>
+</app-header>
+<!-- main-header starts -->
+<div class="flex flex-col items-center py-8">
+    <img class="w-28 h-28 mb-6" src="./assets/img/image_one.png">
+    <span class="flex flex-row space-x-6 mt-4">
+        <p class="font-normal text-2xl text-gray-five mb-1">{{empModel.person.firstName + " " +
+            (empModel?.person?.middleName ?? '') + " " +
+            empModel.person.lastName}}
+        </p>
+        <span style="padding-top: 5px;">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+                <app-icon icon="more_vert"></app-icon>
+            </button>
+            <mat-menu #menu="matMenu" class="p-2">
+                <label mat-menu-item *ngIf="empModel.active" (click)="changeEmpStatus('inactive')">Make
+                    In-Active</label>
+                <label mat-menu-item *ngIf="!empModel.active" (click)="changeEmpStatus('active')">Make Active</label>
+                <label mat-menu-item (click)="deleteEmp()">Delete {{("Employee" | labelReplacement)| async}}</label>
+
+            </mat-menu>
+        </span>
+    </span>
+    <p class="text-sm text-gray-four">{{positions.toString()}}</p>
+    <p class="text-sm text-gray-four"> Status: {{empModel.active ? 'Active' : 'In-Active'}}
+    </p>
+
+
+</div>
+<!-- main-header ends -->
+
+
+
+
+<mat-tab-group mat-align-tabs="start">
+    <mat-tab label="{{('Employee' | labelReplacement)| async}} Details">
+        <div class="flex flex-col px-12">
+            <div class="border-b pb-8">
+                <!-- title starts -->
+                <div class="flex flex-row items-center py-4">
+
+                    <h1 class="flex-auto font-medium text-xl">{{("Employee" | labelReplacement)| async}} Information</h1>
+                    <button class="focus:outline-none" id="btnEmpDetails" (click)="getActiveDetail('employee details')">
+
+                        <app-icon *ngIf="activeAccordian === 'employee details'" icon="expand_more"></app-icon>
+
+                        <app-icon *ngIf="activeAccordian != 'employee details'" icon="expand_less"></app-icon>
+
+                    </button>
+                </div>
+                <!-- title ends -->
+
+                <!-- container starts -->
+                <div *ngIf="activeAccordian == 'employee details'" id="empDetails" [@fadeSlideInOut]
+                    class="flex flex-col py-8 px-6 space-y-12 border-gray-one shadow-xs border-0.5 bg-white-one rounded">
+
+                    <ng-container #editEmp *ngIf="mode=='edit'">
+                        <!-- section one starts -->
+                        <form #empForm="ngForm">
+                            <div class="flex flex-row space-x-12 mb-3">
+                                <div class="w-1/3">
+                                    <p class="text-xs text-gray-four font-normal pb-1">First name</p>
+                                    <input [(ngModel)]="empModel.person.firstName" name="firstName"
+                                        class="text-sm w-full border h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded"
+                                        type="text" value="Cory">
+                                </div>
+                                <div class="w-1/3">
+                                    <p class="text-xs text-gray-four font-normal pb-1">Last name</p>
+                                    <input [(ngModel)]="empModel.person.lastName" name="lastName"
+                                        class="text-sm w-full border h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded"
+                                        type="text" value="Fisher">
+                                </div>
+                                <div class="w-1/3">
+                                    <p class="text-xs text-gray-four font-normal pb-1">Middle name</p>
+                                    <input [(ngModel)]="empModel.person.middleName" name="middleName"
+                                        class="text-sm w-full border h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded"
+                                        type="text" value="Not Provided">
+                                </div>
+                            </div>
+
+                            <!-- section one ends starts -->
+
+                            <!-- section two starts -->
+                            <div class="flex flex-row space-x-12 mb-3">
+                                <div class="w-1/3">
+                                    <p class="text-xs text-gray-four font-normal pb-1">{{("Employee" | labelReplacement)| async}} number</p>
+                                    <input [(ngModel)]="empModel.employeeNumber" name="employeeNumber" readonly disabled
+                                        class="text-sm w-full border h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded"
+                                        type="text" value="43543">
+                                </div>
+                                <div class="w-1/3">
+                                    <p class="text-xs text-gray-four font-normal pb-1">Email</p>
+                                    <input [(ngModel)]="empModel.person.username" name="username" readonly disabled
+                                        class="text-sm w-full border h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded"
+                                        type="text" value="cory.fisher@qtd.com">
+                                </div>
+                                <div class="w-1/3">
+                                    <p class="text-xs text-gray-four font-normal pb-1">{{("Certification" | labelReplacement)| async}}s</p>
+                                    <input name="certification"
+                                        class="text-sm w-full border h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded"
+                                        type="text" value="Not Provided">
+                                </div>
+                            </div>
+                            <!-- section two ends starts -->
+
+                            <!-- section three starts -->
+                            <div class="flex flex-row space-x-12 mb-3">
+                                <div class="w-3/4 relative">
+                                    <div class="flex justify-between w-full mb-3">
+                                        <label class="text-gray-four text-xs"
+                                            for="organization name">Organization</label>
+                                        <button (click)="openFlyInPanel(orgContainer)" type="button"
+                                            class="focus:outline-none text-green-600 text-xs">
+                                            Add new organization
+                                        </button>
+                                    </div>
+                                    <div class="rounded border px-4 py-1">
+                                        <div class="flex justify-between items-center">
+                                            <div class="flex">
+                                                <p *ngFor="let item of empOrgs | keyvalue"
+                                                    class="text-xxs px-2 py-1 mr-1 rounded-full border-black border-0.8">
+                                                    {{item.value}}</p>
+                                                <p
+                                                    class="flex text-xxs px-2 py-1 mr-1 rounded-full border-black border-0.8">
+                                                    <button class="focus:outline-none " type="button"
+                                                        (click)="toggleOrganizationDropdown()">
+                                                        <app-icon icon="expand_more"></app-icon>
+                                                    </button>
+                                                    Add
+                                                </p>
+                                            </div>
+                                            <button class="focus:outline-none p-0 m-0" type="button"
+                                                (click)="toggleOrganizationDropdown()">
+
+                                                <app-icon *ngIf="isOrganizationDropdownVisible" icon="expand_less">
+                                                </app-icon>
+                                                <app-icon *ngIf="!isOrganizationDropdownVisible" icon="expand_more">
+                                                </app-icon>
+
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div *ngIf="isOrganizationDropdownVisible"
+                                        class="absolute flex flex-col rounded shadow w-full bg-white-one z-10 mt-3 orgDDL">
+                                        <div class="border-b-0.8 px-4 py-3 hover:bg-white-three cursor-pointer"
+                                            (click)="addEmpOrgtoList(item.id,item.name)" *ngFor="let item of orgModel">
+                                            <p class="text-sm">{{item.name}}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- section three ends starts -->
+
+                            <!-- section four starts -->
+                            <div class="flex flex-row justify-between items-center">
+                                <button href="" class="flex-row text-sm text-center font-medium text-green-one">View
+                                    Contact
+                                    Information</button>
+                                <button class="flex flex-row px-8 items-center text-sm btn-icon-secondary" type="button"
+                                    (click)="submitEmpForm()">Save</button>
+                            </div>
+                            <!-- section four ends -->
+                        </form>
+                    </ng-container>
+                    <ng-container #viewEmp *ngIf="mode=='view'">
+                        <!-- section one starts -->
+                        <div class="flex flex-row space-x-12">
+                            <div class="w-1/3">
+                                <p class="text-xs text-gray-four font-normal pb-1">First name</p>
+                                <p class="text-sm">{{this.empModel.person.firstName}}</p>
+                            </div>
+                            <div class="w-1/3">
+                                <p class="text-xs text-gray-four font-normal pb-1">Last name</p>
+                                <p class="text-sm">{{this.empModel.person.lastName}}</p>
+                            </div>
+                            <div class="w-1/3">
+                                <p class="text-xs text-gray-four font-normal pb-1">Middle name</p>
+                                <p class="text-sm text-gray-four">
+                                    {{this.empModel?.person?.middleName ?? 'Not Provided'}}
+                                </p>
+                            </div>
+                        </div>
+
+                        <!-- section one ends starts -->
+
+                        <!-- section two starts -->
+                        <div class="flex flex-row space-x-12">
+                            <div class="w-1/3">
+                                <p class="text-xs text-gray-four font-normal pb-1">{{("Employee" | labelReplacement)| async}} number</p>
+                                <p class="text-sm">{{this.empModel.employeeNumber}}</p>
+                            </div>
+                            <div class="w-1/3">
+                                <p class="text-xs text-gray-four font-normal pb-1">Email</p>
+                                <p class="text-sm">{{this.empModel.person.username}}</p>
+                            </div>
+                            <div class="w-1/3">
+                                <p class="text-xs text-gray-four font-normal pb-1">{{("Certification" | labelReplacement)| async}}s</p>
+                                <p class="text-sm text-gray-four">Not Provided</p>
+                            </div>
+                        </div>
+                        <!-- section two ends starts -->
+
+                        <!-- section three starts -->
+                        <div class="flex flex-row space-x-12">
+                            <div class="w-1/3">
+                                <p class="text-xs text-gray-four font-normal pb-1">Organization</p>
+                                <p class="text-sm" *ngFor="let item of this.empModel.employeeOrganizations">
+                                    {{item.organization.name + ','}}</p>
+                            </div>
+                            <!-- <div class="w-1/3">
+                                <p class="text-xs text-gray-four font-normal pb-1">Windows Login</p>
+                                <p class="text-sm">-</p>
+                            </div>
+                            <div class="w-1/3"></div> -->
+                        </div>
+                        <!-- section three ends starts -->
+
+                        <!-- section four starts -->
+                        <div class="flex flex-row justify-between items-center">
+                            <button href="" class="flex-row text-sm text-center font-medium text-green-one">View Contact
+                                Information</button>
+                            <button class="flex flex-row px-8 items-center text-sm btn-icon-secondary"
+                                (click)="mode='edit'">
+                                <app-icon icon="edit"></app-icon>
+                                Edit
+                            </button>
+                        </div>
+                        <!-- section four ends -->
+
+
+                    </ng-container>
+
+                </div>
+                <!-- container ends -->
+            </div>
+        </div>
+        <!-- Employee Infomration ends -->
+
+        <!-- Certification starts -->
+        <div class="flex flex-col px-12">
+            <div class="border-b py-8">
+                <!-- title starts -->
+                <div class="flex flex-row items-center py-4" (click)="getActiveDetail('certifications')">
+                    <h1 class="flex-auto font-medium text-xl">{{("Certification" | labelReplacement)| async}}s</h1>
+                    <button class="focus:outline-none" id="btnCertification">
+                        <app-icon *ngIf="activeAccordian !== 'certifications'" icon="expand_more"></app-icon>
+                        <app-icon *ngIf="activeAccordian === 'certifications'" icon="expand_less"></app-icon>
+
+                    </button>
+                </div>
+                <!-- title ends -->
+
+                <!-- table starts -->
+                <div *ngIf="activeAccordian == 'certifications'" id="certifications" [@fadeSlideInOut]
+                    class="border-gray-one shadow-xs border-0.5 rounded">
+                    <!-- table header starts -->
+                    <div
+                        class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one justify-between">
+                        <app-textbox placeholder="Search here" (keyup)="filterEmpCert($event)"></app-textbox>
+                        <div class="flex flex-row space-x-4 text-sm">
+                            <app-button color="secondary" text="Add {{('Certification' | labelReplacement)| async}}s" icon="add" size="sm"
+                                iconPosition="left"
+                                (clicked)="openCertPanel(undefined,openFlyInPanel(empCertContainer))"></app-button>
+
+                        </div>
+                    </div>
+                    <!-- table header ends -->
+
+                    <!-- table content starts -->
+                    <div class="flex-row bg-white-one rounded-b-md">
+
+
+                        <mat-table [dataSource]="empCertDataSource" matSort #certSort="matSort">
+                            <ng-container matColumnDef="certBody">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> Certifying Body </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.certBody}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="certNo">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Certification" | labelReplacement)| async}}s Number
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.certNo}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="certArea">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Certification" | labelReplacement)| async}}s Area
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.certArea}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="issueDate">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> Issue Date </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.issueDate |
+                                    date:'yyyy-MM-dd'}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="recertDate">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> Recert Date </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.recertDate}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="expireDate">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header> Expiration Date </mat-header-cell>
+                                <mat-cell *matCellDef="let row"> {{row.expireDate |
+                                    date:'yyyy-MM-dd'}} </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="obj">
+                                <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <div class="flex flex-row items-center text-gray-four btn-group">
+                                        <button mat-icon-button [matMenuTriggerFor]="menuCert">
+                                            <app-icon icon="more_vert"></app-icon>
+                                        </button>
+                                        <mat-menu #menuCert="matMenu">
+                                            <label mat-menu-item translate
+                                                (click)="openCertPanel(row.obj,openFlyInPanel(empCertContainer))">Edit</label>
+                                            <label mat-menu-item translate
+                                                (click)="openCertificationModal('delete',row.obj.id)">Delete</label>
+                                        </mat-menu>
+
+                                    </div>
+                                </mat-cell>
+                            </ng-container>
+                            <mat-header-row *matHeaderRowDef="empCertCols"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: empCertCols;"></mat-row>
+
+                            <!-- Row shown when there is no matching data.-->
+                            <tr class="mat-row flex text-center " *matNoDataRow>
+                                <td class="mat-cell w-full m-2">No data to display</td>
+                            </tr>
+
+                        </mat-table>
+                        <app-data-loader *ngIf="!empCertDataSource.data"></app-data-loader>
+                        <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #certPaging
+                            aria-label="Select page of periodic elements">
+                        </mat-paginator>
+                    </div>
+                    <!-- table content ends -->
+                </div>
+                <!-- table ends -->
+            </div>
+        </div>
+        <!-- Certification ends -->
+
+        <!-- Position starts -->
+        <div class="flex flex-col px-12 py-8">
+
+            <!-- title starts -->
+            <div class="flex flex-row items-center py-4" (click)="getActiveDetail('positions')">
+                <h1 class="flex-auto font-medium text-xl">{{("Position" | labelReplacement)| async}}s</h1>
+                <button class="focus:outline-none" id="btnPosition">
+                    <app-icon *ngIf="activeAccordian !== 'positions'" icon="expand_more"></app-icon>
+
+                    <app-icon *ngIf="activeAccordian === 'positions'" icon="expand_less"></app-icon>
+
+                </button>
+            </div>
+            <!-- title ends -->
+
+            <!-- table starts -->
+            <div *ngIf="activeAccordian == 'positions'" id="positions" [@fadeSlideInOut]
+                class="border-gray-one shadow-xs border-0.5 rounded">
+                <!-- table header starts -->
+                <div
+                    class="flex flex-row justify-between bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one">
+                    <app-textbox placeholder="Search here" (keyup)="filterEmpPos($event)"></app-textbox>
+
+                    <div class="flex flex-row space-x-4 text-sm">
+                        <app-button icon="add" text="Add Positon" size="sm" color="secondary"
+                            (clicked)="openPosPanel(undefined,openFlyInPanel(empPosContainer))" iconPosition="left">
+                        </app-button>
+
+                    </div>
+                </div>
+                <!-- table header ends -->
+
+                <!-- table content starts -->
+                <div class="flex-row bg-white-one rounded-b-md">
+                    <mat-table [dataSource]="empPosDataSource" matSort #posSort="matSort">
+                        <ng-container matColumnDef="posName">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Position" | labelReplacement)| async}}s Name </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.posName}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="startDate">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Start Date </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.startDate |
+                                date:'yyyy-MM-dd'}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="Trainee">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Trainee
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.Trainee ? 'Yes' : 'No'}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="qualificationDate">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Qualification Date </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.qualificationDate|
+                                date:'yyyy-MM-dd'}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="tp_version">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Training program version
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.tp_version}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="endDate">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> End Date </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.endDate|
+                                date:'yyyy-MM-dd'}} </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="obj">
+                            <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                                <div class="flex flex-row items-center text-gray-four btn-group">
+                                    <button mat-icon-button [matMenuTriggerFor]="menuPos">
+                                        <app-icon icon="more_vert"></app-icon>
+                                    </button>
+                                    <mat-menu #menuPos="matMenu">
+                                        <label mat-menu-item translate
+                                            (click)="openPosPanel(row.obj,openFlyInPanel(empPosContainer))">Edit</label>
+                                        <label mat-menu-item translate
+                                            (click)="openPositionModal('delete',row.obj.id)">Delete</label>
+                                    </mat-menu>
+
+                                </div>
+                            </mat-cell>
+                        </ng-container>
+                        <mat-header-row *matHeaderRowDef="empPosCols"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: empPosCols;"></mat-row>
+
+                        <!-- Row shown when there is no matching data.-->
+                        <tr class="mat-row flex text-center " *matNoDataRow>
+                            <td class="mat-cell w-full m-2">No data to display</td>
+                        </tr>
+
+                    </mat-table>
+                    <app-data-loader *ngIf="!empPosDataSource.data"></app-data-loader>
+                    <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #certPaging
+                        aria-label="Select page of periodic elements">
+                    </mat-paginator>
+                </div>
+                <!-- table content ends -->
+            </div>
+            <!-- table ends -->
+
+        </div>
+        <!-- Position ends -->
+    </mat-tab>
+    <mat-tab label="Individual Development Plan">
+        <!-- IDP starts -->
+        <div class="flex flex-col px-12">
+            <div class="border-b pb-8 pt-4">
+                <!-- title starts -->
+                <div class="flex flex-row items-center pb-8">
+                    <h1 class="flex-auto font-medium text-xl">Individual Development Plan (IDP)</h1>
+                    <button class="focus:outline-none" id="btnIDP" (click)="getActiveDetail('idpDetails')">
+
+                        <app-icon *ngIf="activeAccordian !== 'idpDetails'" icon="expand_more"></app-icon>
+
+                        <app-icon *ngIf="activeAccordian === 'idpDetails'" icon="expand_less"></app-icon>
+
+                    </button>
+                </div>
+                <!-- title ends -->
+
+                <!-- table starts -->
+                <div class="border-gray-one shadow-xs border-0.5 rounded" *ngIf="activeAccordian == 'idpDetails'">
+                    <!-- table header starts -->
+                    <div
+                        class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one">
+                        <div class="flex-grow text-sm items-center text-gray-four">
+                            <p class="inline-block mr-4">Showing 4 items for year</p>
+                            <select class="appearance-none rounded border w-24 px-4 py-2">
+                                <option>2021</option>
+                                <option>2020</option>
+                                <option>2019</option>
+                            </select>
+                        </div>
+                        <div class="flex flex-row space-x-4 text-sm">
+                            <button class="btn-icon-secondary border-0">
+                                <app-icon icon="file_download"></app-icon>
+                                Export as CSV
+                            </button>
+                            <button class="btn-icon-secondary">
+                                <app-icon icon="add"></app-icon>
+                                Add new
+                            </button>
+                        </div>
+                    </div>
+                    <!-- table header ends -->
+
+                    <!-- table content starts -->
+                    <div class="flex-row bg-white-one rounded-b-md m-2">
+                        <table class="table w-full text-left mt-5 row-border hover">
+                            <thead class="table-row-group">
+
+                                <tr class="table-row text-xs text-gray-four">
+                                    <th class="table-cell w-3/12 py-5 pl-6 border-b-0.8 border-gray-one font-normal">
+                                        {{("ILA" | labelReplacement)| async}} Title</th>
+                                    <th class="table-cell w-1/12 py-5 border-b-0.8 border-gray-one font-normal">{{("ILA" | labelReplacement)| async}}
+                                        No.</th>
+                                    <th class="table-cell w-1/12 py-5 border-b-0.8 border-gray-one font-normal">
+                                        Course Type</th>
+                                    <th class="table-cell w-1/12 py-5 border-b-0.8 border-gray-one font-normal">
+                                        Test Linked</th>
+                                    <th class="table-cell w-1/12 py-5 border-b-0.8 pr-6 font-normal">CBT Linked
+                                    </th>
+                                    <th class="table-cell w-1/12 py-5 border-b-0.8 pr-6 font-normal">Passed</th>
+                                    <th class="table-cell w-1/12 py-5 border-b-0.8 pr-6 font-normal">Scheduled
+                                    </th>
+                                    <th class="table-cell w-1/12 py-5 border-b-0.8 pr-6 font-normal">Completed
+                                    </th>
+                                    <th class="table-cell w-1/12 py-5 border-b-0.8 pr-6 font-normal">Grade</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr href="" class="table-row border-b-8 text-sm hover:bg-gray-50">
+                                    <td class="pl-6 py-6 table-cell align-middle border-b-0.8 border-gray-one">2018
+                                        TOCC {{("Task" | labelReplacement)| async}} Training {{("Task" | labelReplacement)| async}} 8.1.1</td>
+                                    <td class="table-cell align-middle border-b-0.8 border-gray-one">2018 TO...
+                                    </td>
+                                    <td class="table-cell align-middle border-b-0.8 border-gray-one">Self-Paced
+                                    </td>
+                                    <td class="table-cell align-middle border-b-0.8 border-gray-one">Yes</td>
+                                    <td class="table-cell pr-6 align-middle border-b-0.8 border-gray-one">Yes</td>
+                                    <td class="table-cell pr-6 align-middle border-b-0.8 border-gray-one">9/18/2020
+                                    </td>
+                                    <td class="table-cell pr-6 align-middle border-b-0.8 border-gray-one">9/18/2020
+                                    </td>
+                                    <td class="table-cell pr-6 align-middle border-b-0.8 border-gray-one">9/18/2020
+                                    </td>
+                                    <td class="table-cell pr-6 align-middle border-b-0.8 border-gray-one">
+                                        Distinction</td>
+                                </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- table content ends -->
+                </div>
+                <!-- table ends -->
+            </div>
+        </div>
+        <!-- IDP ends -->
+
+        <!-- Employee IDP Review starts -->
+        <div class="flex flex-col px-12">
+            <div class="pt-8">
+
+                <!-- title starts -->
+                <div class="flex flex-row items-center pb-8">
+                    <h1 class="flex-auto font-medium text-xl">{{("Employee" | labelReplacement)| async}} IDP Review</h1>
+                    <button class="focus:outline-none" id="btnIdpReview" (click)="getActiveDetail('empIdpReview')">
+                        <app-icon *ngIf="activeAccordian !== 'empIdpReview'" icon="expand_more"></app-icon>
+
+                        <app-icon *ngIf="activeAccordian === 'empIdpReview'" icon="expand_less"></app-icon>
+
+                    </button>
+                </div>
+                <!-- title ends -->
+
+                <!-- table starts -->
+                <div class="border-gray-one shadow-xs border-0.5 rounded" *ngIf="activeAccordian == 'empIdpReview'">
+                </div>
+                <!-- table ends -->
+
+            </div>
+        </div>
+        <!-- Employee IDP Review ends -->
+
+        <!-- Employee Specific IDP Information starts -->
+        <div class="flex flex-col px-12">
+            <div class="pb-8 pt-8">
+
+                <!-- title starts -->
+                <div class="flex flex-row items-center pb-8">
+                    <h1 class="flex-auto font-medium text-xl">{{("Employee" | labelReplacement)| async}} Specific IDP Information</h1>
+                    <button class="focus:outline-none" (click)="getActiveDetail('empIdpInfo')">
+                        <app-icon *ngIf="activeAccordian !== 'empIdpInfo'" icon="expand_more">
+
+                        </app-icon>
+                        <app-icon *ngIf="activeAccordian === 'empIdpInfo'" icon="expand_less">
+
+                        </app-icon>
+                    </button>
+                </div>
+                <!-- title ends -->
+
+                <!-- table starts -->
+                <div class="border-gray-one shadow-xs border-0.5 rounded" *ngIf="activeAccordian == 'empIdpInfo'">
+                </div>
+                <!-- table ends -->
+
+            </div>
+        </div>
+        <!-- Employee Specific IDP Information ends -->
+    </mat-tab>
+</mat-tab-group>
+
+
+
+
+<ng-template #empPosContainer>
+    <app-fly-panel-emp-position [mode]="editData ? 'edit' : 'add'" [empPosEditData]="editData">
+    </app-fly-panel-emp-position>
+</ng-template>
+
+<ng-template #empCertContainer>
+    <app-fly-panel-emp-certification [mode]="editData ? 'edit' : 'add'" [empCertEditData]="editData">
+    </app-fly-panel-emp-certification>
+</ng-template>
+
+<ng-template #orgContainer>
+    <app-flyPanel-organizations></app-flyPanel-organizations>
+</ng-template>

@@ -1,0 +1,143 @@
+<div class="m-5 flex flex-col">
+  <section class="flex flex-row justify-between">
+    <h1>Bulk Edit</h1>
+    <app-button ButtonType="icon" icon="close" (clicked)="closed.emit('fp-be-ti')"></app-button>
+  </section>
+  <section>
+    <mat-stepper (selectionChange)="stepChanged($event)" #stepper labelPosition="bottom" [linear]="true"
+      [orientation]="(stepperOrientation | async)!">
+      <ng-template matStepperIcon><app-icon></app-icon></ng-template>
+      <mat-step
+        [completed]="step1Form.get('changeStatus')?.value || step1Form.get('changeEO')?.value || step1Form.get('deleteItem')?.value">
+        <ng-template matStepLabel>Bulk Edit</ng-template>
+        <ng-template matStepContent>
+          <form [formGroup]="step1Form" class="flex flex-col w-full">
+            <div class="flex flex-row mb-2 mt-5" style="align-items: center;">
+              <mat-checkbox [disabled]="step1Form.get('deleteItem')?.value" formControlName="changeStatus" class="mr-2">
+                <label>Change Status</label>
+              </mat-checkbox>
+            </div>
+            <label for="status">Change Status to</label>
+            <mat-select [disabled]="!step1Form.get('changeStatus')?.value || step1Form.get('deleteItem')?.value"
+              class="rounded-sm" formControlName="status" style="border: 1px solid lightgray;">
+              <mat-option [value]="false">Inactive</mat-option>
+              <mat-option [value]="true">Active</mat-option>
+            </mat-select>
+            <div class="flex flex-row mb-2 mt-3" style="align-items: center;">
+              <mat-checkbox [disabled]="step1Form.get('deleteItem')?.value" formControlName="changeEO" class="mr-2">
+                <label>Change {{("Enabling Objective" | labelReplacement)| async}}</label>
+              </mat-checkbox>
+            </div>
+            <label>Change {{("Enabling Objective" | labelReplacement)| async}} to</label>
+            <mat-select [disabled]="!step1Form.get('changeEO')?.value || step1Form.get('deleteItem')?.value"
+              formControlName="eoId" class="rounded-sm" style="border: 1px solid lightgray;">
+              <mat-option [value]="'0'">Choose an EO</mat-option>
+              <mat-option [value]="'1'">EO 1</mat-option>
+              <mat-option [value]="'2'">EO 2</mat-option>
+            </mat-select>
+            <div class="flex flex-row" style="align-items: center;">
+              <mat-checkbox formControlName="deleteItem" class="mr-2">
+                <div class="flex flex-col">
+                  <label>Delete Test Questions</label>
+                  <span class="text-xs text-gray-400">By selecting this option you are confirming to
+                    permanently delete the selected
+                    Test Questions. This cannot be undone</span>
+                </div>
+              </mat-checkbox>
+            </div>
+            <div class="flex flex-row w-full justify-end">
+              <app-button
+                [disabled]="!(step1Form.get('changeStatus')?.value || step1Form.get('changeEO')?.value || step1Form.get('deleteItem')?.value)"
+                (clicked)="stepper.next()" size="sm" style="align-self: flex-end;" ButtonType="button" color="secondary"
+                text="Continue"></app-button>
+            </div>
+          </form>
+        </ng-template>
+      </mat-step>
+      <mat-step [completed]="step2Form.valid">
+        <ng-template matStepLabel>History</ng-template>
+        <ng-template matStepContent>
+          <form [formGroup]="step2Form" class="flex flex-col mt-4">
+            <div class="flex flex-col">
+              <label required>Effective Date</label>
+              <app-date formControlName="date"></app-date>
+            </div>
+            <div class="flex flex-col mt-3">
+              <label>Reason For Change</label>
+              <app-textarea formControlName="reason" [value]="step2Form.get('reason')?.value ?? ''"></app-textarea>
+            </div>
+            <div class="flex flex-row w-full justify-end mt-3">
+              <app-button (clicked)="stepper.next()" size="sm" style="align-self: flex-end;" ButtonType="button"
+                color="secondary" text="Continue"></app-button>
+            </div>
+          </form>
+        </ng-template>
+      </mat-step>
+      <mat-step>
+        <ng-template matStepLabel>Review and Save</ng-template>
+        <ng-template matStepContent>
+          <p class="text-sm mt-3">By Selecting Save below you are <b>{{message}} for the following Test
+              Question(s)</b>. Review the
+            table below to confirm wether the actions can be completed</p>
+          <div class="mt-5 mat-elevation-z4 bg-white">
+            <mat-table [dataSource]="dataSource">
+              <ng-container matColumnDef="question">
+                <mat-header-cell *matHeaderCellDef>
+                  Test Question
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  {{row.question}}
+                </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="action">
+                <mat-header-cell *matHeaderCellDef>
+                  Bulk Edit Action
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="flex flex-col">
+                    <div *ngFor="let item of row.change">
+                      <p class="m-0 p-0">{{item.description}}</p>
+                    </div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <ng-container matColumnDef="information">
+                <mat-header-cell *matHeaderCellDef>
+                  Can Be Performed
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div class="flex flex-row justify-between" style="align-items:end;">
+                    <div *ngIf="!row.hasDelete" class="flex flex-col">
+                      <div *ngFor="let item of row.change">
+                        <app-icon [ngClass]="item.canPerform ? 'greenicon':'redicon'"
+                          [icon]="item.canPerform ? 'done':'close'"></app-icon>
+                      </div>
+                    </div>
+                    <div class="ml-5">
+                      <app-icon style="color:lightgray;" icon="help_outline"></app-icon>
+                    </div>
+                  </div>
+                </mat-cell>
+              </ng-container>
+
+              <mat-row *matHeaderRowDef="displayedColumns"></mat-row>
+              <mat-row class="p-3" *matRowDef="let row; columns : displayedColumns"></mat-row>
+              <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full mb-2 mt-2">No Data Found</td>
+              </tr>
+            </mat-table>
+          </div>
+
+          <p class="mt-3">These updates will be saved with an effective date of <b>{{step2Form.get('date')?.value |
+              date:'dd-MM-yy'}}</b></p>
+          <div class="flex flex-row w-full justify-end mt-3">
+            <app-button (clicked)="closed.emit('fp-be-ti')" size="sm" style="align-self: flex-end;" ButtonType="button"
+              color="secondary" text="Save"></app-button>
+          </div>
+        </ng-template>
+      </mat-step>
+    </mat-stepper>
+  </section>
+</div>

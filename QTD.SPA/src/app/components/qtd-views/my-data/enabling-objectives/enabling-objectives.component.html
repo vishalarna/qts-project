@@ -1,0 +1,12 @@
+<mat-sidenav-container style="height: 100vh;">
+  <mat-sidenav align="start" opened mode="side" style="width: 350px;">
+      <app-nav-bar-left>
+          <app-enabling-objectives-navbar (urlEmitter)="url = $event"></app-enabling-objectives-navbar>
+      </app-nav-bar-left>
+  </mat-sidenav>
+  <mat-sidenav-content>
+      <app-header [toggleMenuIcon]="false" breadcrumbs="{{('My Data' | labelReplacement)| async}} / {{('Enabling Objective' | labelReplacement)| async}}s"></app-header>
+      <!-- <app-procedure-overview></app-procedure-overview> -->
+      <router-outlet></router-outlet>
+  </mat-sidenav-content>
+</mat-sidenav-container>

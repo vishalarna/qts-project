@@ -1,0 +1,79 @@
+.keyword-input {
+  align-items: center;
+  svg {
+    margin-right: 8px;
+  }
+  input {
+    max-width: 300px;
+    width: 100%;
+  }
+}
+.icon-wrap {
+  background-color: #eefff2;
+  padding: 20px;
+  border-radius: 4px;
+  width: fit-content;
+}
+.published-dif-icon {
+  color: #13c525;
+  font-size: 28px;
+  width: 100%;
+}
+.draft-icon {
+  color: #8595a6;
+  font-size: 28px;
+  width: 100%;
+}
+.employees-icon {
+  color: #5c9b31;
+  font-size: 28px;
+  width: 100%;
+}
+.gap-2 {
+  gap: 1rem;
+}
+.status {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #15372c;
+}
+.card-heading-style {
+  color: #15372c;
+  font-size: 0.7rem;
+  font-weight: 400;
+}
+.mat-table-header {
+  color: #7a807e;
+}
+.customcolor {
+  background-color: rgba(92, 155, 49, 0.1);
+  width: 120px; 
+  display: inline-block;
+  text-align: center; 
+  margin-top: 12px;
+}
+
+.custom-dev-status{
+  border: 2px solid rgb(137, 214, 137);
+  border-radius: 8px; 
+  font-weight: bold; 
+  padding: 8px;
+  width: 100px;
+  display: inline-block;
+  text-align: center; 
+  margin-top: 12px;
+}
+.closed-cell{
+  opacity: 0.5;
+}
+.closed-row{
+  opacity: 0.6;
+  font-style: italic;
+}
+.inActive-row{
+  opacity: 0.6;
+  font-style: italic;
+}
+.w-2\/4{
+  width: 40%;
+}

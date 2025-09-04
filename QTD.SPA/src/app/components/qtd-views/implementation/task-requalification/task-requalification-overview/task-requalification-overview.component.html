@@ -1,0 +1,67 @@
+<app-header [toggleMenuIcon]="false" breadcrumbs="Implementation / {{('Task' | labelReplacement)| async}} & Skill Qualification"></app-header>
+
+<div *ngIf="empId === ''" class="flex flex-col pr-4 pb-4 pt-4" style="padding-left:3.2rem;">
+  <p class="text-lg font-bold">{{("Task" | labelReplacement)| async}} & Skill Qualification</p>
+  <app-data-loader *ngIf="!taskRequalificationStats"></app-data-loader>
+  <!-- This section is for stats -->
+  <section *ngIf="taskRequalificationStats" class="flex flex-row bg-white rounded shadow-sm">
+    <div (click)="openFlyPanel(withoutPos)" class="pr-4 my-3 ml-12 mr-6 cursor-pointer"
+      style="border-right: 1px solid #F2F2F2;">
+      <p class="m-0 p-0 mb-1">{{("Employee" | labelReplacement)| async}} without {{("Position" | labelReplacement)| async}}s Qualification Date</p>
+      <p [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':taskRequalificationStats.withoutPositionQualDateCount>0,'text-xl text-black':taskRequalificationStats.withoutPositionQualDateCount==0}">
+        {{taskRequalificationStats.withoutPositionQualDateCount | number: '2.0'}}</p>
+    </div>
+    <div (click)="openFlyPanel(pendingTQ)" class="pr-4 my-3 px-12 cursor-pointer"
+      style="border-right: 1px solid #F2F2F2;">
+      <p class="m-0 p-0 mb-1">{{("Employee" | labelReplacement)| async}} Pending {{("Task" | labelReplacement)| async}} & Skill Qualification</p>
+      <p [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':taskRequalificationStats.pendingRequalificationCount>0,'text-xl text-black':taskRequalificationStats.pendingRequalificationCount==0}">
+        {{taskRequalificationStats.pendingRequalificationCount | number : '2.0'}}</p>
+    </div>
+    <div (click)="openFlyPanel(withoutTQ)" class="pr-4 my-3 px-12 cursor-pointer"
+      style="border-right: 1px solid #F2F2F2;">
+      <p class="m-0 p-0 mb-1">{{("Employee" | labelReplacement)| async}} without {{("Task" | labelReplacement)| async}} & Skill Qualification Record</p>
+      <p [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':taskRequalificationStats.withoutTaskQualificationCount>0,'text-xl text-black':taskRequalificationStats.withoutTaskQualificationCount==0}">
+        {{taskRequalificationStats.withoutTaskQualificationCount | number : '2.0'}}</p>
+    </div>
+    <div class="my-3 px-12">
+      <p class="m-0 p-0 mb-1">{{("Task" | labelReplacement)| async}} & Skill Qualification Evaluators</p>
+      <p [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':taskRequalificationStats.taskQualificationEvaluatorCount>0,'text-xl text-black':taskRequalificationStats.taskQualificationEvaluatorCount==0}">
+        {{taskRequalificationStats.taskQualificationEvaluatorCount | number : '2.0'}}</p>
+    </div>
+  </section>
+
+  <!-- Tabs Section -->
+  <section class="mt-5">
+    <mat-tab-group [(selectedIndex)]="selectedIndex">
+      <mat-tab label="RECENT ACTIVITY">
+        <app-task-recent-activity *ngIf="selectedIndex === 0"></app-task-recent-activity>
+      </mat-tab>
+      <mat-tab label="{{(('Task' | labelReplacement)| async) | uppercase}} & SKILL QUALIFICATION">
+        <app-task-qualification *ngIf="selectedIndex === 1"></app-task-qualification>
+      </mat-tab>
+      <mat-tab label="{{(('Task' | labelReplacement)| async) | uppercase}} EVALUATORS">
+        <app-task-evaluators *ngIf="selectedIndex === 2"></app-task-evaluators>
+      </mat-tab>
+      <mat-tab label="RELEASE {{(('Task' | labelReplacement)| async)| uppercase}}S & SKILLS TO EMP">
+        <app-task-release-to-emp *ngIf="selectedIndex === 3"></app-task-release-to-emp>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+
+
+</div>
+
+<ng-template #withoutTQ>
+  <app-flypanel-without-tasks-qualifications
+    (closed)="flyPanelService.close()"></app-flypanel-without-tasks-qualifications>
+</ng-template>
+<ng-template #withoutPos>
+  <app-flypanel-without-position (closed)="flyPanelService.close()"></app-flypanel-without-position>
+</ng-template>
+<ng-template #pendingTQ>
+  <app-flypanel-pending-task-qualification (closed)="flyPanelService.close()"></app-flypanel-pending-task-qualification>
+</ng-template>
+
+<ng-container *ngIf="empId !== ''">
+  <app-task-requall-by-emp [empId]="empId" (closed)="empId = '';gototqStep();readyStats();"></app-task-requall-by-emp>
+</ng-container>

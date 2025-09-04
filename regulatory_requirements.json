@@ -1,0 +1,44 @@
+[
+ {
+  "ID": 1,
+  "CategoryID": 1,
+  "Number": "RR-001",
+  "Title": "Regulatory Requirement 001",
+  "Active": true
+ },
+ {
+  "ID": 2,
+  "CategoryID": 1,
+  "Number": "RR-002",
+  "Title": "Regulatory Requirement 002",
+  "Active": true
+ },
+ {
+  "ID": 3,
+  "CategoryID": 1,
+  "Number": "RR-003",
+  "Title": "Regulatory Requirement 003",
+  "Active": true
+ },
+ {
+  "ID": 4,
+  "CategoryID": 2,
+  "Number": "R_001",
+  "Title": "Regulation 001",
+  "Active": true
+ },
+ {
+  "ID": 5,
+  "CategoryID": 2,
+  "Number": "R_001",
+  "Title": "Regulation 002",
+  "Active": true
+ },
+ {
+  "ID": 6,
+  "CategoryID": 2,
+  "Number": "R_002",
+  "Title": "Regulation 003",
+  "Active": true
+ }
+]

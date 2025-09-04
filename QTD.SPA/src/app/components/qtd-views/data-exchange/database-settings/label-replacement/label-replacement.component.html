@@ -1,0 +1,63 @@
+<div class="row">
+  <div class="flex w-full" style="justify-content: center">
+    <div style="width: 100%" class="flex flex-col">
+      <section class="
+              flex flex-row
+              border-b-0.8 border-gray-one
+              pt-4
+              pb-4
+              rounded-sm
+            ">
+        <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 100%">
+          <div class="panel-heading">
+            Label Replacement
+          </div>
+          <div class="txt-label mb-4">
+            Enter the new labels against default labels, to be used throughout the software
+          </div>
+          <div class="row">
+            <div class="col-md-4">
+              <app-label text="Default Label" class="header-wrap"></app-label>
+            </div>
+            <div class="col-md-4">
+              <app-label text="New Label" class="header-wrap"></app-label>
+            </div>
+            <div class="col-md-4">
+              <app-label text="Demonstration" class="header-wrap"></app-label>
+            </div>
+          </div>
+
+          <form [formGroup]="labelReplacementForm">
+            <ng-container formArrayName="labels"
+              *ngFor="let val of labelReplacementForm.get('labels')?.['controls']; let i=index">
+              <div class="flex flex-row align-items-center" [formGroupName]="i">
+                <app-label text="{{val.get('defaultLabel').value}}" class="text-gray-300 company-text"></app-label>
+                <div class="flex flex-col float-left mb-6 w-full input-flexdata">
+                  <input type="text" formControlName="replacementLabel" class="form-control"
+                    value="val.get('replacementLabel').value"
+                    (change)="onLabelReplacementChange(val.get('defaultLabel').value, ($any($event).target.value) )">
+                </div>
+                <div class="flex flex-col float-left mb-6 w-full input-flexdata">
+                  <app-label
+                    text="This will make {{val.get('defaultLabel').value}} read as {{(val.get('defaultLabel').value | labelReplacement)| async}}"
+                    class="text-gray-300 company-text"></app-label>
+                </div>
+              </div>
+            </ng-container>
+            <div class="flex flex-row justify-content-end gap-2">
+              <app-button type="button" color="secondary" size="md" text="Cancel" *ngIf="mode == 'write'"
+                (clicked)="OnCancelButtonClick()" class="cancel-btn mr-2 border-0">
+              </app-button>
+              <app-button type="submit" color="primary" (clicked)="OnSaveButtonClick()" *ngIf="mode == 'write'"
+                size="md" text="Save" class="save-btn">
+              </app-button>
+              <app-button type="submit" color="secondary" (clicked)="OnEditButtonClick()" *ngIf="mode == 'read'"
+                size="md" text="Edit" class="save-btn">
+              </app-button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+  </div>
+</div>

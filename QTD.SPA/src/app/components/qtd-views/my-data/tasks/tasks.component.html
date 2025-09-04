@@ -1,0 +1,11 @@
+<mat-sidenav-container>
+    <mat-sidenav align="start" opened mode="side" style="width: 350px;">
+        <app-nav-bar-left>
+            <app-task-nav-bar></app-task-nav-bar>
+        </app-nav-bar-left>
+    </mat-sidenav>
+    <mat-sidenav-content>
+        <app-header [toggleMenuIcon]="false" breadcrumbs="{{('My Data' | labelReplacement)| async}} / {{('Task' | labelReplacement)| async}}"></app-header>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+</mat-sidenav-container>

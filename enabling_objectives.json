@@ -1,0 +1,243 @@
+[
+ {
+  "ID": 1,
+  "TopicID": 1,
+  "Description": "Explain the significance of an AC Interconnection; identify the Interconnections in North America",
+  "Number": 1
+ },
+ {
+  "ID": 2,
+  "TopicID": 2,
+  "Description": "Sketch major types of bus arrangements ",
+  "Number": 1
+ },
+ {
+  "ID": 3,
+  "TopicID": 2,
+  "Description": "List the major equipment in a substation control house (alarm panels, relay panels, batteries, etc.) and the functions of each",
+  "Number": 2
+ },
+ {
+  "ID": 4,
+  "TopicID": 2,
+  "Description": "Describe automated systems used for controlling substation equipment",
+  "Number": 3
+ },
+ {
+  "ID": 5,
+  "TopicID": 3,
+  "Description": "State the types of loads on the power system including residential, commercial and industrial; state the typical motor, non-motor characteristics of each type",
+  "Number": 1
+ },
+ {
+  "ID": 6,
+  "TopicID": 3,
+  "Description": "State the effect of frequency and voltage on system load",
+  "Number": 2
+ },
+ {
+  "ID": 7,
+  "TopicID": 3,
+  "Description": "Sketch typical load curves for different times of year and days of week",
+  "Number": 3
+ },
+ {
+  "ID": 8,
+  "TopicID": 4,
+  "Description": "Explain the American wire gage (AWG) numbering system",
+  "Number": 1
+ },
+ {
+  "ID": 9,
+  "TopicID": 4,
+  "Description": "Explain the circular mils (CM) method of rating conductor size",
+  "Number": 2
+ },
+ {
+  "ID": 10,
+  "TopicID": 5,
+  "Description": "Describe the construction of underground pipe-type cable",
+  "Number": 1
+ },
+ {
+  "ID": 11,
+  "TopicID": 5,
+  "Description": "Describe cooling systems for underground cables and their importance for reliable operations",
+  "Number": 2
+ },
+ {
+  "ID": 12,
+  "TopicID": 6,
+  "Description": "Explain factors affecting resistance, capacitance, and inductance of an overhead AC transmission line",
+  "Number": 1
+ },
+ {
+  "ID": 13,
+  "TopicID": 6,
+  "Description": "Define Surge Impedance Loading (SIL) and state the conditions under which it occurs",
+  "Number": 2
+ },
+ {
+  "ID": 14,
+  "TopicID": 7,
+  "Description": "List the functions of switching devices; fault interruption, load break, visible isolation, sectionalizing",
+  "Number": 1
+ },
+ {
+  "ID": 15,
+  "TopicID": 7,
+  "Description": "List and explain the major characteristics of switching devices: current rating, speed of operation, voltage, fault interrupting capability, BIL rating",
+  "Number": 2
+ },
+ {
+  "ID": 16,
+  "TopicID": 7,
+  "Description": "Describe the processes of arc formation and interruption and hence explain the meaning of restrike voltage",
+  "Number": 3
+ },
+ {
+  "ID": 17,
+  "TopicID": 8,
+  "Description": "State the principal characteristics and typical applications of circuit switchers",
+  "Number": 1
+ },
+ {
+  "ID": 18,
+  "TopicID": 8,
+  "Description": "List different types of circuit switchers and explain the differences between them",
+  "Number": 2
+ },
+ {
+  "ID": 19,
+  "TopicID": 8,
+  "Description": "Describe typical construction and principle of operation of circuit switchers",
+  "Number": 3
+ },
+ {
+  "ID": 20,
+  "TopicID": 9,
+  "Description": "State the principal characteristics and typical applications of disconnects and disconnect switches (both load and no-load break)",
+  "Number": 1
+ },
+ {
+  "ID": 21,
+  "TopicID": 9,
+  "Description": "Identify typical locations in substations of bank disconnects, line disconnects, bypass disconnects, etc.",
+  "Number": 2
+ },
+ {
+  "ID": 22,
+  "TopicID": 10,
+  "Description": "Describe the principle of operation of an electric generator (see also Topic 11.3.7)",
+  "Number": 1
+ },
+ {
+  "ID": 23,
+  "TopicID": 10,
+  "Description": "Describe the basic components of an electric generator: rotor, stator, slip rings, cooling",
+  "Number": 2
+ },
+ {
+  "ID": 24,
+  "TopicID": 11,
+  "Description": "State the purpose of PSS",
+  "Number": 1
+ },
+ {
+  "ID": 25,
+  "TopicID": 11,
+  "Description": "Explain possible consequences if PSS are out of service",
+  "Number": 2
+ },
+ {
+  "ID": 26,
+  "TopicID": 12,
+  "Description": "Explain the principle of operation of different types of turbines (e.g., steam, impulse, reaction) and their applications",
+  "Number": 1
+ },
+ {
+  "ID": 27,
+  "TopicID": 12,
+  "Description": "Identify frequency operating limits for steam and combustion turbines and the consequences of off-frequency operation",
+  "Number": 2
+ },
+ {
+  "ID": 28,
+  "TopicID": 13,
+  "Description": "State characteristics of different types of fossil fuel, including availability, cost, contaminants, and so on",
+  "Number": 1
+ },
+ {
+  "ID": 29,
+  "TopicID": 13,
+  "Description": "Describe the energy conversion processes in a fossil unit",
+  "Number": 2
+ },
+ {
+  "ID": 30,
+  "TopicID": 14,
+  "Description": "Describe important features of coal-handling equipment; explain the significance of mill points for system operation",
+  "Number": 1
+ },
+ 
+ {
+  "ID": 31,
+  "TopicID": 14,
+  "Description": "Describe important features of a fossil plant furnace",
+  "Number": 2
+ },
+ {
+  "ID": 32,
+  "TopicID": 15,
+  "Description": "Describe the basic configuration and components of a BWR nuclear plant",
+  "Number": 1
+ },
+ {
+  "ID": 33,
+  "TopicID": 15,
+  "Description": "Describe operating limitations of BWR plants",
+  "Number": 2
+ },
+ {
+  "ID": 34,
+  "TopicID": 16,
+  "Description": "Explain the source of energy for nuclear plants (binding energy of nucleons in the atom)",
+  "Number": 1
+ },
+ {
+  "ID": 35,
+  "TopicID": 16,
+  "Description": "List the types of nuclear radiation (alpha, beta, gamma) and describe associated hazards",
+  "Number": 2
+ },
+ {
+  "ID": 36,
+  "TopicID": 17,
+  "Description": "Describe the basic configuration and components of hydro plants",
+  "Number": 1
+ },
+ {
+  "ID": 37,
+  "TopicID": 17,
+  "Description": "Describe operating limitations (environmental, recreational, etc.) of hydro plants",
+  "Number": 2
+ },
+ {
+  "ID": 38,
+  "TopicID": 18,
+  "Description": "Describe the basic configuration and components of the run-of-the-river hydro plants",
+  "Number": 1
+ },
+ {
+  "ID": 39,
+  "TopicID": 18,
+  "Description": "Describe operating limitations (environmental, recreational, etc.) of run-of-the-river hydro plants",
+  "Number": 2
+ },
+ {
+  "ID": 40,
+  "TopicID": 19,
+  "Description": "Describe the basic configuration and components of pumped storage units",
+  "Number": 1
+ }
+]

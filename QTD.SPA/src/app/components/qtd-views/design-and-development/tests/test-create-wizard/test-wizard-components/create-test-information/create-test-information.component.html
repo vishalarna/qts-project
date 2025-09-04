@@ -1,0 +1,143 @@
+<div class="w-4/5 mr-14 mb-4 mt-4">
+  <app-spinner *ngIf="isSpinner" class="items-center"></app-spinner>
+  <ng-container *ngIf="!isSpinner">
+    <form [formGroup]="TestInformationFormGroup">
+      <div>
+        <!--Test Type-->
+        <div class="flex flex-row float-left w-3/12 mt-4">
+          <!--Test Label -->
+          <app-label text="Test Type " class="font-medium label required"></app-label>
+        </div>
+
+        <div class="mt-4 mb-4 ml-28">
+          <div class="border-0.5 rounded mat-elevation-z2 h-auto w-5/6 ml-20 bg-white-one px-8">
+            <div class="row">
+              <!-- <div class="col-12"> -->
+              <div class="flex flex-row flex-wrap form-group mt-4">
+                <div class="row">
+                  <mat-radio-group formControlName="radio" required>
+                    <div *ngFor="let test of testType; index as i">
+                      <div class="inlineBlock">
+                        <div>
+                          <mat-radio-button [value]="test" class="ml-4 flex-row flex flex-wrap h-15 mr-3"
+                            (change)="testTypeChange()">
+                            {{test.description}}
+                          </mat-radio-button>
+                        </div>
+                      </div>
+                    </div>
+                  </mat-radio-group>
+                  <app-input-error *ngIf="TestInformationFormGroup.get('radio')?.invalid" text="Select a Test type">
+                  </app-input-error>
+
+
+                </div>
+                <br />
+
+
+              </div>
+
+              <!-- </div> -->
+            </div>
+
+            <div *ngIf="isTestTypeSelected">
+              <div class="flex justify-between w-full">
+                <app-label [for]="'Provider'" [text]="'Provider'"></app-label>
+              </div>
+              <mat-form-field appearance="outline" class="text-sm dropdown w-full" >
+                <mat-select formControlName="provider" placeholder="Select Provider"
+                  (selectionChange)="selectProvider($event.value)">
+                  <mat-option *ngFor="let i of provider_list" [value]="i.id">
+                    {{i.name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <app-input-error *ngIf="noProviderFound" text="No Provider found"></app-input-error>
+
+              <div class="flex justify-between w-full">
+                <app-label [for]="'ILA'" text="{{('ILA' | labelReplacement)| async}}"></app-label>
+              </div>
+              <mat-form-field appearance="outline" class="text-sm dropdown w-full"
+                [floatLabel]="isILALoading  ? 'never' : 'auto'">
+                <mat-select #selectControl [disabled]="isILALoading"
+                  [panelClass]="isILALoading || !isOpen ? 'hide-deferred-select-dummy-option' : ''"
+                  formControlName="ILA" placeholder="Select {{('ILA' | labelReplacement)| async}}" required>
+                  <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="ilaSearchText" (input)="ilaSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)">
+                  <mat-option *ngFor="let option of ila_list" [value]="option.id">
+                    {{option.number}} - {{option.name}}
+                  </mat-option>
+                </mat-select>
+                <app-spinner *ngIf="isILALoading" class="spinner internal-spinner"></app-spinner>
+              </mat-form-field>
+              <app-input-error *ngIf="noILAFound" text="No {{('ILA' | labelReplacement)| async}} found"></app-input-error>
+              <app-input-error
+                  *ngIf="!noILAFound && TestInformationFormGroup.get('ILA')?.invalid && TestInformationFormGroup.get('ILA')?.hasError('required')"
+                  text="{{('ILA' | labelReplacement)| async}} is Required">
+                </app-input-error>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      
+      <div class="border-b border-gray-300 ">
+        <!--Test Information-->
+        <div class="flex flex-col float-left w-3/12 mt-4">
+          <!--Test Information Label -->
+          <app-label text="Test Information" class="font-medium"></app-label>
+          <app-label text="Enter a title for this assessment" class="text-gray-300 text-small">
+          </app-label>
+        </div>
+
+        <div class="mt-4 mb-4 ml-28">
+          <div class="border-0.5 rounded mat-elevation-z2 h-auto w-5/6 ml-20 bg-white-one px-8">
+            <div class="row justify-between">
+              <div class="w-full mt-4 mb-6">
+                <app-label [for]="'title'" [text]="'Title '" class="label required">
+                </app-label>
+                <app-textbox type="text" [name]="'title'" [defaultValue]="Title" formControlName="title"
+                  [placeholder]="'Title'">
+                </app-textbox>
+                <app-input-error
+                  *ngIf="TestInformationFormGroup.get('title')?.invalid && TestInformationFormGroup.get('title')?.hasError('required')"
+                  [text]="'Title is Required'">
+                </app-input-error>
+              </div>
+              <div class="w-full mb-6">
+                <app-label [for]="'Instruction'" text="{{('Instruction' | labelReplacement)| async}}s (Optional)"></app-label>
+                <app-textarea type="text" [value]="TestInformationFormGroup.get('Instruction')?.value ?? ''"
+                  [placeholder]="(('Instruction' | labelReplacement)| async)" formControlName="Instruction"
+                  [customClasses]="'text-base border w-full h-auto py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+                </app-textarea>
+              </div>
+              <div class="w-full mb-6">
+                <app-label [for]="'TimeLimit'" [text]="'Time Limit (Optional)'"></app-label>
+                <div>
+                  <div class="w-1/2 float-left">
+                    <app-textbox type="text" [name]="'TimeLimit'" [defaultValue]="TimeLimitHours"
+                      formControlName="TimeLimitHours" [placeholder]="'Time Limit Hours'"
+                      (keypress)="inputChange($event)">
+                    </app-textbox>
+                    <app-input-error *ngIf="TestInformationFormGroup.get('TimeLimitHours')?.invalid">
+                    </app-input-error>
+                  </div>
+                  <div class="w-1/2 float-right">
+                    <app-textbox (keypress)="inputChange($event)" type="text" [name]="'TimeLimit'"
+                      [defaultValue]="TimeLimitMins" formControlName="TimeLimitMins"
+                      [placeholder]="'Time Limit Minutes'">
+                    </app-textbox>
+                    <app-input-error *ngIf="TestInformationFormGroup.get('TimeLimitMins')?.invalid">
+                    </app-input-error>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      
+    </form>
+  </ng-container>
+</div>

@@ -1,0 +1,119 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<table id="content-table" class="table" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center; "><b>@Model.Title </b></div>
+                <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.Employees.Count() > 0)
+    {
+        @foreach (var employee in Model.Employees)
+        {
+            <tr>
+                <td style="border:none;">
+                    <table style="width:100%">
+                        <tr>
+                            <td style="border:none;padding-bottom:0px" colspan="3">
+                                <b>@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b>
+                            </td>
+                            <td style="border: none; padding-bottom: 0px" colspan="9">
+                                <b>@employee.Person.FirstName ,  @employee.Person.LastName</b>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="border:none;padding-top:0;" colspan="3">
+                                <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b>
+                            </td>
+                            <td style="border:none;padding-top:0;" colspan="9">
+                                @{
+                                    var employeePositions = employee.EmployeePositions.Select(x => x.Position.PositionTitle + " (" + x.Position.PositionAbbreviation + ")" + (x.Trainee ? " [Trainee]" : "")).Distinct().ToList();
+                                    <b>@String.Join(", ", employeePositions)</b>
+                                }
+                            </td>
+                        </tr>
+                        @{ var employeeTrainingModules = Model.MetaILAs.Where(r => r.EmployeeId == employee.Id).ToList();}
+                        @if (employeeTrainingModules.Count() > 0)
+                        {
+                            var modules = employeeTrainingModules.Select(item => item.MetaILA.Name).Distinct();
+                            @foreach (var module in modules)
+                            {
+                                <tr>
+                                    <td colspan="3" style="border:none;">
+                                        <b>TrainingModule: </b>
+
+                                    </td>
+                                    <td colspan="9" style="border:none;">
+                                        <b>@module</b>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="12" style="border:none;">
+                                        <table style="width:100%">
+                                            <tr>
+                                                <th style="border: 1px solid #000">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title</th>
+                                                <th style="border: 1px solid #000">Scheduled Date</th>
+                                                <th style="border: 1px solid #000">Completed Date</th>
+                                                <th style="border: 1px solid #000">@("Location".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                                <th style="border: 1px solid #000">Score</th>
+                                                <th style="border: 1px solid #000">Grade</th>
+                                            </tr>
+                                            @{
+                                                var metaIla = employeeTrainingModules.Where(item => item.MetaILA.Name == module).Select(xs => xs.MetaILA);
+                                                var meta_ILAMembers_Links = metaIla.First().Meta_ILAMembers_Links;
+                                                foreach (var ila in meta_ILAMembers_Links)
+                                                {
+                                                    var classScheduleEmployees = ila.ILA.ClassSchedules
+                                                      .SelectMany(rr => rr.ClassSchedule_Employee).ToList();
+                                                    var classSchedule = classScheduleEmployees.Where(xt => xt.EmployeeId == employee.Id).FirstOrDefault();
+                                                    <tr>
+                                                        <td style="border: 1px solid #000">@ila.ILA.Name</td>
+                                                        @if (classSchedule != null)
+                                                        {
+                                                            <td style="border: 1px solid #000">@(classSchedule.PlannedDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString())</td>
+                                                            <td style="border: 1px solid #000">@(classSchedule.CompletionDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString())</td>
+                                                            <td style="border: 1px solid #000">@(classSchedule.ClassSchedule.Location?.LocName)</td>
+                                                            <td style="border: 1px solid #000">@classSchedule.FinalScore</td>
+                                                            <td style="border: 1px solid #000">@classSchedule.FinalGrade</td>
+                                                        }
+                                                        else
+                                                        {
+                                                            <td style="border: 1px solid #000"></td>
+                                                            <td style="border: 1px solid #000"></td>
+                                                            <td style="border: 1px solid #000"></td>
+                                                            <td style="border: 1px solid #000"></td>
+                                                            <td style="border: 1px solid #000"></td>
+                                                        }
+
+                                                    </tr>
+                                                }
+                                            }
+
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                        }
+
+
+                    </table>
+                </td>
+            </tr>
+        }
+    }
+
+</table>

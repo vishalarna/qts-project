@@ -1,0 +1,48 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <!-- {{oldProcedure ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+        <ng-container>
+          Filter by: Year
+          </ng-container>
+        
+      </p>
+      <app-button (click)="closedfilter()" ButtonType='icon' icon="close"></app-button>
+    </div>
+  
+    <form [formGroup]="filterByYear">
+        <div class="flex flex-row px-12">
+            <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+                <app-label required [for]="'startYear'" [text]="'Start Year'"
+                class="mt-6 float-left label required">
+              </app-label>
+                <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                    <mat-select formControlName="startYear" required>
+                      <mat-option *ngFor="let i of range" [value]="i">
+                        {{i}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+           </div>
+           <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+            <app-label required [for]="'endYear'" [text]="'End Year'"
+            class="mt-6 float-left label required">
+          </app-label>
+            <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                <mat-select formControlName="endYear" required>
+                  <mat-option *ngFor="let i of range" [value]="i">
+                    {{i}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+       </div>
+       
+       </div>
+        <div class="px-12 mt-8 float-right py-3">
+         <app-button
+           type="button" size="sm"  text="Apply Filter" [disabled]="filterByYear.invalid" (click)="applyFilter()">
+         </app-button>
+     </div>
+    </form>
+  </ng-container>
+  

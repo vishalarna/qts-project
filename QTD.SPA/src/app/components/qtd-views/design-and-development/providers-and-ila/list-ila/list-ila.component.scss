@@ -1,0 +1,111 @@
+// overwrite the checkbox background
+
+:host ::ng-deep .mat-checkbox-checked .mat-checkbox-background,
+:host ::ng-deep .mat-checkbox-indeterminate .mat-checkbox-background {
+  background-color: rgb(92, 155, 49) !important;
+}
+
+.mat-column-index {
+  flex: 0 0 80px;
+}
+
+// .mat-column-provider {
+//   flex: 1 0 300px;
+// }
+
+.yellowBg {
+  background-color: rgb(254 249 195);
+  color: rgb(250 204 21);
+}
+
+.blueBg {
+  background-color: rgb(207 250 254);
+  color: rgb(6 182 212);
+}
+// overwrite the checkbox background
+
+:host ::ng-deep .mat-checkbox-checked .mat-checkbox-background,
+:host ::ng-deep .mat-checkbox-indeterminate .mat-checkbox-background {
+  background-color: rgb(92, 155, 49) !important;
+}
+
+// .mat-column-index {
+//   flex: 0 0 80px;
+// }
+
+// .mat-column-provider {
+//   flex: 1 0 300px;
+// }
+
+.mat-column-description {
+  flex: 0 0 388px;
+}
+
+.bulk_button:disabled {
+  color: gray;
+}
+.mat-column-isMeta {
+  flex: 0 0 70px;
+}
+
+.yellowBg {
+  background-color: rgb(254 249 195);
+  color: rgb(250 204 21);
+}
+
+.blueBg {
+  background-color: rgb(207 250 254);
+  color: rgb(6 182 212);
+}
+
+.customcolorgreen {
+  background-color: rgba(92, 155, 49, 0.1);
+  color: rgba(92, 155, 49, 1);
+}
+
+.customcolorgreenOnlyText{
+  color: rgba(92, 155, 49, 1);
+}
+
+.customcolorRedOnlyText{
+  color: red;
+}
+
+.menu {
+  width: 25rem;
+  float: left;
+  border: 1px black solid;
+}
+
+.content {
+  max-width: 25rem;
+  min-width: 20rem;
+
+  border: 1px black solid;
+}
+
+@media all and (max-width: 25rem) {
+  .menu {
+    float: none;
+  }
+
+  .content {
+    margin-left: 0;
+  }
+}
+
+.buttonStyle:hover {
+  border-width: 1px;
+  --tw-bg-opacity: 0.1;
+  background-color: rgba(var(--lightblue), var(--tw-bg-opacity));
+  --tw-border-opacity: 1;
+  //border-color: rgba(var(--green), var(--tw-border-opacity));
+}
+
+.buttonStyle{
+  cursor:pointer;
+  border-color: rgba(var(--green), var(--tw-border-opacity));
+  border-width: 1px;
+  color: #5C9B31;
+  align-items:center;
+}

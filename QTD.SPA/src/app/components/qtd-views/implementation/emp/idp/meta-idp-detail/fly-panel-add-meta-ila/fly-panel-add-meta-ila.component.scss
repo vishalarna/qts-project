@@ -1,0 +1,16 @@
+.meta-ila-list-data{
+    padding-bottom: 2rem;
+    .linked-row{
+      color: rgb(92, 155, 49)
+    }
+  }
+  
+  .search-wrap{
+    margin: 0 3rem;
+  }
+
+  :host ::ng-deep .meta-ila-list-data .mat-cell.no-data-cell{
+    flex: 1 1 100%;
+    max-width: unset;
+    border-bottom: none;
+  }

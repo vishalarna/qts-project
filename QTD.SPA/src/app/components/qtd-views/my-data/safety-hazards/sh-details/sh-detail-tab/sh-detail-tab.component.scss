@@ -1,0 +1,15 @@
+:host ::ng-deep ul,
+ul {
+  list-style:disc !important;
+  margin: 0;
+  padding: 0;
+}
+
+:host ::ng-deep ol,
+li {
+  list-style:decimal !important;
+  margin: 0;
+  padding: 0;
+}
+
+

@@ -1,0 +1,236 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    ul {
+        list-style: none;
+        padding: 8px 0px 5px 34px;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse; width:98%;margin:auto;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important; padding-left: 0px; padding-right: 0; padding-bottom: 0;">
+            <div class="repeatedReportHeader" style="padding-bottom: 3px; border-bottom: 2px solid #020378; margin: 0 0 10px 0;">
+                <div style="display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378;"><b>@Model.Title </b></div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @{
+        var loopCount = 0;
+    }
+    @if (Model.IsSummaryReport)
+    {
+        @if (Model.Positions.Count() > 0)
+        {
+            @foreach (var position in Model.Positions.Where(x => x.EmployeePositions.Any(x => x.Employee != null)))
+            {
+                @{
+                    var employees = position.EmployeePositions.Where(x => x.Employee != null).Select(x => x.Employee).Distinct();
+                    var organizations = employees.SelectMany(d => d.EmployeeOrganizations.Select(x => x.Organization)).Distinct();
+                    var organizationEmployees = organizations.Select(d => new { Organization = d.Name, ClassScheduleEmployees = d.EmployeeOrganizations.SelectMany(d => d.Employee.ClassSchedule_Employee).ToList() }).Distinct().ToList();
+                    var empWithoutOrg = employees.Where(x => x.EmployeeOrganizations.Count() == 0).SelectMany(x => x.ClassSchedule_Employee).ToList();
+                    if (empWithoutOrg.Count() > 0)
+                    {
+                        organizationEmployees.Add(new { Organization = "", ClassScheduleEmployees = empWithoutOrg });
+                    }
+                }
+                if (organizationEmployees.Any(x => x.ClassScheduleEmployees.Any()))
+                {
+                    loopCount++;
+                    <tr>
+                        <td style="border: none !important; color: #000000; padding-bottom: 0px" class="strip-container" colspan="12">
+                            <div class="@(loopCount%2==0?"strip-dark":"")"></div>
+                            <div style="padding:5px;" id="@("page" + loopCount)" class="@(loopCount%2==0?"strip":"")">
+                                <div>
+                                    <b style="display: block; font-size: 1.6rem;">@position.PositionTitle (@position.PositionAbbreviation)</b>
+                                </div>
+                                <ul>
+
+                                    @foreach (var organizationEmployee in organizationEmployees.Where(x => x.ClassScheduleEmployees.Any()))
+                                    {
+                                        <li>
+                                            <div>
+                                                <b style="display: block; font-size: 1.2rem;">Organization:@organizationEmployee.Organization</b>
+                                            </div>
+                                            <ul>
+                                                @{
+                                                    var classScheduleEmployees = organizationEmployee?.ClassScheduleEmployees;
+                                                    var groupedByYears = classScheduleEmployees.GroupBy(x => x.ClassSchedule.EndDateTime.Year).OrderByDescending(x => x.Key);
+                                                }
+                                                @foreach (var groupedByYear in groupedByYears)
+                                                {
+                                                    <li>
+                                                        <ul style="padding: 0px 0px 5px 25px; font-weight: 500; ">
+                                                            <li>
+                                                                <table style="width: 60%; font-weight: 500; font-size: 0.9rem; ">
+                                                                    <tr style="text-decoration: underline;">
+                                                                        <th style="border:0;padding:0;text-align:left">@groupedByYear.Key</th>
+                                                                        <th style="border:0;padding:0;text-align:center">Hours</th>
+                                                                    </tr>
+                                                                    @{
+                                                                        var groupedEmployees = groupedByYear.GroupBy(x => x.Employee).OrderBy(x => x.Key.Person?.LastName);
+                                                                    }
+                                                                    @foreach (var groupedEmployee in groupedEmployees)
+                                                                    {
+                                                                        @{
+                                                                            var eopHours = groupedEmployee.Sum(x => x.ClassSchedule?.ILA?.ILACertificationLinks.Where(r => r.Certification?.InternalIdentifier == "Emergency Response").FirstOrDefault()?.CEHHours.GetValueOrDefault());
+                                                                        }
+                                                                        <tr>
+                                                                            <td style=" border: 0; padding: 0; padding: 2px 0px 2px 26px; text-align: left">@groupedEmployee.Key.Person?.LastName,@groupedEmployee.Key.Person?.FirstName (Employee #:@groupedEmployee.Key.EmployeeNumber) </td>
+                                                                            <td style="border:0;padding:0;text-align:center">@eopHours</td>
+
+                                                                        </tr>
+                                                                    }
+                                                                </table>
+                                                            </li>
+                                                        </ul>
+                                                    </li>
+
+
+                                                }
+                                            </ul>
+                                        </li>
+
+
+                                    }
+                                </ul>
+                            </div>
+                            @if (!position.Equals(Model.Positions.Where(x => x.EmployeePositions.Any(x => x.Employee != null)).Last()))
+                            {
+                                <div style="page-break-after:always"></div>
+                                <div class="@(loopCount%2==0?"strip-dark":"")"></div>
+                            }
+                        </td>
+                    </tr>
+
+                }
+            }
+
+        }
+        else
+        {
+            <tr style="border:none">
+                <td style="border:none;text-align:center">
+                    <i>No data available to generate requested report</i>
+                </td>
+            </tr>
+        }
+
+    }
+    else
+    {
+        var employeesDetailed = Model.Positions.SelectMany(x => x.EmployeePositions.Where(x => x.Employee != null).Select(x => x.Employee)).Distinct();
+        var classScheduleEmployeesDetailed = employeesDetailed.SelectMany(x => x.ClassSchedule_Employee).ToList();
+        var groupedYearsDetailed = classScheduleEmployeesDetailed.GroupBy(x => x.ClassSchedule.EndDateTime.Year).OrderByDescending(x => x.Key);
+
+        <tr>
+            <td colspan="12" style=" border: 0; padding-top: 0;">
+                @foreach (var groupedYear in groupedYearsDetailed)
+                {
+                    var employeesClasses = groupedYear.GroupBy(x => x.Employee).OrderBy(x => x.Key.Person?.LastName);
+                    foreach (var employeesClass in employeesClasses)
+                    {
+                        <div style=" font-size: 1.1rem; padding-bottom: 0.6rem; font-weight: 500;color:#000 ">@employeesClass.Key.Person?.LastName,@employeesClass.Key.Person?.FirstName (@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #:@employeesClass.Key.EmployeeNumber) </div>
+                        <table style="width: 100%; color: #000; font-size: 1rem; border-collapse:collapse">
+                            <tr>
+                                <th style="border:1px solid #000;border-bottom-width:2px;border-left:0;padding:0;width:20%;vertical-align:bottom">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #</th>
+                                <th style="border:1px solid #000;border-bottom-width:2px;padding:0 5px;width:50%;vertical-align:bottom">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title</th>
+                                <th style="border:1px solid #000;border-bottom-width:2px;padding:0 5px;width:10%;vertical-align: bottom; text-align: center;"><div>Date</div>Completed</th>
+                                <th style="border:1px solid #000;border-bottom-width:2px;padding:0 5px;width:10%;vertical-align: bottom; text-align: center;"><div>Include</div>Sim</th>
+                                <th style="border:1px solid #000;border-bottom-width:2px;border-right:0;padding:0 5px;width:10%;vertical-align: top; text-align: center;">Hours</th>
+                            </tr>
+                            @{
+                                var totalHours = 0.00;
+                            }
+                            @foreach (var classScheduleEmployee in employeesClass)
+                            {
+                                @{
+                                    var ilaCertLink = classScheduleEmployee?.ClassSchedule?.ILA?.ILACertificationLinks.Where(r => r.Certification?.CertDesc == "Emergency Response").FirstOrDefault();
+                                    var hour = ilaCertLink == null ? 0.00 : ilaCertLink.CEHHours.GetValueOrDefault();
+                                    totalHours = totalHours + hour;
+                                }
+                                <tr>
+                                    <td style="border-bottom:1px solid #000;padding:0;padding-bottom:5px">@classScheduleEmployee?.ClassSchedule?.ILA?.Number</td>
+                                    <td style="border-bottom:1px solid #000;padding:0 5px;padding-bottom:5px">@classScheduleEmployee?.ClassSchedule.ILA?.Name</td>
+                                    <td style="border-bottom:1px solid #000;padding:0 5px;padding-bottom:5px; text-align: center;">@classScheduleEmployee?.ClassSchedule?.EndDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</td>
+                                    <td style="border-bottom:1px solid #000;padding:0 5px;padding-bottom:5px; text-align: center;">
+                                        <div style=" border: 2px solid; width: 21px; margin: auto; height: 21px; font-size: 0.9rem; font-weight: 600;">@(ilaCertLink != null && ilaCertLink.IsIncludeSimulation?"X":"")</div>
+                                    </td>
+                                    <td style="border-bottom:1px solid #000;padding:0 5px;padding-bottom:5px; text-align: center;">@hour</td>
+
+                                </tr>
+                            }
+                            <tr>
+                                <td style="border:0;border-top:2px solid #000;padding:0;padding-bottom:5px"></td>
+                                <td style="border:0;border-top:2px solid #000;padding:0;padding-bottom:5px"></td>
+                                <td style="border:0;border-top:2px solid #000;padding:0;padding-bottom:5px;"></td>
+                                <td style="border:0;border-top:2px solid #000;padding:0;padding-bottom:5px; font-weight:500; text-align: center;">Total</td>
+                                <td style="border: 0; border-top: 2px solid #000; padding: 0; padding-bottom: 5px; font-weight: 500; text-align: center;">@totalHours</td>
+
+                            </tr>
+                        </table>
+                    }
+                }
+
+            </td>
+        </tr>
+
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= loopCount; i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>
+

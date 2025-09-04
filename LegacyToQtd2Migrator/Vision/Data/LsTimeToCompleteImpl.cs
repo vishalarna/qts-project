@@ -1,0 +1,37 @@
+﻿using System;
+using System.Collections.Generic;
+
+namespace LegacyToQtd2Migrator.Vision.Data;
+
+public partial class LsTimeToCompleteImpl
+{
+    public decimal Id { get; set; }
+
+    public decimal FkLsTimeToComplete { get; set; }
+
+    public string Text { get; set; }
+
+    public decimal FkTimeType { get; set; }
+
+    public decimal TimeSpan { get; set; }
+
+    public DateTime DateCreated { get; set; }
+
+    public decimal FkCreatedBy { get; set; }
+
+    public DateTime DateExpired { get; set; }
+
+    public decimal? FkExpiredBy { get; set; }
+
+    public decimal? FkCreatedByL { get; set; }
+
+    public virtual Learner FkCreatedByLNavigation { get; set; }
+
+    public virtual Developer FkCreatedByNavigation { get; set; }
+
+    public virtual Developer FkExpiredByNavigation { get; set; }
+
+    public virtual LsTimeToComplete FkLsTimeToCompleteNavigation { get; set; }
+
+    public virtual TimeType FkTimeTypeNavigation { get; set; }
+}

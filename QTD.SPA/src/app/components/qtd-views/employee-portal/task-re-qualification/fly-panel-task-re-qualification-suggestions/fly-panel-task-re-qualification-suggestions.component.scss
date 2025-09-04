@@ -1,0 +1,90 @@
+.bg-light-orange{
+    background-color: #ffeeee;
+}
+.bg-light-green{
+  background-color: #e5ffea;
+}
+.bg-gray{
+  background-color: #f2f2f2;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .left {
+    align-self: flex-start;
+    line-break:anywhere;
+  }
+  
+  .right {
+    align-self: flex-end;
+    line-break:anywhere;
+  }
+  .mat-mdc-radio-button ~ .mat-mdc-radio-button {
+    margin-left: 16px;
+  }
+
+  :host::ng-deep button.disabled-pointer:disabled{
+    cursor: default;
+    opacity: 0.65 !important;
+    color: #fff;
+    background-color: grey;
+    border-color: grey;
+  }
+
+  .flypanel {
+    position: fixed;
+    top: 0;
+    right: -50%; /* Initially outside the viewport */
+    width: 50%;
+    height: 100%;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    transition: right 0.3s ease-in-out;
+    z-index: 1001;
+    overflow: auto;
+  }
+  .flypanel.open {
+    right: 0;
+  }
+
+  :host ::ng-deep .radio-group-div .mat-radio-button:not(:first-child){
+    margin-left: 55px;
+  }
+
+  :host ::ng-deep.signOff-check-group .mat-checkbox .mat-checkbox-layout{
+    margin-bottom: 0px;
+    margin-left: 10px;
+  }
+
+  .final-qualification-results {
+    font-family: Arial, sans-serif;
+    padding: 1rem;
+    border-radius: 5px;
+  }
+  
+  .final-qualification-results h3 {
+    margin-bottom: 1rem;
+  }
+  
+  .result {
+    display: flex;
+    align-items: center;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .result i {
+    font-size: 1.5rem;
+    margin-right: 0.5rem;
+  }
+  
+  .green-result {
+    color: #28a745;
+  }
+  
+  .red-result {
+    color: #dc3545;
+  }
+  

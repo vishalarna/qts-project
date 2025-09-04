@@ -1,0 +1,173 @@
+<div class="step-controls-section">
+    <div class="flex-row bg-white-one rounded-b-md m-2 task-list-action-items">
+      <mat-table (matSortChange)="sortTaskReviewData($event)"
+        [dataSource]="getTaskReviewDataSource()"
+        matSort
+        [multiTemplateDataRows]="true"
+      >
+        <ng-container matColumnDef="#">
+          <mat-header-cell *matHeaderCellDef mat-sort-header> </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <app-button
+              variant="text"
+              [icon]="expandedData === row ? 'expand_less' : 'expand_more'"
+              (clicked)="expandedData = expandedData == row ? null : row;$event.stopPropagation();taskReviewDetail = row;taskReviewData = row">
+            </app-button>
+          </mat-cell>
+        </ng-container>
+  
+        <ng-container matColumnDef="number">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            No.
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.number}}</mat-cell>
+        </ng-container>
+  
+        <ng-container matColumnDef="statement">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{ 'Task' | labelReplacement | async }} Statement
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.statement}}</mat-cell>
+        </ng-container>
+  
+        <ng-container matColumnDef="noOfActionItems">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            No. of Action Items
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.taskReviewActionItems.length}}</mat-cell>
+        </ng-container>
+  
+        <ng-container matColumnDef="action">
+          <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="flex flex-row items-center text-gray-four btn-group">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <app-icon icon="more_vert"></app-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <label mat-menu-item translate (click) = "taskReviewDetail = row;openActionItemFlyIn(actionItemFlyIn);taskReviewData = row;selectedActionItemId = null;selectedActionItemType = null">New Item</label>
+              </mat-menu>
+            </div>
+          </mat-cell>
+        </ng-container>
+  
+        <ng-container matColumnDef="expandedDetail">
+          <mat-cell *matCellDef="let row" [attr.colspan]="taskActionItemsDisplayColumn">
+            <div style="width: 100%" class="example-element-detail">
+              <!--List View in expanded details-->
+              <div class="mt-4" [attr.colspan]="actionItemsDetailDisplayColumns">
+                <ng-container
+                  class="mt-4"
+                  [attr.colspan]="actionItemsDetailDisplayColumns"
+                  *ngTemplateOutlet="expandedTable"
+                ></ng-container>
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+  
+        <mat-header-row *matHeaderRowDef="taskActionItemsDisplayColumn"></mat-header-row>
+        <mat-row
+          class="example-element-row"
+          [class.example-expanded-row]="expandedData === row"
+          *matRowDef="let row; columns: taskActionItemsDisplayColumn"
+        ></mat-row>
+  
+        <mat-row
+          [ngStyle]="{ display: expandedData === row ? 'block' : 'none' }"
+          *matRowDef="let row; columns: ['expandedDetail']"
+          class="example-detail-row"
+        ></mat-row>
+  
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row flex text-center" *matNoDataRow>
+          <td class="mat-cell w-full m-2">No data to display</td>
+        </tr>
+      </mat-table>
+    </div>
+  
+    <ng-template #expandedTable>
+      <app-data-loader *ngIf="!expandedData"></app-data-loader>
+      <mat-table  class="expanded-mat-table" #innerSort="matSort" *ngIf="expandedData"[dataSource]="getActionItemDataSource()" matSort (matSortChange)="sortActionItemData($event)">
+  
+        <ng-container matColumnDef="actionsItems">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Action Item(s)
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.type}}</mat-cell>
+        </ng-container>
+  
+        <ng-container matColumnDef="assignees">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Assignees
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.assignees}}</mat-cell>
+        </ng-container>
+  
+        <ng-container matColumnDef="priority">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Priority
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.priority}}</mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="dateAssigned">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Date Assigned
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.assignedDate == null ? 'N/A' : (row.assignedDate | dateFormat )| async}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="dueDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Due Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.dueDate == null ? 'N/A' : (row.dueDate | dateFormat )| async}}</mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="actions">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Actions
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <app-icon icon="more_vert"></app-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <button mat-menu-item translate [disabled]="row.type === 'PrepareForTaskRequalification' || row.type === 'MakeTaskInactive'" (click) = "openActionItemFlyIn(actionItemFlyIn);selectedActionItemType = row.type;selectedActionItemId = row.id"> Edit </button>
+                <button mat-menu-item translate [disabled]="row.type === 'PrepareForTaskRequalification' || row.type === 'MakeTaskInactive'" (click)="openDeleteActionItemDialog();deletedActionItemId = row.id"> Delete </button>
+              </mat-menu>
+            </mat-cell>
+          </ng-container>
+  
+        <mat-header-row
+          *matHeaderRowDef="actionItemsDetailDisplayColumns"
+        ></mat-header-row>
+        <mat-row
+          *matRowDef="let row; columns: actionItemsDetailDisplayColumns"
+        ></mat-row>
+  
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row flex text-center" *matNoDataRow>
+          <td class="mat-cell w-full m-2">No data to display</td>
+        </tr>
+      </mat-table>
+    </ng-template>
+  </div>
+
+
+  <ng-template #actionItemFlyIn>
+    <app-flypanel-action-item  [taskId] = "taskReviewDetail.taskId" [task_ReviewId] = "taskReviewDetail.id" (actionItem_Data) = "getActionItemData($event)" [actionItem] = "selectedActionItemType" [selected_ActionItemId] = "selectedActionItemId"></app-flypanel-action-item>
+  </ng-template>
+
+
+  <ng-template #deleteActionItemDialog>
+    <app-qtd-dialogue
+      header="Delete Action Item"
+      description="This will delete the Action Item from the {{ 'Task' | labelReplacement | async }} Review"
+      [cancelText]="'No'"
+      [confirmText]="'Yes'"
+      (confirmed)="deleteActionItem(deletedActionItemId)"
+    >
+    </app-qtd-dialogue>
+  </ng-template>

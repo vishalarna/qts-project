@@ -1,0 +1,377 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+@using QTD2.Infrastructure.Model.ILA
+<style>
+    .table {
+        width: 100%;
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    .table-wrapper-list ul {
+        padding: 0 0 0 20px;
+        list-style: none;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    .fix-image * {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .fix-image img {
+        width: 400px !important;
+        height: auto !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+    }
+
+    .fix-image ul, .fix-image ol {
+        margin: 0 !important;
+        padding: 0 0 0 20px !important;
+        list-style-position: inside !important;
+    }
+
+    .fix-image li {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1rem;
+    }
+
+    .fix-image p {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.5 !important;
+        display: inline;
+    }
+
+    .fix-image strong {
+        font-weight: bold !important;
+    }
+
+    .fix-image u {
+        text-decoration: underline !important;
+    }
+
+    .fix-image table {
+        border-collapse: collapse;
+    }
+
+        .fix-image table td,
+        .fix-image table th {
+            border: 1px solid black;
+            padding: 5px;
+        }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse; width:98%;margin:auto;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.ILAs.Count() > 0)
+    {
+        <tr>
+            <td style="border:none;padding-top:0;" class="strip-container">
+                @{
+                    int j = 1;
+                }
+                @foreach (var iLA in Model.ILAs)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")" colspan="12">
+                        <table style="width:100%;">
+                            <tr>
+                                <td style="border:none;font-size:18px; text-align:center;" colspan="12">
+                                    <div style="color: red; font-style: italic; font-weight: bold;">
+                                        <p>
+                                            This report is for review purposes only. The ILA Application CSV file is the approved file for upload to SOCCED.
+                                        </p>
+                                        <p>
+                                            This report shows only those fields present in the CSV file and is organized based on how the fields appear in the CSV file.
+                                        </p>
+                                    </div>
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none !important; font-size: 1rem; padding: 10px;vertical-align:top" colspan="11">
+                                    <span style="font-weight:700">Provider ID: </span>@iLA.Provider.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none !important; font-size: 1rem; padding: 10px;" colspan="11">
+                                    <span style="font-weight:700">ILA No: </span>@iLA.Number
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none !important; font-size: 1rem; padding: 10px;" colspan="11">
+                                    <span style="font-weight:700">ILA Title: </span>@iLA.Name
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none !important; font-size: 1rem; padding: 10px;" colspan="11">
+                                    <span style="font-weight:700">Course Start Date: </span>@(@iLA?.StartDate == DateOnly.MinValue ? "" : iLA?.StartDate?.ToShortDateString())
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none !important; font-size: 1rem; padding: 10px;" colspan="11">
+                                    <span style="font-weight:700">Training Plan: </span> <span class="fix-image">@(new RawString(iLA?.TrainingPlan))</span>
+                                </td>
+                            </tr>
+
+                            @{
+                                var nercCertLink = iLA.ILACertificationLinks.Where(r => r.Certification.CertifyingBodyId == 1).FirstOrDefault();
+                                var standardsSubLink = nercCertLink?.ILACertificationSubRequirementLink?.FirstOrDefault(r => r.CertificationSubRequirement?.ReqName == "Standards");
+                                var simSubLink = nercCertLink?.ILACertificationSubRequirementLink?.FirstOrDefault(r => r.CertificationSubRequirement?.ReqName == "Simulations");
+                            }
+                            <tr>
+                                <td style="border: none !important; font-size: 1rem; padding-left: 10px;padding-bottom:10px;" colspan="11">
+                                    <span style="font-weight:700">Credit Hours:</span>
+                                    <div>Operating Topic Hours/CEH: @nercCertLink?.CEHHours.GetValueOrDefault() </div>
+                                    <div>Standard Hours: @(standardsSubLink?.ReqHour ?? 0)</div>
+                                    <div>Simulation Hours: @(simSubLink?.ReqHour ?? 0)</div>
+                                    <div>Pilot Data attached: @(iLA.HasPilotData.GetValueOrDefault() ? "Y" : (iLA.PilotDataNA.GetValueOrDefault() ? "NA" : "N"))</div>
+                                    <div>This course is an Emergency Operations related training topic: @(iLA.DoesActivityConform.GetValueOrDefault() ? "Y" : "N")</div>
+                                    <div>This activity confirms to the criteria for System Operator Credential Maintenance as specified in the System Operator Certifications Program Manual: @(nercCertLink == null ? "N" : nercCertLink.IsEmergencyOpHours ? "Y" : "N")</div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none !important; font-size: 1rem; padding:0px!important;" colspan="11">
+                                    <span style="padding-left:10px;font-weight: 700">Assessment Tools:</span>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none !important; font-size: 1rem;padding-left:10px;padding-top:0px!important;" colspan="11">
+                                    Written Exam: @(iLA.WriitenOrOnlineAssessmentTool == true ? "Y" : "N") <br>
+                                    Performance Demonstration: @(iLA.PerformAssessmentTool == true ? "Y" : "N") <br>
+                                    Other: @(string.IsNullOrEmpty(iLA.OtherAssesmentTool) ? "N" : "Y")
+                                </td>
+                            </tr>
+                            @if (!string.IsNullOrEmpty(iLA.OtherAssesmentTool))
+                            {
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem;padding-left:12px;" colspan="11">
+                                        <span>Other Assessment Type:</span> @(iLA.OtherAssesmentTool)
+                                    </td>
+                                </tr>
+                            }
+
+                            <tr>
+                                <th colspan="2" style="font-size: 17px; margin-bottom: 8px;padding-left:10px;padding-top:10px; margin-top: 20px; font-weight: 600;border:none;text-align:left;">
+                                    <b>Learning Objectives</b>
+                                </th>
+                            </tr>
+                            @{
+                                int objCounter = 1;
+                                var eoObjectiveLinks = iLA.ILA_EnablingObjective_Links.Where(x => x.EnablingObjective.Active).Select(x => new ILAObjectivesVM { Description = x.EnablingObjective.Description, Number = x.EnablingObjective.FullNumber, Order = x.ILAObjectiveOrder });
+                                var taskObjectiveLinks = iLA.ILA_TaskObjective_Links.Where(x => x.Task.Active).Select(x => new ILAObjectivesVM { Description = x.Task.Description, Number = x.Task.FullNumber, Order = x.ILAObjectiveOrder });
+                                var customEoObjectiveLinks = iLA.ILACustomObjective_Links.Where(x => x.CustomEnablingObjective.Active).Select(x => new ILAObjectivesVM { Description = x.CustomEnablingObjective.Description, Number = x.CustomEnablingObjective.FullNumber, Order = x.ILAObjectiveOrder });
+                                var ilaObjectiveLinks = eoObjectiveLinks.Concat(taskObjectiveLinks).Concat(customEoObjectiveLinks);
+                            }
+                            @foreach (var ilaObjLink in ilaObjectiveLinks.OrderBy(x => x.Order))
+                            {
+                                <tr style="padding: 5px 0;">
+                                    <td style="padding-left:15px; border:none;vertical-align:top;">
+                                        <div style="display:-webkit-box;display:flex;grid-gap:5px">
+                                            <p style="margin:0px;">@objCounter</p>
+                                            <p style="margin:0px;padding-left:5px;"><i>@ilaObjLink.Description (@ilaObjLink.Number)</i></p>
+                                        </div>
+                                    </td>
+                                </tr>
+                                @{
+                                    objCounter++;
+                                }
+                            }
+
+                            <tr>
+                                <td style="border: none !important; font-size: 17px;padding-left:12px;padding-top:10px; margin-bottom: 8px; font-weight: 600;"><b> Learning Activity Content</b></td>
+                            </tr>
+                            @{
+                                int segmentCounter = 1;
+                            }
+                            @foreach (var ilaSegmentLink in iLA?.ILA_Segment_Links?.OrderBy(r => r.DisplayOrder))
+                            {
+                                <tr>
+                                    <th style="border: none; padding: 10px;text-align:left; color:#00B0F0;">Segment @segmentCounter:</th>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 10px; vertical-align: top;">
+                                        <input type="checkbox" disabled checked="@ilaSegmentLink.Segment.IsPartialCredit" /> Is Partial Credit
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 10px; vertical-align: top;">
+                                        <input type="checkbox" disabled checked="@ilaSegmentLink.Segment.IsNercStandard" /> Standard related hours
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 10px; vertical-align: top;">
+                                        <input type="checkbox" disabled checked="@ilaSegmentLink.Segment.IsNercOperatingTopics" /> Operating Topics/CEHs
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none; padding: 10px; vertical-align: top;">
+                                        <input type="checkbox" disabled checked="@ilaSegmentLink.Segment.IsNercSimulation" /> Simulation Hours
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px;" colspan="11">
+                                        <span style="font-weight:700">Segment Duration (in min):  </span> <span>@ilaSegmentLink.Segment.Duration</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px;" colspan="11">
+                                        <span style="font-weight:700">Segment Description:  </span> <span class="fix-image">@(new RawString(ilaSegmentLink?.Segment?.Content ?? string.Empty))</span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px;" colspan="11">
+                                        <span style="font-weight:600;">Segment Learning Objectives:</span>
+                                    </td>
+                                </tr>
+                                @foreach (var ilasegmentobjectivelinks in ilaSegmentLink?.Segment?.SegmentObjective_Links?.Where(sol => sol.EnablingObjectiveId == null || sol.EnablingObjective?.Active == true))
+                                {
+
+                                    <tr style="padding: 5px 0;">
+                                        @if (ilasegmentobjectivelinks?.EnablingObjectiveId != null)
+                                        {
+                                            @{
+                                                var orderNumber = ilasegmentobjectivelinks?.EnablingObjective?.ILA_EnablingObjective_Links?.FirstOrDefault(x => x.ILAId == iLA.Id)?.ILAObjectiveOrder;
+                                            }
+                                            <td style="padding-left:15px; border:none;vertical-align:top;">
+                                                <div style="display:-webkit-box;display:flex;grid-gap:5px">
+                                                    <p style="margin:0px;">@orderNumber</p>
+                                                    <p style="margin:0px;padding-left:5px;"> <i>@ilasegmentobjectivelinks?.EnablingObjective?.Description (@ilasegmentobjectivelinks?.EnablingObjective?.FullNumber) (EO)</i></p>
+                                                </div>
+                                            </td>
+                                        }
+                                        else if (ilasegmentobjectivelinks?.CustomEOId != null)
+                                        {
+                                            @{
+                                                var OrderCustomEoNumber = ilasegmentobjectivelinks?.CustomEnablingObjective?.ILACustomObjective_Links?.FirstOrDefault(x => x.ILAId == iLA.Id)?.ILAObjectiveOrder;
+                                            }
+                                            <td style="padding-left:15px; border:none;vertical-align:top;">
+                                                <div style="display:-webkit-box;display:flex;grid-gap:5px">
+                                                    <p style="margin:0px;">@OrderCustomEoNumber </p>
+                                                    <p style="margin:0px;padding-left:5px;"><i>@ilasegmentobjectivelinks?.CustomEnablingObjective?.Description (@ilasegmentobjectivelinks?.CustomEnablingObjective?.FullNumber) (Custom EO)</i></p>
+                                                </div>
+                                            </td>
+
+                                        }
+                                        else if (ilasegmentobjectivelinks?.TaskId != null)
+                                        {
+                                            @{
+                                                var ilaTaskObjectiveOrder = ilasegmentobjectivelinks?.Task?.ILA_TaskObjective_Links?.FirstOrDefault(x => x.ILAId == iLA.Id)?.ILAObjectiveOrder;
+                                            }
+                                            <td style="padding-left:15px; border:none;vertical-align:top;">
+                                                <div style="display:-webkit-box;display:flex;grid-gap:5px">
+                                                    <p style="margin:0px;">@ilaTaskObjectiveOrder</p>
+                                                    <p style="margin:0px;padding-left:5px;"><i>@ilasegmentobjectivelinks?.Task?.Description (@ilasegmentobjectivelinks?.Task?.FullNumber) @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))</i></p>
+                                                </div>
+                                            </td>
+                                        }
+                                    </tr>
+                                }
+
+                                segmentCounter++;
+                            }
+
+                            <tr>
+                                <td style="border: none !important; font-size: 1rem; padding: 10px;" colspan="11">
+                                    <span style="font-weight: 700;">Recognized Operator Topics:</span>
+                                    <div style="color:red;font-style:italic;padding: 10px;">The list below shows only those Recognized Operator Topics which were selected</div>
+                                    <ul style="margin: 5px 0;list-style-type: disc;padding-left:40px; padding-top: 10px;">
+                                        @foreach (var link in iLA?.ILA_TrainingTopic_Links)
+                                        {
+                                            <li>@(link.TrainingTopic?.Name)</li>
+                                        }
+                                    </ul>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    @if (!iLA.Equals(Model.ILAs.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.ILAs.Count(); i++)
+    {
+        <a href=@("#page" + i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

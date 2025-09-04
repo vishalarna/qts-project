@@ -1,0 +1,49 @@
+<div class="flex flex-row justify-between items-center px-12 mt-5 mb-3">
+    <p class="text-xl font-bold text-gray-900 mb-0">{{('Regulatory Requirement' | labelReplacement)| async}} Operation</p>
+    <app-button
+      (click)="closeFlyPanel()"
+      ButtonType="icon"
+      icon="close"
+    ></app-button>
+  </div>
+  <div *ngIf = "isLoading" class="operation-spinner">
+    <app-spinner></app-spinner>
+  </div>
+  <div class="m-3" [formGroup] = "rrOperationForm" *ngIf = "!isLoading" >
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label text = "Operation Type" class="font-weight-bold label required"></app-label>
+      <mat-select formControlName="operation" (selectionChange) = "onOperationTypeChange($event.value)" placeholder = "Select Operation Type"
+      class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+      <mat-option *ngFor="let item of operationType" [value]="item.id">
+        {{ item.type }}
+      </mat-option>
+    </mat-select>
+    </div>
+  
+    <ng-container *ngIf="rrOperationForm.get('operation').value">
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label text = "{{('Regulatory Requirement' | labelReplacement)| async}}" class="font-weight-bold label required"></app-label>
+    <ng-container *ngIf="operationTypeName =='CreateLink'">
+      <mat-select formControlName="regulatoryRequirement" placeholder = "Select {{('Regulatory Requirement' | labelReplacement)| async}}" #select="matSelect"
+          class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+          <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="searchText" (input)="regulatoryRequirementSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)">
+          <ng-container *ngFor = "let ia of filtered_AllRR">
+            <mat-option *ngFor = "let rr of getFiltererdRR(ia.regulatoryRequirements)" [value]="rr.id">{{ia.title}} - {{rr.number}} - {{rr.title}}</mat-option>
+          </ng-container>
+      </mat-select>
+    </ng-container>
+    <ng-container *ngIf="operationTypeName =='RemoveLink'">
+      <mat-select formControlName="regulatoryRequirement" placeholder = "Select {{('Regulatory Requirement' | labelReplacement)| async}}" #select="matSelect"
+          class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+          <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="searchText" (input)="regulatoryRequirementSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)">
+        <mat-option *ngFor = "let rr of filtered_TaskRR" [value] = "rr.id">{{rr.rR_IssuingAuthority_Title}} - {{rr.number}} - {{rr.description}}</mat-option>
+      </mat-select>
+    </ng-container>
+    </div>
+  
+    <div class="flex justify-end mt-3">
+      <app-button size="sm" text="Save" [disabled] = "!this.rrOperationForm.get('regulatoryRequirement')?.value" (clicked) = "onRRsave()" type="submit"></app-button>
+    </div>
+  </ng-container>
+  </div>
+  

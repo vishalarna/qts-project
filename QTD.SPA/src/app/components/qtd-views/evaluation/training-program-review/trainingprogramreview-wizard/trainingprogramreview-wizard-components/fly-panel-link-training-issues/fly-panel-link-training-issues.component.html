@@ -1,0 +1,107 @@
+<ng-container *ngIf= "!addTrainingIssueFlyIn"> 
+<div class="flex flex-col px-12 py-12" > 
+      <div class="flex justify-between items-center mt-2 mb-2">
+        <p class="text-xl font-bold text-gray-900">Link Training Issue</p>
+        <app-button (click)="closed.emit()" ButtonType="icon" icon="close"></app-button>
+      </div>
+      <div class="caption-section flex justify-content-end mb-2 mt-2">
+        <app-button  (click)="addTrainingIssueFlyIn = true" variant="text" text="Add new Training Issue" icon="add" iconPosition="left"></app-button>
+      </div>
+      <div class="rounded-t-md py-4 space-x-2" *ngIf="selection.selected.length > 0">
+        <mat-toolbar class="h-28 app-toolbar-sticky w-full">
+            <div class="flex flex-row items-center space-x-4 w-full justify-between">
+                <span class="text-sm">
+                    {{ selection.selected.length }} Training Issues has been selected
+                </span>
+                <div class="flex flex-row space-x-4 m-3 text-sm float-right">
+                    <app-button color="secondary" text="Add to Training Program Review" 
+                        (clicked)="linkTrainingIssueTotrainingProgram()" size="sm" icon="link" iconPosition="left">
+                    </app-button>
+                </div>
+            </div>
+        </mat-toolbar>
+      </div>
+      <div class="training-issues-list">
+        <mat-table matSort [dataSource]="trainingIssuesListData">
+          <ng-container matColumnDef="index">
+          <mat-header-cell *matHeaderCellDef class="px-2"> 
+            <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()" class="mr-3"></mat-checkbox>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="px-2">
+            <mat-checkbox *ngIf="!alreadyLinkedIds.includes(row.id)" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+            [checked]="selection.isSelected(row)"></mat-checkbox>
+            <div *ngIf="alreadyLinkedIds.includes(row.id)" (click)="removeTrainingIssueDialog(deleteDialog,row)" style="align-items: baseline;" class="flex flex-row cursor-pointer">
+              <app-icon class="linkText" icon="link"></app-icon>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+          <ng-container matColumnDef="issueCode">
+            <mat-header-cell *matHeaderCellDef style="max-width: 100px" class="px-2">#</mat-header-cell>
+            <mat-cell class="px-2" *matCellDef="let row" style="max-width: 100px">
+              <span>{{ row.issueCode }}</span>
+            </mat-cell>
+          </ng-container>
+      
+          <ng-container matColumnDef="issueTitle">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Title</mat-header-cell>
+            <mat-cell class="px-2" *matCellDef="let row">
+              <span>{{ row.issueTitle }}</span>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="description">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Description</mat-header-cell>
+            <mat-cell class="px-2" *matCellDef="let row">
+              <span>{{ row.description ?? 'N/A' }}</span>
+            </mat-cell>
+          </ng-container>
+    
+          <ng-container matColumnDef="createdDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Created Date</mat-header-cell>
+            <mat-cell class="px-2" *matCellDef="let row">
+              <span>{{ row.createdDate | dateFormat | async }}</span>
+            </mat-cell>
+          </ng-container>
+    
+          <ng-container matColumnDef="dueDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Due Date</mat-header-cell>
+            <mat-cell class="px-2" *matCellDef="let row">
+              <span>{{ row.dueDate | dateFormat | async }}</span>
+            </mat-cell>
+          </ng-container>
+      
+          <ng-container matColumnDef="severityLevel">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Severity</mat-header-cell>
+            <mat-cell class="px-2" *matCellDef="let row">
+              <span>{{ row.severityLevel }}</span>
+            </mat-cell>
+          </ng-container>
+      
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Status</mat-header-cell>
+            <mat-cell class="px-2" *matCellDef="let row">
+              <span>{{ row.status }}</span>
+            </mat-cell>
+          </ng-container>
+      
+          <mat-header-row *matHeaderRowDef="trainingIssuesColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: trainingIssuesColumns" [class.inActiveItem]="!row.active"></mat-row>
+          <!-- No Data Row -->
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full m-2" style="max-width: unset; border: none;">No data to display</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </ng-container>
+
+  <ng-container *ngIf = "addTrainingIssueFlyIn">
+    <app-fly-panel-add-training-issue [dataElementTypeId] = "dataElementTypeId" [dataElement] = "dataElement" (updatedIssue) = "refreshTable($event)" (closed)="addTrainingIssueFlyIn = false"></app-fly-panel-add-training-issue>
+  </ng-container>
+
+  <ng-template #deleteDialog>
+    <app-qtd-dialogue [header]="'Unlink Training Issue'" [description]="description" [confirmText]="'Yes'" [cancelText]="'No'"
+        (canceled)="dialog.closeAll()" [showEffectiveDateAndReason]="false"
+        (confirmed)="unlinkTrainingIssue()"></app-qtd-dialogue>
+  </ng-template>

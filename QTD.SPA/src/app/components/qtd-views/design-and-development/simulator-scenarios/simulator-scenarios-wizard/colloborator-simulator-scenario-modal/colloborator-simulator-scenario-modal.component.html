@@ -1,0 +1,96 @@
+<mat-dialog-content class="collaborator-dialog-content">
+  <div class="flex flex-row justify-between items-center mt-2 mb-4">
+    <p mat-dialog-title textContent="Collaborate">Collaborate</p>
+    <app-button
+      ButtonType="icon"
+      class="mt--4"
+      icon="close"
+      mat-dialog-close="true"
+    ></app-button>
+  </div>
+
+  <div class="w-screen pr-3 form_container">
+    <form
+      [formGroup]="collaborationForm"
+      class="w-full flex flex-col mt-3 ml-3"
+    >
+      <div class="flex flex-col float-left w-100 status-levelBox">
+        <app-label
+          [for]="'Select Personnel'"
+          text="Select Personnel"
+          class="mt-6 float-left label label-style"
+        ></app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select
+            formControlName="personnel"
+            placeholder="Select personnel"
+            (selectionChange)="onPersonnelSelect($event)"
+            #selectControl="matSelect"
+          >
+          <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="searchPersonnelTxt" (keyup)="collaboratorSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)">
+            <mat-option *ngFor="let user of userDetails" [value]="user" > {{user.person?.firstName}} {{user.person?.lastName}}</mat-option>
+          </mat-select>
+        </mat-form-field>
+      </div>
+      <div class="selected-collaborators-list">
+        <mat-table class="selected-collaborators-list-mat-table" [dataSource]="collaboratorDataSource">
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef> Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" >
+              <span>{{row.name}}</span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="email" >
+            <mat-header-cell *matHeaderCellDef class="px-2"> Email
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="justify-content-start">
+              <span>{{row.email}} </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="permission" >
+            <mat-header-cell *matHeaderCellDef class="px-2"> Permission
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="justify-content-start">
+              <mat-select  (selectionChange)="onPermissionChange(row,$event)" [value]="row.collaboratorPermissionId">
+                <mat-option *ngFor="let permission of collaborationSimScenario" [value]="permission.id">
+                  {{permission.name}}
+                </mat-option>
+              </mat-select>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="action" >
+            <mat-header-cell *matHeaderCellDef class="px-2"> 
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="justify-content-start">
+              <app-button type="button" size="sm" icon="delete" (clicked)="removeCollaborator(row)">Remove</app-button> 
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+          <tr class="mat-row flex text-center " *matNoDataRow>
+            <td class="mat-cell w-full m-2">No data to display</td>
+          </tr>
+        </mat-table>
+      </div>
+      <div class="flex flex-row w-full">
+        <div class="flex flex-col w-full">
+           <app-label [for]="'message'" [text]="'Message(Optional)'" class="mt-6 float-left label"></app-label>
+          <ckeditor name="message" [editor]="editor" formControlName="message">
+          </ckeditor>
+        </div>
+      </div>
+       
+    </form>
+  </div>
+</mat-dialog-content>
+<mat-dialog-actions class="flex flex-row justify-end">
+ <app-button
+      size="sm"
+      class="share_button"
+      variant="contained"
+      color="secondary"
+      text="Share"
+      (clicked)="shareFormValueAsync()"
+    ></app-button>
+</mat-dialog-actions> 

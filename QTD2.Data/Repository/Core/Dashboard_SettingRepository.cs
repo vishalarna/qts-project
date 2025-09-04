@@ -1,0 +1,14 @@
+﻿using QTD2.Domain.Entities.Core;
+using QTD2.Domain.Interfaces.Repository.Core;
+
+namespace QTD2.Data.Repository.Core
+{
+    public class Dashboard_SettingRepository : Common.Repository<DashboardSetting>, IDashboard_SettingRepository
+    {
+        public Dashboard_SettingRepository(QTDContext context)
+           : base(context)
+        {
+        }
+
+    }
+}

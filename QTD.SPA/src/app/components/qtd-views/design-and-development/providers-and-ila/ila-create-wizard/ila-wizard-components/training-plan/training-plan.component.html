@@ -1,0 +1,594 @@
+<div
+  *ngIf="mainSpinner"
+  class="flex mt-5"
+  style="justify-content: center; align-items: center"
+>
+  <app-spinner></app-spinner>
+</div>
+
+<div *ngIf="!mainSpinner" class="w-full flex flex-row mt-16">
+  <div class="w-9/12">
+    <div class="flex flex-col px-4 pb-12">
+      <div
+        class="
+          py-6
+          px-6
+          space-y-6
+          border-gray-one
+          shadow-xs
+          border-0.5
+          bg-white-one
+          rounded
+          mb-8
+        "
+      >
+        <div class="flex flex-row items-center">
+          <h2 class="flex-grow font-medium">Training Plan</h2>
+        </div>
+        <ckeditor
+          [(ngModel)]="trainingPlan"
+          [editor]="Editor"
+          (ready)="onReady($event)"
+        ></ckeditor>
+      </div>
+    </div>
+    <div class="flex flex-col px-4 pb-12">
+      <div
+        class="
+          py-6
+          px-6
+          space-y-6
+          border-gray-one
+          shadow-xs
+          border-0.5
+          bg-white-one
+          rounded
+          mb-8
+        "
+      >
+        <div class="flex flex-row items-center">
+          <h2 class="flex-grow font-medium">Objectives</h2>
+        </div>
+        <div>
+          <div class="flex flex-row justify-between">
+            <ul class="mb-4" style="list-style: none !important;">
+              <li>
+                <app-icon
+                  icon="link"
+                  class="mr-2"
+                  style="color: rgb(92, 155, 49) !important"
+                >
+                </app-icon>
+                <app-button
+                  variant="text"
+                  text="Link Objectives to {{('ILA' | labelReplacement)| async}}s"
+                  style="color: rgb(92, 155, 49) !important"
+                  (clicked)="openFlyInPanel(objectives, false, null, null)"
+                ></app-button>
+              </li>
+              <li>
+                <app-button
+                  variant="text"
+                  text="Create Custom Objectives"
+                  (clicked)="openFlyInPanel(objectives, true, 'add', null)"
+                  style="color: rgb(92, 155, 49) !important"
+                >
+                </app-button>
+                <app-icon
+                  icon="help_outline"
+                  class="ml-2"
+                  style="color: darkgrey !important"
+                  [matTooltip]="help_co"
+                >
+                </app-icon>
+              </li>
+            </ul>
+            <app-button
+              color="secondary"
+              size="sm"
+              (clicked)="unlinkObjectivesFunctions()"
+              text="Unlink Objectives"
+              *ngIf="selection.hasValue()"
+            ></app-button>
+          </div>
+          <app-data-loader *ngIf="!DataSource"></app-data-loader>
+          <ng-container *ngIf="DataSource">
+            <mat-table
+              [dataSource]="DataSource"
+              #objSort="matSort"
+              matSort
+              class="table-bordered"
+              (matSortChange)="sortDataSource($event)"
+            >
+              <ng-container matColumnDef="drag">
+                <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <!-- <app-icon style="pointer-events:all;" icon="drag_indicator"
+                                        matTooltip="Drag to reorder the row"
+                                        style="color: darkgrey!important;cursor:move">
+                                    </app-icon> -->
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="id">
+                <mat-header-cell *matHeaderCellDef>
+                  <mat-checkbox
+                    (change)="$event ? masterToggle() : null"
+                    [checked]="selection.hasValue() && isAllSelected()"
+                    [indeterminate]="selection.hasValue() && !isAllSelected()"
+                  >
+                  </mat-checkbox>
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <mat-checkbox
+                    (click)="$event.stopPropagation()"
+                    (change)="$event ? selection.toggle(row) : null"
+                    [checked]="selection.isSelected(row)"
+                  >
+                  </mat-checkbox>
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="number">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  #
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row" [ngStyle]="{ color: row.type == 'Custom' ? 'orange' : '' }"> {{ row.number }} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="type">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Type
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{ row.type }} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="order">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Order
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{ row.order }} </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="description">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  Description
+                </mat-header-cell>
+                <mat-cell
+                  *matCellDef="let row"
+                  [matTooltip]="row.description"
+                  [ngStyle]="{ color: row.type == 'Custom' ? 'orange' : '' }"
+                >
+                  {{ row.description }}
+                </mat-cell>
+              </ng-container>
+              <ng-container matColumnDef="action">
+                <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                  <div
+                    class="flex flex-row items-center text-gray-four btn-group"
+                    *ngIf="row.type.toLowerCase() === 'custom'"
+                  >
+                    <app-button
+                      ButtonType="icon"
+                      class="text-gray-four"
+                      icon="more_horiz"
+                      [matMenuTriggerFor]="menu"
+                    >
+                    </app-button>
+                    <mat-menu #menu="matMenu">
+                      <div>
+                        <label
+                          mat-menu-item
+                          (click)="
+                            openFlyInPanel(objectives, true, 'edit', row)
+                          "
+                          >Edit</label
+                        >
+                        <label mat-menu-item (click)="removeObjectives(row)"
+                          >Delete</label
+                        >
+                      </div>
+                    </mat-menu>
+                  </div>
+                </mat-cell>
+              </ng-container>
+              <mat-header-row
+                *matHeaderRowDef="displayedColumns"
+              ></mat-header-row>
+              <mat-row
+                *matRowDef="let row; columns: displayedColumns"
+              ></mat-row>
+              <!-- Row shown when there is no matching data.-->
+              <tr class="mat-row flex text-center" *matNoDataRow>
+                <td class="mat-cell w-full m-2">No data to display</td>
+              </tr>
+            </mat-table>
+            <mat-paginator
+              #objPgn
+              [pageSizeOptions]="[20, 40, 60]"
+              showFirstLastButtons
+              aria-label="Select page of periodic elements"
+            >
+            </mat-paginator>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col px-4 pb-12">
+      <div class="flex flex-row justify-between">
+        <h2 class="flex-grow font-medium">Course Outline/Segments</h2>
+      </div>
+    </div>
+    <ng-container>
+      <!-- This Drag and drop is causing issues in form fix this -->
+      <!-- <div cdkDropList class="qtd-list" (cdkDropListDropped)="drop($event)"> -->
+      <div cdkDropList class="qtd-list" (cdkDropListDropped)="drop($event)">
+        <div class="qtd-box flex flex-col" cdkDrag [cdkDragDisabled]="true">
+          <div [formGroup]="group">
+              <ng-container
+                formArrayName="segmentsForm"
+                *ngFor="let val of group.get('segmentsForm')?.['controls']; let i=index"
+              >
+                <div [formGroupName]="i">
+                  <span class="font-medium text-gray-400 mb-3 ml-4">
+                    <!-- <app-icon icon="drag_indicator" style="cursor:move; color: darkgrey!important;cursor:move" cdkDragHandle>
+                </app-icon> -->
+                    Segment {{ i + 1 }}
+                  </span>
+                  <div class="flex flex-col px-4 pb-12">
+                    <div
+                      class="
+                        py-6
+                        px-6
+                        space-y-6
+                        border-gray-one
+                        shadow-xs
+                        border-0.5
+                        bg-white-one
+                        rounded
+                        mb-8
+                      "
+                    >
+                      <div class="flex flex-row">
+                        <div class="flex flex-col mr-4">
+                          <span class="mt-3 font-medium text-sm"
+                            >Segement Title</span
+                          >
+                          <app-textbox
+                            formControlName="title"
+                            placeholder="Segment Title"
+                          >
+                          </app-textbox>
+                          <app-input-error
+                            text="Segment Title is Required"
+                            *ngIf="val.get('title')?.errors?.required"
+                          >
+                          </app-input-error>
+                        </div>
+                        <div class="flex flex-col">
+                          <span class="mt-3 font-medium text-sm"
+                            >Segment Duration</span
+                          >
+                          <div class="flex flex-col">
+                            <app-textbox
+                              (keypress)="durationChanged($event)"
+                              formControlName="duration"
+                              placeholder="Enter Duration"
+                            ></app-textbox>
+                            <app-input-error
+                              *ngIf="val.get('duration')?.errors?.required"
+                              text="Duration is Required"
+                            >
+                            </app-input-error>
+                            <mat-form-field
+                              appearance="outline"
+                              style="vertical-align: sub"
+                              class="mt-1"
+                            >
+                              <mat-select value="min">
+                                <mat-option value="min"> (min) </mat-option>
+                              </mat-select>
+                            </mat-form-field>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="flex flex-col">
+                        <span
+                          *ngIf="isNercProvider"
+                          class="mt-3 font-medium text-sm"
+                          >NERC Only - Segment Includes the following</span
+                        >
+                        <ul *ngIf="isNercProvider" class="mt-4" style="list-style: none !important;">
+                          <li>
+                            <mat-checkbox formControlName="isPartialCredit"
+                              >Is Partial Credit</mat-checkbox
+                            >
+                          </li>
+                          <li>
+                            <mat-checkbox formControlName="isStandard"
+                              >Standard related hours</mat-checkbox
+                            >
+                          </li>
+                          <li>
+                            <mat-checkbox formControlName="isOperationTopic"
+                              >Operating Topics/CEHs</mat-checkbox
+                            >
+                          </li>
+                          <li>
+                            <mat-checkbox formControlName="isSimulation"
+                              >Simulation Hours</mat-checkbox
+                            >
+                          </li>
+                        </ul>
+                        <p class="flex-grow font-medium mt-3">
+                          Segment Description
+                        </p>
+                        <ckeditor
+                          formControlName="description"
+                          [editor]="Editor"
+                          (ready)="onReady($event)"
+                        >
+                        </ckeditor>
+                        <app-input-error
+                          text="Segment Description Is Required"
+                          *ngIf="val.get('description')?.errors?.required"
+                        ></app-input-error>
+                      </div>
+                      <div class="flex flex-row">
+                        <app-button
+                          variant="text"
+                          text="Link Segment Objectives"
+                          iconPosition="left"
+                          icon="add"
+                          (clicked)="
+                            openLinkSegmentFlyPanel(addObjectives, false, i)
+                          "
+                        ></app-button>
+                      </div>
+                      <div class="flex flex-row justify-end">
+                        <app-button
+                          color="secondary"
+                          size="sm"
+                          text="Unlink"
+                          *ngIf="false"
+                        >
+                        </app-button>
+                      </div>
+                      <app-data-loader *ngIf="false"></app-data-loader>
+                      <ng-container *ngIf="length[i] > 0">
+                        <mat-table
+                          [dataSource]="length[i] > 0 ? selectedId[i] : []"
+                          #objSort1="matSort"
+                          matSort
+                          cdkDropList
+                          class="table-bordered"
+                          [cdkDropListData]="selectedId[i]"
+                          (cdkDropListDropped)="dropTable($event, i)"
+                        >
+                          <ng-container matColumnDef="drag">
+                            <mat-header-cell *matHeaderCellDef>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                              <app-icon
+                                cdkDragHandle
+                                matTooltip="Drag to reorder the row"
+                                style="
+                                  pointer-events: all;
+                                  color: darkgrey !important;
+                                  cursor: move;
+                                "
+                                icon="drag_indicator"
+                              >
+                              </app-icon>
+                            </mat-cell>
+                          </ng-container>
+                          <!-- <ng-container matColumnDef="id">
+                              <mat-header-cell *matHeaderCellDef>
+                                <mat-checkbox>
+                                </mat-checkbox>
+                              </mat-header-cell>
+                              <mat-cell *matCellDef="let row">
+                                <mat-checkbox (change)="stausChanged(row,i,$event)">
+                                </mat-checkbox>
+                              </mat-cell>
+                            </ng-container> -->
+                          <ng-container matColumnDef="number">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                              #
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row" [ngStyle]="{ color: row.type == 'Custom' ? 'orange' : '' }">
+                              {{ row.number }}
+                            </mat-cell>
+                          </ng-container>
+                          <ng-container matColumnDef="type">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                              Type
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                              {{ row.type }}
+                            </mat-cell>
+                          </ng-container>
+                          <ng-container matColumnDef="description">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                              Description
+                            </mat-header-cell>
+                            <mat-cell
+                              *matCellDef="let row"
+                              [matTooltip]="row.description"
+                              [ngStyle]="{
+                                color: row.type == 'Custom' ? 'orange' : ''
+                              }"
+                            >
+                              {{ row.description }}
+                            </mat-cell>
+                          </ng-container>
+                          <ng-container matColumnDef="id">
+                            <mat-header-cell *matHeaderCellDef>
+                              <span *ngIf="saved[i]">Unlink</span>
+                              <span *ngIf="!saved[i]">Remove</span>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row">
+                              <app-icon
+                                (click)="unlinkEO(row, i)"
+                                style="color: grey; cursor: pointer"
+                                icon="link_off"
+                              >
+                              </app-icon>
+                            </mat-cell>
+                          </ng-container>
+                          <mat-header-row
+                            *matHeaderRowDef="displayColumns"
+                          ></mat-header-row>
+                          <mat-row
+                            *matRowDef="let row; columns: displayColumns"
+                            cdkDrag
+                            (cdkDragStarted)="dragStarted($event)"
+                            [cdkDragData]="row" 
+                          ></mat-row>
+                          <!-- Row shown when there is no matching data.-->
+                          <tr class="mat-row flex text-center" *matNoDataRow>
+                            <td class="mat-cell w-full m-2">
+                              No data to display
+                            </td>
+                          </tr>
+                        </mat-table>
+                        <mat-paginator
+                          [pageSizeOptions]="[20, 40, 60]"
+                          showFirstLastButtons
+                          aria-label="Select page of periodic elements"
+                        >
+                        </mat-paginator>
+                      </ng-container>
+
+                      <div class="flex flex-row justify-end">
+                        <app-button
+                          *ngIf="!saved[i]"
+                          type="button"
+                          size="sm"
+                          color="secondary"
+                          text="Cancel"
+                          class="mr-5"
+                          (clicked)="cancelClicked(i)"
+                        >
+                        </app-button>
+                        <app-button
+                          *ngIf="showLinked[i] ? !saved[i] : true"
+                          [spinner]="isSaving[i]"
+                          (clicked)="saveSegmentData(val, i)"
+                          type="submit"
+                          size="sm"
+                          [text]="saved[i] ? 'Update' : 'Save'"
+                          [disabled]="
+                            val.get('description')?.errors?.required ||
+                            val.get('title')?.errors?.required ||
+                            val.get('duration')?.errors?.required ||
+                            isSaving[i]
+                          "
+                        >
+                        </app-button>
+                        <app-button
+                          *ngIf="showLinked[i] && saved[i]"
+                          (clicked)="createOnlyLinks(i)"
+                          size="sm"
+                          text="Save Link Changes"
+                        >
+                        </app-button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </ng-container>
+          </div>
+        </div>
+      </div>
+      <app-button
+        [disabled]="!allSegmentsSaved()"
+        variant="text"
+        text="Add next segment"
+        iconPosition="left"
+        icon="add"
+        (clicked)="readyFrom()"
+      >
+      </app-button>
+    </ng-container>
+    <!--Delivery Methods Starts-->
+    <div class="flex flex-col p-3">
+      <!-- Delivery Methods Header Starts-->
+      <div class="flex flex-row items-center">
+        <div class="flex flex-col flex-grow">
+          <p class="flex-auto font-medium text-lg">Delivery Methods</p>
+        </div>
+        <app-button
+          variant="text"
+          size="sm"
+          text="Edit"
+          icon="edit"
+          iconPosition="left"
+          (clicked)="edit.emit($event)"
+          class="flex flex-row text-sm font-normal text-gray-four items-center"
+        >
+        </app-button>
+      </div>
+
+      <div class="flex flex-col pb-8 text-sm">
+        <!-- text field starts here -->
+        <div class="w-full rounded text-sm flex flex-row">
+          <div *ngFor="let i of delivery_method">
+            <ul class="mb-2">
+              {{
+                i.value
+              }}
+            </ul>
+          </div>
+        </div>
+        <!-- text field ends here -->
+      </div>
+
+      <!--Delivery Methods Content Ends-->
+    </div>
+    <!--Delivery Methods Ends-->
+
+    <!--All Segements List Starts-->
+    <div class="ml-4 border-b border-gray-300">
+      <p class="flex-auto font-medium text-lg">All Segments</p>
+      <div class="border-t border-gray-300"></div>
+      <div class="mt-4 text-small" *ngFor="let ev of segmentsArray">
+        <div class="flex flex-row">
+          <span class="font-bold mr-12">{{ ev.title }}</span
+          ><br />
+        </div>
+        <span class="italic text-lightGreen">{{ ev.description }}</span>
+      </div>
+      <br />
+      <app-label
+        text="To Edit Please Move to Training Material Tab"
+        class="text-gray-400 font-medium"
+      ></app-label>
+    </div>
+    <!--All Segements List Ends-->
+  </div>
+  <!--right side of page ends-->
+</div>
+
+<ng-template #objectives>
+  <app-fly-panel-objectives #addObjectives
+    [linkedTaskIds]="linkedTaskIds"
+    [linkedEOIds]="linkedEOIds"
+    (linked)="recieveMessage($event)"
+    [isCustomEO]="isCustomEO"
+    [mode]="mode"
+    [eoDetails]="rowDetails"
+    (closed)="this.flyPanelSrvc.close()"
+  >
+  </app-fly-panel-objectives>
+</ng-template>
+
+<ng-template #addObjectives>
+  <app-fly-panel-link-scenario-objective
+    [linkedTaskIds]="linkedSegmentTaskIds"
+    [linkedEOIds]="linkedSegmentEOIds"
+    [linkedCOIds]="linkedSegmentCOIds"
+    (sendId)="receiveId($event)"
+    [selectedIds]="selectedId"
+    (closed)="this.flyPanelSrvc.close()"
+    [isCustomEO]="isCustomEO"
+    [otherSelectedObjectives]="otherSelectedObjectives"
+    [segmentTitle]="segmentTitle"
+  ></app-fly-panel-link-scenario-objective>
+</ng-template>

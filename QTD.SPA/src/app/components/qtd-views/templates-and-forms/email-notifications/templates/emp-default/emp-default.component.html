@@ -1,0 +1,32 @@
+<div class="container-fluid">
+    <h1 class="panel-heading">{{this.notification.name | dynamicLabelReplacement| async}}</h1>
+    <div class="row switch-box">
+        <div class="col-md-12">
+            <div class="row heighttop">
+                <div class="col-md-12 p-0">
+                    <app-notifications-enabled [enabled]="checked" [mode]="mode"
+                    [events]="eventsSubject.asObservable()"
+                        (onNotificationEnabledToggleChangeEvent)="handleToggleValueChange($event)" [timingText]="timingText"></app-notifications-enabled>
+                </div>
+            </div>
+            <div class="row heighttop justify-content-between">
+                <h1 class="section-header">Email Template</h1>
+                <div class="col-md-12 p-0">
+                    <app-email-template-editor
+                        [emailData]="empDefaultData"
+                        [order]="1"
+                        [mode]="mode"
+                        [events]="emailSubjectData.asObservable()"
+                        (click)="select($event)"
+                        (templateModifiedEvent)="handleEmailTemplateModifiedEvent($event)"
+                        >
+                    </app-email-template-editor>
+                </div>
+            </div>
+            <div id="mySidenav" class="sidenav" *ngIf="IsPanelOpen">
+                <div class="d-flex justify-content-end"><button (click)="closeModel()" class="align-icon"><mat-icon>clear</mat-icon></button></div>
+                <app-model-bindings [modelItems]="modelBinderItems" (modelItemButtonClicked)="GetChildData($event)"></app-model-bindings>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,156 @@
+<div class="container-fluid">
+  <h1 class="panel-heading">{{ this.notification.name }}</h1>
+  <div class="row switch-box">
+    <div class="col-md-12">
+      <div class="row heighttop">
+        <div class="col-md-12 p-0">
+          <app-notifications-enabled
+            (onNotificationEnabledToggleChangeEvent)="
+              handleNotificationToggleValue($event)
+            "
+            [enabled]="this.notification.enabled"
+            [mode]="mode"
+            [events]="eventsSubject.asObservable()"
+            [timingText]="this.notification.timingText"
+          >
+          </app-notifications-enabled>
+        </div>
+      </div>
+      <div class="row heighttop justify-content-between">
+        <h1 class="section-header">Email Template</h1>
+        <div class="col-md-12 p-0">
+          <app-email-template-editor
+            [emailData]="emailData"
+            [mode]="mode"
+            [order]="1"
+            [events]="eventsTemplate.asObservable()"
+            (templateModifiedEvent)="handleEmailTemplateModifiedEvent($event)"
+            (click)="select($event)"
+          >
+          </app-email-template-editor>
+        </div>
+        <div id="mySidenav" class="sidenav" *ngIf="IsPanelOpen">
+          <div class="d-flex justify-content-end">
+            <button (click)="closeModel()" class="align-icon">
+              <mat-icon>clear</mat-icon>
+            </button>
+          </div>
+          <app-model-bindings
+            [modelItems]="this.notification.steps[0].model"
+            (modelItemButtonClicked)="GetChildData($event)"
+          ></app-model-bindings>
+        </div>
+        <div class="row template-bottomform">
+          <div class="col md-6 p-0" *ngIf="isScheduleForNext">
+            <div class="d-flex template-bottom">
+              <div class="label-flex">
+                <label class="m-0">Scheduled for next</label>
+              </div>
+              <div class="form-flex">
+                <input
+                  class="form-control"
+                  [disabled]="mode === 'read' ? true : false"
+                  type="number"
+                  (change)="
+                    handleCustomSettingChange(
+                      'Schedule for next',
+                      $any($event.target).value.toString()
+                    )
+                  "
+                  [value]="this.getStepCustomSettingsValue('Schedule for next')"
+                />
+              </div>
+              days
+            </div>
+          </div>
+          <div class="col md-6 p-0">
+            <div class="d-flex template-bottom justify-content-end">
+              <div class="label-flex">
+                <label class="m-0">Email Frequency</label>
+              </div>
+              <div class="form-flex">
+                <select
+                  class="form-control"
+                  [disabled]="mode === 'read' ? true : false"
+                  [value]="this.getStepCustomSettingsValue('Email Frequency')"
+                  (change)="
+                    onFrequencyChange($any($event.target).value.toString())
+                  "
+                >
+                  <option value="Daily">Daily</option>
+                  <option value="Weekly">Weekly</option>
+                  <option value="Monthly">Monthly</option>
+                </select>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div  class="notifcation-panel" *ngIf = "notification?.name == 'Admin - Employee Portal Completions'">
+        <form [formGroup]="classScheduleForm">
+          <div class="col md-6 p-0">
+            <ng-container [ngSwitch]="selectedFrequency">
+              <!-- Weekly Frequency -->
+              <div *ngSwitchCase="'Weekly'" class="d-flex template-bottom justify-content-end pb-3">
+                <div class="label-flex">
+                  <label class="m-0">Day of Week</label>
+                </div>
+                <div class="form-flex">
+                  <select
+                    class="form-control"
+                    [value]="dayOfWeek"
+                    (change)="onDayChange($any($event.target).value.toString())"
+                    [disabled]="mode === 'read' ? true : false"
+                  >
+                    <option *ngFor="let day of daysOfWeek" [value]="day">{{ day }}</option>
+                  </select>
+                </div>
+              </div>
+        
+              <!-- Monthly Frequency -->
+              <div *ngSwitchCase="'Monthly'" class="d-flex template-bottom justify-content-end pb-3">
+                <div class="label-flex">
+                  <label class="m-0">Day # of Month</label>
+                </div>
+                <div class="form-flex">
+                  <select
+                    class="form-control"
+                    [value]="dayOfMonth"
+                    (change)="onMonthChange($any($event.target).value.toString())"
+                    [disabled]="mode === 'read' ? true : false"
+                  >
+                    <option *ngFor="let day of daysInMonth" [value]="day">{{ day }}</option>
+                  </select>
+                </div>
+              </div>
+            </ng-container>
+        
+            <!-- Time of Day -->
+            <div class="d-flex template-bottom justify-content-end" [ngClass]="{'disabled': mode === 'read'}" [attr.disabled]="mode === 'read' ? true : null">
+              <div class="label-flex">
+                <label class="m-0">Time of Day</label>
+              </div>
+              <div class="data">
+                <mat-form-field appearance="outline">
+                  <input 
+                    matInput
+                    type="time"
+                    formControlName="dayTime"
+                    (change)="onTimeSelected()"
+                  />
+                </mat-form-field>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- <div>
+        <app-employee-picker
+          [Employees]="employees"
+          [mode]="mode"
+          [SelectedEmployees]="this.notification.steps[0].recipients"
+          (employeeListChangedEvent)="handleRecipientChange($event)">
+        </app-employee-picker>
+      </div> -->
+    </div>
+  </div>
+</div>

@@ -1,0 +1,5 @@
+<!-- <a [href]="href" [target]="target" *ngIf="!routerLink" [class]="customClasses">{{text}}</a> -->
+
+<!-- <a [routerLink]="routerLink" [queryParams]="queryParams" *ngIf="routerLink" [class]="customClasses">{{text}}</a> -->
+<span *ngIf="disabled" [class]="customClasses" style="color:lightgray;font-style: italic;" [matTooltip]="tooltip != '' ? tooltip : null">{{text}}</span>
+<span *ngIf="!disabled" [class]="customClasses" (click)="linkClicked($event)" [matTooltip]="tooltip != '' ? tooltip : null">{{text}}</span>

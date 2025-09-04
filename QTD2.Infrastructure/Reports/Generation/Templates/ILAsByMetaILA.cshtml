@@ -1,0 +1,484 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .fix-content * {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .fix-content img {
+        width: 400px !important;
+        height: auto !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+    }
+
+    .fix-content ul, .fix-content ol {
+        margin: 0 !important;
+        padding: 0 0 0 20px !important;
+        list-style-position: inside !important;
+    }
+
+    .fix-content li {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1rem;
+    }
+
+    .fix-content p {
+        margin: 0 !important;
+        padding: 0 !important;
+        display: inline-block;
+    }
+
+    .fix-content strong {
+        font-weight: bold !important;
+    }
+
+    .fix-content u {
+        text-decoration: underline !important;
+    }
+
+    .fix-content table {
+        border-collapse: collapse;
+    }
+
+        .fix-content table td,
+        .fix-content table th {
+            border: 1px solid black;
+            padding: 5px;
+        }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+</style>
+
+
+<table id="content-table" class="table">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.MetaILAs.Count() > 0)
+    {
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+                @{
+                    int j = 1;
+                }
+                @foreach (var metaILA in Model.MetaILAs.OrderBy(m => m.Name))
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100%;table-layout: fixed;">
+                            <tr>
+                                <td style="border: none;padding:10px 5px;" colspan="12">
+                                    <span style="font-weight:600">Meta @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title :</span>
+                                    <span style="padding-left:5px;">@metaILA.Name</span>
+                                </td>
+                            </tr>
+                            @if (Model.DisplayColumns.Contains("Meta ILA Description"))
+                            {
+                                <tr>
+                                    <td style="border: none;padding:10px 5px;" colspan="12">
+                                        <span style="font-weight:600;vertical-align:top;">Meta @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Description :</span>
+                                        <span style="padding-left:5px;" class="fix-content">@(new RawString(metaILA.Description))</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Contains("Meta ILA Summary Test Linked"))
+                            {
+                                <tr>
+                                    <td style="border: none;padding:10px 5px;" colspan="12">
+                                        <span style="font-weight:600">Meta @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Summary Test :</span>
+                                        <span style="padding-left:5px;">@metaILA.MetaILA_SummaryTest_FinalTest?.Test?.TestTitle</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Contains("Meta ILA Student Evaluation Linked"))
+                            {
+                                <tr>
+                                    <td style="border: none;padding:10px 5px;" colspan="12">
+                                        <span style="font-weight:600">Meta @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Student Evaluation :</span>
+                                        <span style="padding-left:5px;">@metaILA.StudentEvaluation?.Title</span>
+                                    </td>
+                                </tr>
+                            }
+                            @{
+                                var links = metaILA.Meta_ILAMembers_Links
+                                .Select(m => m?.ILA ?.ILACertificationLinks?.FirstOrDefault(x => x.Certification?.CertifyingBody?.Name == "NERC"))
+                                .Where(x => x != null)
+                                .ToList();
+
+                                var operatingSum = links.Sum(l => l?.CEHHours ?? 0);
+                                var standardsSum = links.Sum(l => l?.ILACertificationSubRequirementLink
+                                ?.FirstOrDefault(x => x.CertificationSubRequirement.ReqName == "Standards")?.ReqHour ?? 0);
+                                var simulationSum = links.Sum(l => l?.ILACertificationSubRequirementLink
+                                ?.FirstOrDefault(x => x.CertificationSubRequirement.ReqName == "Simulations")?.ReqHour ?? 0);
+                                var allEmergencyOp = links.Any() && links.All(l => l?.IsEmergencyOpHours == true);
+                            }
+
+                            <tr>
+                                <td style="border:none;padding-bottom:15px;" colspan="12">
+                                    <table style="width:100%; border-collapse:collapse;">
+                                        <thead>
+                                            <tr>
+                                                <th style="border:1px solid black; text-align:left; vertical-align:middle; padding:5px;font-weight:600" rowspan="2">Meta Credit Hours</th>
+                                                <th style="border:1px solid black; text-align:left; vertical-align:bottom; padding:5px;">CEH/Operating</th>
+                                                <th style="border:1px solid black; text-align:left; vertical-align:bottom; padding:5px;">Standards</th>
+                                                <th style="border:1px solid black; text-align:left; vertical-align:bottom; padding:5px;">Simulation</th>
+                                                <th style="border:1px solid black; text-align:left; vertical-align:bottom; padding:5px;">Emergency Operations Related</th>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid black; padding:5px;">@operatingSum</td>
+                                                <td style="border:1px solid black; padding:5px;">@standardsSum</td>
+                                                <td style="border:1px solid black; padding:5px;">@simulationSum</td>
+                                                <td style="border:1px solid black; padding:5px;">
+                                                    <input type="checkbox" disabled @(allEmergencyOp ? "checked" : "") />
+                                                </td>
+                                            </tr>
+                                        </thead>
+                                    </table>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border:none;" colspan="12">
+                                    <table style="width:100%;border-collapse:collapse;">
+                                        <thead>
+                                            <tr>
+                                                <th style="border:1px solid black;text-align: left; vertical-align: bottom; padding: 5px;width:32%">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #</th>
+                                                <th style="border:1px solid black;text-align: left; vertical-align: bottom; padding: 5px;width:32%">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title</th>
+                                                @if (Model.DisplayColumns.Contains("Delivery Method"))
+                                                {
+                                                    <th style="border:1px solid black;text-align: left; vertical-align: bottom; padding: 5px;width:16%">Delivery Method</th>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("EMP Release Criteria"))
+                                                {
+                                                    <th style="border:1px solid black;text-align: left; vertical-align: bottom; padding: 5px;width:20%">EMP Release Criteria</th>
+                                                }
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var ilaMemberLink in metaILA.Meta_ILAMembers_Links.OrderBy(x => x.SequenceNumber))
+                                            {
+                                                <tr>
+                                                    <td style="border:1px solid black;padding:5px;">@ilaMemberLink.ILA?.Number</td>
+                                                    <td style="border:1px solid black;padding:5px;">@ilaMemberLink.ILA?.Name</td>
+                                                    @if (Model.DisplayColumns.Contains("Delivery Method"))
+                                                    {
+                                                        <td style="border:1px solid black;padding:5px;">@ilaMemberLink.ILA?.DeliveryMethod?.Name</td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Contains("EMP Release Criteria"))
+                                                    {
+                                                        <td style="border:1px solid black;padding:5px;">@ilaMemberLink.MetaILAConfigurationPublishOption?.Description</td>
+                                                    }
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                            @foreach (var ilaMemberLink in metaILA.Meta_ILAMembers_Links.OrderBy(x => x.SequenceNumber))
+                            {
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding-left: 0" colspan="12">
+                                        <table style="table-layout: auto">
+                                            <tr>
+                                                <td style="font-weight:600;color:#567DFF;border: none;padding:10px;vertical-align:top;padding-left: 0">
+                                                    <span>(@ilaMemberLink.ILA?.Number)</span>
+                                                </td>
+                                                <td style="font-weight:600;color:#567DFF;border: none;padding:10px;vertical-align:top;">
+                                                    <span style="padding-left:5px;">@ilaMemberLink.ILA?.Name</span>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                if (ilaMemberLink.ILA.ILA_TaskObjective_Links.Count() > 0)
+                                {
+                                    if (Model.ILAObjectivesLinks.Contains(2))
+                                    {
+                                        @foreach (var taskLink in ilaMemberLink.ILA.ILA_TaskObjective_Links.Where(m => m.Task?.IsMeta == false))
+                                        {
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        <tr>
+                                                            <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                <span style="font-weight: 600; padding: 0px 5px;">
+                                                                    @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)):
+                                                                </span>
+                                                            </td>
+                                                            <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                <span style="padding: 0px 5px;">(@taskLink?.Task?.FullNumber)</span>
+                                                            </td>
+                                                            <td style="border: none; padding: 0px; vertical-align: top;">
+                                                                <span style="padding: 0px 5px;">@taskLink?.Task?.Description</span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    if (Model.ILAObjectivesLinks.Contains(1))
+                                    {
+                                        @foreach (var taskLink in ilaMemberLink.ILA.ILA_TaskObjective_Links.Where(m => m.Task?.IsMeta == true))
+                                        {
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        <tr>
+                                                            <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                <span style="font-weight:600;padding:0px 5px;">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</span>
+                                                            </td>
+                                                            <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                <span style="color:#009E60;padding:0px 5px;">(META)</span> <span style="padding:0px">@taskLink?.Task?.FullNumber</span>
+                                                            </td>
+                                                            <td style="border: none; padding: 0px; vertical-align: top;">
+                                                                <span style="padding:0px 5px;">@taskLink?.Task?.Description</span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            @if (Model.DisplayColumns.Contains("Show Tasks Linked to Meta Task"))
+                                            {
+                                                foreach (var metaTaskLink in taskLink.Task.Task_MetaTask_Links)
+                                                {
+                                                    <tr class="excel-not-include">
+                                                        <td style="border:none !important;padding-left:67px;" colspan="12">
+                                                            <table style="table-layout: auto">
+                                                                <tr>
+                                                                    <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;" />
+                                                                    <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                        <i style="font-weight:600;padding:0px 5px;">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</i>
+                                                                    </td>
+                                                                    <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                        <i style="padding:0px 5px;">(@metaTaskLink?.Task?.FullNumber)</i>
+                                                                    </td>
+                                                                    <td style="border: none; padding: 0px; vertical-align: top;">
+                                                                        <i style="padding:0px 5px;">@metaTaskLink?.Task?.Description</i>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (ilaMemberLink.ILA.ILA_EnablingObjective_Links.Count() > 0)
+                                {
+                                    if (Model.ILAObjectivesLinks.Contains(4))
+                                    {
+                                        @foreach (var eoLink in ilaMemberLink.ILA.ILA_EnablingObjective_Links.Where(m => m.EnablingObjective?.isMetaEO == false && m.EnablingObjective?.IsSkillQualification == false))
+                                        {
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        <tr>
+                                                            <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                <span style="font-weight:600;padding:0px 5px;">EO:</span>
+                                                            </td>
+                                                            <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                <span style="padding:0px 5px;">(@eoLink?.EnablingObjective?.FullNumber)</span>
+                                                            </td>
+                                                            <td style="border: none; padding: 0px; vertical-align: top;">
+                                                                <span style="padding:0px 5px;">@eoLink?.EnablingObjective?.Description</span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    if (Model.ILAObjectivesLinks.Contains(5))
+                                    {
+                                        @foreach (var eoLink in ilaMemberLink.ILA.ILA_EnablingObjective_Links.Where(m => m.EnablingObjective?.IsSkillQualification == true))
+                                        {
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        <tr>
+                                                            <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                <span style="font-weight:600;padding:0px 5px;">EO:</span>
+                                                            </td>
+                                                            <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                <span style="color:#009E60;padding:0px 5px;">(SQ)</span> <span style="padding:0px;">@eoLink?.EnablingObjective?.FullNumber</span>
+                                                            </td>
+                                                            <td style="border: none; padding: 0px; vertical-align: top;">
+                                                                <span style="padding:0px 5px;">@eoLink?.EnablingObjective?.Description</span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                    if (Model.ILAObjectivesLinks.Contains(3))
+                                    {
+                                        @foreach (var eoLink in ilaMemberLink.ILA.ILA_EnablingObjective_Links.Where(m => m.EnablingObjective?.isMetaEO == true))
+                                        {
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        <tr>
+                                                            <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                <span style="font-weight:600;padding:0px 5px;">EO:</span>
+                                                            </td>
+                                                            <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                <span style="color:#009E60;padding:0px 5px;">(META)</span>  <span style="padding:0px">@eoLink?.EnablingObjective?.FullNumber</span>
+                                                            </td>
+                                                            <td style="border: none; padding: 0px; vertical-align: top;">
+                                                                <span style="padding:0px 5px;">@eoLink?.EnablingObjective?.Description</span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            @if (Model.DisplayColumns.Contains("Show EOs linked to Meta EO"))
+                                            {
+                                                @foreach (var metaEoLink in eoLink.EnablingObjective.EnablingObjective_MetaEO_Links)
+                                                {
+                                                    <tr class="excel-not-include">
+                                                        <td style="border:none !important;padding-left:67px;" colspan="12">
+                                                            <table style="table-layout: auto">
+                                                                <tr>
+                                                                    <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;"/>
+                                                                    <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                                        <i style="font-weight:600;padding:0px 5px;">EO:</i>
+                                                                    </td>
+                                                                    <td style="border:none;padding:0px;width:30px;vertical-align:top;">
+                                                                        <i style="padding:0px 5px;">(@metaEoLink?.EnablingObjective?.FullNumber)</i>
+                                                                    </td>
+                                                                    <td style="border:none;padding:0px;vertical-align:top;">
+                                                                        <i style="padding:0px 5px;">@metaEoLink?.EnablingObjective?.Description</i>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                                if (Model.ILAObjectivesLinks.Contains(6) && ilaMemberLink.ILA.ILACustomObjective_Links.Count() > 0)
+                                {
+                                    @foreach (var customEoLink in ilaMemberLink.ILA.ILACustomObjective_Links)
+                                    {
+                                        <tr class="excel-not-include">
+                                            <td style="border:none !important;" colspan="12">
+                                                <table style="table-layout: auto">
+                                                    <tr>
+                                                        <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                            <span style="font-weight:600;padding:0px 5px;">Custom EO:</span>
+                                                        </td>
+                                                        <td style="border: none; padding: 0px; vertical-align: top; white-space: nowrap;">
+                                                            <span style="padding:0px 5px;">(@customEoLink?.CustomEnablingObjective?.FullNumber)</span>
+                                                        </td>
+                                                        <td style="border: none; padding: 0px; vertical-align: top;">
+                                                            <span style="padding:0px 5px;">@customEoLink?.CustomEnablingObjective?.Description</span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                            <tr></tr>
+                        </table>
+                    </div>
+                    @if (!metaILA.Equals(Model.MetaILAs.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.MetaILAs.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

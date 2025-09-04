@@ -1,0 +1,207 @@
+
+<!--HTML for Create New Student Evaluation Starts-->
+<ng-container *ngIf="!show_create_new_rating_scale">
+<!-- header starts here -->
+ <div class="flex flex-row justify-between items-center px-12 mt-5" >
+  <p *ngIf="!preview_evaluation" class="text-xl font-bold text-gray-900">Create New Student Evaluation</p>
+  <p class="text-xl font-bold text-gray-900" *ngIf="preview_evaluation">Student Evaluation - Preview</p>
+  <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+</div>
+<!-- header ends here -->
+
+<!--Title Starts-->
+<div class="ml-12 mt-8 pr-4">
+  <app-label [for]="'Title'" [text]="'Title'" class="label required"></app-label>
+ <!--    <app-label class="required font-medium">Title</app-label> -->
+    <input [disabled]="preview_evaluation" type="text" class="h-10 border w-23/24 rounded p-2 bg-white-one" placeholder="Enter Title" [(ngModel)]="title"/>
+</div>
+<!--Title Ends-->
+
+<!--Rating Scale Starts-->
+<div class="ml-12 mt-8 pr-4">
+  <div class="flex flex-row">
+      <div class="w-4/12">
+        <p class="font-medium">Rating Scale</p>
+      </div>
+
+      <!-- <div class="pl-3 float-right ml-32">
+        <app-button *ngIf="!preview_evaluation" variant="text" icon="add" iconPosition="left" (clicked)="OnRatingScaleClick()" text="Create New Rating Scale"></app-button>
+      </div> -->
+  </div>
+
+  <mat-form-field appearance="outline" class="text-sm dropdown w-23/24">
+    <mat-select [disabled]="preview_evaluation" [formControl]="ratingScaleId" placeholder="Select Rating Scale">
+   <!--    <mat-select-trigger>
+        <mat-chip-list>
+          <mat-chip *ngFor="let i of RatingControl.value" [removable]="true"
+            (removed)="removeRating(i)"
+            [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+            selected>
+            {{ i }}
+            <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+            </app-icon>
+          </mat-chip>
+        </mat-chip-list>
+      </mat-select-trigger> -->
+      <mat-option *ngFor="let i of rating_scale" [value]="i.id">{{i.ratingScaleDescription}}
+      </mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
+<!--Rating Scale Ends-->
+
+<!--Checkboxes Starts-->
+<div class="mt-4">
+    <!-- <div *ngFor="let i of checked_options" class="ml-12 mt-2">
+      <mat-checkbox [(ngModel)]="i.checked" (change)="SelectCheckBox(i.id)">{{i.description}}</mat-checkbox>
+    </div> -->
+   <!-- New Implementation -->
+   <form [formGroup]="additionalOptionsForm">
+   <div class="ml-12 mt-2">
+     <div class="flex flex-row">
+       <mat-checkbox
+        [disabled]="preview_evaluation"
+         class="example-margin"
+         formControlName="availableForAllIlas"
+         >Make Student Evaluation available for all
+         {{("ILA" | labelReplacement)| async}}s</mat-checkbox
+       >
+     </div>
+     <div class="flex flex-row">
+       <mat-checkbox
+       [disabled]="preview_evaluation"
+         class="example-margin"
+         formControlName="availableForSelectedIlas"
+         >Make Student Evaluation available for selected {{("ILA" | labelReplacement)| async}}s
+         (ability to select {{("ILA" | labelReplacement)| async}}s to link the Evaluation
+         to)</mat-checkbox
+       >
+     </div>
+     <div class="flex flex-row">
+       <mat-checkbox
+       [disabled]="preview_evaluation"
+         class="example-margin"
+         formControlName="allowNAoption"
+         >Allow N/A option</mat-checkbox
+       >
+     </div>
+     <div class="flex flex-row">
+       <mat-checkbox
+       [disabled]="preview_evaluation"
+         class="example-margin"
+         formControlName="includeComments"
+         >Include Comments Section following each
+         question</mat-checkbox
+       >
+     </div>
+   </div>
+ </form>
+     <!-- New Implementation Ends-->
+
+
+
+</div>
+<!--Checkboxes Ends-->
+
+<ng-container [formGroup]="QuestionAnswerform">
+  <div class="flex flex-row justify-between px-12">
+    <p class="font-semibold text-base">Evaluation Questions</p>
+    <app-button *ngIf="!preview_evaluation" variant="text" size="sm" text="Add New Question" icon="add" iconPosition="left" (clicked)="AddInput()"></app-button>
+  </div>
+  <!-- This Drag and drop is causing issues in form fix this -->
+  <!-- <div cdkDropList class="qtd-list" (cdkDropListDropped)="drop($event)"> -->
+  <div cdkDropList class="qtd-list px-12" >
+  <div class="qtd-box" formArrayName="quesAns"  cdkDrag *ngFor="let qa of quesAns?.controls; let i = index">
+    <div [formGroupName]="i">
+      <div class="flex flex-row font-medium text-gray-400 mt-2">
+        <app-icon icon="drag_indicator" style="cursor:move; color: darkgrey!important;cursor:move" cdkDragHandle></app-icon><p class="text-gray-500 text-sm">Question {{i+1}}</p>
+      </div>
+      <div>
+        <ckeditor
+        [disabled]="preview_evaluation"
+        [id]="i"
+        [data]="QuestionAnswerform.value.quesAns[i].questionText"
+        formControlName="questionText"
+        name="questionText" [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+      </div>
+    </div>
+
+   <!--  <div class="flex flex-col px-4 pb-12 ">
+      <div class="py-6 px-6 space-y-6 border-gray-one shadow-xs border-0.5 bg-white-one rounded mb-8">
+
+      </div>
+    </div> -->
+  </div>
+  </div>
+
+</ng-container>
+
+<!--Evaluation Questions Starts-->
+<!-- <div class="ml-12 mt-8 mr-12">
+  <p class="font-semibold text-base">Evaluation Questions</p>
+  <button (click)="AddInput()" class="custom_class_2" ><app-icon icon="add"></app-icon>Add New Question</button>
+
+  <div class="flex flex-col justify-between mb-6"  cdkDrag *ngFor="let i of  add_boxes.controls; let j = index">
+    <div cdkDropList="add_boxes.controls" >
+
+    <div>
+      <div class="flex flex-row">
+        <app-icon  icon="drag_indicator" class="text-gray-500" ></app-icon><p class="font-medium text-gray-500 text-sm ml-2">Question {{j+1}}</p>
+      </div>
+      <div>
+        <ckeditor [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+      </div>
+    </div>
+
+
+  </div>
+  </div>
+</div> -->
+<br>
+<!--Evaluation Questions Ends-->
+
+<!--Save Button Starts-->
+<div class="w-28 h-26 float-right mb-4 mr-12">
+  <app-button *ngIf="!preview_evaluation" color="secondary" (clicked)="OnSaveEvaluation()" [disabled]="title === null|| title === '' || ratingScaleId?.value === null" text="Save" size="sm"></app-button>
+</div>
+<!--Save Button Ends-->
+</ng-container>
+<!--HTML for Create New Student Evaluation Ends-->
+
+
+<!--HTML for Create New Rating Scale Starts-->
+<ng-container *ngIf="show_create_new_rating_scale">
+ <!-- header starts here -->
+ <div class="flex flex-row justify-between mt-5 mr-8 ml-8" >
+  <div class="flex flex-row justify-between">
+      <app-button (clicked)="show_create_new_rating_scale=false" type="button" ButtonType='icon' icon='chevron_left'>
+      </app-button>
+       <p class="text-xl font-bold text-gray-900 mt-2">Create New Rating Scale</p>
+  </div>
+  <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+</div>
+<!-- header ends here -->
+
+<div class="ml-12 mr-12 mt-12 mb-4">
+  <p class="text-sm text-gray-500">Enter the label against each value respectively</p>
+</div>
+
+<div *ngFor="let i of new_rating_scale; let j=index" class="flex flex-row border rounded mb-3 ml-12 mr-12 h-11 pl-2 pt-1">
+ <p class="h-9 w-8 border rounded mr-2 font-bold text-2xl pl-2">{{j+1}}</p>
+  <app-textarea
+  (change)="OnChange(i.id)"
+  ngDefaultControl
+  [value]="i.text"
+  [(ngModel)]="text_area"
+  [placeholder]="'Type label here...'"
+  [customClasses]="'text-xs custom_width h-auto over:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded'">
+  </app-textarea>
+  <app-button (clicked)="OnDelete(i.id)"  ButtonType='icon' icon="delete"></app-button>
+</div>
+
+  <!-- <div class="float-right mt-12 ml-12 mr-12">
+      <app-button (clicked)="OnSave()" type="button" size="sm" color="secondary" text="Save Rating Scale"></app-button>
+  </div> -->
+
+</ng-container>
+<!--HTML for Create New Rating Scale Ends-->

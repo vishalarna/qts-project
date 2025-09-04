@@ -1,0 +1,1005 @@
+<app-header
+  [toggleMenuIcon]="false"
+  [canGoBack]="false"
+  [breadcrumbs]="url"
+></app-header>
+<div class="flex flex-col m-5">
+  <section>
+    <span class="font-bold text-lg">Self Registration Courses</span>
+  </section>
+  <section class="w-full mt-4">
+    <mat-tab-group
+      [selectedIndex]="selectedIndex"
+      [dynamicHeight]="true"
+      (selectedTabChange)="onTabChanged($event)"
+    >
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Approved Courses</span>
+          <div class="icon" *ngIf="ApprovedCount > 0">
+            <span class="icon__value">{{ ApprovedCount }}</span>
+          </div>
+        </ng-template>
+        <app-spinner
+          *ngIf="isLoading"
+          class="spinner internal-spinner"
+        ></app-spinner>
+        <div *ngIf="!isLoading">
+          <div
+            class="
+              flex flex-row
+              items-center
+              pt-4
+              pb-4
+              pl-3
+              border-b-0.8
+              bg-white
+              border-gray-one
+            "
+          >
+            <app-icon class="text-gray-four" icon="search"></app-icon>
+            <input
+              (input)="filterApproved($event)"
+              class="text-sm flex-grow focus:outline-none"
+              placeholder="Search"
+              type="text"
+            />
+          </div>
+
+          <table
+            #completedSort="matSort"
+            matSort
+            [dataSource]="ApprovedCourses"
+            class="w-full"
+            mat-table
+          >
+            <ng-container matColumnDef="ilaNum">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>{{("ILA" | labelReplacement)| async}} #</th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.ilaNum }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="ilaTitle">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>Title</th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.ilaTitle }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="classDetail">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                Class Detail/Time
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>
+                  {{
+                    covertUtcToLocalTime(row.classStartDateTime) | date: "short"
+                  }}
+                  -
+                  {{
+                    covertUtcToLocalTime(row.classEndDateTime) | date: "short"
+                  }}</span
+                >
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="location">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                {{ "Location" | labelReplacement | async }}s
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.location }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="instructor">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                {{("Instructor" | labelReplacement)| async}}
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.instructor }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>Status</th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <mat-chip-list>
+                  <mat-chip
+                    style="
+                      background-color: #eef7ff;
+                      color: #80b264;
+                      border-radius: 2px;
+                    "
+                  >
+                    Enrolled
+                  </mat-chip>
+                </mat-chip-list>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+              <th
+                class="pl-4"
+                style="width: 30%"
+                mat-header-cell
+                *matHeaderCellDef
+              >
+                Action
+              </th>
+              <td class="pl-4" mat-cell *matCellDef="let row">
+                <div class="flex flex-row space-x-4 text-sm">
+                  <app-button
+                    color="blueBorder"
+                    text="Drop Registration"
+                    (clicked)="modelDialog(dropModal, row)"
+                    size="sm"
+                  >
+                  </app-button>
+                  <app-button
+                    color="blueBorder"
+                    text="View Detail"
+                    (clicked)="courseViewDetail(row)"
+                    size="sm"
+                  >
+                  </app-button>
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsApproved"></tr>
+            <tr
+              style="vertical-align: baseline"
+              mat-row
+              *matRowDef="let row; columns: displayedColumnsApproved"
+            ></tr>
+            <tr class="mat-row" *matNoDataRow>
+              <td
+                class="mat-cell text-center"
+                [attr.colspan]="displayedColumnsApproved.length"
+              >
+                No Approved courses Records found
+              </td>
+            </tr>
+          </table>
+          <mat-paginator
+            [pageSizeOptions]="[20, 40, 60]"
+            showFirstLastButtons
+            #approvedCoursesPage
+            aria-label="Select page of periodic elements"
+          >
+          </mat-paginator>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Available Courses</span>
+          <div class="icon" *ngIf="AvailableCount > 0">
+            <span class="icon__value">{{ AvailableCount }}</span>
+          </div>
+        </ng-template>
+        <app-spinner
+          *ngIf="isLoading"
+          class="spinner internal-spinner"
+        ></app-spinner>
+        <div *ngIf="!isLoading">
+          <div
+            class="
+              flex flex-row
+              items-center
+              pt-4
+              pb-4
+              pl-3
+              border-b-0.8
+              bg-white
+              border-gray-one
+            "
+          >
+            <app-icon class="text-gray-four" icon="search"></app-icon>
+            <input
+              (input)="filterAvailable($event)"
+              class="text-sm flex-grow focus:outline-none"
+              placeholder="Search"
+              type="text"
+            />
+          </div>
+          <table
+            mat-table
+            #outerSort="matSort"
+            [dataSource]="dataSource"
+            multiTemplateDataRows
+            (matSortChange)="sortAvailbleCoursesData($event, false)"
+            class="w-full"
+            matSort
+          >
+            <ng-container matColumnDef="expand">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef></th>
+              <td
+                class="pt-3 pb-3"
+                mat-cell
+                *matCellDef="let row; let k = dataIndex"
+              >
+                <app-button
+                  variant="text"
+                  icon="{{
+                    row === expandedElement
+                      ? 'keyboard_arrow_down'
+                      : 'keyboard_arrow_up'
+                  }}"
+                  *ngIf="row.empSelfregistrationEmployees?.length > 0"
+                  (click)="toggleRow(row, k)"
+                ></app-button>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="provider">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                Provider Title
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.provider }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="ilaNum">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                {{("ILA" | labelReplacement)| async}} #
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.ilaNum }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="ilaTitle">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                {{("ILA" | labelReplacement)| async}} Title
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.ilaTitle }}</span>
+              </td>
+            </ng-container> 
+            <ng-container matColumnDef="totalCourses">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                Total Classes
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.empSelfregistrationEmployees.length }}</span>
+              </td>
+            </ng-container>        
+
+            <tr mat-header-row *matHeaderRowDef="columnsToDisplay"></tr>
+            <tr
+              mat-row
+              *matRowDef="let element; columns: columnsToDisplay"
+              [class.example-expanded-row]="expandedElement === element"
+            ></tr>
+            <mat-row
+              [ngStyle]="{
+                display:
+                  expandedElement?.empSelfregistrationEmployees[0]?.ilaId ===
+                  row?.empSelfregistrationEmployees[0]?.ilaId
+                    ? 'table-row'
+                    : 'none'
+              }"
+              *matRowDef="let row; columns: ['expandedDetail']"
+              class="example-detail-row w-full"
+            ></mat-row>
+            <tr class="mat-row" *matNoDataRow>
+              <td
+                class="mat-cell text-center"
+                [attr.colspan]="displayedColumnsApproved.length"
+              >
+                No Available Records found
+              </td>
+            </tr>
+
+            <ng-container matColumnDef="expandedDetail">
+              <td
+                mat-cell
+                *matCellDef="let element"
+                [attr.colspan]="columnsToDisplay.length"
+              >
+                <div
+                  class="example-element-detail"
+                  [ngClass]="
+                    element?.empSelfregistrationEmployees[0]?.ilaId ===
+                    expandedElement?.empSelfregistrationEmployees[0]?.ilaId
+                      ? 'innerTableHeight'
+                      : ''
+                  "
+                  *ngIf="expandedElement"
+                  [@detailExpand]="
+                    element?.empSelfregistrationEmployees[0]?.ilaId ===
+                    expandedElement?.empSelfregistrationEmployees[0]?.ilaId
+                      ? 'expanded'
+                      : 'collapsed'
+                  "
+                >
+                  <div
+                    class="inner-table mat-elevation-z8"
+                    *ngIf="expandedElement"
+                  >
+                    <table
+                      (matSortChange)="sortAvailbleCoursesData($event, true)"
+                      mat-table
+                      #innerSort="matSort"
+                      [dataSource]="expandedTableSource"
+                      matSort
+                      class="w-full"
+                    >
+                      <ng-container matColumnDef="classStartDateTime">
+                        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                          Class Detail
+                        </th>
+                        <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                          <span
+                            >{{
+                              covertUtcToLocalTime(row.classStartDateTime)
+                                | date: "short"
+                            }}
+                            -
+                            {{
+                              covertUtcToLocalTime(row.classEndDateTime)
+                                | date: "short"
+                            }}</span
+                          >
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="location">
+                        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                          {{ "Location" | labelReplacement | async }}s
+                        </th>
+                        <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                          <span>{{ row.location }}</span>
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="instructor">
+                        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                          {{("Instructor" | labelReplacement)| async}}
+                        </th>
+                        <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                          <span>{{ row.instructor }}</span>
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="seatsAvailable">
+                        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                          Seat Available
+                        </th>
+                        <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                          <div
+                            *ngIf="
+                              row.seatsAvailable === -1 ||
+                                row.seatsAvailable === 0;
+                              else templateName
+                            "
+                          >
+                            0
+                          </div>
+
+                          <ng-template #templateName>
+                            <div
+                              style="color: orange"
+                              *ngIf="
+                                row.seatsAvailable == 5 ||
+                                row.seatsAvailable == 4
+                              "
+                            >
+                              {{ row.seatsAvailable }}
+                            </div>
+                            <div
+                              style="color: red"
+                              *ngIf="
+                                row.seatsAvailable == 3 ||
+                                row.seatsAvailable == 2 ||
+                                row.seatsAvailable == 1
+                              "
+                            >
+                              {{ row.seatsAvailable }} Only!
+                            </div>
+                            <div *ngIf="row.seatsAvailable > 5">
+                              {{ row.seatsAvailable }}
+                            </div>
+                          </ng-template>
+                        </td>
+                      </ng-container>
+                      <ng-container matColumnDef="action">
+                        <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                          Action
+                        </th>
+                        <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                          <div class="flex flex-row space-x-4 text-sm">
+                            <!-- && element.closeRegistrationOnStartDate === false -->
+                            <app-button
+                              color="blueBorder"
+                              *ngIf="
+                                row.requiredAdminApproval === false &&
+                                row.seatsAvailable > 0 &&
+                                row.isDenied !== true &&
+                                  row.isDropped !== true &&
+                                  row.isEnrolled !== true &&
+                                  row.isAwaitingForApproval !== true &&
+                                (row.closeRegistrationOnStartDate === false
+                                  ? true
+                                  : matchDate(row))
+                              "
+                              text="Register Now"
+                              (clicked)="
+                                modelDialogRegister(
+                                  approvalModel,
+                                  row,
+                                  'noApproval'
+                                )
+                              "
+                              size="sm"
+                            >
+                            </app-button>
+                            <app-button
+                              color="blueBorder"
+                              *ngIf="
+                                row.requiredAdminApproval === true &&
+                                row.seatsAvailable > 0 &&
+                                row.isDenied !== true &&
+                                  row.isDropped !== true &&
+                                  row.isEnrolled !== true &&
+                                  row.isAwaitingForApproval !== true &&
+                                (row.closeRegistrationOnStartDate === false
+                                  ? true
+                                  : matchDate(row))
+                              "
+                              text="Register Now"
+                              (clicked)="
+                                modelDialogRegister(
+                                  approvalModel,
+                                  row,
+                                  'Approval'
+                                )
+                              "
+                              size="sm"
+                            >
+                            </app-button>
+
+                            <!-- if Close Registration on Start Date is applicable -->
+
+                            <!-- <app-button color="secondary"  [disabled]="true" *ngIf="row.seatsAvailable>0 || (element.closeRegistrationOnStartDate === true && areDatesEqualWithoutTime(covertUtcToLocalTime(element.classStartDateTime),todaysDate) === true) &&(element.isDenied !== true && element.isDropped !== true && element.isEnrolled !== true)" text="Registraion Closed " size="sm">
+                                    </app-button> -->
+                            <!-- <app-button color="secondary" *ngIf=" element.requiredAdminApproval==true && element.seatsAvailable>0 || (element.closeRegistrationOnStartDate === true && (areDatesGreaterWithoutTime(todaysDate,covertUtcToLocalTime(element.classStartDateTime))) || areDatesLessWithoutTime(todaysDate,covertUtcToLocalTime(element.classStartDateTime))) &&(element.isDenied !== true && element.isDropped !==true && element.isEnrolled !== true)" text="Register Now" (clicked)="modelDialogRegister(approvalModel,element,'Approval')" size="sm">
+                                    </app-button> -->
+                            <!-- <app-button color="secondary" *ngIf="element.requiredAdminApproval==false && element.seatsAvailable>0 || (element.closeRegistrationOnStartDate === true && todaysDate !== covertUtcToLocalTime(element.classStartDateTime)) &&(element.isDenied !== true && element.isDropped !==true && element.isEnrolled !== true)" text="Register Now" (clicked)="modelDialogRegister(approvalModel,element,'noApproval')" size="sm">
+                                    </app-button> -->
+
+                            <!-- end if Close Registration on Start Date is applicable -->
+
+                            <app-button
+                              color="blueBorder"
+                              *ngIf="
+                                row.seatsAvailable < 1 &&
+                                row.isWaitListEnabled === true &&
+                                !row.isDenied  && !row.isDropped && !row.isEnrolled && !row.isInWaitList"
+                              text="Join waitlist "
+                              (clicked)="modelDialog(joinListModal, row)"
+                              size="sm"
+                            >
+                            </app-button>
+                            <app-button
+                              [disabled]="true"
+                              *ngIf="
+                                row.seatsAvailable < 1 &&
+                                row.isWaitListEnabled === false &&
+                                (row.closeRegistrationOnStartDate === true
+                                  ? !matchDate(row)
+                                  : false) &&
+                                row.isWaitListEnabled === false
+                              "
+                              style="color: #babebd; border: 0"
+                              text="Registration closed "
+                              size="sm"
+                            >
+                            </app-button>
+                            <app-button
+                              [customClasses]="'approval-table'"
+                              [disabled]="true"
+                              *ngIf="
+                                row.requiredAdminApproval == true &&
+                                row.isAwaitingForApproval === true
+                              "
+                              text="Awaiting Approval "
+                              size="sm"
+                            >
+                            </app-button>
+                            <app-button
+                              [matTooltip]="
+                                'Your request to join the Waiting List has been sent to Administrator for approval'
+                              "
+                              text="Waiting List"
+                              [customClasses]="'approval-table'"
+                              *ngIf="
+                                row.isWaitListEnabled === true &&
+                                row.seatsAvailable < 1 &&
+                                row.isInWaitList === true
+                              "
+                              size="sm"
+                            >
+                            </app-button>
+                            <app-button
+                              color="blueBorder"
+                              text="View Detail"
+                              (clicked)="courseViewDetail(row)"
+                              size="sm"
+                            >
+                            </app-button>
+                          </div>
+                        </td>
+                      </ng-container>
+
+                      <tr
+                        mat-header-row
+                        *matHeaderRowDef="innerDisplayedColumns"
+                      ></tr>
+                      <tr
+                        mat-row
+                        *matRowDef="let row; columns: innerDisplayedColumns"
+                      ></tr>
+                    </table>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+          </table>
+          <mat-paginator
+            [pageSizeOptions]="[20, 40, 60]"
+            showFirstLastButtons
+            #availableCoursesPage
+            aria-label="Select page of periodic elements"
+          >
+          </mat-paginator>
+        </div>
+
+        <!--
+                <table #pendingSort="matSort" matSort [dataSource]="AvailableCourses" class="w-full" mat-table>
+                    <ng-container matColumnDef="providerTitle">
+                        <th mat-sort-header mat-header-cell *matHeaderCellDef>Provider Title</th>
+                        <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                            <span>{{row.number}}</span>
+                        </td>
+                    </ng-container>
+                    <ng-container matColumnDef="totalCourses">
+                        <th mat-sort-header mat-header-cell *matHeaderCellDef>Total Courses</th>
+                        <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                            <span>{{row.ilaTitle}}</span>
+                        </td>
+                    </ng-container>
+
+                    <tr mat-header-row *matHeaderRowDef="displayedColumnsAvailable"></tr>
+                    <tr style="vertical-align:baseline;" mat-row
+                        *matRowDef="let row; columns: displayedColumnsAvailable"></tr>
+                    <tr class="mat-row" *matNoDataRow>
+                        <td class="mat-cell text-center" [attr.colspan]="displayedColumnsAvailable.length">
+                            No Pending Evaluation Records found
+                        </td>
+                    </tr>
+                </table> -->
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Dropped Courses</span>
+          <div class="icon" *ngIf="DroppedCount > 0">
+            <span class="icon__value">{{ DroppedCount }}</span>
+          </div>
+        </ng-template>
+        <app-spinner
+          *ngIf="isLoading"
+          class="spinner internal-spinner"
+        ></app-spinner>
+        <div *ngIf="!isLoading">
+          <div
+            class="
+              flex flex-row
+              items-center
+              pt-4
+              pb-4
+              pl-3
+              border-b-0.8
+              bg-white
+              border-gray-one
+            "
+          >
+            <app-icon class="text-gray-four" icon="search"></app-icon>
+            <input
+              (input)="filterDropped($event)"
+              class="text-sm flex-grow focus:outline-none"
+              placeholder="Search"
+              type="text"
+            />
+          </div>
+          <table
+            #droppedSort="matSort"
+            matSort
+            [dataSource]="DroppedCourses"
+            class="w-full"
+            mat-table
+          >
+            <ng-container matColumnDef="ilaNum">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>{{("ILA" | labelReplacement)| async}} #</th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.ilaNum }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="ilaTitle">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>Title</th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.ilaTitle }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="classDetail">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                Class Detail/Time
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>
+                  {{
+                    covertUtcToLocalTime(row.classStartDateTime) | date: "short"
+                  }}
+                  -
+                  {{
+                    covertUtcToLocalTime(row.classEndDateTime) | date: "short"
+                  }}</span
+                >
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="location">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                {{ "Location" | labelReplacement | async }}s
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.location }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="instructor">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                {{("Instructor" | labelReplacement)| async}}
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.instructor }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>Status</th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <mat-chip-list>
+                  <mat-chip
+                    style="
+                      background-color: #fff3f2;
+                      color: #fca69a;
+                      border-radius: 2px;
+                    "
+                  >
+                    Dropped
+                  </mat-chip>
+                </mat-chip-list>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+              <th
+                class="pl-4"
+                style="width: 30%"
+                mat-header-cell
+                *matHeaderCellDef
+              >
+                Action
+              </th>
+              <td class="pl-4" mat-cell *matCellDef="let element">
+                <div class="flex flex-row space-x-4 text-sm">
+                  <div class="flex flex-row space-x-4 text-sm">
+                    <!-- <app-button color="secondary" *ngIf=" element.isDropped===true && element.requiredAdminApproval==false && element.seatsAvailable>0" text="Register Now" (clicked)="registerAvailableCourses(element)" size="sm">
+                                        </app-button> -->
+                    <app-button
+                      color="blueBorder"
+                      *ngIf="
+                        element.isDropped === true &&
+                        element.seatsAvailable > 0 &&
+                        element.requiredAdminApproval !== true &&
+                        element.isAwaitingForApproval !== true
+                      "
+                      text="Register Now"
+                      (clicked)="
+                        modelDialogRegister(
+                          approvalModel,
+                          element,
+                          'noApproval'
+                        )
+                      "
+                      size="sm"
+                    >
+                    </app-button>
+                    <app-button
+                      color="blueBorder"
+                      *ngIf="
+                        element.isDropped === true &&
+                        element.isWaitListEnabled !== true &&
+                        element.isInWaitList !== true &&
+                        element.seatsAvailable > 0 &&
+                        element.requiredAdminApproval == true &&
+                        element.isAwaitingForApproval !== true &&
+                        element.seatsAvailable > 0
+                      "
+                      text="Register Now"
+                      (clicked)="
+                        modelDialogRegister(approvalModel, element, 'Approval')
+                      "
+                      size="sm"
+                    >
+                    </app-button>
+
+                    <app-button
+                      color="blueBorder"
+                      *ngIf="
+                        element.isDropped === true &&
+                        element.seatsAvailable < 1 &&
+                        element.isWaitListEnabled === true &&
+                        element.isInWaitList != true
+                      "
+                      text="Join waitlist "
+                      size="sm"
+                      (clicked)="joinwaitlist(element)"
+                    >
+                    </app-button>
+                    <app-button
+                      [matTooltip]="
+                        'Your request to join the Waiting List has been sent to Administrator for approval'
+                      "
+                      color="blue"
+                      [customClasses]="'approval-table'"
+                      [disabled]="true"
+                      *ngIf="
+                        element.isDropped === true &&
+                        element.seatsAvailable < 1 &&
+                        element.isWaitListEnabled === true &&
+                        element.isInWaitList === true
+                      "
+                      text="Waiting List"
+                      size="sm"
+                    >
+                    </app-button>
+                    <app-button
+                      [disabled]="true"
+                      *ngIf="
+                        element.isDropped === true &&
+                        element.seatsAvailable < 1 &&
+                        element.isWaitListEnabled === false
+                      "
+                      style="color: #babebd; border: 0"
+                      text="Registration closed "
+                      size="sm"
+                    >
+                    </app-button>
+                    <!-- <app-button color="secondary" *ngIf="element.isDropped===true && element.requiredAdminApproval==true &&(element.isDenied==false && element.isDropped==true && element.isEnrolled==false)" text="Awaiting Approval " size="sm">
+                                        </app-button> -->
+                    <app-button
+                      color="blue"
+                      [customClasses]="'approval-table'"
+                      [disabled]="true"
+                      *ngIf="
+                        element.requiredAdminApproval == true &&
+                        element.isAwaitingForApproval === true
+                      "
+                      text="Awaiting Approval "
+                      size="sm"
+                    >
+                    </app-button>
+                    <!-- <app-button color="secondary" text="Awaiting Approval" *ngIf="" size="sm">
+                                        </app-button> -->
+                    <app-button
+                      color="blueBorder"
+                      text="View Detail"
+                      (clicked)="courseViewDetail(element)"
+                      size="sm"
+                    >
+                    </app-button>
+                  </div>
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsApproved"></tr>
+            <tr
+              style="vertical-align: baseline"
+              mat-row
+              *matRowDef="let row; columns: displayedColumnsApproved"
+            ></tr>
+            <tr class="mat-row" *matNoDataRow>
+              <td
+                class="mat-cell text-center"
+                [attr.colspan]="displayedColumnsApproved.length"
+              >
+                There are no matches found
+              </td>
+            </tr>
+          </table>
+          <mat-paginator
+            [pageSizeOptions]="[20, 40, 60]"
+            showFirstLastButtons
+            #droppedCoursesPage
+            aria-label="Select page of periodic elements"
+          >
+          </mat-paginator>
+        </div>
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Denied Courses</span>
+          <div class="icon" *ngIf="DeniedCount > 0">
+            <span class="icon__value">{{ DeniedCount }}</span>
+          </div>
+        </ng-template>
+        <app-spinner
+          *ngIf="isLoading"
+          class="spinner internal-spinner"
+        ></app-spinner>
+        <div *ngIf="!isLoading">
+          <div
+            class="
+              flex flex-row
+              items-center
+              pt-4
+              pb-4
+              pl-3
+              border-b-0.8
+              bg-white
+              border-gray-one
+            "
+          >
+            <app-icon class="text-gray-four" icon="search"></app-icon>
+            <input
+              (input)="filterDenied($event)"
+              class="text-sm flex-grow focus:outline-none"
+              placeholder="Search"
+              type="text"
+            />
+          </div>
+          <table
+            #deniedSort="matSort"
+            matSort
+            [dataSource]="DeniedCourses"
+            class="w-full"
+            mat-table
+          >
+            <ng-container matColumnDef="ilaNum">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>{{("ILA" | labelReplacement)| async}} #</th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.ilaNum }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="ilaTitle">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>Title</th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.ilaTitle }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="classStartDateTime">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                Class Detail
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span
+                  >{{
+                    covertUtcToLocalTime(row.classStartDateTime) | date: "short"
+                  }}
+                  -
+                  {{
+                    covertUtcToLocalTime(row.classEndDateTime) | date: "short"
+                  }}</span
+                >
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="location">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                {{ "Location" | labelReplacement | async }}s
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.location }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="instructor">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>
+                {{("Instructor" | labelReplacement)| async}}
+              </th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <span>{{ row.instructor }}</span>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="status">
+              <th mat-sort-header mat-header-cell *matHeaderCellDef>Status</th>
+              <td class="pt-3 pb-3" mat-cell *matCellDef="let row">
+                <mat-chip-list>
+                  <mat-chip
+                    style="
+                      background-color: #fff3f2;
+                      color: #fca69a;
+                      border-radius: 2px;
+                    "
+                  >
+                    Denied
+                  </mat-chip>
+                </mat-chip-list>
+              </td>
+            </ng-container>
+            <ng-container matColumnDef="action">
+              <th
+                class="pl-4"
+                style="width: 24%"
+                mat-header-cell
+                *matHeaderCellDef
+              >
+                Action
+              </th>
+              <td class="pl-4" mat-cell *matCellDef="let row">
+                <div class="flex flex-row space-x-4 text-sm">
+                  <app-button
+                    color="blueBorder"
+                    text="View Detail"
+                    (clicked)="courseViewDetail(row)"
+                    size="sm"
+                  >
+                  </app-button>
+                </div>
+              </td>
+            </ng-container>
+            <tr mat-header-row *matHeaderRowDef="displayedColumnsDenied"></tr>
+            <tr
+              style="vertical-align: baseline"
+              mat-row
+              *matRowDef="let row; columns: displayedColumnsDenied"
+            ></tr>
+            <tr class="mat-row" *matNoDataRow>
+              <td
+                class="mat-cell text-center"
+                [attr.colspan]="displayedColumnsDenied.length"
+              >
+                No Denied courses Records found
+              </td>
+            </tr>
+          </table>
+          <mat-paginator
+            [pageSizeOptions]="[20, 40, 60]"
+            showFirstLastButtons
+            #deniedCoursesPage
+            aria-label="Select page of periodic elements"
+          >
+          </mat-paginator>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </section>
+</div>
+
+<ng-template #approvalModel>
+  <app-qtd-dialogue
+    [header]="RegistrationApproval"
+    [description]="modelDescription"
+    confirmText="Yes"
+    [showEffectiveDateAndReason]="false"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="modelConformation($event, 'register')"
+    [isHTML]="true"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #dropModal>
+  <app-qtd-dialogue
+    header="Drop Course"
+    [description]="unlinkDescription"
+    cancelText="No"
+    confirmText="Yes"
+    [showEffectiveDateAndReason]="false"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="modelConformation($event, 'drop')"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #joinListModal>
+  <app-qtd-dialogue
+    header="Join Wait List"
+    [description]="joinListDescription"
+    cancelText="No"
+    confirmText="Yes"
+    [showEffectiveDateAndReason]="false"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="modelConformation($event, 'waitList')"
+  >
+  </app-qtd-dialogue>
+</ng-template>

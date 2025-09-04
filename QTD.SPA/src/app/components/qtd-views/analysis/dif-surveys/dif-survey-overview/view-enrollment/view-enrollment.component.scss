@@ -1,0 +1,104 @@
+:host ::ng-deep .dif-survey-header .header-back-button span mat-icon {
+    font-size: 30px;
+    position: relative;
+    bottom: 2px;
+    right: 5px;
+    color: #278f6d;
+  }
+  
+  app-button.header-back-button {
+    background-color: rgba(39, 143, 109, 0.11);
+    border-radius: 50%;
+  }
+  
+  .dif-survey-header {
+    padding: 1.12rem 1.5rem;
+    background-color: white;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+    justify-content: space-between;
+  }
+  .center-wrap{
+    max-width: 80rem;
+    width: 100%;
+    margin: 0 auto;
+  }
+  .heading-style{
+    font-size: 1rem;
+    font-weight: 500;
+    font-family: roboto,sans-serif;
+  }
+  // for pie chart
+  canvas{
+    height: 200px;
+    width:200px
+  }
+ 
+  .progress{
+    width: 8px;
+    margin: 2px;
+    border-radius: 10px;
+    border: 1px solid #00000011;
+    height: auto;
+  }
+ 
+  .progress-not{
+    background-color: #FFD46F;
+  }
+ 
+  .progress-in{
+    background-color: #0084FA;
+  }
+ 
+  .progress-completed{
+    background-color: #00C48C;
+  }
+
+  mat-cell.status-cell span{
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    &.not-started{
+      color: #FFCF5C;
+      background-color:#FFFCF4;
+    }
+    &.in-progress{
+      color: #0084FA;
+      background-color: #F5FAFF;
+    }
+    &.completed{
+      color: #00C48C;
+      background-color: #F1FFFB;
+    }
+  }
+  .survey-date-range{
+    font-size: 0.9rem;
+  }
+  .view-results-div{
+    position: absolute;
+    top: 0rem;
+    right: 3rem;
+  }
+  .main-enrollment-div{
+    padding: 3rem 6.25rem;
+    .chart-div{
+      position: relative;
+      padding-right: 15rem !important;
+    }
+  }
+  :host ::ng-deep .enrollment-list-data .mat-header-cell,
+  :host ::ng-deep .enrollment-list-data .mat-cell {
+    padding-right: 0.8rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .enrollment-list-data .completed-row{
+    background-color: #278F6C0A;
+      mat-cell.employee-cell div{
+        color: #278F6C !important;
+      }
+  }
+
+  .add-employee-btn{
+    justify-content: flex-end;
+    margin-bottom: 5px;
+  }

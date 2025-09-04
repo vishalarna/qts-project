@@ -1,0 +1,69 @@
+<section class="panel-section">
+    <div class="flex flex-row bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one w-full justify-end">
+        <app-button text="Add Training Issues" icon="add" iconPosition="left" size="sm" (clicked)="openFlyInPanel(addTrainingIssues)" >
+        </app-button>
+    </div>
+  
+    <mat-table matSort class="manager-table" [dataSource]="trainingIssuesDataSource">
+      <ng-container matColumnDef="issueCode">
+        <mat-header-cell *matHeaderCellDef style="max-width: 100px">#</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let row" style="max-width: 100px">
+          <span>{{ row.issueCode }}</span>
+        </mat-cell>
+      </ng-container>
+  
+      <ng-container matColumnDef="issueTitle">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Title</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let row">
+          <span>{{ row.issueTitle }}</span>
+        </mat-cell>
+      </ng-container>
+  
+      <ng-container matColumnDef="description">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Description</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let row">
+          <span>{{ row.description }}</span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="createdDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Created Date</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let row">
+          <span>{{ row.createdDate | dateFormat | async }}</span>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="dueDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Due Date</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let row">
+          <span>{{ row.dueDate | dateFormat | async }}</span>
+        </mat-cell>
+      </ng-container>
+  
+      <ng-container matColumnDef="severityLevel">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Severity</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let row">
+          <span>{{ row.severityLevel }}</span>
+        </mat-cell>
+      </ng-container>
+  
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2">Status</mat-header-cell>
+        <mat-cell class="px-2" *matCellDef="let row">
+          <span>{{ row.status }}</span>
+        </mat-cell>
+      </ng-container>
+  
+      <mat-header-row *matHeaderRowDef="linkTrainingIssueColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: linkTrainingIssueColumns" [class.inActiveItem]="!row.active"></mat-row>
+      <!-- No Data Row -->
+      <tr class="mat-row flex text-center" *matNoDataRow>
+        <td class="mat-cell w-full m-2" style="max-width: unset; border: none;">No data to display</td>
+      </tr>
+    </mat-table>
+  </section>
+  
+
+  <ng-template #addTrainingIssues>
+    <app-fly-panel-add-training-issue [dataElementTypeId] = "dataElementTypeId" [dataElement] = "dataElement" (updatedIssue) = "refreshTable($event)" (closed)="closeAddTrainingIssueFlyIn()"></app-fly-panel-add-training-issue>
+  </ng-template>

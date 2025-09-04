@@ -1,0 +1,222 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+   .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                            <div>
+                                <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                            </div>
+                    }
+                    else
+                    {
+                            <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                        <h6> <b style="text-align: center; font-family: sans-serif !important; margin-top: 5px; font-size: 18px; color: #020378; padding-bottom: 7px;">Time Period: @(Model.DateRange != null && Model.DateRange.Any() ? $"{Model.DateRange[0].ToShortDateString()} - {Model.DateRange[1].ToShortDateString()}" : "All Time")</b> </h6>
+                    </div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+
+    @if (Model.Tasks.Count() > 0)
+    {
+            <tr>
+                <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+
+                @{
+                    int j = 1;
+                }
+                @foreach (var task in Model.Tasks.OrderBy(t => t.SubdutyArea.DutyArea.Letter).ThenBy(t => t.SubdutyArea.DutyArea.Number).ThenBy(t => t.SubdutyArea.SubNumber).ThenBy(t => t.Number))
+                {
+                            <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                            <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                                <table style="width:100% ;border-collapse:collapse;">
+                                        <tr>
+                                            @if (Model.DisplayColumns.Where(r => r == "Duty Area").Count() > 0)
+                                            {
+                                                            <td style="border: none !important; font-size: 18px; padding: 0.2rem 0 0.2rem 1.2rem;" colspan="12">
+                                                                 <div style="display: -webkit-box;display:flex;width:100% ;">
+                                                                 <div style="width:15%"> <b>Duty Area:</b></div>
+                                                                 <div style="width:85%; padding-left:2rem;">
+                                                                        <b>@task.SubdutyArea.DutyArea.Letter@task.SubdutyArea.DutyArea.Number - @task.SubdutyArea.DutyArea.Title</b>
+                                                                 </div>
+                                                                </div>
+                                                            </td>
+                                            }
+                                        </tr>
+                                        <tr>
+                                            @if (Model.DisplayColumns.Where(r => r == "Sub-Duty Area").Count() > 0)
+                                            {
+                                                            <td style="border: none !important; font-size: 18px; padding: 0.2rem 0 0.2rem 1.2rem;" colspan="12">
+                                                                <div style="display: -webkit-box;display: flex;width:100% ;">
+                                                                <div style="width:15%;"><b>Sub Duty Area:</b> </div>
+                                                                <div style="width:85%;padding-left:2rem;">
+                                                                        <b>@task.SubdutyArea.DutyArea.Letter@task.SubdutyArea.DutyArea.Number.@task.SubdutyArea.SubNumber - @task.SubdutyArea.Title</b>
+                                                                </div>
+                                                            </td>
+                                            }
+                                       </tr>
+
+                                       <tr>
+                                            @if (Model.DisplayColumns.Contains("Task Number") && !Model.DisplayColumns.Contains("Task Description"))
+                                            {
+                                                            <td style=" border-bottom: 1px solid;font-size: 18px;border-top:0px; padding: 0.2rem 0 0.2rem 1.2rem;" colspan="12">
+                                                                <div style="display: -webkit-box; display: flex;width:100% ;">
+                                                                <div style="width:15%"> <b>@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b> </div>
+                                                                <div style="width:85%;padding-left:2rem;">
+                                                                        <b>@(task.IsReliability ? "*" : "") @task.SubdutyArea.DutyArea.Letter@task.SubdutyArea.DutyArea.Number.@task.SubdutyArea.SubNumber.@task.Number</b>
+                                                                 </div>
+                                                                </div>
+                                                            </td>
+                                            }
+                                            else if (Model.DisplayColumns.Contains("Task Description") && !Model.DisplayColumns.Contains("Task Number"))
+                                            {
+                                                            <td style=" border-bottom: 1px solid; font-size: 18px;border-top:0px; padding: 0.2rem 0 0.2rem 1.2rem;" colspan="12">
+                                                                <div style="display: -webkit-box; display: flex;">
+                                                                    <div style="width:15%;"> <b>@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b> </div>
+                                                                    <div style="width:85%;padding-left:2rem;">
+                                                                        <b>@task.Description</b>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                            }
+                                            else if (Model.DisplayColumns.Contains("Task Number") && Model.DisplayColumns.Contains("Task Description"))
+                                            {
+                                                            <td style=" border-bottom: 1px solid; border-top:0px;font-size: 18px; padding: 0.2rem 0 0.2rem 1.2rem;" colspan="12">
+                                                                <div style="display: -webkit-box; display: flex;">
+                                                                    <div style="width:15%;"> <b>@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b> </div>
+                                                                    <div style="width:85%;padding-left:2rem;">
+                                                                        <b>@(task.IsReliability ? "*" : "") @task.SubdutyArea.DutyArea.Letter@task.SubdutyArea.DutyArea.Number.@task.SubdutyArea.SubNumber.@task.Number - @task.Description</b>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+                                            }
+                                     </tr>
+
+                                    <tr>
+                                        <td colspan="12" style="border:none;">
+                                            <div style="display: -webkit-box; display: flex;padding-top:10px;">
+                                               <div  style="width:15%;"></div>
+                                               <div style="width:85%;padding-left:2rem;">
+                                                <table style="width:80%;">
+                                                        <tr>
+                                                            @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                                            {
+                                                                 <th style="border-bottom: 1px solid;border-top:0px;padding: 5px;width:26%" align="left" colspan="4">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name </th>
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Employee Status").Count() > 0)
+                                                            {
+                                                                <th style="border-bottom: 1px solid;border-top:0px;padding: 5px;width:26%" align="left" colspan="4">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Status </th>
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Last Task Qualification Date").Count() > 0)
+                                                            {
+                                                                <th style="border-bottom: 1px solid;border-top:0px;padding: 5px;width:35%" align="left" colspan="4"> Last Task Qualification Date</th>
+                                                            }
+                                                        </tr>
+                                                        @foreach (var taskQualification in task.TaskQualifications.OrderBy(tq => tq.Employee.Person.LastName))
+                                                        {
+                                                               <tr>
+                                                                    @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                                                    {
+                                                                        <td colspan="4" style="border: none; padding: 5px; ">@taskQualification.Employee.Person.FirstName @taskQualification.Employee.Person.LastName   @(taskQualification.Employee.EmployeePositions.Any(ep => ep.Trainee) ? " [Trainee]" : "")</td>
+                                                                    }
+                                                                    @if (Model.DisplayColumns.Where(r => r == "Employee Status").Count() > 0)
+                                                                    {
+                                                                       <td colspan="4" style="border: none; padding: 5px; ">@(taskQualification.Employee.Active ? " Active" : " Inactive")</td>
+                                                                    }
+                                                                    @if (Model.DisplayColumns.Where(r => r == "Last Task Qualification Date").Count() > 0)
+                                                                    {
+                                                                       <td colspan="4" style="border: none; padding: 5px; ">@taskQualification?.TaskQualificationDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat)</td>
+                                                                    }
+                                                               </tr>
+                                                        }
+                                                 </table>
+                                         </div>
+                                       </div>
+                                      </td>
+                                    </tr>
+                                     <tr>
+                                        <td colspan="7" style="border:none">
+                                            <div class="table" style="border-collapse: collapse;margin:auto;margin-top:10px;margin-bottom:0">*R-R is Reliability Related</div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                    @if (j < Model.Tasks.Count())
+                    {
+                          <div style="page-break-after:always"></div>
+                          <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+
+                    @{ j++;}
+                }
+                </td>
+            </tr>
+    }
+    else
+    {
+            <tr style="border:none">
+                <td style="border:none;text-align:center">
+                    <i>No data available to generate requested report</i>
+                </td>
+            </tr>
+    }
+</table>
+
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Tasks.Count(); i++)
+    {
+            <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

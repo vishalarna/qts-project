@@ -1,0 +1,150 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .expired-row {
+        color: lightgray;
+        font-style: italic;
+    }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse; width:98%;margin:auto;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-left:0px;padding-right:0">
+            <div class="repeatedReportHeader" style="padding-bottom: 3px; border-bottom: 2px solid #020378; margin: 0 0 10px 0;">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378;"><b>@Model.Title </b></div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.Employees.Count() > 0)
+    {
+        <tr style="border-collapse: collapse">
+
+            @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+            {
+                <th style="border: 2px solid #000;border-left:0;padding:5px; padding-left:0" align="left">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+            {
+                <th style="border: 2px solid #000; padding: 5px;" align="left">Organization</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "NERC Cert #").Count() > 0)
+            {
+                <th style="border: 2px solid #000; padding: 5px;" align="left">NERC Cert #</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Recert Date").Count() > 0)
+            {
+                <th style="border: 2px solid #000; padding: 5px; text-align: center " align="left">Recert Date</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Cert Area").Count() > 0)
+            {
+                <th style="border: 2px solid #000; padding: 5px; text-align: center " align="left">Cert Area:</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Expiration Date").Count() > 0)
+            {
+
+                <th style="border: 2px solid #000; padding: 5px; text-align: center " align="center">Exp. Date</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+            {
+                <th style="border: 2px solid #000; border-right: 0; padding: 5px;padding-right:5px;text-align:center" align="center">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s Abbrev</th>
+            }
+        </tr>
+
+        @foreach (var employee in Model.Employees.OrderBy(e => e.Person.LastName))
+        {
+            var nercCertification = employee.EmployeeCertifications?
+                .Where(certification => certification.Certification.CertifyingBodyId == 1 && certification.ExpirationDate.HasValue)
+                .OrderByDescending(certification => certification.ExpirationDate)
+                .FirstOrDefault();
+
+            if (nercCertification != null)
+            {
+                <tr class="@(nercCertification.ExpirationDate < DateOnly.FromDateTime(DateTime.Now) ? " expired-row" : "" )">
+
+                    @if (Model.DisplayColumns.Contains("Employee Name"))
+                    {
+                        <td style="border: none; border-bottom: 1px solid #000; padding: 5px; padding-left: 0">
+                            @employee.Person.LastName, @employee.Person.FirstName
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Organization"))
+                    {
+                        <td style="border: none; border-bottom: 1px solid #000;padding:5px ">
+                            @employee.EmployeeOrganizations.FirstOrDefault()?.Organization.Name
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("NERC Cert #"))
+                    {
+                        <td style="border: none; border-bottom: 1px solid #000; padding: 5px">
+                            @nercCertification?.CertificationNumber
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Recert Date"))
+                    {
+                        <td style="border: none; border-bottom: 1px solid #000; text-align: center; padding: 5px">
+                            @nercCertification?.RenewalDate?.ToShortDateString()
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Cert Area"))
+                    {
+                        <td style="border: none; border-bottom: 1px solid #000; text-align: center; padding: 5px">
+                            @nercCertification?.Certification.CertAcronym
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Expiration Date"))
+                    {
+                        <td style="border: none; border-bottom: 1px solid #000; text-align: center; padding: 5px">
+                            @nercCertification?.ExpirationDate?.ToShortDateString()
+                        </td>
+                    }
+                    @if (Model.DisplayColumns.Contains("Position"))
+                    {
+                        @if (employee.EmployeePositions != null && employee.EmployeePositions.Any())
+                        {
+                            <td style="border: none; border-bottom: 1px solid #000; text-align: center; padding: 5px;">
+                                @string.Join(",", employee.EmployeePositions.Select(r => r.Position.PositionAbbreviation))
+                            </td>
+                        }
+                        else
+                        {
+                            <td style="border: none; border-bottom: 1px solid #000; text-align: center; padding: 5px;"></td>
+                        }
+                    }
+                </tr>
+            }
+        }
+
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+@if (Model.Employees.Count() > 0)
+{
+    <div class="table" style="border-collapse: collapse; width:98%;margin:auto;margin-top:10px;">Note: @("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements))s with Suspended and/or Expired @("Certification".ReplaceLabel(Model.ClientSettings_LabelReplacements)) will appear in <span class="expired-row" style="padding-left:25px">gray, italicized font</span></div>
+}
+
+

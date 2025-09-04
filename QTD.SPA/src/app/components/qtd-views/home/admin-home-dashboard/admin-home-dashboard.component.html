@@ -1,0 +1,253 @@
+<app-header [toggleMenuIcon]="true" [canGoBack]="false" title="Dashboard"></app-header>
+<!-- <div class=" mt-2 font-medium text-normal ml-10" style="color: gray;"> -->
+  <!-- <app-button type="button" ButtonType='icon' icon='keyboard_arrow_left' (clicked)="hideBar()">
+  </app-button> -->
+  <!-- Dashboard</div> -->
+
+<div class="flex flex-col mt-8 ml-12" style="margin-right: 50px;">
+
+  <div class="text-slate-300 mt-2 font-medium text-xl flex">
+ <!-- <app-button type="button" ButtonType='icon' icon='keyboard_arrow_left' (clicked)="hideBar()">
+  </app-button>
+  <span> -->
+    Admin Portal
+  <!-- </span> -->
+  </div>
+
+  <div class="image-container">
+    <img src="./assets/img/adminDashboardImage.png" alt="Background Image">
+    <div class="text-overlay">
+      <p class="font-normal text-3xl" *ngIf="userName !=='' ">Welcome, {{userName}}</p>
+      <p class="font-normal text-3xl" *ngIf="userName ==='' ">Welcome</p>
+    </div>
+  </div>
+  <app-data-loader *ngIf="messageLoader"></app-data-loader>
+  <div *ngIf="visibleMessages?.length > 0 && !messageLoader">
+    <app-admin-messages [messages]="visibleMessages" (dismiss)="handleDismiss($event)"></app-admin-messages>
+  </div>
+
+  <div class="flex flex-row w-full justify-between">
+    <div style="width: 66%;">
+        <div class="flex flex-row flex-wrap mt-3 justify-between">
+          <div class="flex flex-col">
+              <p class="font-bolCinnod text-lg font-bold linkText">Expiring/Expired Certificates</p>
+          </div>
+
+        </div>
+
+        <app-data-loader *ngIf="isLoadingCertifications"></app-data-loader>
+        <ng-container *ngIf="!isLoadingCertifications">
+          <div class="flex flex-row justify-end pb-2">
+            <div class="pr-4 pt-2"><span class="pr-2 font-weight-bold">Filter Applied:</span> <span>{{appliedCertificationFilters.join(",")}}</span></div>
+            <app-button *ngIf="!(appliedCertificationFilters.length === 1 && appliedCertificationFilters.includes('All'))"  variant="text" class="px-2 pt-2" (clicked)="clearFilters()" text="Clear" icon="clear" iconPosition="right"></app-button>
+            <app-button text = "Filter" (clicked) = "openFlyInPanel(certificationFilter)" size="sm" ></app-button>
+          </div>
+          <mat-table [dataSource]="dataSource" class="table-bordered" matSort (matSortChange)="sortExpirationData($event)">
+
+            <ng-container matColumnDef="EmployeeName">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Employee" | labelReplacement)| async | uppercase}} NAME </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span class="cursor-pointer" (click)="NavigateToEdit(row.empId)" >{{row.employeeName}}</span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="Position">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2"> {{("POSITION" | labelReplacement) | async | uppercase}}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span >{{row.position}} </span>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="CertificationType">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> {{("CERTIFICATION" | labelReplacement) | async | uppercase}} TYPE
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="justify-between">
+                <span style="padding-left: 3px;">{{row.certificationType}} </span>
+
+
+              </mat-cell>
+            </ng-container>
+
+
+            <ng-container matColumnDef="ExpirationDate">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> EXPIRATION DATE
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="justify-between">
+                <span >{{datePipe.transform(row.expirationDate, "MM-dd-yyyy")}} 
+                  <ng-container *ngIf="getCertStatus(row) as certStatus">
+                    <span *ngIf="certStatus" class="font-weight-bold"
+                          [ngStyle]="{
+                            'color': certStatus === 'Suspended' ? '#567DFF' : 
+                                     certStatus === 'Expired' ? 'red' : 'inherit'
+                          }">
+                      ({{ certStatus | uppercase }})
+                    </span>
+                  </ng-container>
+                </span>
+
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayColumnsExpiringCertifications"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayColumnsExpiringCertifications;" ></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+              <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+
+          </mat-table>
+          <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons #certificationExpiredPaging></mat-paginator>
+        </ng-container>
+
+
+    </div>
+
+    <div style="width: 33%; padding-top: 58px; padding-left: 10px;" >
+      <div (click)="selfRegistration()" class="flex flex-row w-full cursor-pointer" style="background-color: #5c6aff; padding: 20px 10px 16px 25px;">
+        <div style="width: 80%; color: white;">
+        <span class="font-normal text-normal">Self-registrations needing approval</span>
+        <br>
+        <span class="font-medium text-2xl mt-5">{{stats?.needingApproval??0}}</span>
+        </div>
+        <div style="width: 20%; padding-top: 10px;">
+          <app-icon class="mr-2" icon="arrow_forward"
+          style="color:white;outline: 2px white;border: 2px solid white;border-radius: 100%;padding: 3px;"></app-icon>
+        </div>
+      </div>
+      <div (click)="waitList()" class="flex flex-row w-full mt-3 cursor-pointer" style="background-color: #ff9e2d; padding: 20px 10px 16px 25px;">
+        <div style="width: 80%; color: white;">
+        <span class="font-normal text-normal">Manage Waitlist</span>
+        <br>
+        <span class="font-medium text-2xl mt-5">{{stats?.waitlist??0}}</span>
+        </div>
+        <div style="width: 20%; padding-top: 10px;">
+          <app-icon class="mr-2" icon="arrow_forward"
+          style="color:white;outline: 2px white;border: 2px solid white;border-radius: 100%;padding: 3px;"></app-icon>
+        </div>
+      </div>
+      <div *ngIf="isChecked" (click)="openPublicRequest()" class="flex flex-row w-full mt-3 cursor-pointer" style="background-color: #5c9b31; padding: 20px 10px 16px 25px;">
+        <div style="width: 80%; color: white;">
+        <span class="font-normal text-normal">Public Portal Registration Requests</span>
+        <br>
+        <span class="font-medium text-2xl mt-5">{{publicClassRequestStats}}</span>
+        </div>
+        <div style="width: 20%; padding-top: 10px;">
+          <app-icon class="mr-2" icon="arrow_forward"
+          style="color:white;outline: 2px white;border: 2px solid white;border-radius: 100%;padding: 3px;"></app-icon>
+        </div>
+      </div>
+
+
+    </div>
+
+  </div>
+  <div style="width: 100%;">
+    <div class="flex flex-row flex-wrap mt-3 justify-between" style="align-items: center;">
+      <div class="flex flex-col">
+          <p class="font-bolCinnod text-lg font-bold linkText">Upcoming Classes</p>
+      </div>
+      <div>
+        <app-button text="View Schedules and Grades" color="secondary" size="sm" (click)="openClassSchedules()"></app-button>
+      </div>
+    </div>
+    <app-calendar-base></app-calendar-base>
+</div>
+
+  <div class="flex flex-row w-full justify-between">
+    <div style="width: 100%;">
+        <div class="flex flex-row flex-wrap mt-3 justify-between">
+          <div class="flex flex-col">
+              <p class="font-bolCinnod text-lg font-bold linkText">Recent {{("Task" | labelReplacement)| async}} Qualifications</p>
+          </div>
+
+        </div>
+
+        <app-data-loader *ngIf="isLoading"></app-data-loader>
+        <ng-container *ngIf="!isLoading">
+          <mat-table [dataSource]="dataSourceTq" class="table-bordered tq-data-list" matSort (matSortChange)="sortTQData($event)">
+
+            <ng-container matColumnDef="EmployeeName">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Employee" | labelReplacement)| async | uppercase}} NAME </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span >{{row.empName}}</span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="Evaluator">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2"> Evaluator
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span >{{row.evaluatorName}} </span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="taskNumber">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2"> Task Number
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span >{{row.taskNumber}} </span>
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="DueDate">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> DUE DATE
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="justify-between">
+        <span class="text-xs font-medium">{{row.dueDate ? ((row.dueDate | dateFormat)| async):"N/A"}}</span>
+              </mat-cell>
+            </ng-container>
+
+
+            <ng-container matColumnDef="CriteriaMet">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> CRITERIA MET
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="justify-between">
+                <span >{{row.criteriaMet ? 'Y':'N'}} </span>
+
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="ReQuaificatioStatus">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> (RE)QUALIFICATION STATUS
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="justify-between">
+                <div class="rounded-sm py-1 common text-center"
+                [ngClass]="{'initial':row.status.trim().toLowerCase() !== 'overdue','overdue':row.status.trim().toLowerCase() === 'overdue'}">
+                <span class="font-bold text-xs">{{row.status}}</span>
+              </div>
+
+              </mat-cell>
+            </ng-container>
+
+            <ng-container matColumnDef="TotalRequiredTq">
+              <mat-header-cell *matHeaderCellDef mat-sort-header> TOTAL REQUIRED {{("Task" | labelReplacement)| async | uppercase}} Qualifications
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row" class="justify-between">
+        {{row.requiredRequals === null || row.requiredRequals === '' ? "N/A":row.requiredRequals}}
+
+
+              </mat-cell>
+            </ng-container>
+
+            <mat-header-row *matHeaderRowDef="displayColumnsTaskQualifications"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayColumnsTaskQualifications;" ></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+              <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+
+          </mat-table>
+          <mat-paginator [pageSize]="5" [pageSizeOptions]="[5, 10, 20]" showFirstLastButtons #taskQualPaging></mat-paginator>
+
+        </ng-container>
+
+<br>
+<br>
+<br>
+    </div>
+  </div>
+</div>
+
+<ng-template #certificationFilter>
+  <app-flypanel-certification-expiration-table-filter (closed) = "flyPanelSrvc.close()" (filterApplied) = "getAppliedFilter($event)" [selectedFilters] = "appliedCertificationFilters"></app-flypanel-certification-expiration-table-filter>
+</ng-template>

@@ -1,0 +1,32 @@
+  .search-set-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  } 
+  
+  .keyword-input {
+    align-items: center;
+    svg {
+      margin-right: 15px;
+    }
+    input {
+      max-width: 300px;
+      width: 100%;
+    }
+  }
+
+  .employees-list{
+    margin-top: 1.125rem;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.10);
+    border-radius: 4px;
+    border: 0.5px solid #E1E5E4;
+    overflow: hidden;
+}
+  :host ::ng-deep .employees-list .mat-header-cell:nth-child(2),
+  :host ::ng-deep .employees-list .mat-cell:nth-child(2) {
+    flex: 1 1 80%;
+  }
+  :host ::ng-deep .employees-list .mat-cell,:host ::ng-deep .employees-list .mat-header-cell {
+    padding: 1rem;
+  }

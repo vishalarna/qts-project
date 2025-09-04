@@ -1,0 +1,62 @@
+<aside style="background-color: #456FA5;" class="sidebar h-screen sticky top-0 flex flex-col overflow-auto ">
+
+    <div class="flex flex-col items-center py-4 px-6 border-gray-two mb-8 h-28">
+        <img class="flex-auto w-1/2 h-auto" src="./assets/img/qtd-white.png">
+    </div>
+    <div class="flex flex-col space-y-6 px-6 text-sm text-black">
+        <h5 style="color:white;" id="loading" *ngIf="navList.length==0">Loading ...</h5>
+        <ng-container *ngIf="navList.length>0">
+            <span class="flex flex-col" *ngFor="let m of navList" >
+                    <!-- <app-menu-item class="item" [disabled]="m.disabled" [ngbTooltip]="m.Title" [hasHover]="m.hasHover ?? false" [ngStyle]="{'color':m.Title?'black':'orange'}"
+                        [HasChildren]="m.Children!=undefined && m.Children.length>0"
+                        [Title]="m.Title"
+                        [IconName]="m.IconName ?? ''" [RoutePath]="m.RoutePath" [RouteParams]="m.RouteParams"
+                        [Children]="m.Children" [id]="m.id"></app-menu-item> -->
+
+                  <div *ngIf="!m.Children" [ngStyle]="{'cursor':m.disabled ? 'not-allowed':'pointer'}" class="pt-2 pb-2 pr-4 pl-3 "
+                    [ngClass]="{'active_menu_blue':(selectedId === undefined ? (selectedItem === m.Title):(selectedItem === m.Title && selectedId === m.id)),'blueHover':!m.disabled}">
+                    <app-icon style="color:white;" *ngIf="m.IconName" [icon]="m.IconName"></app-icon>
+                    <app-link [disabled]="m.disabled" (click)="selectedItem = m.Title; selectedId = m.id;" [link]="m.RoutePath"
+                      [text]="m.Title" [tooltip]="m.tooltip ?? ''" customClasses="pl-3 text-white">
+                    </app-link>
+                  </div>
+                  <div *ngIf="m.Children">
+                      <div class="flex flex-row" (click)="m.Collapsed=!m.Collapsed">
+                        <ng-container>
+                          <app-icon style="color:white;" *ngIf="!m.Collapsed" [icon]="'expand_more'">
+                          </app-icon>
+                          <app-icon style="color:white;" *ngIf="m.Collapsed" [icon]="'expand_less'">
+                          </app-icon>
+                        </ng-container>
+                        <div class="flex overflow-auto">
+                          <app-icon style="color:white;" *ngIf="m.IconName" [icon]="m.IconName"></app-icon>
+                          <app-label *ngIf="!m.RoutePath" [text]="m.Title " customClasses="ml-2 cursor-pointer text-white">
+                          </app-label>
+                          <app-link [disabled]="m.disabled" *ngIf="m.RoutePath" [link]="m.RoutePath" [text]="m.Title " customClasses="ml-2 text-white" [tooltip]="m.tooltip ?? ''">
+                          </app-link>
+                        </div>
+                      </div>
+                      <div class="flex flex-col mt-3" *ngIf="m.Collapsed">
+                        <ng-container *ngFor="let ch of m.Children">
+                          <div [ngStyle]="{'cursor':ch.disabled ? 'not-allowed':'pointer'}" [ngClass]="selectedId === undefined ? (selectedItem === ch.Title) ? 'active_menu_blue':'':(selectedItem === ch.Title && selectedId === ch.id) ? 'active_menu_blue':'' " class="flex flex-row blueHover items-center pl-16 mb-2 pt-2 pb-2 pr-4">
+                            <app-icon style="color:white;" class="mr-2" [icon]="ch.IconName ?? '' "></app-icon>
+
+                            <app-link [disabled]="ch.disabled" (clicked)="selectedId = ch.id;selectedItem = ch.Title" [link]="ch.RoutePath"
+                              [queryParams]="ch.RouteParams" *ngIf="ch.RouteParams" [text]="ch.Title"
+                              customClasses="text-white" [tooltip]="ch.tooltip ?? ''">
+                            </app-link>
+                            <app-link [disabled]="ch.disabled" (clicked)="selectedId = ch.id;selectedItem = ch.Title;" [link]="ch.RoutePath"
+                              *ngIf="!ch.RouteParams" [text]="ch.Title" customClasses="text-white" [tooltip]="ch.tooltip ?? ''">
+                            </app-link>
+
+                          </div>
+                        </ng-container>
+                      </div>
+                  </div>
+            </span>
+
+        </ng-container>
+    </div>
+
+
+</aside>

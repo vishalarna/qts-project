@@ -1,0 +1,83 @@
+<mat-toolbar class="app-toolbar-sticky flex align-items-center program-review-header">
+  <div class="flex items-center">
+    <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" class="review-back-button" (clicked)="goBack()"></app-button>
+    <div *ngIf="tPRViewModel.id" class="edit-review-heading ml-4">
+      <h3>{{tPRViewModel.trainingProgramType}} - {{tPRViewModel.trainingProgram_Version}}</h3>
+      <h4  translate> {{("Position" | labelReplacement)| async}}: <span>{{tPRViewModel.positionName}}</span> </h4>
+    </div>
+    <div *ngIf="!tPRViewModel.id" class="create-review-heading ml-4">
+      <h3 translate> Create New: <span>Training Program Review </span> </h3>
+    </div>
+  </div>
+  <div class="flex flex-row items-center" >
+    <app-button *ngIf="tPRViewModel.id" customClasses="review-share-button header-button" type="button"  text="Share" (clicked)="shareClick($event,shareProgramReview)" color="secondary" size="sm" class="mr-2" ></app-button>
+    <app-button *ngIf="!tPRViewModel.id" customClasses="review-cancel-button header-button mr-2" variant="text" text="Cancel" (clicked)="cancelClick($event)">
+    </app-button>
+    <app-button *ngIf="currentStep != 7"  type="button" text="Continue" size="sm" [disabled]="currentStep == 1 && tPRViewModel.trainingProgram_Version === undefined" customClasses="review-continue-button header-button disabled-pointer" (clicked)="continueClickAsync($event)"> </app-button>
+    <app-button *ngIf="currentStep == 7" type="button" text="Publish" size="sm" [disabled]="!tPRViewModel.trainerSignOff" customClasses="review-continue-button header-button disabled-pointer" (clicked)="publishClickAsync($event)"> </app-button>
+  </div>
+</mat-toolbar>
+<div class="program-review-container">
+  <mat-stepper [linear]="true"  labelPosition="bottom" [orientation]="(stepperOrientation | async)!" class="program-review-stepper" #stepper (selectionChange)="onSelectionChange($event)">
+    <ng-template matStepperIcon="edit">
+      <app-icon icon="done"></app-icon>
+    </ng-template>
+    <mat-step [completed]="tPRViewModel.id !== undefined">
+      <ng-template matStepLabel>Create New Program Review</ng-template>
+      <ng-template matStepContent >
+        <app-create-new-program-review [inputTPRViewModel] ="tPRViewModel"></app-create-new-program-review>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel >Purpose of Review</ng-template>
+      <ng-template matStepContent>
+        <app-purpose-of-review [inputTPRViewModel] ="tPRViewModel"></app-purpose-of-review>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Design & Development</ng-template>
+      <ng-template matStepContent>
+        <app-review-design-and-development [inputTPRViewModel] ="tPRViewModel"></app-review-design-and-development>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Evaluation</ng-template>
+      <ng-template matStepContent>
+        <app-review-evaluation [inputTPRViewModel] ="tPRViewModel"></app-review-evaluation>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Supporting Documents & Issues</ng-template>
+      <ng-template matStepContent>
+        <app-supporting-documents-and-issues [inputTPRViewModel] ="tPRViewModel"></app-supporting-documents-and-issues>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Conclusion & Action Items</ng-template>
+      <ng-template matStepContent>
+        <app-conclusion-and-action-items  [inputTPRViewModel] ="tPRViewModel"></app-conclusion-and-action-items>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Training Dept Sign-off</ng-template>
+      <ng-template matStepContent>
+        <app-training-department-sign-off  [inputTPRViewModel] ="tPRViewModel"></app-training-department-sign-off>
+      </ng-template>
+    </mat-step>
+  </mat-stepper>
+</div>
+<ng-template #saveProgramReview>
+  <app-qtd-dialogue header="Exit Training Program Review" [description]="'Exiting the Annual Training Program review will cause it to be saved in its current ' + (tPRViewModel.published ? 'Published' : 'Draft') + ' state. Are you sure you want to continue?'"
+    cancelText="No" confirmText="Yes" (confirmed)="backClickAsync()">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #shareProgramReview >
+  <div class="share-dialog">
+    <app-dialogue-share-report
+      [inputHeader]="shareDialogHeader"
+    >
+    </app-dialogue-share-report>
+  </div>
+
+</ng-template>

@@ -1,0 +1,54 @@
+.dropdown-toggle::after {
+  content: none !important;
+}
+
+.mat-column-index {
+  flex: 0 0 60px;
+}
+
+.mat-column-image {
+  flex: 0 0 70px;
+}
+
+.mat-column-name {
+  flex: 0 0 230px;
+}
+
+.mat-column-position {
+  
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.mat-column-id{
+  flex: 0 0 auto;
+}
+
+
+
+.customcolorgreen{
+  background-color: rgba(92, 155, 49, 0.1);
+  color: rgba(92, 155, 49, 1);
+}
+
+.customcolorgray{
+  background-color: rgba(122, 128, 126, 0.2);
+  color: rgba(122, 128, 126, 1);
+}
+
+.box {
+  inline-size: 120px;
+    overflow-wrap: break-word;
+}
+#container {
+  display: flex;
+  justify-content:space-between;
+  flex-direction:column;
+}
+
+#id{
+
+  width: 100px;
+  margin: 10px;
+}
+

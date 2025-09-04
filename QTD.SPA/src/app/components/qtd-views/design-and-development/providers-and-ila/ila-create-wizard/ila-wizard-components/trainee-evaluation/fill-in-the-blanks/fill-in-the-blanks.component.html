@@ -1,0 +1,40 @@
+<!--Question Box Starts Here-->
+<div class="ml-12 mr-12 mt-2">
+  <mat-label class="font-medium text-sm">Question</mat-label>
+  <p class="text-gray-four text-xs">Type the question in the space below. Underline the word you want to mark as correct
+  </p>
+  <div class="flex flex-row-reverse font-bold mb-2">
+    <app-button (clicked)="generateBlanks()" variant="text" size="sm" text="Mark as Correct Answer"></app-button>
+    <app-button (clicked)="generateBlanks()" variant="text" class="mr-4" size="sm" text="Unmark"></app-button>
+  </div>
+
+  <div [formGroup]="FillBlank">
+    <ckeditor formControlName="fillBlank" [editor]="Editor"></ckeditor>
+    <app-input-error class="mt--2"
+      *ngIf="FillBlank.get('fillBlank')?.invalid && (FillBlank.get('fillBlank')?.hasError('required'))"
+      [text]="'Question is Required'"></app-input-error>
+  </div>
+
+  <div class="mt-4" [formGroup]="EditorForm">
+    <p>Preview of Fill-In-The-Blank</p>
+    <!-- <input formControlName="htmlContent" name="preview" placeholder="Preview" [disabled]="true" /> -->
+    <div [innerHTML]="previewString"></div>
+  </div>
+</div>
+<!--Question Box Ends Here-->
+
+
+
+<!--Save Button Starts-->
+<div class="flex flex-row float-right mr-12 mt-16">
+  <div *ngIf="!update && showSaveButton">
+    <app-button class="mr-2" [spinner]="saveSpinner" [disabled]="!FillBlank.valid" (clicked)="OnSave(false)"
+      type="button" size="sm" color="secondary" text="Save"></app-button>
+    <app-button type="button" [disabled]="!FillBlank.valid" [spinner]="saveandAddSpinner" size="sm" color="primary"
+      (clicked)="OnSave(true)" text="Save & Add New"></app-button>
+  </div>
+
+  <app-button (clicked)="updateData()" *ngIf="update && showSaveButton" [spinner]="updateSpinner" [disabled]="!FillBlank.valid"
+    type="button" size="sm" color="primary" text="Update"></app-button>
+</div>
+<!--Save Button Ends-->

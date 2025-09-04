@@ -1,0 +1,68 @@
+<div class="flex flex-row flex-wrap mt-3 justify-between mb-4">
+  <div class="flex flex-col">
+    <p class="text-xs text-gray-four">{{DataSource?.data?.length ?? 0}}  {{("Employee" | labelReplacement)| async}} linked to this {{("Task" | labelReplacement)| async}}</p>
+  </div>
+  <div>
+    <app-button (clicked)="openFlyPanel(empPanel)" [disabled]="!isActive" variant="text" icon="link" iconPosition="left"
+      text="Link  {{('Employee' | labelReplacement)| async}}">
+    </app-button>
+  </div>
+</div>
+
+<app-data-loader *ngIf="!DataSource"></app-data-loader>
+<div class="shadow-md" *ngIf="DataSource">
+
+  <mat-table [dataSource]="DataSource" matSort class="table-bordered">
+
+    <ng-container matColumnDef="description">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>  {{("Employee" | labelReplacement)| async}}
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="flex flex-row">
+          <img onerror="this.src='assets/img/ImageNotFound.jpg'" [src]="row.image" class="rounded-full w-10 h-10 m-2">
+          <div class="flex flex-col">
+            <p>{{row.description}} </p>
+            <p>{{row.email}}</p>
+          </div>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="positionTitle">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Position" | labelReplacement)| async}}s title
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.positionTitle}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="posQualificationDate">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Last Qualification
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.posQualificationDate === "" ? 'No Qualification Date Provided':row.posQualificationDate}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="traineeStatus">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Qualification Status
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.traineeStatus ? "Qualified": "Not Qualified"}} </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayColumns;" [class.inActiveItem]="!row.active"></mat-row>
+
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center " *matNoDataRow>
+      <td class="mat-cell w-full m-2">No data to display</td>
+    </tr>
+
+  </mat-table>
+  <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons aria-label="Select page of periodic elements">
+  </mat-paginator>
+</div>
+
+<ng-template #empPanel>
+  <app-flypanel-eo-employee-link [alreadyLinkedIds]="alreadyLinked" (refresh)="getLinkedEmployees()" (closed)="flyPanelSrvc.close()"></app-flypanel-eo-employee-link>
+</ng-template>
+
+<ng-template #linkedPanel>
+  <app-flypanel-linked-eos [selectedType]="'Employee'" [Id]="selectedId"></app-flypanel-linked-eos>
+</ng-template>

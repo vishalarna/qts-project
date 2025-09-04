@@ -1,0 +1,111 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <!-- {{oldProcedure ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+        <ng-container *ngIf="mode==='Add'">
+           Add New {{("Definition" | labelReplacement)| async}}s
+          </ng-container>
+        <ng-container *ngIf="mode==='Edit'" > 
+                 Edit {{("Definition" | labelReplacement)| async}}s
+                </ng-container>
+        <ng-container *ngIf="mode==='Copy'">
+        Copy {{("Definition" | labelReplacement)| async}}s
+      </ng-container>
+       
+      </p>
+      <app-button (click)="closedefinition()" ButtonType='icon' icon="close"></app-button>
+    </div>
+  
+    <form [formGroup]="definitionForm">
+      <div class="flex flex-row px-12 ">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+            <div>
+                <app-label required [for]="'defCategory'" [text]="'Category'"
+                  class="mt-6 float-left label required">
+                </app-label>
+              </div>
+            <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                <mat-select formControlName="defCategory" placeholder="Select {{('Definition' | labelReplacement)| async}}s Category">
+                  <mat-option *ngFor="let i of definitionCategoryList" [value]="i">
+                    {{i}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'defNumber'" text="{{('Definition' | labelReplacement)| async}}s Number" class="mt-6 float-left label required"></app-label>
+          <app-textbox type="text" formControlName="defNumber"
+            placeholder="Enter {{('Definition' | labelReplacement)| async}}s number">
+          </app-textbox>
+        </div>
+    </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'defName'" text="{{('Definition' | labelReplacement)| async}}s Name" class="mt-6 float-left label required"></app-label>
+          <app-textbox type="text" formControlName="defName"
+            placeholder="Enter {{('Definition' | labelReplacement)| async}}s Name">
+          </app-textbox>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'defDescription'" [text]="'Description'"></app-label>
+          <app-textarea type="text" formControlName="defDescription"
+            placeholder="Enter {{('Definition' | labelReplacement)| async}}s Description"
+            [value]="definitionForm.get('insDescription')?.value || ''"
+            [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+          </app-textarea>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-0" style="width: 50vw;">
+          <app-label [for]="'hyperlink'" text="Hyperlink"></app-label>
+          <p class="text-xs text-gray-400 ml-2">upload a PDF copy of the regulation or enter a
+            hyperlink for
+            the regulation</p>
+        </div>
+    </div>
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-0" style="width: 50vw;">
+        <input type="file" (change)="fileChange(file.files)" [hidden]="true" #file>
+        <app-button *ngIf="!fileUploaded" (clicked)="file.click()" variant="text" icon="upload" iconPosition="left"
+          text="Upload PDF"></app-button>
+        <ng-container class="border-2 border-black" *ngIf="fileUploaded">
+          <span>{{fileName}}</span>
+          <button (click)="removeFile()">
+            <app-icon icon="close"></app-icon>
+          </button>
+        </ng-container>
+    </div>
+</div>
+<div class="flex flex-row px-12">
+    <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-textbox *ngIf="!fileUploaded" formControlName="hyperlink" placeholder="Enter Hyperlink">
+        </app-textbox>
+    </div>
+</div>
+      
+  
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'EffectiveDate'" [text]="'Effective Date '"></app-label>
+          <app-date (ngModelChange)="dateChanged($event)" formControlName="EffectiveDate" placeholder="Select Date">
+          </app-date>
+          <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+          </app-input-error>
+        </div>
+      </div>
+  
+      
+      <div class="px-12 mt-8 float-right py-3">
+        <app-button [spinner]="showSpinner" [disabled]="definitionForm.invalid || showSpinner || dateError"
+          type="button" size="sm"  text="Save">
+        </app-button>
+      </div>
+  
+  
+    </form>
+  </ng-container>
+  

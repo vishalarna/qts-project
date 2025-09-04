@@ -1,0 +1,19 @@
+export class ProviderUpdateOptions{
+  name!:string
+  number!:number
+  providerLevelId!:any
+  contactName!:string
+  contactTitle!:string
+  contactPhone!:number
+  contactExt!:number
+  contactMobile!:number
+  contactEmail!:string
+  companyWebsite!:string
+  repName!:string
+  repTitle!:string
+  repPhone!:number
+  repEmail!:string
+  repSignature!:string
+  isPriority!:boolean
+  isNERC!:boolean
+}

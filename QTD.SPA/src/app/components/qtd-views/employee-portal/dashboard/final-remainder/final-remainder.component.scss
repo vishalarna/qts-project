@@ -1,0 +1,23 @@
+.customStyle:hover{
+  background: inherit !important;
+}
+
+.greenBullet{
+  background-color: #13C525;
+  border-radius: 50%;
+}
+
+.redBullet{
+  background-color: #FF4A4A;
+  border-radius: 50%;
+}
+
+.yellowBullet{
+  background-color: #FFB200;
+  border-radius: 50%;
+}
+
+:host ::ng-deep .mat-expansion-panel-header
+{
+    height: fit-content !important;
+}

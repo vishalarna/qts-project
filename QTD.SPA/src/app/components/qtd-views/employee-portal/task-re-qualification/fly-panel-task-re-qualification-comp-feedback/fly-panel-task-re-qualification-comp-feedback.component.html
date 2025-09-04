@@ -1,0 +1,101 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+    <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBack()">
+    </app-button>
+    <div class="flex flex-row items-center space-x-4 w-full justify-between">
+        <h1>Feedback and comments</h1>
+        <div class="justify-between">
+
+
+            <app-button color="blue" type="button" text="Close" (clicked)="goBack()" style="margin-left: 10px;">
+            </app-button>
+        </div>
+    </div>
+</mat-toolbar>
+
+
+<div class="mt-5 flex justify-center" style="align-items:center;" *ngIf="taskFeedbackData!==undefined">
+    <div style="width:90%;">
+        <!-- Top Header Section -->
+
+        <ng-container *ngIf="taskStepList>0" >
+            <h2 >Steps</h2>
+            <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 mb-3 rounded-sm" *ngFor="let item of this.taskFeedbackData.stepsList let i = index">
+
+                <h3>Step {{i+1}}</h3>
+                <p [innerHtml]="item.stepDescription"></p>
+                <div class="mt-2 mr-0 w-fit">
+                    <app-button *ngIf="images[i] !== undefined"
+                      [text]="(collapseImage[i] ? 'Collapse' : 'Expand' )+ ' attached Image'"
+                      (clicked)="collapseImage[i] = !collapseImage[i]" variant="text"
+                      [icon]="collapseImage[i] ? 'expand_more': 'expand_less'"></app-button>
+                    <span class="text-gray-500 text-sm" *ngIf="images[i] === undefined">No Image Attached</span>
+                    <div *ngIf="collapseImage[i]" [innerHtml]="images[i]"></div>
+                  </div>
+                <h2>Comments</h2>
+                <section class="flex flex-col p-4 bg-light-orange  mt-2 rounded-sm" *ngFor="let item2 of item.evaluatorsStepComments">
+                    <div class="flex flex-row" style="align-items:center;">
+                        <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 ml-2 mb-2"
+                            [src]="item2.image" onerror="this.src='assets/img/ImageNotFound.jpg'" />
+                        <div class="flex flex-col">
+
+                            <div class="container">
+                                <span class="left">{{item2.employeeName}}</span>
+                                <span class="right">{{ datePipe.transform(item2.commentDate, 'dd/MM/yyyy') }} </span>
+                              </div>
+                            <span style="line-break:anywhere;" [innerHtml]="item2.comment"></span>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </ng-container>
+
+        <ng-container *ngIf="taskQuestionAnswer>0" >
+            <h2 >Question and Answers</h2>
+            <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 mb-3 rounded-sm" *ngFor="let item of taskFeedbackData?.quesionAnswerList let i = index">
+
+                <h3>Question {{i+1}}</h3>
+                <p [innerHtml]="item.questionDescription"></p>
+                <div class="mt-2 mr-0 w-fit">
+                    <app-button *ngIf="images[i] !== undefined"
+                      [text]="(collapseImage[i] ? 'Collapse' : 'Expand' )+ ' attached Image'"
+                      (clicked)="collapseImage[i] = !collapseImage[i]" variant="text"
+                      [icon]="collapseImage[i] ? 'expand_more': 'expand_less'"></app-button>
+                    <span class="text-gray-500 text-sm" *ngIf="images[i] === undefined">No Image Attached</span>
+                    <div *ngIf="collapseImage[i]" [innerHtml]="images[i]"></div>
+                  </div>
+
+                <h3>Answer</h3>
+                <p [innerHtml]="item.answer"></p>
+                <div class="mt-2 mr-0 w-fit">
+                    <app-button *ngIf="images[i] !== undefined"
+                      [text]="(collapseImage[i] ? 'Collapse' : 'Expand' )+ ' attached Image'"
+                      (clicked)="collapseImage[i] = !collapseImage[i]" variant="text"
+                      [icon]="collapseImage[i] ? 'expand_more': 'expand_less'"></app-button>
+                    <span class="text-gray-500 text-sm" *ngIf="images[i] === undefined">No Image Attached</span>
+                    <div *ngIf="collapseImage[i]" [innerHtml]="images[i]"></div>
+                  </div>
+                <h2>Comments</h2>
+                <section class="flex flex-col p-4 bg-light-orange  mt-2 rounded-sm" *ngFor="let item2 of item.evaluatorsQuestionAnswerComments">
+                    <div class="flex flex-row" style="align-items:center;">
+                        <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 ml-2 mb-2"
+                            [src]="item2.image" onerror="this.src='assets/img/ImageNotFound.jpg'" />
+                        <div class="flex flex-col">
+
+                            <div class="container">
+                                <span class="left">{{item2.employeeName}}</span>
+                                <span class="right">{{ datePipe.transform(item2.commentDate, 'dd/MM/yyyy') }} </span>
+                              </div>
+                            <span style="line-break:anywhere;" [innerHtml]="item2.comment"></span>
+                        </div>
+                    </div>
+                </section>
+            </section>
+        </ng-container>
+
+
+
+
+
+    </div>
+
+</div>

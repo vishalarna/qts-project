@@ -1,0 +1,51 @@
+<div class="flex flex-row justify-between border-b items-center header-spacing">
+  <h1 class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+    Version History Details
+  </h1>
+  <button class="focus:outline-none" (click)="closed.emit()">
+    <svg
+      class="w-6 h-6"
+      fill="none"
+      stroke="currentColor"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d="M6 18L18 6M6 6l12 12"
+      ></path>
+    </svg>
+  </button>
+</div>
+<app-data-loader *ngIf="spinner" class="overview-spinner"></app-data-loader>
+
+<div *ngIf="!spinner" class="container">
+  <div class="details">
+    <p><span class="font-weight-bold pt-3 pr-1">ILA/Course Title:</span> {{ this.filteredVersionDetails[0]?.ilaTitle }}</p>
+    <p><span class="font-weight-bold pt-3 pr-1">ILA/Course Number:</span> {{ this.filteredVersionDetails[0]?.ilaNumber }}</p>
+    <p><span class="font-weight-bold pt-3 pr-1">ILA/Course Version:</span> {{versionNumber}}</p>
+    <p><span class="font-weight-bold pt-3 pr-1">Published Date:</span>{{ this.filteredVersionDetails[0]?.effectiveDate | dateFormat | async }}</p>
+    <p><span class="font-weight-bold pt-3 pr-1">Changed by:</span>{{ this.changeByUsernames}}</p>
+    <p><span class="font-weight-bold pt-3 pr-1">Changes:</span> {{ this.filteredVersionDetails?.length }}</p>
+  </div>
+  <div class="added-linked-edited">
+    <p><span class="font-weight-bold">Added/Linked/Edited:</span></p>
+    <ul *ngFor="let linked of this.linkedDetails">
+      <li>{{ linked?.changeDescription }}</li>
+    </ul>
+  </div>
+  <div class="unlinked-deleted">
+    <p><span class="font-weight-bold">Unlinked/Deleted:</span></p>
+    <ul *ngFor="let unlinked of this.unlinkedDeletedDetails">
+      <li>{{ unlinked?.changeDescription }}</li>
+    </ul>
+  </div>
+  <div class="unlinked-deleted">
+    <p><span class="font-weight-bold">Notes:</span></p>
+    <li *ngFor="let note of publishedNotes">
+      {{ note?.changeDescription }}
+    </li>
+  </div>
+</div>

@@ -1,0 +1,54 @@
+.loader-class {
+  width: 100%;
+  height: auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+:host ::ng-deep .action-button {
+  button {
+    padding: 5px;
+    font-size: small;
+  }
+}
+
+:host ::ng-deep mat-cell .dropDown-container {
+  width: 100%;
+  display: block;
+  min-height: 36px; 
+  display: flex; 
+  align-items: center;
+}
+
+:host ::ng-deep mat-cell .dropDown {
+  width: 90%;
+  display: block;
+}
+
+:host ::ng-deep mat-cell .textFieldContainer {
+  display: block;
+  width: 100%;
+  min-height: 25px;;
+  display: flex; 
+  align-items: center;
+  cursor: pointer;
+  pointer-events: auto;
+  padding: 2px 5px;
+}
+
+:host ::ng-deep mat-cell , :host ::ng-deep mat-header-cell {
+  padding: 5px 10px; 
+}
+
+:host ::ng-deep .action-button {
+  button {
+    padding: 5px;
+    font-size: small;
+  }
+}
+
+:host ::ng-deep mat-cell .mat-form-field-wrapper{
+  padding: 4px 0px 2px 0px;
+ 
+}

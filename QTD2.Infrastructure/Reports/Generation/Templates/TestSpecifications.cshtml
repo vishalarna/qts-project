@@ -1,0 +1,608 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using System.Text.RegularExpressions;
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    table {
+        border-collapse: collapse;
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    .font-large {
+        font-size: 17px;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+    }
+
+</style>
+<table id="content-table" class="table" style="border-collapse: collapse;">
+    <!-- Header -->
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-left:0px;padding-right:0">
+            <div class="repeatedReportHeader" style="padding-bottom: 3px; border-bottom: 2px solid #020378; margin: 0 0 10px 0;">
+                <table style="width:100%;">
+                    <tr>
+                        <td style="border: 0;" colspan="3">
+                            @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                            {
+                                <div>
+                                    <img src="@Model.CompanyLogo" alt="Company logo" style="float: left;height: 65px !important;object-fit: scale-down !important;" />
+                                </div>
+                            }
+                            else
+                            {
+                                <div></div>
+                            }
+                        </td>
+                        <td align="center" style="vertical-align: middle; border: 0; font-size: 24px; color: #020378;" colspan="6">
+                            <b>@Model.Title </b>
+                        </td>
+                        <td align="right" style="vertical-align:middle;border:0;" colspan="3">
+                            <b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </td>
+    </tr>
+    @{
+        int j = 1;
+    }
+    @if (Model.Tests.Count() > 0)
+    {
+        <tr class="font-large">
+            <td style="border: none !important;">
+                @foreach (var test in Model.Tests)
+                {
+                    var employeesPassedCount = test.ClassSchedule_Rosters == null ? 0 : test.ClassSchedule_Rosters.Where(x => (x.Grade ?? "").Trim().ToLower() == "p").Count();
+                    var employeesFailedCount = test.ClassSchedule_Rosters == null ? 0 : test.ClassSchedule_Rosters.Where(x => (x.Grade ?? "").Trim().ToLower() == "f").Count();
+                    var averageTestScore = (test.ClassSchedule_Rosters == null || !test.ClassSchedule_Rosters.Any()) ? 0 : Math.Round(Convert.ToDecimal(test.ClassSchedule_Rosters.Average(x => x.Score)));
+
+
+
+                    <div style="padding-top:5px" id="@("page" + j)">
+                        <table style="width:100%">
+                            <tr>
+                                <td colspan="2" style=" border: none !important;">
+                                    <table>
+                                        <tbody>
+                                            @if (Model.DisplayColumns.Where(r => r == "Provider").Count() > 0)
+                                            {
+                                                <tr>
+                                                    <td style=" border: none !important;"><b> Provider:</b></td>
+                                                    <td colspan="3" style=" border: none !important;">
+                                                        <b>
+                                                            <span>@test.ILATraineeEvaluations.FirstOrDefault()?.ILA?.Provider?.Name</span>
+                                                        </b>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                            @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0 && Model.DisplayColumns.Where(r => r == "ILA Number").Count() > 0)
+                                            {
+                                                <tr>
+                                                    <td style=" border: none !important;"><b> @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title/Number:</b></td>
+                                                    <td colspan="3" style=" border: none !important;">
+                                                        <b>
+                                                            <span>@test.ILATraineeEvaluations.FirstOrDefault()?.ILA?.Name/@test.ILATraineeEvaluations.FirstOrDefault()?.ILA?.Number</span>
+                                                        </b>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            else
+                                            {
+                                                @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                                {
+                                                    <tr>
+                                                        <td style=" border: none !important;"><b> @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title:</b></td>
+                                                        <td colspan="3" style=" border: none !important;">
+                                                            <b>
+                                                                <span>@test.ILATraineeEvaluations.FirstOrDefault()?.ILA?.Name</span>
+                                                            </b>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td style=" border: none !important;"><b> @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Number:</b></td>
+                                                        <td colspan="3" style=" border: none !important;">
+                                                            <b>
+                                                                <span>@test.ILATraineeEvaluations.FirstOrDefault()?.ILA?.Number</span>
+                                                            </b>
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            }
+
+                                            @if (Model.DisplayColumns.Where(r => r == "Test Title").Count() > 0)
+                                            {
+                                                <tr>
+                                                    <td style=" border: none !important;"><b> Test Title:</b></td>
+                                                    <td colspan="3" style=" border: none !important;">
+                                                        <b>
+                                                            <span>@test?.TestTitle </span>
+                                                        </b>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Test Type").Count() > 0)
+                                            {
+                                                <tr>
+                                                    <td style=" border: none !important;"><b> Test Type:</b></td>
+                                                    <td colspan="3" style=" border: none !important;">
+                                                        <b>
+                                                            <span>@test.ILATraineeEvaluations.FirstOrDefault()?.TestType?.Description</span>
+                                                        </b>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                            @if (Model.DisplayColumns.Where(r => r == "Status").Count() > 0)
+                                            {
+                                                <tr>
+                                                    <td style=" border: none !important;">
+                                                        <b> Status:</b>
+                                                    </td>
+                                                    <td colspan="3" style=" border: none !important;">
+                                                        <b>
+                                                            @test.TestStatus.Description
+                                                        </b>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td colspan="2" style=" border: none !important;"></td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2" style=" border: none !important;padding:0px; vertical-align: top;">
+                                    <table style="border:3px; color:#000;">
+                                        <thead>
+                                            <tr><th style=" border: none !important; text-decoration: underline !important;padding:12px;">Item Type Summary:</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">Multiple choice</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TestItemTypeId == 1)</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">True /False</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TestItemTypeId == 3)</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">Matching</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TestItemTypeId == 5)</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">Fill-in-the-Blank</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TestItemTypeId == 2)</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">Short Answer type</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TestItemTypeId == 4)</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">Multiple Correct Answers</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TestItemTypeId == 6)</td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right" style="text-decoration:underline;font-weight:700; font-style:italic;padding:10px;padding-bottom:30px;">Total:</td>
+                                                <td style="font-weight:700;padding:10px 40px 30px 40px">@test.Test_Item_Links.Count(link => link.TestItem.TestItemTypeId >= 1 && link.TestItem.TestItemTypeId <= 6)</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </td>
+
+
+                                <td colspan="2" style=" border: none !important;padding:0px;vertical-align: top;">
+                                    <table>
+                                        <thead>
+                                            <tr><th style=" border: none !important; text-decoration: underline !important;padding:12px;" colspan="2">Taxonomy Level Summary:</th></tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">Application Item</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TaxonomyLevel.Description == "Application").ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">Analysis Items</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TaxonomyLevel.Description == "Analysis").ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">Recall Items</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TaxonomyLevel.Description == "Recall").ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">Evaluation Items</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TaxonomyLevel.Description == "Evaluation").ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border:1px solid;padding:10px 40px;">Create Items</td>
+                                                <td style="border:1px solid;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TaxonomyLevel.Description == "Create").ToString()</td>
+                                            </tr>
+                                            <tr>
+                                                <td align="right" style="text-decoration:underline;font-weight:700; font-style:italic;padding:10px;">Total:</td>
+                                                <td style="font-weight:700;padding:10px 40px;">@test.Test_Item_Links.Count(link => link.TestItem.TaxonomyLevel.Description == "Application" || link.TestItem.TaxonomyLevel.Description == "Analysis" || link.TestItem.TaxonomyLevel.Description == "Recall" || link.TestItem.TaxonomyLevel.Description == "Evaluation" || link.TestItem.TaxonomyLevel.Description == "Create")</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="4" style="border: none !important;padding:0px">
+                                    <table style="width:100%;">
+                                        <thead>
+                                            <tr>
+                                                <th style="border: none !important; text-decoration: underline !important;padding:10px;text-align:left;" colspan="2">Distribution by @("Enabling Objective".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <th style="border:1px solid;text-align:left;padding:10px;">EO ID</th>
+                                                <th colspan="2" style="border:1px solid;text-align:left;padding:10px;">EO Name</th>
+                                                <th style="border:1px solid;text-align:left;padding:10px;">Count</th>
+                                            </tr>
+                                            @{
+                                                int totaltestItemLinksCount = 0;
+                                            }
+                                            @foreach (var eo in test.Test_Item_Links.OrderBy(m => m.TestItem?.EnablingObjective?.FullNumber).Select(r => r.TestItem.EnablingObjective).Distinct())
+                                            {
+                                                if (eo != null)
+                                                {
+                                                    <tr>
+                                                        <td style="border:1px solid;text-align:left;padding:10px;">@eo.FullNumber</td>
+                                                        <td colspan="2" style="border:1px solid;text-align:left;padding:10px;">@eo.Description</td>
+                                                        @{
+                                                            int testItemLinksCount = test.Test_Item_Links.Count(r => r.TestItem.EnablingObjective == eo);
+                                                            totaltestItemLinksCount += testItemLinksCount;
+                                                        }
+                                                        <td style="border:1px solid;text-align:left;padding:10px;">@testItemLinksCount</td>
+                                                    </tr>
+                                                }
+                                            }
+
+                                            <tr>
+                                                <td colspan="3" align="right" style="text-decoration:underline;font-weight:700; font-style:italic;padding:10px;">Total:</td>
+                                                <td style="font-weight:700;padding:10px;">@totaltestItemLinksCount</td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="2" style=" border: none !important;padding:0px">
+                                    <table>
+                                        <tbody>
+                                            <tr>
+                                                <td style=" border: none !important; padding-left:0;"><b>  @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name/ID:</b></td>
+                                                <td colspan="3" style=" border: none !important;">
+                                                    <b>
+                                                        @if (test.ILATraineeEvaluations != null)
+                                                        {
+                                                            if (test.ILATraineeEvaluations.FirstOrDefault() == null)
+                                                            {
+                                                                <span></span>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>@test.ILATraineeEvaluations.First().ILA.Name </span>
+                                                            }
+                                                        }
+                                                    </b>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </td>
+                                <td colspan="2" style=" border: none !important;"></td>
+                            </tr>
+                        </table><table>
+                            @if (@Model.IsIncludeTestStatistics)
+                            {
+                                <tr>
+                                    <td colspan="2" style="border: none !important;padding-bottom:20px;">
+                                        <table style=" border-collapse: collapse; width: 100%;">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="3" style="border: none !important; text-decoration: underline !important; padding: 10px; text-align: left;">
+                                                        Test Completion Statistics:
+                                                    </th>
+                                                </tr>
+                                            </thead>
+                                            <tr>
+                                                <td style="border: 1px solid black; padding: 10px; font-weight: bold; text-align: center;">
+                                                    Employees Passed:
+                                                </td>
+                                                <td style="border: 1px solid black; padding: 10px; font-weight: bold; text-align: center;">
+                                                    Employees Failed:
+                                                </td>
+                                                <td style="border: 1px solid black; padding: 10px; font-weight: bold; text-align: center;">
+                                                    Average Test Score:
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="border: 1px solid black; padding: 10px; text-align: center;">
+                                                    @employeesPassedCount
+                                                </td>
+                                                <td style="border: 1px solid black; padding: 10px; text-align: center;">
+                                                    @employeesFailedCount
+                                                </td>
+                                                <td style="border: 1px solid black; padding: 10px; text-align: center;">
+                                                    @(averageTestScore)%
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+                            }
+
+                            @foreach (var (index, item) in test.Test_Item_Links.OrderBy(m => m.TestItem?.EnablingObjective?.FullNumber).Select((value, index) => (index, value)))
+                            {
+
+                                <tr style=" color: #567DFF;">
+                                    <td style=" border: none !important;padding:0px;">
+                                        <div style="padding-right:15px;padding-top:15px;">
+                                            <b> Item ID:</b>  @item.TestItem.Id
+                                        </div>
+                                    </td>
+                                    <td style=" border: none !important; padding: 0px;">
+                                        <div style="padding-left: 15px; padding-top: 15px;">
+                                            <b> EO:</b>  @item.TestItem.EnablingObjective?.FullNumber
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    @if (item.TestItem.TestItemTypeId == 2)
+                                    {
+                                        var fillUpDescription = Regex.Replace(item.TestItem.Description, @"<u>(.*?)<\/u>", "_______");
+                                        <td colspan="4" style=" border: none !important;padding:0px">
+                                            @(index + 1).<span style="display:inline-block;padding-top:10px;padding-bottom:10px"><b>@(new RawString(fillUpDescription))</b></span>
+                                        </td>
+                                    }
+                                    else
+                                    {
+                                        <td colspan="4" style=" border: none !important;padding:0px">
+                                            @(index + 1).<span style="display:inline-block;padding-top:10px;padding-bottom:10px"><b>@(new RawString(item.TestItem.Description))</b></span>
+                                        </td>
+                                    }
+
+                                </tr>
+
+                                @if (item.TestItem.TestItemTypeId == 1)
+                                {
+                                    <tr>
+                                        <td colspan="4" style="padding: 0px; border: none !important; padding-left: 16px">
+                                            <div style="display: -webkit-box; -webkit-box-pack: justify; display: flex; justify-content: space-between; align-items: center;">
+                                                <ol type="A" style="list-style-type: upper-alpha; margin: 0; padding: 0;">
+                                                    @foreach (var testitems in item.TestItem.TestItemMCQs)
+                                                    {
+                                                        @if (testitems.IsCorrect && @Model.IsShowCorrectAnswer)
+                                                        {
+                                                            <li><b>@(new RawString(testitems.ChoiceDescription))</b></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>@(new RawString(testitems.ChoiceDescription))</li>
+                                                        }
+                                                    }
+
+                                                </ol>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                else if (item.TestItem.TestItemTypeId == 2)
+                                {
+                                    <tr>
+                                        <td colspan="4" style="padding: 0px; border: none !important;">
+                                            @foreach (var testblanks in item.TestItem.TestItemFillBlanks)
+                                            {
+                                                @if (@Model.IsShowCorrectAnswer)
+                                                {
+                                                    <span><b>@(new RawString(testblanks.Correct))</b></span>
+                                                }
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                                else if (item.TestItem.TestItemTypeId == 3)
+                                {
+                                    <tr>
+                                        <td colspan="4" style="padding: 0px; border: none !important; padding-left: 16px">
+                                            <div style="display: -webkit-box; -webkit-box-pack: justify; display: flex; justify-content: space-between; align-items: center;">
+                                                <ol type="A" style="list-style-type: upper-alpha; margin: 0; padding: 0;">
+                                                    @foreach (var testOptions in item.TestItem.TestItemTrueFalses)
+                                                    {
+                                                        @if (testOptions.IsCorrect && @Model.IsShowCorrectAnswer)
+                                                        {
+                                                            <li><b>@(new RawString(testOptions.Choices))</b></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>@(new RawString(testOptions.Choices))</li>
+                                                        }
+                                                    }
+                                                </ol>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                else if (item.TestItem.TestItemTypeId == 4)
+                                {
+                                    <tr>
+                                        <td colspan="4" style="padding: 0px; border: none !important; padding-left: 16px">
+                                            <div style="display: -webkit-box; -webkit-box-pack: justify; display: flex; justify-content: space-between; align-items: center;">
+                                                <ol type="1" style="list-style-type: auto; margin: 0; padding: 0;">
+                                                    @foreach (var testanswers in item.TestItem.TestItemShortAnswers)
+                                                    {
+                                                        @if (@Model.IsShowCorrectAnswer)
+                                                        {
+                                                            <li><b>@(new RawString(testanswers.Responses))</b></li>
+                                                        }
+                                                    }
+                                                </ol>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                else if (item.TestItem.TestItemTypeId == 6)
+                                {
+                                    <tr>
+                                        <td colspan="4" style="padding: 0px; border: none !important; padding-left: 16px">
+                                            <div style="display: -webkit-box; -webkit-box-pack: justify; display: flex; justify-content: space-between; align-items: center;">
+                                                <ol type="A" style="list-style-type: upper-alpha; margin: 0; padding: 0;">
+                                                    @foreach (var testitems in item.TestItem.TestItemMCQs)
+                                                    {
+                                                        @if (testitems.IsCorrect && @Model.IsShowCorrectAnswer)
+                                                        {
+                                                            <li><b>@(new RawString(testitems.ChoiceDescription))</b></li>
+                                                        }
+                                                        else
+                                                        {
+                                                            <li>@(new RawString(testitems.ChoiceDescription))</li>
+                                                        }
+                                                    }
+
+                                                </ol>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                else if (item.TestItem.TestItemTypeId == 5)
+                                {
+                                    <tr>
+                                        <td colspan="4" style="padding: 0px; border: none !important; padding-left: 2px;">
+                                            <div style="display: -webkit-box; -webkit-box-pack: justify; display: flex; justify-content: space-between; align-items: center;">
+                                                <table style="width: 40%; border-collapse: collapse;">
+                                                    <tr>
+                                                        <td style="vertical-align: top; padding-right: 10px;border:none">
+                                                            <ol type="A" style="list-style-type: lower-alpha; margin: 0; padding: 0;">
+                                                                @foreach (var testitems in item.TestItem.TestItemMatches.Where(x => x.ChoiceDescription != "").OrderBy(m => m.MatchValue))
+                                                                {
+                                                                    <li><b>@(new RawString(testitems.ChoiceDescription))</b></li>
+                                                                }
+                                                            </ol>
+                                                        </td>
+                                                        <td style="vertical-align: top; padding-left: 10px; border: none">
+                                                            <ol type="A" style="list-style-type: upper-alpha; margin: 0; padding: 0;">
+                                                                @foreach (var testitems in item.TestItem.TestItemMatches.Where(x => x.MatchDescription != "").OrderBy(m => m.MatchValue))
+                                                                {
+                                                                    <li><b>@(new RawString(testitems.MatchDescription))</b></li>
+                                                                }
+                                                            </ol>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </div>
+                                            @if (@Model.IsShowCorrectAnswer)
+                                            {
+                                                <div style="padding-top: 10px;">
+                                                    @foreach (var testitems in item.TestItem.TestItemMatches.Where(x => x.MatchDescription != "" && x.ChoiceDescription != "").OrderBy(m => m.MatchValue))
+                                                    {
+                                                        <span>@Char.ToLower(testitems.MatchValue).<b>(@testitems.CorrectValue) &nbsp;</b></span>
+                                                    }
+                                                </div>
+                                            }
+                                        </td>
+                                    </tr>
+                                }
+                                @if (@Model.IsIncludeTestStatistics)
+                                {
+                                    @{
+                                        var testStatistics = @Model.TestStatistics?.FirstOrDefault(ts => ts.Test.Id == test.Id);
+                                    }
+
+                                    @foreach (var testItemStatistics in testStatistics.TestItemStatistics.Where(t => t.TestItem.Id == item.TestItem.Id))
+                                    {
+                                        <tr>
+                                            <td colspan="2" style=" border: none !important; padding-top:20px;">
+                                                <table style="border:3px; color:#000;">
+                                                    <thead>
+                                                        <tr><th style=" border: none !important; text-decoration: underline !important;text-align:left;padding:10px">Test Question Statistics:</th></tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        <tr>
+                                                            <td style="border:1px solid;padding:10px">Answered Correctly</td>
+                                                            <td style="border:1px solid;padding:10px">@testItemStatistics.AnsweredCorrectly</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="border:1px solid;padding:10px">Total Answers</td>
+                                                            <td style="border:1px solid;padding:10px">@testItemStatistics.TotalAnswers</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="border:1px solid;padding:10px">No of respondents | Answer selected</td>
+                                                            <td style="border:1px solid;padding:10px">
+                                                                <table style="width:100%; border-collapse:collapse;">
+                                                                    @foreach (var responseStat in testItemStatistics.ResponseStatistics?.OrderByDescending(rs => rs.ResponseCount))
+                                                                    {
+                                                                        <tr>
+                                                                            <td style="border:1px solid;padding:10px">@responseStat.ResponseCount</td>
+                                                                            <td style="border:1px solid;padding:10px">@(new RawString(@responseStat?.ResponseString)</td>
+                                                                        </tr>
+                                                                    }
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            }
+                        </table>
+                    </div>
+                    @if (!test.Equals(Model.Tests.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Tests.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>
+

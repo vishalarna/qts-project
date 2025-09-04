@@ -1,0 +1,17 @@
+<div>
+    <div>
+        <app-training-issue-action-items-table [trainingIssueDetail] = "inputTrainingIssue_Vm" [mode] = "'edit'" #actionItemTable></app-training-issue-action-items-table>
+    </div>
+    <div class="pt-5 flex flex-col">
+        <app-label class="text-xl font-weight-bold pb-3" text = "Planned Response"></app-label>
+       <form [formGroup]="plannedResponseForm" class="flex flex-col pb-0 mt-4">
+            <ckeditor
+              [editor]="Editor"
+              formControlName="plannedResponse"
+              name="plannedResponse"
+              (change)="onPlannedResponseChange($event)"
+              (ready)="onEditorReady($event)"
+            ></ckeditor>
+        </form> 
+    </div>
+</div>

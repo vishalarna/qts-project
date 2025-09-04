@@ -1,0 +1,129 @@
+<div  class="flex flex-col px-12 py-12">
+    <ng-container>
+        <div class="flex flex-row justify-between">
+            <p *ngIf="licenseEditMode == 'Add'" class="font-bold text-lg m-0 p-0">Add License</p>
+            <p *ngIf="licenseEditMode == 'Update'" class="font-bold text-lg m-0 p-0">Update License</p>
+            <app-button ButtonType="icon" icon="close" (clicked)="closed.emit()"></app-button>
+        </div>
+    </ng-container>
+    <form [formGroup]="licenseForm">
+        <div class="mt-4">
+          <label>Client Id</label>
+            <app-textbox type="text" formControlName="clientId"></app-textbox>
+          </div>
+        <div class="mt-4">
+          <label>Activation Code</label>
+          <app-textbox type="text" placeholder="Enter activation code" formControlName="activationCode" (input)="resetActivationCodeDetails($event)"></app-textbox>
+        </div>
+        <section class="flex w-full ml-2 mt-3" style="justify-content:flex-end;">
+          <app-button class="mr-2"  ButtonType="button" color="secondary" size="sm" text="Analyze" (clicked)="analyzeLicenseAsync()" [spinner]="loader"></app-button>
+          <app-button [disabled]="!isLicenseAnalyzed" ButtonType="button" color="secondary" size="sm" text="Save" (clicked)="createAndUpdateLicense()" [spinner]="saveLoader"></app-button>
+        </section>
+      </form>
+
+      <div *ngIf="licenseDetail && isLicenseAnalyzed" class="flex w-full mt-4" style="justify-content: center">
+        <div style="width: 100%" class="flex flex-col">
+            <div class="flex flex-col bg-white mat-elevation-z3 p-4 card-shadow">
+                <div class="mb-3 panel-heading">
+                    License Information
+                </div>
+
+                <div class="flex flex-row align-items-center row-spacewrap">
+                    <app-label text="Client Id"
+                        class="text-gray-300 company-text label-wrap"></app-label>
+                    <div class="flex flex-col float-left w-full text-wrap">
+                        <label>{{licenseDetail?.clientAccountNumber}}</label>
+                    </div>
+                </div>
+                <div class="flex flex-row align-items-center row-spacewrap">
+                    <app-label text="License Type"
+                        class="text-gray-300 company-text label-wrap"></app-label>
+                    <div class="flex flex-col float-left w-full text-wrap">
+                        <label>{{licenseDetail?.licenseType}}</label>
+                    </div>
+                </div>
+                <div class="flex flex-row align-items-center row-spacewrap">
+                    <app-label
+                        text="Current no. of {{('Employee' | labelReplacement)| async}} Records/Total {{('Employee' | labelReplacement)| async}} Records Available"
+                        class="text-gray-300 company-text label-wrap"></app-label>
+                    <div class="flex flex-col float-left w-full text-wrap">
+                        <label>{{licenseDetail?.employeeRecordsUsed}}
+                            /{{licenseDetail?.totalEmployeeRecordsAvailable}}</label>
+                    </div>
+                </div>
+
+                <div class="flex flex-row align-items-center row-input-spacewrap">
+                    <app-label text="Activation Code"
+                        class="text-gray-300 company-text label-wrap"></app-label>
+                    <div class="flex flex-col float-left w-full">
+                        <label>{{licenseDetail?.activationCode}}</label>
+                    </div>
+                </div>
+
+                <div class="flex flex-row content-wrap" style="padding: 0.5em 1em 0.3em;">
+                    <app-label text="Activation Code Expiration"
+                        class="text-gray-300 company-text"></app-label>
+                    <div class="flex flex-col float-left w-full text">
+                        {{licenseDetail?.expiration | date }}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div *ngIf="productDetailDataSource && isLicenseAnalyzed" class="row m-auto label-mb-0">
+        <div class="flex w-full" style="justify-content: center">
+            <div style="width: 100%" class="flex flex-col">
+                <div class="flex flex-col bg-white mat-elevation-z3 p-4 card-shadow">
+                    <div class="panel-heading">
+                        QTD Product Suite
+                    </div>
+                    <mat-table [dataSource]="productDetailDataSource">
+                        <ng-container matColumnDef="productName">
+                            <mat-header-cell *matHeaderCellDef> Product Name
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.productName}} </mat-cell>
+                        </ng-container>
+
+                        <ng-container matColumnDef="productAcronym">
+                            <mat-header-cell *matHeaderCellDef>Product Acronym
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.productAcronym}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="releaseDate">
+                            <mat-header-cell *matHeaderCellDef>Version & Release Date
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.releaseDate}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="companyProduct">
+                            <mat-header-cell *matHeaderCellDef>Does my company have this product?
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row"
+                                [ngClass]=" row.enabled === true ? 'success' : 'failure'">
+                                {{row.enabled
+                                ===
+                                true ? "Yes" : "No"}} </mat-cell>
+                        </ng-container>
+
+                        <mat-header-row *matHeaderRowDef="displayLicenseExpandColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayLicenseExpandColumns;">
+                        </mat-row>
+
+                        <tr class="mat-row flex text-center " *matNoDataRow>
+                            <td class="mat-cell w-full m-2">No data to display</td>
+                        </tr>
+
+                    </mat-table>
+                    <div class="flex flex-row align-items-center content-text">
+                        For more information on your company's current license type and to learn
+                        more
+                        about
+                        the QTD Product
+                        Suite, send and email to&nbsp;
+                        <a class="email-wrap">sales@qualitytraningsystems.com</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+  </div>

@@ -1,0 +1,25 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+        <p class="text-xl font-bold text-gray-900">{{ mode === 'view' ? 'View Criteria' : 'Edit Criteria'}}</p>
+        <app-button (click)="flyPanelService.close()" ButtonType='icon' icon="close"></app-button>
+    </div>
+    <div class="flex flex-col pb-0 mt-4 px-5">
+        <form [formGroup]="editCriteriaForm">
+            <ckeditor
+            [disabled]="mode === 'view'"
+            [editor]="editor"
+                name="Prerequisites"
+                formControlName="criteriaDescription"
+              ></ckeditor>
+        </form>
+    </div>
+    <div class="px-12 mt-8 float-right" *ngIf="mode ==='edit'">
+        <app-button type="button" size="sm"
+          (clicked)="saveTaskCriteriaAsync(saveDescription)" color="primary" text="Save">
+        </app-button>
+      </div>
+</ng-container>
+
+ <ng-template #saveDescription>
+   <app-edit-criteria-modal  [taskCriteriaVM]="taskCriteriaVM"></app-edit-criteria-modal>
+</ng-template> 

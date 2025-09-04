@@ -1,0 +1,27 @@
+<div>
+  <div class="flex flex-row justify-between items-center px-3 mt-4">
+    <p *ngIf="editStep?.number === undefined" class="text-xl font-bold text-gray-900">Add New Step</p>
+    <p *ngIf="editStep?.number !== undefined" class="text-xl font-bold text-gray-900">Edit Step</p>
+    <app-button (clicked)="closed.emit('fp-add-step')" ButtonType='icon' icon="close">
+    </app-button>
+  </div>
+  <div class="w-11/12 ml-4 mt-4 flex flex-col">
+    <div class="mt-3">
+      <app-label [for]="'number'" text="Step Number"></app-label>
+      <app-textbox [(ngModel)]="stepNum" [disabled]="true" [defaultValue]="'05'"></app-textbox>
+    </div>
+    <div class="mt-3">
+      <app-label [for]="'descciption'" text="Description"></app-label>
+      <ckeditor [(ngModel)]="description" [editor]="editor">
+      </ckeditor>
+      <app-input-error *ngIf="description.length < 1" text="Description is required"></app-input-error>
+    </div>
+    <div class="flex flex-row-reverse">
+      <div class="self-end pt-12">
+        <app-button [spinner]="showSpinner" *ngIf="editStep?.number === undefined" [disabled]="description.length < 1 || showSpinner" (clicked)="saveStep()" text="Save" size="sm"></app-button>
+        <app-button [spinner]="showSpinner" *ngIf="editStep?.number !== undefined" [disabled]="description.length < 1 || showSpinner" (clicked)="updateStepData()" text="Update" size="sm"></app-button>
+
+      </div>
+    </div>
+  </div>
+</div>

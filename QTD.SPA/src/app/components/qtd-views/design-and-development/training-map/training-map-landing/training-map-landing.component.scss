@@ -1,0 +1,29 @@
+mat-card {
+  padding: 2rem !important;
+  // max-width: 500px !important;
+  height: 96%;
+  width: 96%;
+}
+mat-card-title {
+  font-family: Roboto;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: 0.15000000596046448px;
+  text-align: left;
+}
+
+// mat-grid-tile {
+//   background: lightblue;
+// }
+
+mat-card-footer {
+  display: initial;
+}
+
+.qtd-chip {
+  background-color: rgba(223, 223, 223, 0.8);
+  color: rgb(47, 141, 70, 1);
+  border-radius: 5px;
+}

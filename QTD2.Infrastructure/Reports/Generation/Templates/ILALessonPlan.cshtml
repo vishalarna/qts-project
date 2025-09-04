@@ -1,0 +1,580 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+@using QTD2.Infrastructure.Model.ILA
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .segment-table-header {
+        display: table-row-group;
+    }
+
+    .fix-image * {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .fix-image img {
+        width: 400px !important;
+        height: auto !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+    }
+
+    .fix-image ul, .fix-image ol {
+        margin: 0 !important;
+        padding: 0 0 0 20px !important;
+        list-style-position: inside !important;
+    }
+
+    .fix-image li {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1rem;
+    }
+
+    .fix-image p {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.5 !important;
+    }
+
+    .fix-image strong {
+        font-weight: bold !important;
+    }
+
+    .fix-image u {
+        text-decoration: underline !important;
+    }
+
+    .fix-image table {
+        border-collapse: collapse;
+    }
+
+    .fix-image table td,
+    .fix-image table th {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table" style="width:100%;margin-bottom:0px; padding:0 25px 0 25px;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.ILAs.Count() > 0)
+    {
+        <tr>
+            <td style="border:none;padding-top:0;" class="strip-container">
+                @{
+                    int j = 1;
+                }
+
+                @foreach (var ila in Model.ILAs)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+
+                        <table class="table" style="width:100%;">
+                            <tr>
+                                <td style="border: none !important; font-size: 17px; margin-bottom: 8px; font-weight: 600;"><b>Individual Learning Activity Information</b></td>
+                            </tr>
+                            <tr>
+                                <td style="border: none !important; padding: 0px; padding-left: 15px;">
+                                    <div style="display: -webkit-box; display: flex;"><div style="width:23%; font-weight: 600;">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) ID:</div> <div style="width: 77%;">@ila.Number</div></div>
+                                </td>
+                            </tr>
+                            @if (Model.DisplayColumns.Where(r => r == "ILA Description").Count() > 0)
+                            {
+                                <tr>
+                                    <td style="border: none !important; padding: 0px; padding-left: 15px;">
+                                        <div style="display: -webkit-box; display: flex;"><div style="width:23%;font-weight: 600;">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Description:</div> <div style="width: 77%; word-wrap: break-word; white-space: pre-line; overflow-wrap: break-word; overflow: hidden;">@ila.Description</div></div>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td style="border: none !important; padding: 0px; padding-left: 15px;">
+                                    <div style="display: -webkit-box; display: flex;"><div style="width:23%;display:block;font-weight: 600;">Estimated Duration(hrs):</div> <div style="width: 77%;">@ila.TotalTrainingHours</div></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none !important;  padding: 0px; padding-left: 15px;">
+                                    <div style="display: -webkit-box; display: flex; "><div style="width:23%;font-weight: 600;">Type of Activity:</div> <div style="width: 77%;">@ila.DeliveryMethod?.Name</div></div>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="border: none !important; padding: 0px; padding-left: 15px;">
+                                    <div style="display: -webkit-box; display: flex;">
+                                        <div style="width:23%;font-weight: 600;">Target Audience:</div>
+                                        <div style="word-wrap: break-word;width:77%;">
+                                            @{
+                                                var targetAudienceNames = ila.ILA_NERCAudience_Links.Select(link => link.NERCTargetAudience.Name);
+                                                @string.Join(", ", targetAudienceNames)
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+
+                        @if (Model.DisplayColumns.Where(r => r == "ILA Training Plan").Count() > 0)
+                        {
+                            <table style="width: 100%; border-collapse: collapse; padding-bottom: 5px;border:none;">
+                                <thead class="segment-table-header">
+                                    <tr>
+                                        <th colspan="2" style="font-size: 17px; border:none; margin-top: 10px; font-weight: 600;text-align:left;">
+                                            <b>Training Plan</b>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ila.TrainingPlan != null && ila.TrainingPlan!=String.Empty)
+                                    {
+                                        <tr>
+                                            <td style="font-weight: 600;padding-left: 15px;border:none;text-align:left;" class="fix-image">
+                                                @(new RawString(ila.TrainingPlan))
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                        {
+                            <table style="width: 100%; border-collapse: collapse;border:none;">
+                                <thead class="segment-table-header">
+                                    <tr>
+                                        <th colspan="2" style="font-size: 17px; margin-top: 10px; font-weight: 600;;border:none;text-align:left;">
+                                            <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))</b>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var position in ila.ILA_Position_Links)
+                                    {
+                                        <tr>
+                                            <td style="padding-left: 15px;text-align:left;border:none">@position.Position.PositionNumber - @position.Position.PositionTitle</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "Topic").Count() > 0)
+                        {
+
+                            <table style="width: 100%; border-collapse: collapse; border:none">
+                                <thead class="segment-table-header">
+                                    <tr>
+                                        <th colspan="2" style="font-size: 17px;text-align:left; margin-top: 10px; font-weight: 600;border:none">
+                                            <b>Topics</b>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var topic in ila.ILA_Topic_Links)
+                                    {
+                                        <tr>
+                                            <td style="padding-left: 15px;text-align:left;border:none">@topic.ILA_Topic.Name</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "Regulatory Requirements").Count() > 0)
+                        {
+                            <table style="width: 100%; border-collapse: collapse;border:none">
+                                <thead class="segment-table-header">
+                                    <tr>
+                                        <th colspan="2" style="font-size: 17px; margin-top: 10px; text-align:left; font-weight: 600;border:none">
+                                            <b>@("Regulatory Requirement".ReplaceLabel(Model.ClientSettings_LabelReplacements))</b>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var regRequirement in ila.ILA_RegRequirement_Links)
+                                    {
+                                        <tr>
+                                            <td style="padding-left: 15px;text-align:left;border:none">@regRequirement.RegulatoryRequirement.Number - @regRequirement.RegulatoryRequirement.Title</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+
+                        @if (Model.DisplayColumns.Where(r => r == "ILA Prerequisites").Count() > 0)
+                        {
+                            <table style="width: 100%; border-collapse: collapse;border:none">
+                                <thead class="segment-table-header">
+                                    <tr>
+                                        <th colspan="2" style="font-size: 17px; text-align:left;margin-top: 10px; font-weight: 600;border:none">
+                                            <b>Prerequisites</b>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var preRequisitesLink in ila.ILA_PreRequisite_Links)
+                                    {
+                                        <tr>
+                                            <td style="padding-left: 15px;text-align:left; border:none">@preRequisitesLink.PreRequisite.Number - @preRequisitesLink.PreRequisite.Name</td>
+                                        </tr>
+                                    }
+                                    @if (ila.Prerequisites != null && ila.Prerequisites != String.Empty)
+                                    {
+                                        <tr>
+                                            <td style="padding-left: 15px;text-align:left;border:none" class="fix-image">@(new RawString(ila.Prerequisites))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        }
+
+
+                        @if (Model.DisplayColumns.Where(r => r == "ILA Procedures").Count() > 0)
+                        {
+                            <table style="width: 100%; border-collapse: collapse;border:none">
+                                <thead class="segment-table-header">
+                                    <tr>
+                                        <th colspan="2" style="font-size: 17px; text-align:left;margin-top: 10px; font-weight: 600;border:none">
+                                            <b>@("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</b>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ilaProcedureLink in ila.ILA_Procedure_Links)
+                                    {
+                                        <tr>
+                                            <td style="padding-left: 15px;text-align:left;border:none">@ilaProcedureLink.Procedure.Number - @ilaProcedureLink.Procedure.Title</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        }
+
+                        @if (Model.DisplayColumns.Where(r => r == "Safety Hazards").Count() > 0)
+                        {
+                            <table style="width: 100%; border-collapse: collapse;border:none">
+                                <thead class="segment-table-header">
+                                    <tr>
+                                        <th colspan="2" style="font-size: 17px; text-align:left;margin-top: 10px; font-weight: 600;border:none">
+                                            <b>Hazards</b>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var ilaSafetyHazardLink in ila.ILA_SafetyHazard_Links)
+                                    {
+                                        <tr>
+                                            <td style="padding-left: 15px;text-align:left;border:none">@ilaSafetyHazardLink.SafetyHazard.Number - @ilaSafetyHazardLink.SafetyHazard.Title</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        }
+
+                        @if (Model.DisplayColumns.Where(r => r == "ILA Evaluation Methods").Count() > 0)
+                        {
+                            <table style="width: 100%; border-collapse: collapse;border:none">
+                                <thead class="segment-table-header">
+                                    <tr>
+                                        <th colspan="2" style="font-size: 17px;text-align:left; margin-top: 10px; font-weight: 600; border:none">
+                                            <b>Evaluation Method</b>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @if (ila.TrainingEvalMethods != null && ila.TrainingEvalMethods != String.Empty)
+                                    {
+                                        <tr>
+                                            <td style="padding-left: 15px;text-align:left; border:none" class="fix-image">@(new RawString(ila.TrainingEvalMethods))</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "ILA Training Resources").Count() > 0)
+                        {
+                            <div>
+
+                                <table style="width:100%; border:0;border-collapse:collapse;padding-left:15px;">
+                                    <thead>
+                                        <tr>
+                                            <td style="border: none !important; font-size: 17px; margin-bottom: 8px; font-weight: 600;"><b>Training Resources</b></td>
+                                        </tr>
+                                        <tr>
+                                            <th style=" border: 1px solid;padding: 0px;border-left:0;padding-left:15px;" align="left" colspan="2">
+                                                #:
+                                            </th>
+                                            <th align="left" style=" border: 1px solid; padding: 0px; padding-left: 5px" colspan="6">
+                                                Description:
+                                            </th>
+                                            <th align="left" style=" border: 1px solid; padding: 0px; padding-left:5px; border-right:0;" colspan="4">
+                                                File Path and Name:
+                                            </th>
+
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int counter = 1;
+                                        }
+                                        @foreach (var ilaUpload in ila.ILA_Uploads)
+                                        {
+
+                                            <tr>
+                                                <td colspan="2" style="border:none; padding:0px">@counter</td>
+                                                <td colspan="6" style="border: none; padding: 0px">TODO Description</td>
+                                                <td colspan="4" style="border: none; padding: 0px; color:blue;">@ilaUpload.FileName</td>
+                                                @{
+                                                    counter++;
+                                                }
+                                            </tr>
+                                        }
+                                        @foreach (var ilaResources in ila.ILA_Resources)
+                                        {
+
+                                            <tr>
+                                                <td colspan="2" style="border:none; padding:0px">@counter</td>
+                                                <td colspan="6" style="border: none; padding: 0px">@ilaResources.Comments</td>
+                                                <td colspan="4" style="border: none; padding: 0px; color:blue;">@ilaResources.Title</td>
+                                                @{
+                                                    counter++;
+                                                }
+                                            </tr>
+                                        }
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        }
+
+
+                        @if (Model.DisplayColumns.Where(r => r == "ILA Segment and Content").Count() > 0)
+                        {
+
+                            <div>
+                                <table>
+                                    <tr>
+                                        <td style="border: none !important; font-size: 17px; margin-bottom: 8px; font-weight: 600;"><b>Individual Learning Activity Content</b></td>
+                                    </tr>
+                                </table>
+                                <table style="width:100%; border:0;border-collapse:separate;border-spacing:0; padding-left:15px;">
+                                    <thead class="segment-table-header">
+                                        <tr>
+                                            <th style="border: 1px solid #000;padding:5px;text-align:center;" rowspan="2">#</th>
+                                            <th style="border: 0; border-top: 1px solid #000; padding: 5px; text-align:center" colspan="3">Objectives</th>
+                                            <th style="border: 1px solid #000; padding: 5px;vertical-align:middle;text-align:center;width:40%" rowspan="2">Segment Content</th>
+                                        </tr>
+                                        <tr>
+                                            <th style="border: 0; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 5px; ">Type</th>
+                                            <th style="border: 1px solid #000; border-bottom: 1px solid #000; padding: 5px; ">#</th>
+                                            <th style="border: 0; border-top: 1px solid #000; border-bottom: 1px solid #000; padding: 5px; "> Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int segmentCounter = 1;
+                                        }
+                                        @foreach (var ilaSegmentLink in ila?.ILA_Segment_Links?.OrderBy(r => r.DisplayOrder))
+                                        {
+                                            <tr>
+                                                @{
+
+                                                    int? objectiveCount = ilaSegmentLink?.Segment?.SegmentObjective_Links?.Count() == 0 ? 1 : ilaSegmentLink?.Segment?.SegmentObjective_Links?.Count();
+                                                }
+                                                <td style="border: 1px solid #000; border-top: 0; padding: 5px; vertical-align:top;padding-left:15px;" rowspan="@objectiveCount">@segmentCounter</td>
+                                                @if (ilaSegmentLink?.Segment?.SegmentObjective_Links != null && ilaSegmentLink.Segment.SegmentObjective_Links.Any())
+                                                {
+                                                    ilaSegmentLink.Segment.SegmentObjective_Links = ilaSegmentLink?.Segment?.SegmentObjective_Links?.OrderBy(t => t?.EnablingObjective?.FullNumber, new AlphaNumericSortHelper()).ToList();
+                                                    var firstLink = ilaSegmentLink?.Segment?.SegmentObjective_Links?.Where(sol => sol.EnablingObjectiveId == null || sol.EnablingObjective?.Active == true).FirstOrDefault();
+                                                    @if (firstLink?.EnablingObjectiveId != null)
+                                                    {
+                                                        <td style="border: 0; border-bottom: 1px solid #000;padding-left:15px; padding: 5px; vertical-align:top">EO</td>
+                                                        <td style="border: 1px solid #000; border-top: 0;padding-left:15px; padding: 5px;vertical-align:top">@firstLink?.EnablingObjective?.FullNumber</td>
+                                                        <td style="border-bottom: 1px solid #000;padding-left:15px; padding: 5px;vertical-align:top">@firstLink?.EnablingObjective?.Description</td>
+                                                    }
+                                                    else if (firstLink?.CustomEOId != null)
+                                                    {
+                                                        <td style="border: 0; border-bottom: 1px solid #000; padding-left:15px;padding: 5px;vertical-align:top">Custom EO</td>
+                                                        <td style="border: 1px solid #000; border-top: 0;padding-left:15px; padding: 5px; vertical-align:top">@firstLink?.CustomEnablingObjective?.FullNumber</td>
+                                                        <td style="border-bottom: 1px solid #000; padding-left:15px;padding: 5px; vertical-align:top">@firstLink?.CustomEnablingObjective?.Description</td>
+                                                    }
+                                                    else if (firstLink?.TaskId != null)
+                                                    {
+                                                        <td style="border: 0; border-bottom: 1px solid #000;padding-left:15px; padding: 5px; ">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))</td>
+                                                        <td style="border: 1px solid #000; border-top: 0;padding-left:15px; padding: 5px; ">@firstLink?.Task?.FullNumber</td>
+                                                        <td style="border-bottom: 1px solid #000;padding-left:15px; padding: 5px; ">@firstLink?.Task?.Description</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="border: 0; border-bottom: 1px solid #000; padding-left:15px;padding: 5px; "></td>
+                                                        <td style="border: 1px solid #000; border-top: 0;padding-left:15px; padding: 5px;"></td>
+                                                        <td style="border-bottom: 1px solid #000; padding-left:15px;padding: 5px;"></td>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <td style="border: 0; border-bottom: 1px solid #000; padding-left:15px; padding: 5px; "></td>
+                                                    <td style="border: 1px solid #000; border-top: 0;padding-left:15px; padding: 5px;"></td>
+                                                    <td style="border-bottom: 1px solid #000; padding-left:15px; padding: 5px;"></td>
+                                                }
+                                                <td style="border: 1px solid #000; border-top: 0;padding-left:15px; padding: 5px; width: 40%" rowspan="@objectiveCount" class="fix-image">@(new RawString(ilaSegmentLink?.Segment?.Content ?? string.Empty))</td>
+                                            </tr>
+
+                                            @foreach (var ilasegmentobjectivelinks in ilaSegmentLink?.Segment?.SegmentObjective_Links?.Where(sol => sol.EnablingObjectiveId == null || sol.EnablingObjective?.Active == true).Skip(1))
+                                            {
+                                                <tr>
+                                                    @if (ilasegmentobjectivelinks?.EnablingObjectiveId != null)
+                                                    {
+                                                        <td style="border: 0; border-bottom: 1px solid #000;padding-left:15px; padding: 5px; ">EO</td>
+                                                        <td style="border: 1px solid #000; border-top: 0;padding-left:15px; padding: 5px; ">@ilasegmentobjectivelinks?.EnablingObjective?.FullNumber</td>
+                                                        <td style="border-bottom: 1px solid #000;padding-left:15px; padding: 5px; ">@ilasegmentobjectivelinks?.EnablingObjective?.Description</td>
+                                                    }
+                                                    else if (ilasegmentobjectivelinks?.CustomEOId != null)
+                                                    {
+                                                        <td style="border: 0; border-bottom: 1px solid #000;padding-left:15px; padding: 5px; ">Custom EO</td>
+                                                        <td style="border: 1px solid #000; border-top: 0; padding-left:15px;padding: 5px; ">@ilasegmentobjectivelinks?.CustomEnablingObjective?.FullNumber</td>
+                                                        <td style="border-bottom: 1px solid #000;padding-left:15px; padding: 5px; ">@ilasegmentobjectivelinks?.CustomEnablingObjective?.Description</td>
+                                                    }
+                                                    else if (ilasegmentobjectivelinks?.TaskId != null)
+                                                    {
+                                                        <td style="border: 0; border-bottom: 1px solid #000; padding-left:15px;padding: 5px; ">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))</td>
+                                                        <td style="border: 1px solid #000; border-top: 0;padding-left:15px; padding: 5px; ">@ilasegmentobjectivelinks?.Task?.FullNumber</td>
+                                                        <td style="border-bottom: 1px solid #000; padding-left:15px;padding: 5px; ">@ilasegmentobjectivelinks?.Task?.Description</td>
+                                                    }
+                                                </tr>
+                                            }
+                                            segmentCounter++;
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+
+
+                        }
+                        @if (Model.DisplayColumns.Where(r => r == "List of Objectives").Count() > 0)
+                        {
+                            <table style="width: 100%; border-collapse: collapse; border:none !important;">
+                                <thead class="segment-table-header">
+                                    <tr>
+                                        <th colspan="2" style="font-size: 17px; margin-bottom: 8px; margin-top: 20px; font-weight: 600;border:none;text-align:left;">
+                                            <b>Individual Learning Activity Objectives</b>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        int objCounter = 1;
+                                        var eoObjectiveLinks = ila.ILA_EnablingObjective_Links.Where(x=>x.EnablingObjective.Active).Select(x=>new ILAObjectivesVM{Description=x.EnablingObjective.Description,Number = x.EnablingObjective.FullNumber,Order = x.ILAObjectiveOrder});
+                                        var taskObjectiveLinks = ila.ILA_TaskObjective_Links.Where(x=>x.Task.Active).Select(x=>new ILAObjectivesVM{Description=x.Task.Description,Number = x.Task.FullNumber,Order = x.ILAObjectiveOrder});
+                                        var customEoObjectiveLinks = ila.ILACustomObjective_Links.Where(x=>x.CustomEnablingObjective.Active).Select(x=>new ILAObjectivesVM{Description=x.CustomEnablingObjective.Description,Number = x.CustomEnablingObjective.FullNumber,Order = x.ILAObjectiveOrder});
+                                        var ilaObjectiveLinks = eoObjectiveLinks.Concat(taskObjectiveLinks).Concat(customEoObjectiveLinks);
+                                    }
+                                    @foreach (var ilaObjLink in ilaObjectiveLinks.OrderBy(x=>x.Order))
+                                    {
+                                        <tr style="padding: 5px 0;">
+                                            <td style="padding-left:15px; border:none;vertical-align:top;">@objCounter</td>
+                                            <td style="border:none;">
+                                                <i>@ilaObjLink.Description (@ilaObjLink.Number)</i>
+                                            </td>
+                                        </tr>
+                                        @{
+                                            objCounter++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        }
+                    </div>
+                    @if (!ila.Equals(Model.ILAs.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                    <table>
+                        <tr></tr>
+                    </table>
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.ILAs.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>
+

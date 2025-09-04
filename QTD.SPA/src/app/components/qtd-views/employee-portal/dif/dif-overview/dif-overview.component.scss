@@ -1,0 +1,53 @@
+.mat-tab-group{
+    max-width: 100% !important;
+    background-color: white;
+}
+
+.customcolor {
+    background-color: rgba(92, 155, 49, 0.1);
+    width: 124px; 
+    display: inline-block;
+    text-align: center; 
+    margin-top: 12px;
+    color:#5C9B31;
+  }
+
+  .icon {
+    border-radius: 60%;
+    background-color: #456FA5;
+    color: white;
+    padding: 0.5em;
+    margin-left: 0.5rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .icon__value {
+    overflow: visible;
+    height: 0;
+    margin-top: -1.35em;
+  }
+  .table-header{
+    color: #7A807E !important;
+    font-weight: 400;
+  }
+  .app-button{
+    width: 124px; 
+    padding: 0.5rem 1.5rem;
+    color: #456FA5;
+    border: 1px solid rgba(69, 111, 165, 1);
+    border-radius: 4px;
+  }
+  .btn-view-response {
+    width: 153px;
+    padding: 0.5rem 1.5rem;
+    color: #456FA5;
+    border: 1px solid #456fa5;
+    border-radius: 4px;
+  }
+  .mat-tab-label{
+    background-color: rgba(0, 0, 0, 0.08);
+  }

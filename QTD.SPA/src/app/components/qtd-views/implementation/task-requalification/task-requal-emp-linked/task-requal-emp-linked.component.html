@@ -1,0 +1,176 @@
+<app-header [toggleMenuIcon]="false" breadcrumbs="Implementation / {{('Task' | labelReplacement)| async}} & Skill Qualification"></app-header>
+<app-data-loader *ngIf="isLoading"></app-data-loader>
+<div *ngIf="!isLoading" class="pt-4 pb-4 pl-5 pr-4 flex flex-col w-full">
+  <section class="pl-4 pr-4 pt-2 flex flex-col bg-white rounded-sm mat-elevation-z3">
+    <div class="flex flex-row cursor-pointer" (click)="goBack()" style="align-items:baseline;">
+      <app-icon icon="keyboard_arrow_left" class="linkText mr-3"></app-icon>
+      <span class="text-xs font-thin linkText">{{("Task" | labelReplacement)| async}} & Skill Qualification main view</span>
+    </div>
+    <div class="flex flex-row mt-4 pb-4 border-b-2">
+      <span style="margin-left:0.4rem" class="mr-4 text-base font-normal">{{(taskwithNum.taskNumber)}}</span>
+      <div class="w-full flex">
+        <span class="text-base font-normal" style="width:75%">{{taskwithNum.taskDescription}}</span>
+      </div>
+
+    </div>
+    <div class="flex flex-row pt-4 pb-4" style="margin-left:4.5rem;">
+      <div class="mr-4">
+        <span class="text-gray-500">Requalification Required : </span>
+        <span class="font-medium">{{taskwithNum.requalificationRequired ? "YES":"NO"}}</span>
+      </div>
+      <div>
+        <span class="text-gray-500">Due Date : </span><span class="font-medium">{{taskwithNum.dueDate === null ? "NA":
+          (taskwithNum.dueDate | date:'MM/dd/yyyy')}}</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="flex flex-row justify-between mt-5 mb-4" style="align-items:center">
+    <span class="text-lg font-bold">{{("Employee" | labelReplacement)| async}}s Linked to {{("Task" | labelReplacement)| async}}</span>
+    <app-button [mat-menu-trigger-for]="filterBy" ButtonType="button" color="secondary" size="sm"
+      rightIcon="keyboard_arrow_down" leftIcon="filter_alt" text="Filter by"></app-button>
+    <mat-menu #filterBy="matMenu" backdropClass="qtd__menu">
+      <label (click)="filterByEMP = 'Position';openFlyPanel(filter);statusFilter=''" mat-menu-item>{{("Position" | labelReplacement)| async}}s</label>
+      <label (click)="filterByEMP = 'Status';openFlyPanel(filter);posId=''" mat-menu-item>Status</label>
+      <label (click)="filterByEMP = 'All';clearFilters()" mat-menu-item>Clear</label>
+    </mat-menu>
+  </section>
+
+  <section>
+    <table matSort class="w-full mat-elevation-z3 rounded-sm" [dataSource]="dataSource" mat-table>
+
+      <ng-container matColumnDef="empName">
+        <th style="width:20%" mat-header-cell mat-sort-header *matHeaderCellDef>
+          {{("Employee" | labelReplacement)| async}} Name
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="flex flex-row">
+            <img [src]="row.empImage" onerror="this.src='assets/img/ImageNotFound.jpg'"
+              class="rounded-full mr-2 mt-1" style="width:2rem;height:2rem">
+            <div class="flex flex-col">
+              <span class="font-bold w-full">{{row.empName}}</span>
+              <span class="text-xs text-gray-400 font-thin w-full" style="word-break:break-all;">{{row.empEmail}}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container *ngIf="hasEMPPortal" matColumnDef="empReleaseDate">
+        <th mat-sort-header style="width:12%" mat-header-cell *matHeaderCellDef>
+          EMP Release Date
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span class="text-xs font-light text-gray-400">
+            {{row.empReleaseDate === null ? "N/A" : (row.empReleaseDate | date:'MM/dd/yyyy')}}
+          </span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="evaluatorName">
+        <th mat-sort-header style="width:12%" mat-header-cell *matHeaderCellDef>
+          Qualification Date / Evaluator
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="flex flex-col">
+            <span class="text-xs font-thin text-gray-400">{{row.qualificationDate === null ? "N/A" :
+              (row.qualificationDate | dateFormat) | async}}</span>
+            <span class="linkText" [innerHTML] = "row.evaluatorName"></span>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="dueDate">
+        <th mat-sort-header style="width:8%;" mat-header-cell *matHeaderCellDef>
+          Due Date
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span class="text-xs font-light text-gray-400">{{row.dueDate === null ? "N/A" : (row.dueDate |
+            date:'MM/dd/yyyy')}}</span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="criteriaMet">
+        <th mat-sort-header style="width:8%;" mat-header-cell *matHeaderCellDef>
+          Criteria Met (Y/N)
+        </th>
+        <td mat-cell *matCellDef="let row">
+          {{row.criteriaMet ? 'Y':'N'}}
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="status">
+        <th mat-sort-header style="width:18%" mat-header-cell *matHeaderCellDef>
+          (Re)Qualification Status
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <div class="flex flex-row" style="align-items:center">
+            <div
+              [ngClass]="{'initial':row.status.trim().toLowerCase() !== 'overdue','overdue':row.status.trim().toLowerCase() === 'overdue'}"
+              class="rounded-sm py-1 px-1 common text-center">
+              <span class="font-bold text-xs">{{row.status}}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="comments">
+        <th style="width:20%" mat-header-cell *matHeaderCellDef>
+          Comments
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <span class="tq-comments" [innerHTML] = "row.comments ?? 'No Comments'"></span>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="actions">
+        <th mat-header-cell *matHeaderCellDef>
+
+        </th>
+        <td mat-cell *matCellDef="let row">
+          <app-icon [matMenuTriggerFor]="actions" icon="more_horiz" class="text-gray-400 cursor-pointer"></app-icon>
+          <mat-menu #actions="matMenu">
+            <label (click)="mode='add';selectedData = row;openFlyPanel(addQualification)" class="label_style"
+              mat-menu-item>Add</label>
+            <label (click)="mode='edit';selectedData = row;openFlyPanel(addQualification)" class="label_style"
+              mat-menu-item>Edit</label>
+            <label (click)="selectedData = row;openDeleteDialog(deleteDialog)" class="label_style"
+              mat-menu-item>Delete</label>
+            <label (click)="selectedData = row;openFlyPanel(taskQualified)" class="label_style" mat-menu-item>View
+              All</label>
+          </mat-menu>
+        </td>
+      </ng-container>
+
+      <tr style="vertical-align: top;" mat-header-row class="pl-2 pr-2" *matHeaderRowDef="hasEMPPortal ? displayedColumns:displayedColumnWithoutEMP"></tr>
+      <tr mat-row class="pr-2 pl-2" *matRowDef="let row; columns: hasEMPPortal ? displayedColumns:displayedColumnWithoutEMP"></tr>
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">No {{("Task" | labelReplacement)| async}} Qualifications Found</td>
+      </tr>
+    </table>
+  </section>
+</div>
+
+
+<ng-template #taskQualified>
+  <app-flypanel-task-qualified [taskId]="selectedData.taskId" [empId]="selectedData.empId"
+    (closed)="flyPanelService.close()"></app-flypanel-task-qualified>
+</ng-template>
+
+<ng-template #addQualification>
+  <app-flypanel-add-task-qualification [mode]="mode" [data]="selectedData" (closed)="flyPanelService.close()"
+    (refresh)="refreshData($event);"></app-flypanel-add-task-qualification>
+</ng-template>
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue header="Delete {{('Task' | labelReplacement)| async}} Qualification" [description]="description"
+    [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()" (confirmed)="deleteData($event);"
+    [cancelText]="'No'" [confirmText]="'Yes'"></app-qtd-dialogue>
+</ng-template>
+
+
+<ng-template #filter>
+  <app-flypanel-filter-tq-emp-by [selectedPos]="posId" [selectedStatus]="statusFilter"
+    (closed)="flyPanelService.close()" [mode]="filterByEMP"
+    (filterSelected)="applyFilter($event);flyPanelService.close();"></app-flypanel-filter-tq-emp-by>
+</ng-template>

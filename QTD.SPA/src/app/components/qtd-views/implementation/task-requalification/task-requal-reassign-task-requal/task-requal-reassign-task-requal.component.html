@@ -1,0 +1,64 @@
+<div class="flex flex-col">
+  <div class="flex flex-row justify-between pb-3" style="align-items:center">
+    <span class="text-xl font-bold">Reassign {{("Task" | labelReplacement)| async}} Qualification</span>
+    <app-icon (click)="canceled.emit()" icon="close" class="text-gray-500 cursor-pointer"></app-icon>
+  </div>
+
+  <mat-dialog-content class="border-2">
+    <form [formGroup]="qualificationForm" class="flex flex-col">
+      <span *ngIf="!selectedData.wasTQStarted" class="mb-3 mt-4 font-normal">You are selecting to reassign Evaluators for this {{("Task" | labelReplacement)| async}} Qualification.
+        Reassigning {{("Task" | labelReplacement)| async}} Qualification Evaluators will remove pending or in progress qualifications from currently
+        assigned Evaluator EMP dashboards.</span>
+      <span *ngIf="selectedData.wasTQStarted" class="mb-3 mt-4 font-normal">The qualification for {{("Employee" | labelReplacement)| async}} <b>{{selectedData.empFName + ' ' + selectedData.empLName}}</b> on Task <b>{{selectedData.taskDescription}}</b> has been started and is currently in Progress via EMP. Please select how you would like to proceed:</span>
+      <div *ngIf="selectedData.wasTQStarted" class="mb-3 mt-4">
+        <mat-radio-group clas="flex flex-col" formControlName="checkStarted">
+          <mat-radio-button value="1">Retain previous Evaluator's sign-off and notes on {{("Task" | labelReplacement)| async}} Steps. New Evaluator can override responses</mat-radio-button>
+          <mat-radio-button value="2">Clear all information entered by previous Evaluator(s). New Evaluator(s) will restart Qualification from Step 1</mat-radio-button>
+        </mat-radio-group>
+      </div>
+      <span class="mb-3 font-normal">Select new Evaluator's from the list below to release the {{("Task" | labelReplacement)| async}} to the new
+        Evaluators:</span>
+      <label class="text-gray-400 mt-3">Select Evaluator(s)</label>
+      <!-- change this ngModel to reactive form with multiselect -->
+      <mat-select multiple placeholder="Select Evaluator(s)" formControlName="evaluatorId"
+        class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white" style="width:40%">
+        <mat-select-trigger>
+          <mat-chip-list>
+            <mat-chip *ngFor="let i of qualificationForm.get('evaluatorId')?.value" [removable]="true"
+              [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+              selected (removed)="removeData(i)">
+              {{i.person.firstName + ' ' + i.person.lastName}}
+              <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+              </app-icon>
+            </mat-chip>
+          </mat-chip-list>
+        </mat-select-trigger>
+        <mat-option [value]="eval" *ngFor="let eval of evaluators">
+          {{eval.person.firstName + ' ' + eval.person.lastName}}
+        </mat-option>
+      </mat-select>
+      <div class="flex flex-row gap-4 mb-6" style="width: 80%;">
+        <div class="flex flex-col pr-4" style="width: 50%;">
+          <label class="text-gray-400 mt-3">Release Date</label>
+          <app-date formControlName="release" class="mb-4"></app-date>
+        </div>
+        <div class="flex flex-col pr-4 time-input mt-3" style="width: 50%;">
+          <app-label [for]="'startTime'" [text]="'Start Time'" class="text-gray-400"  [ngClass]="{'label required': qualificationForm.get('startTime')?.hasError('required')}">
+          </app-label>
+          <div class="flex flex-col pr-4 time-input">
+            <mat-form-field appearance="outline" class="w-full">
+              <input matInput type="time" formControlName="startTime" />
+            </mat-form-field>
+          </div>
+        </div>
+      </div>
+      <label class="text-gray-400 mt-3">Due Date</label>
+      <app-date formControlName="due" class="mb-5" style="width:40%"></app-date>
+    </form>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <app-button [disabled]="qualificationForm.invalid" class="mb-4" (clicked)="emitDate()" text="Save"
+      size="sm"></app-button>
+  </mat-dialog-actions>
+</div>

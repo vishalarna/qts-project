@@ -1,0 +1,221 @@
+<div class="w-full flex flex-row mt-16">
+  <div class="w-9/12">
+    <!--Heading and Subheading Start-->
+    <div class="flex flex-row justify-between mb-2">
+      <p class="font-bold text-2xl text-gray-five mb-6">
+        Training Material Development
+      </p>
+      <app-button variant="text" text="Add new Lesson/Segments" icon="add" iconPosition="left"
+        (clicked)="openSegmentPanel(lessonsegment)"></app-button>
+    </div>
+
+    <!--1st segment-->
+    <div class="flex flex-col pb-4  example-box">
+      <div class="border-0.5 rounded mat-elevation-z2 h-40 px-4 py-3">
+        <div class="flex flex-row justify-between mb-10">
+          <p class="text-sm text-gray-four">Delivery Method: <b>{{deliveryMethod}}</b></p>
+          <app-button (clicked)="training_material.emit()" variant="text" text="Edit" icon="edit" iconPosition="left">
+          </app-button>
+        </div>
+      </div>
+    </div>
+
+    <!--2nd segment-->
+    <div class="flex flex-col pb-4  example-box" *ngIf="deliveryMethodBit">
+      <div class="border-0.5 rounded mat-elevation-z2 h-40 px-4 py-3">
+        <div class="flex flex-row justify-between mb-4">
+          <p class="text-sm text-gray-four">Add a Self Study document by choosing one of the following options</p>
+        </div>
+        <button (click)="OnClickUpload()" class="text-sm font-semibold">
+          <app-icon class="mr-2" style="color: rgb(92, 155, 49);" icon="file_upload"></app-icon>Upload a Self Study
+          Guide
+        </button><br>
+        <button (click)="previewEvent.emit('edit')" class="text-sm font-semibold">
+          <app-icon class="mr-2" style="color: rgb(92, 155, 49);" icon="arrow_forward"></app-icon>Create new Guide in
+          Editor
+        </button>
+      </div>
+
+    </div>
+
+    <!--3rd segment-->
+    <div class="flex flex-col pb-4  example-box">
+      <div class="border-0.5 rounded mat-elevation-z2 h-40 px-4 py-3">
+        <p class="text-sm text-gray-four">Lesson/Segments</p>
+        <!--Heading and Subheading End-->
+
+        <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+          <app-data-loader *ngIf="isEmpty"></app-data-loader>
+          <div class="flex flex-col pb-4  example-box" *ngFor="let item of lsegs,index as i" cdkDrag>
+            <div class="border-0.5 rounded mat-elevation-z2 h-40 px-4 py-3"
+              [ngClass]="{'bg-gray-200':item.content.length === 0}">
+              <div class="flex flex-row justify-between mb-10">
+                <div class="text-lg font-semibold" [innerHTML]="item.content"></div>
+                <span>
+                  <app-button variant="text" text="Delete" icon="delete" iconPosition="left" (click)="deleteEmp(item)">
+                  </app-button>
+                  <app-button *ngIf="item.content.length > 0" variant="text" text="Review Content" icon="edit"
+                    iconPosition="left" (clicked)="openFlyInPanel(Content,i)"></app-button>
+                  <app-button *ngIf="item.content.length === 0" variant="text" text="Add Content" icon="add"
+                    iconPosition="left" (clicked)="openFlyInPanel(Content,i)"></app-button>
+                </span>
+              </div>
+
+              <p class="text-sm text-gray-four">
+                <app-icon icon="schedule"></app-icon> {{item.duration}}
+              </p>
+
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-row items-center">
+          <p class="flex-grow font-medium">All {{("ILA" | labelReplacement)| async}} Resources</p>
+        </div>
+        <ngx-dropzone [multiple]="false" (change)="onSelect($event)">
+          <ngx-dropzone-label style="color: rgb(92, 155, 49);">
+            <app-icon icon="cloud_upload"></app-icon> <br> Choose file to upload <br> <span
+              class="text-gray-500">or</span> <br> <span class="text-gray-500">Drag and Drop your files here</span>
+          </ngx-dropzone-label>
+          <ngx-dropzone-preview *ngFor="let f of files" [removable]="true" (removed)="onRemove(f)">
+            <ngx-dropzone-label>{{ f.name }} ({{ f.type }})</ngx-dropzone-label>
+          </ngx-dropzone-preview>
+        </ngx-dropzone>
+        <div class="flex float-right pt-3">
+          <app-button [spinner]="showSpinner" class="float-right" [disabled]="files.length < 1 || showSpinner"
+            (clicked)="uploadFiles()" color="secondary" text="Upload"></app-button>
+        </div>
+      </div>
+    </div>
+
+    <div class="border-0.5 rounded mat-elevation-z2 h-40 px-4 py-3">
+    <div class="flex flex-col pb-4  example-box">
+      <div
+        class="
+          flex flex-row
+          bg-white-one
+          rounded-t-md
+          py-4
+          px-6
+          space-x-2
+          border-b-0.8 border-gray-one
+          w-full
+        "
+      >
+        <div class="flex flex-grow keyword-input">
+          <svg
+            class="flex-none w-4 h-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+            ></path>
+          </svg>
+          <input
+            class="text-sm flex-grow focus:outline-none"
+            placeholder="Enter {{('ILA' | labelReplacement)| async}} Resource to search"
+            type="text"
+            (keyup)="searchUpdate($event)"
+          />
+        </div>
+        <app-button  class="float-right" icon="add" iconPosition="left" size="sm"
+        (clicked)="addILAResouce(addNewTrainingMaterial)" color="primary" text="Add {{('ILA' | labelReplacement)| async}} Resource"></app-button>
+      </div>
+      <mat-table [dataSource]="trainingMaterialList" class="manager-table" matSort>
+        <ng-container matColumnDef="iLAId">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            {{('ILA' | labelReplacement)| async}}Id
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.ilaId}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="title">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Title
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.title}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="comments">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Comments
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">{{row.comments}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="edit">
+          <mat-header-cell *matHeaderCellDef>
+            Edit
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <button mat-icon-button (click)="editILAResource(row, addNewTrainingMaterial)">
+              <mat-icon>edit</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="remove">
+          <mat-header-cell *matHeaderCellDef>
+            Remove
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <button mat-icon-button (click)="removeILAResource(row,removeResourceILA)">
+              <mat-icon>delete</mat-icon>
+            </button>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: tableColumns"></mat-row>
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row flex text-center" *matNoDataRow>
+          <td class="mat-cell w-full">No Data</td>
+        </tr>
+      </mat-table>
+    </div>
+    </div>
+
+    <ng-container *ngIf="uploadedFiles.length > 0" class="flex flex-col pb-4  example-box">
+      <div class="border-0.5 rounded mat-elevation-z2 h-40 px-4 py-3">
+        <app-data-loader *ngIf="showFileLoader"></app-data-loader>
+        <div class="mt-3" *ngFor="let file of uploadedFiles,index as i">
+          <div class="mb-4 mt-4">
+            <span>{{file.fileName}}</span>
+            <div class="flex float-right ml-5">
+              <app-button [disabled]="deleteSpinner[i]" [spinner]="deleteSpinner[i]" variant="text" iconPosition="left"
+                icon="delete" (clicked)="deleteFile(file,i)" text="delete"></app-button>
+              <app-button [disabled]="downloadSpinner[i]" [spinner]="downloadSpinner[i]" variant="text"
+                iconPosition="left" icon="cloud_download" (clicked)="downloadFile(file,i)" class="ml-3" text="download">
+              </app-button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </ng-container>
+
+
+  </div>
+</div>
+<ng-template #lessonsegment>
+  <app-fly-panel-lesson-segment (segSaved)="refreshSegments($event)"></app-fly-panel-lesson-segment>
+</ng-template>
+<ng-template #Content>
+  <app-fly-panel-content (close)="refreshSegments($event)" [myData]="dataForReview" (close)="flyPanelSrvc.close()">
+  </app-fly-panel-content>
+</ng-template>
+<ng-template #removeResourceILA>
+  <app-qtd-dialogue  [header]="header" [description]="description"
+    [cancelText]="'No'" [confirmText]="'Yes'" (confirmed)="confirmRemoveResourceILA()">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #addNewTrainingMaterial>
+  <app-fly-panel-training-material
+  [ilaId]="ilaID"
+  (close)="flyPanelSrvc.close()"
+  (saveComplete)="getILaResourceAsync()"
+  [editILAResourceData]="editILAResourceData"
+  [isEditILAResource]="isEditILAResource"
+  >
+  </app-fly-panel-training-material>

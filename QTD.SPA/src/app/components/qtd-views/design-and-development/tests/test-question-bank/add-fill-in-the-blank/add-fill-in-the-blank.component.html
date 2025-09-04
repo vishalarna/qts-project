@@ -1,0 +1,74 @@
+<div class="mt-2">
+  <mat-label class="font-medium text-sm">Question</mat-label>
+  <p class="text-gray-four text-xs">Type the question in the space below. Underline the word you want to mark as
+    correct
+  </p>
+  <div class="flex flex-row-reverse font-bold mb-2">
+    <app-button (clicked)="generateBlanks()" variant="text" size="sm" text="Mark as Correct Answer"></app-button>
+    <app-button [disabled]="answers.length < 1" (clicked)="unmarkBlank()" variant="text" class="mr-4" size="sm" text="Unmark"></app-button>
+  </div>
+
+  <div [formGroup]="FillBlank">
+    <ckeditor #editor formControlName="fillBlank" [editor]="Editor"></ckeditor>
+    <app-input-error class="mt--2"
+      *ngIf="FillBlank.get('fillBlank')?.invalid && (FillBlank.get('fillBlank')?.hasError('required'))"
+      [text]="'Question is Required'"></app-input-error>
+  </div>
+
+  <div class="mt-4" [formGroup]="EditorForm">
+    <p>Preview of Fill-In-The-Blank</p>
+    <!-- <input formControlName="htmlContent" name="preview" placeholder="Preview" [disabled]="true" /> -->
+    <div [innerHTML]="previewString"></div>
+
+    <app-input-error *ngIf="answers.length<1"
+      text="Please Underline atleast 1 word and mark the blank as correct"></app-input-error>
+  </div>
+</div>
+
+
+<div *ngIf="mode === 'add' && showSaveButton" class="flex flex-row mr-12 mt-16 justify-between">
+
+    <!--Add another checkbox-->
+    <mat-checkbox [(ngModel)]="FIBCheckbox"
+      [disabled]="!FillBlank.valid || answers.length<1"
+     >Add Another Fill In The Blank</mat-checkbox>
+
+
+  <div class="flex flex-row" style="justify-content:flex-end;">
+
+    <!--Preview-->
+    <app-button [disabled]="saveSpinner || saveandAddSpinner" class="mr-2" (clicked)="previewOnly()" text="preview" color="secondary" size="sm"></app-button>
+    <!--Save-->
+    <app-button (clicked)="close=true;saveFIB($event,close)" class="mr-2" [spinner]="saveSpinner"
+      [disabled]="!FillBlank.valid || saveSpinner || saveandAddSpinner || answers.length<1" type="button" size="sm"
+      color="secondary" text="Save"></app-button>
+
+
+  </div>
+
+
+</div>
+
+<div *ngIf="mode === 'copy'" class="flex flex-row float-right mr-12 mt-16">
+  <div class="flex flex-row" style="justify-content:flex-end;">
+    <app-button (clicked)="close=true;openSaveDialog(saveDialog)" class="mr-2" [spinner]="saveSpinner"
+      [disabled]="!FillBlank.valid || saveSpinner || saveandAddSpinner || answers.length<1" type="button" size="sm"
+      color="secondary" text="Copy"></app-button>
+  </div>
+</div>
+
+<div *ngIf="mode === 'edit'" class="flex flex-row float-right mr-12 mt-16">
+  <div class="flex flex-row" style="justify-content:flex-end;">
+    <app-button (clicked)="close=true;openDialog(reasonDialog)" class="mr-2" [spinner]="saveSpinner"
+      [disabled]="!FillBlank.valid || saveSpinner || saveandAddSpinner || answers.length<1" type="button" size="sm"
+      color="secondary" text="Update"></app-button>
+  </div>
+</div>
+
+<ng-template #reasonDialog>
+  <app-qtd-dialogue [header]="header" [cancelText]="'No'" confirmText="Yes"  [reasonOnly]="true" (canceled)="dialog.closeAll()" (confirmed)="updateFIB($event)"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #saveDialog>
+  <app-qtd-dialogue [header]="header" [cancelText]="'No'" confirmText="Yes"  [reasonOnly]="true" (canceled)="dialog.closeAll()"></app-qtd-dialogue>
+</ng-template>

@@ -1,0 +1,60 @@
+.bg-white {
+  background-color: white;
+}
+
+.section {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+
+.add-position-button {
+  display: flex;
+  align-items: center;
+  color: #5c9b31;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 143%;
+  letter-spacing: 0.00938rem;
+}
+
+.bubbles-div {
+  padding: 0.5rem 0.5rem 0.5rem 0;
+  flex-wrap: wrap;
+  display: flex;
+  gap: 10px;
+
+  .bubble {
+    padding: 0.2rem 0.5rem;
+    border-radius: 22px;
+    color: #5c9b31;
+    border: 1px solid #5c9b31;
+  }
+}
+
+.table-list {
+  margin-top: 1.125rem;
+  border-radius: 4px;
+  border: 0.5px solid #E1E5E4;
+  overflow: hidden;
+}
+
+.remove-btn {
+  background: none;
+  border: none;
+  font-size: 1.2em;
+  line-height: 1;
+  cursor: pointer;
+  margin-left: 0.5em;
+  padding: 0;
+  color: #5c9b31;
+}
+
+:host::ng-deep .disabled-pointer {
+  pointer-events: none;
+  filter: grayscale(100%) brightness(80%) contrast(90%);
+  opacity: 0.8;
+}
+
+mat-toolbar.h-100-important {
+  height: 100% !important;
+}

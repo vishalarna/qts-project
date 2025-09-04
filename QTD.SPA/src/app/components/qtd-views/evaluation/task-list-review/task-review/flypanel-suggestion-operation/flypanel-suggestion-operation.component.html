@@ -1,0 +1,45 @@
+<div class="flex flex-row justify-between items-center px-12 mt-5 mb-3">
+    <p class="text-xl font-bold text-gray-900 mb-0">Suggestion Operation</p>
+    <app-button
+      (click)="closeFlyPanel()"
+      ButtonType="icon"
+      icon="close"
+    ></app-button>
+  </div>
+  <div *ngIf = "isLoading" class="operation-spinner">
+    <app-spinner></app-spinner>
+  </div>
+  <div class="m-3" [formGroup] = "suggestionOperationForm" *ngIf = "!isLoading">
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label text = "Operation Type" class="font-weight-bold label required"></app-label>
+      <mat-select formControlName="operation" (selectionChange) = "onOperationTypeChange($event.value)" placeholder = "Select Operation Type"
+      class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+      <mat-option *ngFor="let item of operationType" [value]="item.id">
+        {{ item.type }}
+      </mat-option>
+    </mat-select>
+    </div>
+  
+  <ng-container *ngIf="suggestionOperationForm.get('operation').value">
+    <ng-container *ngIf="operationTypeName !='CreateRecord'">
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label text = "{{ 'Task' | labelReplacement | async }} Suggestion"  class="font-weight-bold label required"></app-label>
+      <mat-select (selectionChange) = "onTaskSuggestionChange($event.value)" placeholder = "Select {{ 'Task' | labelReplacement | async }} Suggestion"
+        formControlName="taskSuggestion"
+        class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+        <mat-option *ngFor = "let ts of taskSuggestions" [value] = "ts.id" >{{ts.number}}</mat-option>
+      </mat-select>
+    </div>
+  </ng-container>
+  
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label text = "Description" [ngClass]="{'label required': operationTypeName != 'RemoveLink'}" class="font-weight-bold"></app-label>
+      <app-textbox formControlName = "description" type = "text" class="mt-1"></app-textbox>
+    </div>
+  
+    <div class="flex justify-end mt-3">
+      <app-button size="sm" text="Save" [disabled] = "saveDisabled()" (clicked) = "onSuggestionOperationSave()" type="submit"></app-button>
+    </div>
+</ng-container>
+  </div>
+  

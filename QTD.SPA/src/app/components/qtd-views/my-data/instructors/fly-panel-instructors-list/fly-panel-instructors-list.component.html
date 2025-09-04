@@ -1,0 +1,27 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+        <p class="text-xl font-bold text-gray-900">{{name}}
+        </p>
+        <app-button (click)="flyInClose.close()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <app-data-loader *ngIf="spinner"></app-data-loader>
+    <ng-container *ngIf="treedataSource.data.length > 0">
+        <div class="flex flex-col px-12">
+
+            <mat-tree [dataSource]="treedataSource" [treeControl]="tasktreeControl" class="qtd-tree">
+             
+                <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                    &nbsp;&nbsp;
+
+                 <div *ngIf="moduleName === 'Catactive' || moduleName === 'Catinactive'">{{node.iCategoryTitle}}</div>
+                 <div *ngIf="moduleName === 'Insactive' || moduleName === 'Insinactive' || moduleName === 'Workbook'">{{node.instructorNumber}} - {{node.instructorName}}</div>
+
+                   
+
+                </mat-tree-node>
+            </mat-tree>
+        </div>
+    </ng-container> 
+</ng-container>
+

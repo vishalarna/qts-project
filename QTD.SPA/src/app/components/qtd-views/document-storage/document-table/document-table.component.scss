@@ -1,0 +1,75 @@
+.flypanel-outer-wrapper {
+  background-color: rgba(0, 0, 0, 0.5);
+  bottom: 0;
+  display: block;
+  height: 100vh;
+  position: fixed;
+  right: 0;
+  top: 0;
+  width: 100vw;
+  z-index: 10;
+}
+.flypanel {
+  background-color: #fff;
+  position: absolute;
+  right: 0;
+  width: 630px;
+  top: 0;
+  bottom: 0;
+  min-height: 100vh;
+  overflow: auto;
+  z-index: 1;
+  left: auto;
+}
+.keyword-input {
+  align-items: center;
+  svg {
+    margin-right: 8px;
+  }
+  input {
+    max-width: 300px;
+    width: 100%;
+  }
+}
+
+.mat-drawer-opened {
+  max-width: 630px;
+}
+
+.filter-menu-container {
+  min-width: 21rem;
+  right: 0;
+  left: unset;
+}
+.filter-actions {
+  padding: 0.875rem;
+  border-bottom: 1px solid #e1e5e4;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+:host ::ng-deep .clear-button.btn-text {
+  color: #7a807e !important;
+  text-align: center;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 157%; /* 21.98px */
+  letter-spacing: 0.1px;
+}
+
+.filter-selection-list{
+  padding: 20px 15px;
+  display: flex;
+    flex-direction: column;
+}
+.filter-selection-option{
+  display: flex;
+  align-items: center;
+  margin-bottom: 1.43rem;
+  label{
+    color: #000D09;
+    margin-left: 0.8rem;
+  }
+}
+

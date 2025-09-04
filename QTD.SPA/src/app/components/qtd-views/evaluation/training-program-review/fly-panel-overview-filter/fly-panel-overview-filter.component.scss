@@ -1,0 +1,47 @@
+.sidebar-header{
+    font-size: 1.3rem;
+    color: #000;
+    font-weight: 500;
+}
+.sidebar-header-wrap{
+    border-bottom: 1px solid #ebebeb;
+    padding: 0.8rem 3rem;
+}
+
+.custom-date-range-field {
+   border: 1px solid #dee2e6; /* Adjust the color and size as needed */
+    border-radius: 4px; /* Optional: Add border-radius for rounded corners */
+    padding: 0px 8px 8px 12px;
+    height: 50px;
+  }
+  .custom-date-range-field svg, 
+  ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-prefix .mat-datepicker-toggle-default-icon, 
+  ::ng-deep .mat-form-field-appearance-legacy .mat-form-field-suffix .mat-datepicker-toggle-default-icon
+{
+    width: 24px !important;
+    margin: 0px 11px -7px -8px;
+}
+  ::ng-deep .custom-date-range-field.mat-form-field .mat-form-field-underline {
+    display: none;
+  }
+  .review-label{
+    height: 36px;
+  }
+  .w-50{
+    width: 50%;
+  }
+  
+  .btn-wrapar{
+    padding-left:3rem;
+  }
+  .program-type-select .mat-form-field-wrapper{
+    padding-bottom: 0;
+  }
+  .program-type-select .mat-form-field-appearance-legacy .mat-form-field-wrapper{
+    padding: 0;
+  }
+  .label-style{
+    font-size: 0.875rem;
+    font-weight: 400;
+    color: #000000;
+  }

@@ -1,0 +1,60 @@
+<form [formGroup]="empForm" class="flex flex-col p-5">
+  <div class="flex flex-row justify-between my-4" style="align-items:center;">
+    <span class="text-lg font-bold">Filter {{("Task" | labelReplacement)| async}} Qualification By {{("Employee" |
+      labelReplacement)| async}}</span>
+    <app-icon class="cursor-pointer" icon="close" (click)="closed.emit()"></app-icon>
+  </div>
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="width: 100%; padding-right: 8px;">
+      <label class="mb-2 mt-3">Organization</label>
+      <div style="position: relative;">
+        <mat-select formControlName="organization"
+          class="appearance-none rounded border w-full px-4 py-3 mt-2 align-item-end bg-white"
+          placeholder="Select Organization" (selectionChange)="onSelectOrganization($event.value)">
+          <input matInput class="pt-3 pb-3 pl-3" type="text" formControlName="searchTxt"
+            (keyup)="organizationSearch($event.target)" placeholder="Enter Text to Search">
+          <mat-option *ngFor="let org of organizations" [value]="org.id">
+            {{org.name}}
+          </mat-option>
+        </mat-select>
+        <button class="close-button" *ngIf="empForm.get('organization')?.value" matSuffix mat-icon-button type="button"
+          aria-label="Clear" (click)="clearSelectedOrganization(); $event.stopPropagation(); ">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+
+    <div style="width: 100%;">
+      <label class="mb-2 mt-3">{{("Position" | labelReplacement)| async}}</label>
+      <div style="position:relative;">
+        <mat-select formControlName="position"
+          class="appearance-none rounded border w-full px-4 py-3 mt-2 align-item-end bg-white"
+          placeholder="Select Position" (selectionChange)="onSelectPosition($event.value)">
+          <input matInput class="pt-3 pb-3 pl-3" type="text" formControlName="searchTxt"
+            (keyup)="positionSearch($event.target)" placeholder="Enter Text to Search">
+          <mat-option *ngFor="let position of positions" [value]="position.id">
+            {{position.positionTitle}}
+          </mat-option>
+        </mat-select>
+        <button class="close-button" *ngIf="empForm.get('position')?.value" matSuffix mat-icon-button type="button"
+          aria-label="Clear" (click)="clearSelectedPosition(); $event.stopPropagation(); ">
+          <mat-icon>close</mat-icon>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <label class="mb-2 mt-3">{{("Employee" | labelReplacement)| async}}</label>
+  <mat-select formControlName="emp" class="appearance-none rounded border w-full px-4 py-3 mt-2 align-item-end bg-white"
+    placeholder="Select {{('Employee' | labelReplacement)| async}}">
+    <input matInput class="pt-3 pb-3 pl-3" type="text" formControlName="searchTxt"
+      (keyup)="employeeSearch($event.target)" placeholder="Enter Text to Search">
+    <mat-option *ngFor="let emp of emps" [value]="emp.id">
+      {{emp.fullName}}
+    </mat-option>
+  </mat-select>
+
+  <div class="flex flex-row w-full mt-4" style="justify-content:flex-end;">
+    <app-button ButtonType="button" text="Filter" size="sm" (clicked)="emitEMP();"></app-button>
+  </div>
+</form>

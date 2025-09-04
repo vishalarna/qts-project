@@ -1,0 +1,136 @@
+<div class="flex flex-row items-center mb-4" *ngIf="isVisible">
+  <div class="text-xs cursor-pointer">
+    <div class="flex text-sm focus:outline-none">
+      <ng-container *ngIf="Mode=='read'">
+        <ng-container *ngIf="HasChildren">
+          <div (click)="Collapsed=!Collapsed" class="flex flex-row items-center">
+            <ng-container>
+              <app-icon *ngIf="!Collapsed" [icon]="'expand_more'">
+              </app-icon>
+              <app-icon *ngIf="Collapsed" [icon]="'expand_less'">
+              </app-icon>
+            </ng-container>
+            <!--    [class.active_menu]="selectedItem===Title" -->
+            <div class="flex overflow-auto">
+              <app-icon *ngIf="IconName" [icon]="IconName"></app-icon>
+              <app-label *ngIf="!RoutePath" [text]="Title " customClasses="ml-2 cursor-pointer">
+              </app-label>
+              <app-link [disabled]="disabled" *ngIf="RoutePath" [link]="RoutePath" [text]="Title " customClasses="ml-2" [tooltip]="tooltip">
+              </app-link>
+            </div>
+          </div>
+        </ng-container>
+        <ng-container *ngIf="!HasChildren">
+          <div class="flex flex-col space-y-6 px-6 text-sm">
+            <!--  [class.active_menu]="selectedItem===Title" -->
+            <div [ngClass]="{'active_menu':(selectedId === undefined ? (selectedItem === Title):(selectedItem === Title && selectedId === id)),'greenHover':(hasHover && !disabled)}"  class="flex flex-row items-center" (click)="selectedItem=Title">
+              <app-icon *ngIf="IconName" [icon]="IconName"></app-icon>
+              <app-link  (click)="emitSelected(Title,id);" [disabled]="disabled" [link]="RoutePath" [text]="Title " customClasses="ml-2 w-1/2" [tooltip]="tooltip">
+              </app-link>
+
+            </div>
+          </div>
+
+        </ng-container>
+      </ng-container>
+      <ng-container *ngIf="Mode=='write'">
+
+        <div (click)="Collapsed=!Collapsed" class="flex flex-row items-center">
+          <ng-container>
+            <app-icon *ngIf="!Collapsed" [icon]="'expand_more'">
+            </app-icon>
+            <app-icon *ngIf="Collapsed" [icon]="'expand_less'">
+            </app-icon>
+          </ng-container>
+
+          <div class="flex">
+            <app-icon *ngIf="IconName" [icon]="IconName"></app-icon>
+            <app-label [text]="Title " customClasses="ml-2 cursor-pointer"></app-label>
+          </div>
+        </div>
+
+      </ng-container>
+
+    </div>
+    <ng-container>
+      <div *ngIf="Collapsed" class="mt-6 space-y-6 flex flex-col">
+        <ng-container *ngFor="let c of Children">
+          <ng-container *ngIf="c.Children">
+            <div
+              [class.active_menu]="selectedId === undefined ? selectedItem === c.Title:selectedItem === c.Title && selectedId === c.id"
+              [ngClass]="(hasHover && !c.disabled) ? 'greenHover link':''" (click)="c.Collapsed=!c.Collapsed"
+              class="flex flex-row items-center pl-8 pt-1 pb-1">
+              <ng-container>
+                <app-icon *ngIf="!c.Collapsed" [icon]="'expand_more'">
+                </app-icon>
+                <app-icon *ngIf="c.Collapsed" [icon]="'expand_less'">
+                </app-icon>
+              </ng-container>
+
+              <app-label *ngIf="!c.RoutePath" [text]="c.Title " customClasses="cursor-pointer">
+              </app-label>
+
+              <div (click)="emitSelected(c.Title,c.id);">
+                <app-link [disabled]="c.disabled" *ngIf="c.RoutePath" [link]="c.RoutePath" [text]="c.Title"
+                  customClasses="cursor-pointer" [tooltip]="c.tooltip ?? ''"></app-link>
+              </div>
+
+            </div>
+          </ng-container>
+
+
+          <ng-container *ngIf="!c.Children">
+            <!-- [class.active_menu]="selectedItem===c.Title" -->
+            <div 
+              [ngClass]="{'active_menu':(selectedId === undefined ? (selectedItem === c.Title):(selectedItem === c.Title && selectedId === c.id)),'greenHover':!c.disabled}">
+              <app-icon *ngIf="c.IconName" [icon]="c.IconName"></app-icon>
+              <app-link [disabled]="c.disabled" (click)="emitSelected(c.Title,c.id)" [link]="c.RoutePath" [queryParams]="c.RouteParams !== undefined?c.RouteParams:{}"
+                [text]="c.Title" customClasses=" pt-2 pb-2 pr-4 d-block pl-8 link" [tooltip]="c.tooltip ?? ''">
+              </app-link>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="c.Children">
+            <ng-container *ngIf="c.Collapsed">
+              <ng-container *ngFor="let ch of c.Children">
+                <div [ngClass]="selectedId === undefined ? (selectedItem === ch.Title) ? 'active_menu':'':(selectedItem === ch.Title && selectedId === ch.id) ? 'active_menu':'' " class="flex flex-row greenHover items-center pl-16 mb-2 pt-2 pb-2 pr-4">
+                  <app-icon [icon]="ch.IconName ?? '' "></app-icon>
+
+                  <app-link [disabled]="ch.disabled" (clicked)="emitSelected(ch.Title,ch.id)" [link]="ch.RoutePath"
+                    [queryParams]="ch.RouteParams" *ngIf="ch.RouteParams" [text]="ch.Title"
+                    customClasses="cursor-pointer" [tooltip]="ch.tooltip ?? ''">
+                  </app-link>
+                  <app-link [disabled]="ch.disabled" (clicked)="emitSelected(ch.Title,ch.id);" [link]="ch.RoutePath"
+                    *ngIf="!ch.RouteParams" [text]="ch.Title" customClasses="cursor-pointer" [tooltip]="ch.tooltip ?? ''">
+                  </app-link>
+
+                </div>
+              </ng-container>
+
+              <ng-container *ngIf="Mode=='write'">
+                <div class="flex flex-row items-center pl-16 mb-2 pt-2 pb-2 pr-4">
+                  <app-add-new-menu-item *ngIf="Level=='TASK_'+c.Title" Placeholder="Enter {{('Task' | labelReplacement)| async}} Name"
+                    (Cancelled)="Level=''" (Saved)="MenuSaved(c.Title,Level,$event)">
+                  </app-add-new-menu-item>
+                  <app-button icon="add" *ngIf="Level!='TASK_'+c.Title" (clicked)="Level='TASK_'+c.Title" text="Add New"
+                    variant="text" iconPosition="left">
+                  </app-button>
+                </div>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+
+        </ng-container>
+        <ng-container *ngIf="Mode=='write'">
+          <div class="flex flex-row items-center pl-8 pt-2 pb-2 pr-4">
+            <app-add-new-menu-item *ngIf="Level=='SDA_'+Title" Placeholder="Enter Subduty Area" (Cancelled)="Level=''"
+              (Saved)="MenuSaved(Title,Level,$event)">
+            </app-add-new-menu-item>
+            <app-button icon="add" *ngIf="Level!=='SDA_'+Title" (clicked)="Level='SDA_'+Title" text="Add New"
+              variant="text" iconPosition="left">
+            </app-button>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+  </div>
+</div>

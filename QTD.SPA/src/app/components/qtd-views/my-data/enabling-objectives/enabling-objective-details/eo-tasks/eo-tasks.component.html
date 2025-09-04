@@ -1,0 +1,97 @@
+<div class="flex flex-row flex-wrap mt-3 justify-between">
+  <div class="flex flex-col">
+    <p class="font-bold text-lg">Linkages: {{("Task" | labelReplacement)| async}}s</p>
+    <p class="text-xs text-gray-four">{{srcList.length}} {{("Task" | labelReplacement)| async}}s linked to selected {{isMeta ? 'Meta EO':('Enabling Objective' | labelReplacement | async)}}</p>
+  </div>
+  <app-button *ngIf="!isMeta" (clicked)="openLinkFlyPanel(linkTask)" [disabled]="!isActive" variant="text" icon="link"
+    iconPosition="left" text="Link {{('Task' | labelReplacement)| async}}s">
+  </app-button>
+</div>
+
+<app-data-loader *ngIf="!DataSource"></app-data-loader>
+<div class="shadow-md" *ngIf="DataSource">
+  <div class="flex flex-row flex-wrap bg-gray-one justify-between mb-3 mt-3  px-3 py-3 rounded"
+    *ngIf="unlinkIds.length > 0">
+    <p class="text-xs text-gray-four pt-2">{{unlinkIds.length}} {{("Task" | labelReplacement)| async}}s selected</p>
+    <app-button (clicked)="unlinkModal(unlinkTaskModal)" [spinner]="spinner" [disabled]="spinner" icon="link_off"
+      iconPosition="left" size="sm" color="secondary" text="Unlink {{('Task' | labelReplacement)| async}}s">
+    </app-button>
+  </div>
+  <table matSortActive="number" matSortDirection="asc" mat-table [dataSource]="DataSource" matSort class="w-full" (matSortChange)="sortData($event)">
+    <ng-container matColumnDef="id">
+      <th mat-header-cell *matHeaderCellDef>
+        <mat-checkbox [disabled]="!isActive || isMeta" (change)="$event ? masterToggle() : null"
+          [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox [disabled]="!isActive || isMeta" (click)="$event.stopPropagation()"
+          (change)="$event ? selectrow(row) : null" [checked]="selection.isSelected(row)">
+        </mat-checkbox>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="number">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> #
+      </th>
+      <td mat-cell *matCellDef="let row"> {{row.number}} </td>
+    </ng-container>
+    <ng-container matColumnDef="description">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header class="mr-4"> {{("Task" | labelReplacement)| async}} Statement
+      </th>
+      <td style="width:60%;" mat-cell *matCellDef="let row">
+        <span>{{row.description}}</span>
+      </td>
+    </ng-container>
+
+    <ng-container matColumnDef="linkCount">
+      <th mat-header-cell *matHeaderCellDef mat-sort-header> # of Linkages
+      </th>
+      <td mat-cell *matCellDef="let row" class="cursor-pointer">
+        <label style="color:rgba(92, 155, 49, 1)"
+          (click)="selectedId = row.id;selectedTitle = row.description;selectedNumber = row.number;openLinkedFlyPanel(linkedPanel);"
+       >
+          {{row.linkCount}}
+        </label>
+        <app-button (clicked)="unlinkModal(unlinkTaskModal,row.id)" [disabled]="!isActive || isMeta || spinner" ButtonType="icon"
+          icon="link_off" style="color:lightgray;float:right;"></app-button>
+      </td>
+    </ng-container>
+
+
+    <ng-container>
+      <th mat-header-cell *matHeaderCellDef mat-sort-header>
+      </th>
+      <td mat-cell *matCellDef="let row" matTooltip="Unlink Task">
+        <app-icon icon="link_off"></app-icon>
+      </td>
+    </ng-container>
+    <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+    <tr mat-row *matRowDef="let row; columns: displayColumns;" [ngClass]="row.active ? '':'inactiveRow'"></tr>
+
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row text-center " *matNoDataRow>
+      <td class="mat-cell w-full m-2" [colSpan]="displayColumns.length">No data to display</td>
+    </tr>
+
+  </table>
+  <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons aria-label="Select page of periodic elements">
+  </mat-paginator>
+</div>
+
+<ng-template #linkTask>
+  <app-flypanel-eo-task-link (refresh)="refreshData();flyPanelSrvc.close();" [alreadyLinked]="alreadyLinked"
+    (closed)="flyPanelSrvc.close()">
+  </app-flypanel-eo-task-link>
+</ng-template>
+
+<ng-template #unlinkTaskModal>
+  <app-qtd-dialogue header="Unlink {{('Task' | labelReplacement)| async}}" [description]="unlinkDescription" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="getData($event)">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #linkedPanel>
+  <app-flypanel-linked-eos [Title]="selectedTitle" (closed)="flyPanelSrvc.close()" [Id]="selectedId"
+    [selectedType]="'Task'" [selectedTypeNumber]="selectedNumber"></app-flypanel-linked-eos>
+</ng-template>

@@ -1,0 +1,420 @@
+<ng-container>
+  <app-data-loader *ngIf="testSpinner"></app-data-loader>
+  <div *ngIf="!testSpinner" class="flex flex-col">
+    <form [formGroup]="trainingForm">
+      <div class="
+          border-gray-one border-0.5
+          bg-white-one
+          rounded
+          mb-8
+          pb-4
+          pt-4
+          pl-16
+          pr-16
+        ">
+        <div class="flex flex-col mb-3" *ngIf="TestLinkedILAsPreTest_List.length === 0 && TestLinkedILAsTest_List.length === 0">
+          <app-input-error *ngIf="TestLinkedILAsPreTest_List.length === 0 && TestLinkedILAsTest_List.length === 0"
+          text="Written Tests (Pretests, Final Tests, and Retakes) have not been created for the {{('ILA' | labelReplacement)| async}}. To create a written test go to the Provider & {{('ILA' | labelReplacement)| async}}s page, select the {{('ILA' | labelReplacement)| async}} and go to Step 5 (Trainee Evaluation) in the progress view."></app-input-error>
+
+        </div>
+        <div class="flex flex-col mb-3">
+          <ul>
+            <li class="flex flex-col">
+              <mat-checkbox formControlName="usePreTestAndTest" (change)="usePreTestChanged($event)">
+                Pretest and Tests will not be used as assessment
+                for this  {{("ILA" | labelReplacement)| async}}</mat-checkbox>
+              <app-input-error *ngIf="trainingForm.invalid && trainingForm.get('usePreTestAndTest')?.value === false"
+                text="Please Select appropriate settings or check this box to not use EMP Test release settings"></app-input-error>
+            </li>
+            <fieldset style="width: 100%" [disabled]="trainingForm.value.usePreTestAndTest">
+              <li class="pt-2">
+                <p class="text-base font-bold m-b-0">
+                  Pretest Release Settings
+                </p>
+              </li>
+              <li class="pt-2 pd-left-20">
+                <mat-checkbox [disabled]="trainingForm.get('usePreTestAndTest')?.value === true"
+                  formControlName="preTestRequired" (change)="preTestRequiredChangeed($event)">
+                  Pretest Required for this course</mat-checkbox>
+              </li>
+              <li class="pt-2 pd-left-20">
+                <div class="flex flex-col justify-between" style="width: 50%">
+                  <div class="flex flex-row justify-between" style="align-items: center">
+                    <app-label [for]="'pretest'" [text]="'Select Pretest '" class="label"></app-label>
+
+                    <a *ngIf="trainingForm.get('preTestId')?.invalid || trainingForm.get('preTestId')?.value === '' || trainingForm.get('preTestId')?.value === null" pointer-events: none  class="text-qtd">Preview Test</a>
+                    <!-- [disabled]="trainingForm.get('preTestId')?.value === '' || trainingForm.get('preTestId')?.value === null" -->
+                    <a *ngIf="trainingForm.get('preTestId')?.invalid ===false && trainingForm.get('preTestId')?.value !== '' && trainingForm.get('preTestId')?.value !== null" target="_blank"
+                      variant="text"
+                      class="text-qtd" [routerLink]="['/dnd/tests/publish/'+trainingForm.get('preTestId')?.value+'/false']" routerLinkActive="router-link-active" >Preview Test</a>
+                  </div>
+
+                  <mat-select style="margin-right: 0px" formControlName="preTestId"
+                    [disabled]="!trainingForm.value.preTestRequired || trainingForm.get('usePreTestAndTest')?.value === true"
+                    class="
+                  appearance-none
+                  rounded
+                  border
+                  w-full
+                  px-4
+                  py-2.5
+                  align-item-end
+                  bg-white
+                ">
+                    <mat-option *ngFor="let p of TestLinkedILAsPreTest_List,index as i" [value]="p.id">
+                      {{ (i+1) + ' - '  + ((p.testTitle === null || p.testTitle === undefined || p.testTitle === '') ? "N/A":p.testTitle)}}
+                    </mat-option>
+                  </mat-select>
+
+                  <app-input-error *ngIf="trainingForm.get('preTestId')?.hasError('required')"
+                    text="Please Select a Pretest Id"></app-input-error>
+                </div>
+              </li>
+
+              <li style="width: 30%;" class="pt-2 pd-left-20">
+                <app-label text="Pretest Passing Score" class="label">
+                </app-label>
+                <app-textbox formControlName="preTestScore" [isPercentage]="true" [type] = "'number'"
+                  [disabled]="!trainingForm.value.preTestRequired || trainingForm.get('usePreTestAndTest')?.value === true"></app-textbox>
+                <app-input-error *ngIf="trainingForm.get('preTestScore')?.hasError('required')"
+                  text="Please Enter valid Pretest score"></app-input-error>
+              </li>
+              <li class="pt-2 pd-left-20"> 
+                <p class="text-base font-bold m-b-0">
+                  Make Pretest Available:</p>
+              </li>
+              <li class="pt-2 pd-left-40">
+                <mat-checkbox formControlName="preTestAvailableOnEnrollment"
+                  (change)="pretestToggle($event,'preTestAvailableOnEnrollment')"
+                  [disabled]="!trainingForm.value.preTestRequired || trainingForm.get('usePreTestAndTest')?.value === true">
+                   Upon enrollment in {{("ILA" | labelReplacement)| async}}
+                </mat-checkbox>
+              </li>
+              <li  class="pt-2 pd-left-40 ">
+                <div class="flex flex-col">
+                  <mat-checkbox (change)="pretestToggle($event,'preTestAvailableOneStartDate')"
+                    formControlName="preTestAvailableOneStartDate"
+                    [disabled]="!trainingForm.value.preTestRequired || trainingForm.get('usePreTestAndTest')?.value === true">
+                    XX days/weeks before class start date and time:</mat-checkbox>
+                  <div style="width: 22%; position: relative;">
+                    <mat-select style="margin-left: 20px"
+                      [disabled]="!trainingForm.value.preTestAvailableOneStartDate || trainingForm.get('usePreTestAndTest')?.value === true"
+                      formControlName="makeAvailableBeforeDays" class="
+                      appearance-none
+                      rounded
+                      border
+                      w-full
+                      px-4
+                      py-2.5
+                      align-item-end
+                      bg-white
+                    ">
+                      <mat-option *ngFor="let p of weekOrDays" [value]="p">
+                        {{ p }}
+                      </mat-option>
+                    </mat-select>
+
+
+                    <!--for days-->
+                    <div class="flex flex-col">
+                      <div *ngIf="trainingForm.get('makeAvailableBeforeDays')?.value == 'Days'">
+                        <mat-select style="margin-left: 20px"
+                          [disabled]="!trainingForm.value.preTestAvailableOneStartDate || trainingForm.get('usePreTestAndTest')?.value === true"
+                          formControlName="days" class="
+                          appearance-none
+                          rounded
+                          border
+                          w-full
+                          px-4
+                          py-2.5
+                          align-item-end
+                          bg-white
+                        ">
+                          <div>
+                            <mat-option *ngFor="let p of numberOfDays" [value]="p">
+                              {{ p }}
+                            </mat-option>
+                          </div>
+                        </mat-select>
+                      </div>
+
+                      <!--for weeks-->
+                      <div  *ngIf="trainingForm.get('makeAvailableBeforeDays')?.value == 'Weeks'">
+                        <mat-select style="margin-left: 20px"
+                        [disabled]="!trainingForm.value.preTestAvailableOneStartDate || trainingForm.get('usePreTestAndTest')?.value === true"
+                        formControlName="weeks" class="
+                        appearance-none
+                        rounded
+                        border
+                        w-full
+                        px-4
+                        py-2.5
+                        align-item-end
+                        bg-white
+                        ">
+                          <div>
+                            <mat-option *ngFor="let p of numberOfWeeks" [value]="p">
+                              {{ p }}
+                            </mat-option>
+                          </div>
+                        </mat-select>
+                      </div>
+                    </div>
+                  </div>
+                  <app-input-error *ngIf="trainingForm.get('makeAvailableBeforeDays')?.invalid"
+                    text="Please Select Days for release"></app-input-error>
+                </div>
+                <app-input-error
+                  *ngIf="pretestSettingSelection.selected.length < 1 && trainingForm.get('preTestRequired')?.value === true"
+                  text="Please select Pretest release settings"></app-input-error>
+              </li>
+              <li class="pt-2 pd-left-20"> 
+                <p class="text-base font-bold m-b-0">
+                  In EMP Test Review Screen, show students:</p>
+              </li>
+              <li class="pt-2 pd-left-40 ">
+                <div class="flex flex-col">
+                  <mat-checkbox formControlName="showStudentSubmittedPreTestAnswers"
+                    [disabled]="!trainingForm.value.preTestRequired || trainingForm.get('usePreTestAndTest')?.value === true">
+                    Their submitted answers</mat-checkbox>
+                </div>
+              </li>
+              <li class="pt-2 pd-left-40 ">
+                <mat-checkbox formControlName="showCorrectIncorrectPreTestAnswers"
+                  [disabled]="!trainingForm.value.preTestRequired || trainingForm.get('usePreTestAndTest')?.value === true">
+                  Correct/incorrect answers</mat-checkbox>
+              </li>
+              <li class="pt-4">
+                <p class="text-base font-bold m-b-0">
+                  Final Test Release Settings
+                </p>
+                <!-- <app-label class="font-medium" text="Class size"></app-label>
+                                <input type="number" class=" w-24
+                        text-sm
+                        border
+                        h-5
+                        px-4
+                        py-6
+                        mt-2
+                        hover:outline-none
+                        focus:outline-none
+                        focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50
+                        rounded
+                      "> -->
+              </li>
+              <li class="pt-2 pd-left-20">
+                <div class="flex flex-col justify-between" style="width: 50%">
+                  <div class="flex flex-row justify-between" style="align-items: center">
+                    <app-label [for]="'test'" [text]="'Select Test '" class="label"></app-label>
+                    <!-- [disabled]="trainingForm.get('finalTestId')?.invalid" -->
+
+                    <a *ngIf="trainingForm.get('finalTestId')?.value === '' || trainingForm.get('finalTestId')?.value === null" pointer-events: none  class="text-qtd">Preview Test</a>
+
+                    <a  *ngIf="trainingForm.get('finalTestId')?.value !== '' && trainingForm.get('finalTestId')?.value !== null" text="Preview Test" target="_blank"
+                     class="text-qtd" [routerLink]="['/dnd/tests/publish/'+trainingForm.get('finalTestId')?.value+'/false']" routerLinkActive="router-link-active"> Preview Test</a>
+                  </div>
+
+                  <mat-select [disabled]="trainingForm.get('usePreTestAndTest')?.value === true" style="margin-right: 0px" formControlName="finalTestId" class="
+                      appearance-none
+                      rounded
+                      border
+                      w-full
+                      px-4
+                      py-2.5
+                      align-item-end
+                      bg-white
+                    ">
+                    <mat-option *ngFor="let p of TestLinkedILAsTest_List,index as i" [value]="p.id">
+                      {{ (i+1) + ' - '  + ((p.testTitle === null || p.testTitle === undefined || p.testTitle === '') ? "N/A":p.testTitle) }}
+                    </mat-option>
+                  </mat-select>
+                  <app-input-error *ngIf="trainingForm.get('finalTestId')?.hasError('required')"
+                    text="Please select a Test"></app-input-error>
+                </div>
+              </li>
+              <li style="width: 30%" class="pt-2 pd-left-20">
+                <app-label text="Test Passing Score" class="label">
+                </app-label>
+                <app-textbox formControlName="finalTestPassingScore" [isPercentage]="true" [type] = "'number'"></app-textbox>
+                <app-input-error *ngIf="trainingForm.get('finalTestPassingScore')?.hasError('required')"
+                  text="Test passing score is required"></app-input-error>
+              </li>
+              <li class="pt-2 pd-left-20"> 
+                <p class="text-base font-bold m-b-0">
+                  Make Test Available:</p>
+              </li>
+              <li class="pt-2 pd-left-40 ">
+                <mat-checkbox (change)="toggleFinalTest($event,'makeFinalTestAvailableImmediatelyAfterStartDate')"
+                  formControlName="makeFinalTestAvailableImmediatelyAfterStartDate"
+                  [disabled]="trainingForm.get('usePreTestAndTest')?.value === true">
+                  On class start date and time
+                </mat-checkbox>
+              </li>
+              <li class="pt-2 pd-left-40 ">
+                <mat-checkbox (change)="toggleFinalTest($event,'makeFinalTestAvailableOnClassEndDate')"
+                  formControlName="makeFinalTestAvailableOnClassEndDate"
+                  [disabled]="trainingForm.get('usePreTestAndTest')?.value === true">
+                  On class end date and time
+                </mat-checkbox>
+              </li>
+              <li class="pt-2 pd-left-40 ">
+                <mat-checkbox (change)="toggleFinalTest($event,'makeFinalTestAvailableAfterCBTCompleted')"
+                  formControlName="makeFinalTestAvailableAfterCBTCompleted"
+                  [disabled]="trainingForm.get('usePreTestAndTest')?.value === true">
+                  After CBT is completed
+                </mat-checkbox>
+              </li>
+              <li class="pt-2 pd-left-40 ">
+                <mat-checkbox (change)="toggleFinalTest($event,'makeFinalTestAvailableOnSpecificTime')"
+                  formControlName="makeFinalTestAvailableOnSpecificTime"
+                  [disabled]="trainingForm.get('usePreTestAndTest')?.value === true">
+                  At specified time on class end date</mat-checkbox>
+                <div style="width: 25%">
+                  <mat-select
+                    [disabled]="!trainingForm.value.makeFinalTestAvailableOnSpecificTime || trainingForm.get('usePreTestAndTest')?.value === true"
+                    style="margin-right: 0px" formControlName="setAvailabilityTimeTest" (selectionChange)="
+                      getTestAvailabilityTime($event)
+                    " class="
+                      appearance-none
+                      rounded
+                      border
+                      w-full
+                      px-4
+                      py-2.5
+                      align-item-end
+                      bg-white
+                    ">
+                    <mat-option *ngFor="let item of testAvailabiilityTime" [value]="item">{{ item.timeSpan
+                      }}</mat-option>
+                  </mat-select>
+                  <app-input-error *ngIf="trainingForm.get('setAvailabilityTimeTest')?.hasError('required')"
+                    text="Select appropriate Availability Time">
+
+                  </app-input-error>
+                </div>
+                <app-input-error
+                  *ngIf="testSettingSelectionModel.selected.length < 1 && trainingForm.get('usePreTestAndTest')?.value === false"
+                  text="Please Select applicable Test release settings"></app-input-error>
+              </li>
+              <li class="pt-2 pd-left-40">
+                Test Due Date (to complete the final test after
+                the class end date/time)
+              </li>
+              <li class="pt-2 pd-left-40">
+                <div class="flex flex-col">
+                  <span class="text-gray-400">The number of days/weeks/months following the class
+                    end date/time students have to complete the
+                    Test in EMP. After this due date, the test
+                    will be removed from EMP and Students will not
+                    be awarded a grade.</span>
+
+                  <div class="border py-2 flex mt-3" style="width: 20%; align-items: center">
+                    <app-textbox [disabled]="trainingForm.get('usePreTestAndTest')?.value === true"  formControlName="finalTestDueDate" (keypress)="keyPressNumbers($event)" class="modifiedTextbox"></app-textbox>
+                    <mat-select [disabled]="trainingForm.get('usePreTestAndTest')?.value === true" formControlName="empSettingsReleaseType">
+                      <mat-option *ngFor="let type of empSettingsReleaseTypes" [value]="type.typeId">{{type.typeName}}</mat-option>
+                    </mat-select>
+                  </div>
+                  <app-input-error *ngIf="trainingForm.get('finalTestDueDate')?.hasError('required') || trainingForm.get('empSettingsReleaseType')?.hasError('required')"
+                    text="Final Test Due date is Required"></app-input-error>
+                </div>
+              </li>
+              <li class="pt-2 pd-left-20"> 
+                <p class="text-base font-bold m-b-0">
+                  In EMP Test Review Screen, show students:</p>
+              </li>
+              <li class="pt-2 pd-left-40">
+                <mat-checkbox formControlName="showStudentSubmittedFinalTestAnswers"
+                  [disabled]="trainingForm.get('usePreTestAndTest')?.value === true">Their submitted answers</mat-checkbox>
+              </li>
+              <li class="pt-2 pd-left-40">
+                <mat-checkbox formControlName="showCorrectIncorrectFinalTestAnswers"
+                  [disabled]="trainingForm.get('usePreTestAndTest')?.value === true">Correct/incorrect answers</mat-checkbox>
+              </li>
+              <li>
+                <p class="text-base font-bold m-b-0 pt-4">
+                  Test Retake Settings
+                </p>
+              </li>
+              <li class="pt-2 pd-left-20">
+                <mat-checkbox formControlName="retakeEnabled"
+                  [disabled]="trainingForm.get('usePreTestAndTest')?.value === true">
+                  Enable Retake</mat-checkbox>
+              </li>
+              <li class="pt-2 pd-left-20">
+                <mat-checkbox formControlName="autoReleaseRetake"
+                  [disabled]="trainingForm.get('usePreTestAndTest')?.value === true">
+                  Auto release retake if student fails
+                </mat-checkbox>
+              </li>
+              <li class="pt-2 pd-left-20">
+                <app-label text=" Number of Retakes Allowed"></app-label>
+
+                <div style="width: 25%">
+                  <app-textbox (paste)="$event.preventDefault()"
+                    [disabled]="!trainingForm.value.retakeEnabled || trainingForm.get('usePreTestAndTest')?.value === true"
+                    (keypress)="keyPressNumbersRetake($event)" (changed)="valueChanged();"
+                    formControlName="numberOfRetakes"></app-textbox>
+                </div>
+              </li>
+              <li class="pt-2 pd-left-20" *ngFor="let item of numberOfTimeRetake,index as i">
+                <div class="flex flex-col justify-between" style="width: 50%">
+                  <div class="flex flex-row justify-between" style="align-items: center">
+                    <app-label [for]="'pretest'" [text]="updateReTake(item)" class="label"></app-label>
+
+                    <a *ngIf="selectedRetakeId[i] === undefined" pointer-events: none  class="text-qtd">Preview Test</a>
+                    <!-- [disabled]="selectedRetakeId[i] === undefined" -->
+                    <a *ngIf="selectedRetakeId[i] !== undefined"
+
+                    text="Preview Test" (clicked)="previewTest('retake',i)"
+                    class="text-qtd" target="_blank" class="text-qtd" [routerLink]="['/dnd/tests/publish/'+selectedRetakeId[i]+'/false']" routerLinkActive="router-link-active">Preview Test</a>
+
+                  </div>
+
+                  <mat-select [(value)]="selectedRetakeId[i] === undefined ? null:selectedRetakeId[i]"
+                    [disabled]="trainingForm.get('usePreTestAndTest')?.value === true" style="margin-right: 0px"
+                    (selectionChange)="getTestReTakeId($event.value,i)" class="
+                    appearance-none
+                    rounded
+                    border
+                    w-full
+                    px-4
+                    py-2.5
+                    align-item-end
+                    bg-white">
+                    <mat-option
+                      *ngFor="let p of TestLinkedILAsReTakeTest_List,index as i" [value]="p.id">
+                      {{ (i+1) + ' - ' + ((p.testTitle === null || p.testTitle === undefined || p.testTitle === '') ? "N/A":p.testTitle)}}
+                    </mat-option>
+                  </mat-select>
+                </div>
+              </li>
+              <li>
+                <app-input-error *ngIf="selectedRetakeId.length !== numberOfTimeRetake.length"
+                  text="Please fill out the Retake Ids"></app-input-error>
+              </li>
+              <li class="pt-2 pd-left-20" >
+                <p class="text-base font-bold m-b-0">
+                  In EMP Test Review Screen, show students:
+                </p>
+              </li>
+              <li class="pt-2 pd-left-40">
+                <mat-checkbox [disabled]="trainingForm.get('usePreTestAndTest')?.value === true"
+                  formControlName="showStudentSubmittedRetakeTestAnswers">
+                  Their submitted answers
+                </mat-checkbox>
+              </li>
+              <li class="pt-2 pd-left-40">
+                <mat-checkbox [disabled]="trainingForm.get('usePreTestAndTest')?.value === true"
+                  formControlName="showCorrectIncorrectRetakeTestAnswers">
+                  Correct/incorrect answers
+                </mat-checkbox>
+              </li>
+           
+            </fieldset>
+          </ul>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</ng-container>

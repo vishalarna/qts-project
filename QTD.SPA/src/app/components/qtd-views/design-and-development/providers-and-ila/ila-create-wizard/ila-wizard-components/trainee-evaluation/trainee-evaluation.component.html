@@ -1,0 +1,662 @@
+<form class="block text-sm" [formGroup]="TraineeEvaluationForm">
+  <div class="w-full flex flex-row mt-16">
+
+    <div class="w-9/12 mr-12 mb-4 mt-4">
+      <div>
+        <div class="flex flex-row-reverse">
+          <button [hidden]="true" type="text" class="text-xs text-gray-500" (click)="previewEvent.emit('test')">
+            <app-icon icon="remove_red_eye" class="mr-2"></app-icon>Preview Test
+          </button>
+          <button [hidden]="true" text="Test Settings" class="text-xs text-gray-500 mr-4" [disabled]="!WrittenStatus && !DiscussStatus"
+            (click)="openFlyInPanelTestSettings(TestSettings)">
+            <app-icon icon="settings" class="mr-2"></app-icon>Test Settings
+          </button>
+          <button [hidden]="true" type="text" class="text-xs text-gray-500 mr-4" (click)="CreateNewEvaluation()">
+            <app-icon icon="add" class="mr-2"></app-icon>Create New Assessment
+          </button>
+        </div>
+        <!--Training Evaluation Method TextBox-->
+        <div>
+          <div class="flex flex-col float-left mt-4 mr-3">
+            <app-label text="Training Assessment Methods" class="font-medium"></app-label>
+            <app-label text="Enter the assessment methods" class="text-gray-300 text-small"></app-label>
+          </div>
+          <form [formGroup]="evaluationForm">
+            <div class="mt-4 mb-4">
+              <ckeditor formControlName="eval" [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+            </div>
+          </form>
+        </div>       
+      </div>
+
+    <div *ngIf="isCreateTestVisible">
+      <div class="flex flex-row border-gray-300">
+        <!--Evaluation Type-->
+        <div class="float-left  mt-4">
+          <!--Evaluation Type Label -->
+          <app-label text="Assessment Type " class="font-medium label required mr-3"></app-label>
+        </div>
+
+        <div class="border-0.5 rounded mat-elevation-z2  ml-20 bg-white-one px-2 mt-2 mb-2" style="width: 90%;">
+          <app-data-loader *ngIf="evalTypesSpinner"></app-data-loader>
+          <div *ngIf="!evalTypesSpinner" class="row">
+            <div class="bg-white-one"></div>
+            <form [formGroup]="assessmentTypeForm">
+              <mat-radio-group formControlName="assessmentType" class="assesment-type">
+                <div *ngFor="let type of evalTypes,index as i" class="flex flex-row">
+                  <div class="inlineBlock">
+                    <div>
+                      <mat-radio-button
+                        [value]="type.name"
+                        (change)="ShowType(type.name, type.id)"
+                        [disabled]="type.name === 'Discuss' || type.name === 'Simulations'"
+                      >
+                    {{ type.name }}
+                  </mat-radio-button>
+                    </div>
+                  </div>
+                </div>
+              </mat-radio-group>
+            </form>
+          </div>
+
+        </div>
+      </div>
+
+      <div *ngIf="spinner == true" class="flex justify-center align-item-center h-4">
+        <div class="py-3 px-3">
+          <app-spinner *ngIf="spinner" color="rgb(92, 155, 49)"></app-spinner>
+        </div>
+      </div>
+
+      <ng-container *ngIf="WrittenStatus === true">
+        <form [formGroup]="WrittenFormGroup">
+          <div class="border-b border-gray-300">
+            <!--Test Information-->
+            <div class="flex flex-col float-left w-3/12 mt-4">
+              <!--Test Information Label -->
+              <app-label text="Test Information" class="font-medium"></app-label>
+            </div>
+
+            <div class="mt-4 mb-4 ml-28">
+              <div class="border-0.5 rounded mat-elevation-z2 h-auto ml-20 bg-white-one px-8">
+                <div class="row justify-between">
+                  <div class="flex flex-col w-23/24 mt-4 mb-6">
+                    <app-label [for]="'title'" [text]="'Title '" class="label required">
+                    </app-label>
+                    <app-textbox type="text" [name]="'title'" [defaultValue]="WrittenTitle" formControlName="title"
+                      [placeholder]="'Title'">
+                    </app-textbox>
+                    <app-input-error
+                      *ngIf="WrittenFormGroup.get('title')?.invalid && WrittenFormGroup.get('title')?.hasError('required')"
+                      [text]="'Title is Required'">
+                    </app-input-error>
+                  </div>
+                  <div class="flex flex-col w-23/24 mb-6">
+                    <app-label [for]="'Instruction'" text="{{('Instruction' | labelReplacement)| async}}s "></app-label>
+                    <app-textarea [value]="WrittenFormGroup.get('Instruction')?.value ?? ''" type="text" [placeholder]="(('Instruction' | labelReplacement)| async)"
+                      formControlName="Instruction"
+                      [customClasses]="'text-base border w-full h-auto py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+                    </app-textarea>
+                    <app-input-error *ngIf="WrittenFormGroup.get('Instruction')?.invalid" text="Please Enter Test {{('Instruction' | labelReplacement)| async}}s"></app-input-error>
+                  </div>
+                  <div class="flex flex-col w-23/24 mb-6">
+                    <app-label [for]="'TimeLimit'" [text]="'Time Limit (Optional)'"></app-label>
+                    <div class="flex flex-row">
+                      <div class="w-1/2 float-left">
+                        <app-textbox type="text" [name]="'TimeLimit'" [defaultValue]="TimeLimitHours"
+                          formControlName="TimeLimitHours" [placeholder]="'Time Limit Hours'"
+                          (keypress)="inputChange($event)">
+                        </app-textbox>
+                        <app-input-error *ngIf="TraineeEvaluationForm.get('TimeLimitHours')?.invalid">
+                        </app-input-error>
+                      </div>
+                      <div class="w-1/2 float-right">
+                        <app-textbox (keypress)="inputChange($event)" type="text" [name]="'TimeLimit'"
+                          [defaultValue]="TimeLimitMins" formControlName="TimeLimitMins"
+                          [placeholder]="'Time Limit Minutes'">
+                        </app-textbox>
+                        <app-input-error *ngIf="TraineeEvaluationForm.get('TimeLimitMins')?.invalid">
+                        </app-input-error>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <div class="border-b border-gray-300">
+            <!--Test Type-->
+            <div class="flex flex-row float-left w-3/12 mt-4">
+              <!--Test Label -->
+              <app-label text="Test Type " class="font-medium label required"></app-label>
+            </div>
+
+            <div class="mt-4 mb-4 ml-28">
+              <div class="border-0.5 rounded mat-elevation-z2 h-auto w-5/6 ml-20 bg-white-one">
+                <app-input-error *ngIf="!WrittenFormGroup.get('radio')?.valid" text="Select a Test type">
+                </app-input-error>
+                  <div class="flex flex-row flex-wrap form-group mt-4">
+                    <div class="row">
+                      <mat-radio-group formControlName="radio">
+                        <div *ngFor="let test of testType; index as i">
+                          <div class="inlineBlock">
+                            <div>
+                              <mat-radio-button [value]="test.id" class="ml-4 flex-row flex flex-wrap h-15 mr-3">
+                                {{test.description}}
+                              </mat-radio-button>
+                            </div>
+                          </div>
+                        </div>
+                      </mat-radio-group>
+
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+          <div class="w-3/12 mt-4">
+            <app-label text="Questions" class="font-medium"></app-label><br />
+            <app-button variant="text" text="Create New Test Items" iconPosition="left" icon="add"
+              (clicked)="openFlyInPanel(CreateNewTestItems)">
+            </app-button>
+
+            <app-button variant="text" text="Use Question Bank" iconPosition="left" icon="add"
+              (clicked)="openFlyInPanelQuestionBank(QuestionBank)">
+            </app-button><br />
+          </div>
+
+          <div class="ml-4" *ngIf="dataTransfered">
+            <table class="table w-full border border-gray-one text-left mt-5 hover" cdkDropList
+              (cdkDropListDropped)="drop($event)">
+              <thead>
+                <tr class="table-row text-xs text-gray-four">
+                  <th class="table-cell border-gray-one font-normal" >
+                    <app-icon icon="drag_indicator"></app-icon>
+                  </th>
+                  <th class="table-cell border-gray-one font-normal" style="min-width: 40%; max-width: 55%;">Question</th>
+                  <th class="table-cell border-gray-one font-normal" >Type</th>
+                  <th class="table-cell border-gray-one font-normal" >Taxonomy Level</th>
+                  <th class="table-cell border-gray-one font-normal" ></th>
+                  <th class="table-cell border-gray-one font-normal" ></th>
+                  <th class="table-cell border-gray-one font-normal" ></th>
+                </tr>
+              </thead>
+              <tbody>
+
+                <tr cdkDrag *ngFor="let item of answer_array"
+                  class="h-11 table-row text-sm font-normal hover:bg-gray-50">
+                  <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                    <button class="text-gray-four bg-gray-50" cdkDragHandle>
+                      <app-icon icon="drag_indicator" class="text-gray-four"></app-icon>
+                    </button>
+                  </td>
+                  <td [matTooltip]="item.ans"
+                    class=" table-cell align-middle border-b-0.8 border-gray-one wrap-text">
+                    <div [innerHTML]="item.description"></div>
+                  </td>
+                  <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                    {{item.quesType}}
+                  </td>
+                  <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                    {{item.taxType}}
+                  </td>
+                  <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                    <button type="text" style="color: rgb(92, 155, 49) !important;"
+                      (click)="openFlyInPanelView(viewTestQuestion,item)" class="underline">
+                      <app-icon icon="remove_red_eye" class="mr-2"></app-icon>View Test Item
+                    </button>
+                  </td>
+                  <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                    <button type="text" style="color: rgb(92, 155, 49) !important;"
+                      (click)="openWithEditFlyPanelView(CreateNewTestItems,item)" class="underline">
+                      <app-icon icon="edit" class="mr-2"></app-icon>Edit
+                    </button>
+                  </td>
+                  <td class=" table-cell align-middle border-b-0.8 border-gray-one">
+                    <button type="text" style="color: rgb(92, 155, 49) !important;"
+                      (click)="openRemoveTestQuestionDialogue(RemoveTestQuestionDialogue, item)" class="underline">
+                      <app-icon icon="delete" class="mr-2"></app-icon>Remove
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="flex flex-row justify-end mt-4">
+            <!-- <app-button (clicked)="removeAnswers()" color="grey" text="Cancel" size="sm"></app-button> -->
+            <app-button color="secondary" size="sm" (clicked)="saveWrittenEval()" text="Save" [disabled]="WrittenFormGroup.invalid || spinner" [spinner]="spinner"></app-button>
+          </div>
+        </form>
+      </ng-container>
+
+      <ng-container *ngIf="PerformStatus === true">
+        <div class="border-b border-gray-300">
+          <!--Select Tasks-->
+          <div class="float-left mt-4" style="width: 12%;" >
+            <!--Task Label -->
+            <app-label text="{{('Task' | labelReplacement)| async}}s linked to {{('ILA' | labelReplacement)| async}}" class="font-medium"></app-label><br />
+          </div>
+
+          <div class="mt-4 mb-4 ml-28">
+            <div class="border-0.5 rounded mat-elevation-z2 h-auto w-5/6 ml-20 bg-white-one px-8">
+              <table class="table w-full border text-left mt-5 hover">
+                <thead>
+                  <tr class="table-row text-xs text-gray-four">
+                    <th class="table-cell border-gray-one font-normal">
+                      <mat-checkbox (change)="checkAllTasks($event)"
+                        [checked]="taskSelection.selected.length > 0 && taskSelection.selected.length === taskList.length"
+                        [indeterminate]="taskSelection.selected.length > 0 && taskSelection.selected.length < taskList.length">
+                      </mat-checkbox>
+                    </th>
+                    <th class="table-cell border-gray-one font-normal">{{("Task" | labelReplacement)| async}} No.</th>
+                    <th class="table-cell border-gray-one font-normal">{{("Task" | labelReplacement)| async}} Statement</th>
+                    <th class="table-cell border-gray-one font-normal" style="width:25% !important;"></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let task of taskList" class="table-row text-sm font-normal ">
+                    <td class="table-cell align-middle border-b-0.8 border-gray-one">
+                      <mat-checkbox (change)="taskChange($event, task.id)" [checked]="taskSelection.selected.includes(task.id)">
+                      </mat-checkbox>
+                    </td>
+                    <td class="table-cell align-middle border-b-0.8 border-gray-one">{{task.number}}</td>
+                    <td class="table-cell align-middle border-b-0.8 border-gray-one">{{
+                      task.description }}</td>
+                    <td class="table-cell align-middle border-b-0.8 border-gray-one" style="width:25% !important;">
+                      <a target="_blank" [routerLink]="[task.RoutePath]" [queryParams]="task.RouteParams"
+                        class="text-lightGreen">
+                        <app-icon icon="visibility"></app-icon>
+                        View {{("Task" | labelReplacement)| async}}
+                      </a>
+
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="flex" style="justify-content:flex-end">
+            <app-button [spinner]="performSpinner"
+            (clicked)="savePerformData()"
+            text="Save" [disabled]="!taskSelection.hasValue() || performSpinner" ButtonType="button" size="sm"></app-button>
+          </div>
+        </div>
+      </ng-container>
+
+      <ng-container *ngIf="DiscussStatus === true">
+        <form [formGroup]="DiscussFormGroup" class="border-b border-gray-300">
+          <!--Test Information-->
+          <div class="float-left w-3/12 mt-4">
+            <!--Test Information Label -->
+            <app-label text="Test Information" class="font-medium"></app-label>
+           <!--  <app-label text="Enter a title for this assessment" class="text-gray-300 text-small">
+            </app-label> -->
+          </div>
+
+          <div class="mt-4 mb-4 ml-28">
+            <div class="border-0.5 rounded mat-elevation-z2 h-auto ml-20 bg-white-one px-8">
+              <div class="row justify-between">
+                <div class="flex flex-col w-23/24 mt-4 mb-6">
+                  <app-label [for]="'Title'" [text]="'Title '" class="label required">
+                  </app-label>
+                  <app-textbox type="text" [name]="'Title'" [defaultValue]="Title" formControlName="Title"
+                    [placeholder]="'Title'">
+                  </app-textbox>
+                  <app-input-error
+                    *ngIf="DiscussFormGroup.get('Title')?.invalid && DiscussFormGroup.get('Title')?.hasError('required')"
+                    [text]="'Title is Required'">
+                  </app-input-error>
+                </div>
+                <div class="flex flex-col w-23/24 mb-6">
+                  <div>
+                    <app-label [for]="'Instruction'"  text="{{('Instruction' | labelReplacement)| async}}s"></app-label>
+                    <span class="float-right">
+
+                      <app-button ButtonType="text" text="Add as Coversheet Template"
+                        customClasses="focus:outline-none text-lightGreen text-sm"
+                        (clicked)="openFlyInPanel(AddCoversheetTemplate)">
+                      </app-button>
+                      <app-button ButtonType="text" text="Use Coversheet Template"
+                        customClasses="ml-4 focus:outline-none text-lightGreen text-sm"
+                        (clicked)="useCoverFor = 'Discuss';openFlyInPanel(UseCoversheet)">
+                      </app-button>
+                    </span>
+
+                  </div>
+                  <br />
+                  <ckeditor [editor]="PerformEditor" formControlName="Instruction" (ready)="onReady($event)"></ckeditor>
+                  <app-input-error *ngIf="DiscussFormGroup.get('Instruction')?.hasError('required')" text="Please Enter Discuss {{('Instruction' | labelReplacement)| async}}s "></app-input-error>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </form>
+
+        <div>
+          <div class="float-left w-3/12 mt-4">
+            <app-label text="Add Discuss Questions" class="font-medium"></app-label><br />
+            <app-label text="(Optional)" class="text-gray-300 text-small"></app-label>
+          </div>
+
+          <div class="mt-4 mb-4 ml-28" >
+            <div class="rounded h-auto ml-20 px-8">
+              <div class="row justify-between">
+                <div class="w-full mt-4 mb-6" [formGroup]="QuestionAnswerform">
+                  <div formArrayName="quesAns" *ngFor="let qa of quesAns.controls; let i = index">
+                    <div [formGroupName]="i">
+                        <div class="font-medium mb-2">Question {{i+1}}</div>
+                        <div class="mb-7">
+                          <ckeditor
+                          [id]="i"
+                          [data]="QuestionAnswerform.value.quesAns[i].questionText"
+                          formControlName="questionText"
+                          name="questionText"
+                         [editor]="DiscussQuestionEditor" (ready)="onReady($event)"></ckeditor>
+                        </div>
+                        <div class="font-medium mb-2">Answer/ Keywords (Optional)</div>
+                        <div class="mb-7">
+                          <ckeditor
+                          [id]="i"
+                          [data]="QuestionAnswerform.value.quesAns[i].answerText"
+                          formControlName="answerText"
+                          name="answerText"
+                          [editor]="DiscussAnswerEditor" (ready)="onReady($event)"></ckeditor>
+                    </div>
+                    </div>
+
+                  </div>
+                  <div class="flex" style="float: right;align-items:center;">
+                    <app-button class="mr-4" variant="text" text="Add another Question" iconPosition="left" icon="add"
+                      (clicked)=" AddNewDiscussQuestion()"></app-button>
+                    <app-button [disabled]="DiscussFormGroup.invalid || discussSaveSpinner" [spinner]="discussSaveSpinner"
+                      text="Save" size="sm" (clicked)="saveDiscussionType()"></app-button>
+                  </div>
+                </div>
+              </div>
+
+
+              <div class="flex flex-row justify-end mt-4">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- <div class="float-right">
+                    <app-button type="button" size="sm" color="secondary" text="Save & Add New" class="pb-4">
+                    </app-button>
+                    <app-button type="button" size="sm" color="primary" text="Save" class="ml-3 pb-4">
+                    </app-button>
+                </div> -->
+      </ng-container>
+
+      <ng-container *ngIf="SimulationStatus === true || simulation_status">
+        <form [formGroup]="SimulationFormGroup" class="border-b border-gray-300">
+          <!--Test Information-->
+          <div class="float-left mt-4">
+            <!--Test Information Label -->
+            <app-label text="Test Information" class="font-medium"></app-label>
+            <p><app-label text="Enter a title for this assessment" class="text-gray-300 text-small"></app-label></p>
+          </div>
+
+          <div class=" mt-4 mb-4 ml-28">
+            <div class="rounded mat-elevation-z1 h-auto ml-20 bg-white-one px-8">
+              <div class="row justify-between">
+                <div class="flex flex-col w-23/24 mb-6 mt-4">
+                  <app-label [for]="'Title'" [text]="'Title '" class="label required">
+                  </app-label>
+                  <app-textbox type="text" [name]="'Title'" [defaultValue]="SimulationTitle" formControlName="Title"
+                    [placeholder]="'Title'">
+                  </app-textbox>
+                  <app-input-error
+                    *ngIf="SimulationFormGroup.get('Title')?.invalid && SimulationFormGroup.get('Title')?.hasError('required')"
+                    [text]="'Title is Required'">
+                  </app-input-error>
+                </div>
+                <div class="flex flex-col w-23/24 mb-6">
+                  <div>
+                    <app-label [for]="'Instruction'"  text="{{('Instruction' | labelReplacement)| async}}s "></app-label>
+                    <span class="float-right">
+                      <app-button ButtonType="text" text="Add as Coversheet Template"
+                        customClasses="focus:outline-none text-lightGreen text-sm"
+                        (clicked)="openFlyInPanel(AddCoversheetTemplate)">
+                      </app-button>
+                      <app-button ButtonType="text" text="Use Coversheet Template"
+                        customClasses="ml-4 focus:outline-none text-lightGreen text-sm"
+                        (clicked)="useCoverFor = 'Simulations';openFlyInPanel(UseCoversheet)">
+                      </app-button>
+                    </span>
+                  </div>
+                  <br />
+                  <ckeditor [editor]="PerformEditor" formControlName="Instruction" (ready)="onReady($event)">
+                  </ckeditor>
+
+                </div>
+
+                <div class="flex flex-col w-23/24 mb-6">
+                  <app-label [for]="'TimeLimit'" [text]="'Time Limit (Optional)'"></app-label>
+                  <div>
+                    <div class="w-1/2 float-left">
+                      <app-textbox type="text" [name]="'TimeLimit'" [defaultValue]="TimeLimitHours"
+                        formControlName="TimeLimitHours" [placeholder]="'Time Limit Hours'"
+                        (keypress)="inputChange($event)">
+                      </app-textbox>
+                      <app-input-error *ngIf="SimulationFormGroup.get('TimeLimitHours')?.invalid">
+                      </app-input-error>
+                    </div>
+                    <div class="w-1/2 float-right">
+                      <app-textbox (keypress)="inputChange($event)" type="text" [name]="'TimeLimit'"
+                        [defaultValue]="TimeLimitMins" formControlName="TimeLimitMins"
+                        [placeholder]="'Time Limit Minutes'">
+                      </app-textbox>
+                      <app-input-error *ngIf="SimulationFormGroup.get('TimeLimitMins')?.invalid">
+                      </app-input-error>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </form>
+
+        <div class="border-gray-300">
+          <div class="float-left mt-2">
+            <!--Labels-->
+            <app-label text="Add Scenario" class="font-medium"></app-label>
+            <p><app-label text="Add a simulation scenario" class="text-gray-400 text-small"></app-label></p>
+          </div>
+
+          <div class="mt-4 mb-4 ml-28">
+            <div class="border-0.5 rounded mat-elevation-z2 h-auto ml-20 bg-white-one px-8">
+              <div class="row justify-between">
+                <div class="w-full mt-4 mb-6">
+                  <p>Select one of the following options to add a scenario</p>
+                </div>
+                <!--buttons-->
+                <div class="flex flex-col w-23/24 mb-6">
+
+                  <!--Create New Simulation Scenario Starts-->
+                  <div class="mb-2">
+                    <app-button (clicked)="OnCreateNewClick()" variant="text" text="Create New Simulation Scenario">
+                    </app-button>
+                  </div>
+                  <div class="bg-gray-200 rounded-sm pl-4 text-xs font-medium mt-3"
+                    *ngIf="title_text && !create_new_simulation">
+                    <p class="py-2">
+                      <app-icon class="mr-2" icon="check_circle_outline" style="color: rgb(92, 155, 49) !important;">
+                      </app-icon>{{title_text}}
+                    </p>
+                  </div>
+                  <!--Create New Simulation Scenario Ends-->
+
+                  <!--Use existing Simulator Scenario Starts-->
+                  <div class="mb-2">
+                    <button variant="text" style="color: rgb(92, 155, 49) !important;"
+                      (click)="UseExistingScenario()">Use Existing Simulator Scenario
+                      <app-icon *ngIf="use_existing" icon="expand_less"></app-icon>
+                      <app-icon *ngIf="!use_existing" icon="expand_more"></app-icon>
+                    </button>
+
+                    <div *ngIf="use_existing">
+
+                      <div class="mt-9">
+                        <!--    <p *ngIf="!on_select" class="text-gray-400 pl-4">Simulator Scenarios</p> -->
+                        <div *ngIf="on_select" class="bg-gray-200 rounded-sm pl-4 text-xs font-medium">
+                          <p *ngFor="let sel of selected_data_array" class="py-2">
+                            <app-icon class="mr-2" icon="check_circle_outline"
+                              style="color: rgb(92, 155, 49) !important;"></app-icon>
+                            {{sel}}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div class="mt-6 mb-6">
+                        <table class="table w-full border border-gray-one text-left mt-5 hover rounded-b-sm">
+                          <thead>
+                            <tr class="table-row text-gray-400 ">
+                              <th class="table-cell border-gray-one font-normal pl-4">
+                                Simulator Scenarios</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr *ngFor="let item of simulator_array"
+                              class="table-row text-sm font-normal hover:bg-gray-50"
+                              [ngClass]="{'text-gray-400':item.checked}">
+                              <td class="pl-4 text-xs w-2/4 table-cell align-middle border-b-0.8 border-gray-one">
+                                {{item.text}}
+                              </td>
+                              <td
+                                class="w-4/12 table-cell align-middle border-b-0.8 border-gray-one text-xs text-green-600">
+                                <button (click)="openFlyInPanelViewScenario(ViewScenario,item)" type="text"
+                                  class="underline" [ngClass]="{'text-gray-400':item.checked}">
+                                  <app-icon [ngClass]="{'text-gray-400':item.checked}" icon="remove_red_eye"
+                                    class="mr-2"></app-icon>
+                                  View Scenario
+                                </button>
+                              </td>
+                              <td class=" w-4/12 table-cell align-middle border-b-0.8 border-gray-one">
+                                <button (click)="OnSelect(item)" class="w-20 px-4 btn-icon-secondary text-xs"
+                                  [disabled]="item.checked"
+                                  [ngClass]="{'text-gray-400 border-gray-300 ':item.checked}">Select</button>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+
+                    </div>
+                  </div>
+                  <!--Use existing Simulator Scenario Ends-->
+
+                  <!--Link Power Data Simulation Starts-->
+                  <div>
+                    <app-button (click)="openFlyInPanelPowerData(PowerData)" variant="text"
+                      text="Link PowerData Simulation"></app-button>
+                  </div>
+                  <div class="bg-gray-200 rounded-sm pl-4 text-xs font-medium mt-3" *ngIf="recieve_power_data ">
+                    <p *ngFor="let power of powerData_array" class="py-2">
+                      <app-icon class="mr-2" icon="check_circle_outline" style="color: rgb(92, 155, 49) !important;">
+                      </app-icon>{{power.text}}
+                    </p>
+                  </div>
+                  <!--Link Power Data Simulation Ends-->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="flex flex-row justify-end mt-4">
+          <!-- <app-button (clicked)="removeAnswers()" color="grey" text="Cancel" size="sm"></app-button> -->
+          <app-button color="secondary" size="sm" (clicked)="this.SaveEvaluation('Simulations');" text="Save" [disabled]="SimulationFormGroup.invalid || spinner" [spinner]="spinner"></app-button>
+        </div>
+      </ng-container>
+    </div>
+    </div>
+
+    <div class="w-3/12 ml-4 border-b border-gray-300">
+      <app-label text="All Assessments" class="text-gray-500 font-medium"></app-label>
+      <div class=" border-t border-gray-300"></div>
+      <div class="mt-4 text-small" *ngFor="let ev of allEvaluations">
+        <div class="flex flex-row">
+          <span class="font-bold mr-12 " *ngIf="ev.isActive">{{ev.evaluationDescription}}</span>
+          <span class="font-bold mr-12 " style="color:gray"  *ngIf="!ev.isActive">{{ev.evaluationDescription}}</span>
+          <br />
+          <app-button ButtonType="icon" class="mt--4" icon="more_horiz" [matMenuTriggerFor]="menu">
+            <mat-menu #menu="matMenu">
+              <label mat-menu-item (click)="editTest(ev.evaluationMethodType,ev.data)">Edit</label>
+              <label [disabled]="ev.evaluationMethodType==='Perform'" mat-menu-item (click)="copyId = ev.evaluationId;copyTraineeEval()">Copy</label>
+              <label mat-menu-item (click)="deleteId = ev.evaluationId;deleteType=ev.evaluationMethodType;OnDelete(deleteDialog)">Delete</label>
+              <label mat-menu-item (click)="ChangeStatus(ev)">{{ev.isActive?"Make Inactive":"Make Active"}} </label>
+            </mat-menu>
+          </app-button>
+        </div>
+        <span class="italic text-lightGreen">{{ev.evaluationMethodType}}</span>
+      </div>
+
+    </div>
+  </div>
+</form>
+<div *ngIf="isShowCreateTestVisible">
+  <app-button ButtonType="text" text="Create Test for {{('ILA' | labelReplacement)| async}}" icon="add"
+    customClasses="text-lightGreen text-sm"
+    (clicked)="createTestForILA()">
+  </app-button>
+</div>
+
+
+<ng-template #CreateNewTestItems>
+  <app-flypanel-add-test-item [ilaId]="ILAID" [previousQuestion]="selectedQuestion" [mode]="mode" (closed)="flyPanelService.close()" (addQuestion)="questionAdded($event)">
+  </app-flypanel-add-test-item>
+</ng-template>
+
+<ng-template #viewTestQuestion>
+  <app-flypanel-preview-test-questions (closed)="flyPanelService.close()" [previousQuestion]="selectedQuestion"></app-flypanel-preview-test-questions>
+</ng-template>
+
+<ng-template #UseCoversheet>
+  <app-fly-panel-coversheets (coverSelected)="selectSheet($event,useCoverFor);"></app-fly-panel-coversheets>
+</ng-template>
+
+<ng-template #AddCoversheetTemplate>
+  <app-fly-panel-add-coversheets></app-fly-panel-add-coversheets>
+</ng-template>
+
+<!--fly in for question bank-->
+<ng-template #QuestionBank>
+  <app-fly-panel-ques-bank (question_array_create)="recieveQuestionBankItems($event)"
+    (random_array)="recieveQuestionBankItems($event)">
+  </app-fly-panel-ques-bank>
+</ng-template>
+
+<!--fly in for test settings-->
+<ng-template #TestSettings>
+  <app-fly-panel-test-setting [WrittenStatus]="WrittenStatus" [DiscussStatus]="DiscussStatus">
+  </app-fly-panel-test-setting>
+</ng-template>
+
+<!--fly in for power data-->
+<ng-template #PowerData>
+  <app-fly-panel-power-data (powerData)="recievePowerData($event)">
+  </app-fly-panel-power-data>
+</ng-template>
+
+<!--fly in for View Scenario-->
+<ng-template #ViewScenario>
+  <app-fly-panel-scenario [View_Scenario_text]="View_Scenario_text">
+  </app-fly-panel-scenario>
+</ng-template>
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue [header]="'Delete Trainee Assessment'" [confirmText]="'Yes'" [description]="'You are selecting to delete a Trainee Assessment, this will not be undone.'" (canceled)="dialog.closeAll()" [showEffectiveDateAndReason]="false" (confirmed)="deleteTREval()"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #RemoveTestQuestionDialogue>
+  <app-qtd-dialogue [isHTML]="true" [header]="'Remove Test Question'" [confirmText]="'Yes'" [description]="testQuestionRemovalDescription" (canceled)="dialog.closeAll()" [showEffectiveDateAndReason]="false" (confirmed)="removeTestQuestion()"></app-qtd-dialogue>
+</ng-template>

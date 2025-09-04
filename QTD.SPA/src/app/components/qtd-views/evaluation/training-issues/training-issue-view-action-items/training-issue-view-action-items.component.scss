@@ -1,0 +1,88 @@
+:host ::ng-deep .training-issues-action-item-header .training-back-button span mat-icon {
+    font-size: 30px;
+    position: relative;
+    bottom: 2px;
+    right: 5px;
+    color: #278f6d;
+  }
+
+  app-button.training-back-button {
+    background-color: rgba(39, 143, 109, 0.11);
+    border-radius: 50%;
+  }
+
+  .training-issues-action-item-header {
+    padding: 1.12rem 1.5rem;
+    background-color: white;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+    justify-content: space-between;
+  }
+  :host ::ng-deep .training-issues-action-item-header {
+    .header-button {
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 143%;
+      letter-spacing: 0.00938rem;
+    }
+ 
+    .training-edit-button {
+      color: #fff;
+      padding: 0.75rem 1.87rem;
+    }
+    .training-save-button {
+        color: #fff;
+        padding: 0.75rem 1.87rem;
+      }
+  }
+
+  .step-controls-section {
+    padding: 1.5rem 2rem;
+    border-radius: 0.25rem;
+    border: 0.5px solid #e1e5e4;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+    width: 90%;
+    margin-top: 2rem;
+    .step-control-container {
+      margin-bottom: 1.19rem;
+    }
+    .step-control-label {
+      color: #000d09;
+      font-size: 0.875rem;
+      font-weight: 400;
+      line-height: 143%; /* 1.25125rem */
+      letter-spacing: 0.00938rem;
+    }
+  }
+
+  .training-issue-info{
+    display: flex;
+    width: 40%;
+  }
+
+  .action-item-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+
+  .action-item-table-container{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  .table-info-data{
+    width: 90%;
+    padding-top: 2rem;
+    padding-bottom: 1rem;
+  }
+
+  .training-issue-action-item-spinner{
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }

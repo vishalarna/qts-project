@@ -1,0 +1,142 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important; padding-bottom:4px;">
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center; ">
+                    <b style=" display: block; color: #020378; font-weight: bold; font-size: 20px; text-align: center; margin-top: 8px;">@Model.Title </b>
+                </div>
+                <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.MetaILAs.Count() > 0)
+    {
+        @foreach (var metaIla in Model.MetaILAs)
+        {
+            <tr>
+                <td colspan="12" style="border: 0; padding: 20px 0 0 0; border: none !important;" class="strip-container">
+                    <div style="color: #000000; padding-bottom: 20px"><b>@metaIla.Name</b></div>
+
+                    @foreach (var ila in metaIla.Meta_ILAMembers_Links)
+                    {
+                        <table class="table">
+                            <tr>
+                                <td style=" border: none !important;color:#0077ee;padding-left:30px; padding-bottom:20px">
+                                    @ila.ILA.Number - @ila.ILA.Name
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td colspan="12" style="border:none;">
+                                    @{
+                                        var employees = metaIla.MetaILA_Employees.Select(r => r.Employee).ToList();
+                                        var employeeIds = employees.Select(x => x.Id).Distinct().ToList();
+                                        var classScheduleEmployees = ila.ILA.ClassSchedules.SelectMany(rr => rr.ClassSchedule_Employee).ToList();
+                                    }
+                                    @if (classScheduleEmployees.Where(x => employeeIds.Contains(x.EmployeeId)).Any())
+                                    {
+                                        <table class="table">
+                                            <tr>
+                                                <th style="border: 1px solid #000; text-align:center;">Employee</th>
+                                                <th style="border: 1px solid #000; text-align:center;">Scheduled Date</th>
+                                                <th style="border: 1px solid #000; text-align:center;">Completed Date</th>
+                                                <th style="border: 1px solid #000; text-align:center;">@("Location".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                                <th style="border: 1px solid #000; text-align:center;">Score</th>
+                                                <th style="border: 1px solid #000; text-align:center;">Grade</th>
+                                            </tr>
+                                            @foreach (var employee in employees)
+                                            {
+                                                @foreach (var emp in classScheduleEmployees.Where(xt => xt.EmployeeId == employee.Id))
+                                                {
+                                                    <tr>
+                                                        <td style="border: 1px solid #000">@employee.Person?.FirstName @employee.Person?.LastName</td>
+                                                        <td style="border: 1px solid #000; text-align: center; ">@(emp.PlannedDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString())</td>
+                                                        <td style="border: 1px solid #000; text-align: center; ">@(emp.CompletionDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString())</td>
+                                                        <td style="border: 1px solid #000; text-align: center; ">@(emp.ClassSchedule.Location?.LocName)</td>
+                                                        <td style="border: 1px solid #000; text-align: center; ">@emp.FinalScore</td>
+                                                        <td style="border: 1px solid #000; text-align: center; ">@emp.FinalGrade</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        </table>
+                                    }
+                                </td>
+                            </tr>
+                        </table>
+                    }
+                </td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate the requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+

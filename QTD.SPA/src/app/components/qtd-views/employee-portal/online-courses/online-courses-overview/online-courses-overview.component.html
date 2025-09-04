@@ -1,0 +1,243 @@
+<app-header [toggleMenuIcon]="false" [canGoBack]="false" [breadcrumbs]="url"></app-header>
+<div class="flex flex-row flex-wrap ml-4 mt-3 justify-between p-3">
+  <div class="flex flex-row justify-between" style="align-items: baseline; width: 50%">
+    <span class="font-bold text-lg" style="width: 50%">Online Courses</span>
+    <!-- <div class="flex flex-row float-right bg-white-one text-sm"> -->
+    <!-- </div> -->
+  </div>
+
+  <section class="mat-elevation-z8 w-full mt-4 bg-white">
+    <mat-tab-group [selectedIndex]="1">
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Completed Courses</span>
+          <div class="icon" *ngIf="completedDataSource && completedDataSource.data.length">
+            <span class="icon__value">{{totalCompletedCourses}}</span>
+          </div>
+        </ng-template>
+
+        <!-- search and buttons starts -->
+        <div class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one">
+        <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Enter key word to search" type="text"
+          (keyup)="filterCompletedTest($event)">
+      </div>
+      <!-- search and button ends -->
+
+      <!-- table starts -->
+      <div class="flex-row bg-white-one rounded-b-md m-2 ">
+        <mat-table [dataSource]="completedDataSource" matSort (matSortChange)="completedSortEvent($event)">
+          <ng-container matColumnDef="ilaNo">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="ClassSchedule.ILA.Number">
+              {{("ILA" | labelReplacement)| async}} #
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{row?.ilaNumber ?? "N/A"}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="ilaTitle">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="ClassSchedule.ILA.Name">
+              {{("ILA" | labelReplacement)| async}} Title
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{row?.ilaName ?? "N/A"}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="score">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="ScormRegistrations.Score">
+              Score
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{row?.scormRegistrations[0]?.score ?? "N/A"}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="grade">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="ScormRegistrations.Grade">
+              Grade
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{row?.scormRegistrations[0]?.grade ?? "N/A"}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="completionDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="CompletionDate">
+              Completion Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{row?.completionDate === null ? null : convertUtcToLocalDate(row?.completionDate) | date:'MM/dd/yyyy'}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="courseRequirements">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="CourseRequirements">
+              Other Course Requirements
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{
+                !row?.usePreTestAndTest
+                ? (row?.preTestRequired ? "PreTest, Test" : "Test")
+                : "N/A"
+              }}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef>Action</mat-header-cell>
+
+            <mat-cell *matCellDef="let row">
+              <div class="flex justify-between w-full">
+                <app-button color="blueBorder" text="View Notes" size="sm" iconPosition="left"
+                  (clicked)="viewNotes(row?.classSchdule)">
+                </app-button>
+
+                <app-button color="blue" text="Review Course" size="sm" iconPosition="left"
+                  (clicked)="reviewCourse(row?.classSchdule)">
+                </app-button>
+              </div>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedCompletedColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedCompletedColumns;"></mat-row>
+
+          <tr *matNoDataRow class="mat-row flex text-center">
+            <td class="mat-cell w-full m-2">
+              <app-spinner *ngIf="isLoadingCompletedCourses; else noData" class="spinner internal-spinner"></app-spinner>
+              <ng-template #noData>
+                No data matching the filter
+              </ng-template>
+            </td>
+          </tr>
+
+        </mat-table>
+        <mat-paginator showFirstLastButtons
+          [length]="totalCompletedCourses"
+          [pageIndex]="completedCoursesPage"
+          [pageSize]="completedCoursesPageSize"
+          [pageSizeOptions]="[20, 40, 60]"
+          (page)="completedPageEvent($event)"
+          aria-label="Select page of periodic elements">
+        </mat-paginator>
+      </div>
+      <!-- table ends -->
+      </mat-tab>
+
+      <mat-tab>
+        <ng-template mat-tab-label>
+          <span>Pending Courses</span>
+          <div class="icon" *ngIf="pendingDataSource && pendingDataSource.data.length">
+            <span class="icon__value">{{totalPendingCourses}}</span>
+          </div>
+        </ng-template>
+
+        <!-- search and buttons starts -->
+        <div class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one">
+        <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Enter key word to search" type="text"
+          (keyup)="filterPendingTest($event)">
+      </div>
+      <!-- search and button ends -->
+
+      <!-- table starts -->
+      <div class="flex-row bg-white-one rounded-b-md m-2 ">
+        <mat-table [dataSource]="pendingDataSource" matSort (matSortChange)="pendingSortEvent($event)">
+          <ng-container matColumnDef="ilaNo">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="ClassSchedule.ILA.Number">
+              {{("ILA" | labelReplacement)| async}} #
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{row?.ilaNumber}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="ilaTitle">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="ClassSchedule.ILA.Name">
+              {{("ILA" | labelReplacement)| async}} Title
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{row?.ilaName}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="courseDueDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="PlannedDate">
+              Course Due Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{convertUtcToLocalDate(row?.plannedDate) | date:'MM/dd/yyyy'}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="courseRequirements">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="CourseRequirements">
+              Other Course Requirements
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{
+                !row?.usePreTestAndTest
+                ? (row?.preTestRequired ? "PreTest, Test" : "Test")
+                : "N/A"
+              }}
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header="Status">
+              Status
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <mat-chip-list>
+                <mat-chip *ngIf="!hasLaunchLink(row.scormRegistrations)" style="background-color: #fff6df; color: #f0b43e;"> 
+                   Pending
+                </mat-chip>
+                <mat-chip *ngIf="hasLaunchLink(row.scormRegistrations)" style="background-color: #fef3f2; color: #fa634e;">
+                  In Progress
+                </mat-chip>
+              </mat-chip-list>
+            </mat-cell>
+          </ng-container>
+
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef></mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <app-button color="blue" (clicked)="startCoursedialogue(startCourse,row)" text="Start Course"
+                size="sm" iconPosition="left">
+              </app-button>
+            </mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="displayedPendingColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayedPendingColumns;"></mat-row>
+
+          <tr *matNoDataRow class="mat-row flex text-center">
+            <td class="mat-cell w-full m-2">
+              <app-spinner *ngIf="isLoadingPendingCourses; else noData" class="spinner internal-spinner"></app-spinner>
+              <ng-template #noData>
+                No data matching the filter
+              </ng-template>
+            </td>
+          </tr>
+        </mat-table>
+        <mat-paginator showFirstLastButtons
+          [length]="totalPendingCourses"
+          [pageIndex]="pendingCoursesPage"
+          [pageSize]="pendingCoursesPageSize"
+          [pageSizeOptions]="[20, 40, 60]"
+          (page)="pendingPageEvent($event)"
+          aria-label="Select page of periodic elements">
+        </mat-paginator>
+      </div>
+      <!-- table ends -->
+      </mat-tab>
+
+    </mat-tab-group>
+  </section>
+</div>
+
+<ng-template #startCourse>
+  <app-start-course-dialogue [classSchedule_emp]="selectedSchedule" (close)="dialog.closeAll()">
+  </app-start-course-dialogue>
+</ng-template>

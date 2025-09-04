@@ -1,0 +1,199 @@
+<!--Link EO Menu -->
+<ng-container *ngIf="!AddEditSHMenu">
+    <div>
+
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center px-12">
+            <h1 class="text-xl font-medium text-gray-900">Safty Hazards</h1>
+            <button type="button" (click)="flyPanelSrvc.close()">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                    </path>
+                </svg>
+            </button>
+        </div>
+        <!-- header ends here -->
+
+        <!-- search starts here -->
+        <div class="flex flex-row items-center pt-12 pb-2 border-b-0.8 mx-12 border-gray-one">
+            <svg class="w-4 h-4 mr-2 stroke-current text-gray-four " fill="none" stroke="currentColor"
+                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+            <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+                (keyup)="filterSaftyHazard($event)">
+        </div>
+        <!-- search starts ends -->
+
+        <!-- List section starts here -->
+        <div class="">
+            <!-- sub-header starts here -->
+            <div class="flex flex-row pt-12 items-center px-12">
+                <div class="flex-grow space-y-1">
+                    <div class="flex flex-row items-center text-gray-four">
+                        <p class="text-xs mr-2">Sort by Category (A - Z)</p>
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7">
+                            </path>
+                        </svg>
+                    </div>
+                </div>
+
+                <div class="flex flex-row items-center text-green-one" *ngIf="shToLink.length==0">
+                    <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                    </svg>
+                    <button (click)="openSafetyHazardPanel('add')" class="font-medium text-xs xl:text-sm">Add new
+                        Safty Hazard
+                    </button>
+                </div>
+                <div class="flex flex-row space-x-4 text-sm " *ngIf="shToLink.length>0">
+                    <button class="btn-icon-secondary" (click)="LinkSaftyHazardToTask()">
+                        <svg class="feather feather-plus mr-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Link to {{("Task" | labelReplacement)| async}}
+                    </button>
+                </div>
+            </div>
+            <!-- sub-header ends here -->
+            <!-- sub-header ends here -->
+            <app-data-loader *ngIf="tempSHwithCategories.length == 0"></app-data-loader>
+            <!-- Main content starts here -->
+            <div class="pt-6 items-center pb-3">
+                <mat-accordion [multi]="true">
+                    <mat-expansion-panel *ngFor="let sh_cat of tempSHwithCategories" [expanded]="true">
+                        <mat-expansion-panel-header>
+                            <mat-panel-title>
+                                <p>{{sh_cat.description}}</p>
+                            </mat-panel-title>
+                        </mat-expansion-panel-header>
+
+                        <ng-template matExpansionPanelContent>
+                            <div class="text-sm" *ngFor="let sh of sh_cat.saftyHazards">
+                                <div class="py-6 border-b-0.8 border-gray-one px-12 hover:bg-white-three">
+                                    <div class="flex flex-nowrap">
+                                        <input type="checkbox" class="mr-3 bg-green-300"
+                                            [checked]="shToLink.includes(sh.id)" (change)="AddToLinkList(sh.id)">
+                                        <p>{{sh.title}}</p>
+                                    </div>
+                                    <div class="flex flex-row items-center justify-between pt-3 pl-6">
+                                        <div class="flex flex-row items-center text-gray-four">
+                                            <p class="text-xs">#{{sh.majorVersion +"."+sh.minorVersion}} created 18 days
+                                                ago
+                                                by
+                                                Daniela</p>
+                                        </div>
+                                        <div class="flex flex-row items-center text-gray-four btn-group">
+                                            <button mat-icon-button [matMenuTriggerFor]="menu">
+                                                <app-icon icon="more_vert"></app-icon>
+                                            </button>
+                                            <mat-menu #menu="matMenu">
+                                                <label mat-menu-item
+                                                    (click)="openSafetyHazardPanel('edit',sh)">Edit</label>
+                                                <label mat-menu-item>View {{("Safety Hazard" | labelReplacement)| async}}s linked to {{("Task" | labelReplacement)| async}}</label>
+                                                <label mat-menu-item>View {{("Safety Hazard" | labelReplacement)| async}}s linked to {{("ILA" | labelReplacement)| async}}</label>
+                                                <label mat-menu-item *ngIf="sh.active"
+                                                    (click)="modifySaftyHazardStatus(sh,'inactive')">Make
+                                                    Inactive</label>
+                                                <label mat-menu-item *ngIf="!sh.active"
+                                                    (click)="modifySaftyHazardStatus(sh,'active')">Make Active</label>
+                                                <label mat-menu-item
+                                                    (click)="modifySaftyHazardStatus(sh,'delete')">Delete</label>
+                                            </mat-menu>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </ng-template>
+                    </mat-expansion-panel>
+                </mat-accordion>
+            </div>
+            <!-- Main content ends here -->
+        </div>
+        <!-- List section ends here -->
+
+    </div>
+</ng-container>
+
+<!-- Add EO Menu -->
+<ng-container *ngIf="AddEditSHMenu">
+    <form (ngSubmit)="onSubmit()" #form="ngForm">
+
+        <!-- header starts here -->
+        <button class="flex flex-row items-center px-10" (click)="AddEditSHMenu=false">
+            <svg xmlns="http://www.w3.org/2000/svg"
+                class="stroke-current text-gray-900 feather feather-x cursor-pointer hover:text-teal-400 h-6 w-6"
+                fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            <h1 class="text-xl font-medium text-gray-900"> {{SHMenuMode=='add'?'Add new ':'Edit '}} Safty Hazard
+            </h1>
+        </button>
+        <!-- header ends here -->
+
+        <!-- input starts here -->
+        <div class="flex flex-col pt-12 pb-2 px-12">
+            <p class="text-sm font-medium text-gray-four">Title</p>
+            <input [(ngModel)]="shObj.title" name="title" required
+                class="text-sm flex-grow focus:outline-none text-gray-900 border-gray-one border-0.8 mt-2 px-4 pt-3 pb-7 rounded"
+                placeholder="Safty Hazard Title" type="text">
+        </div>
+        <div class="flex flex-col pt-12 pb-2 px-12">
+            <p class="text-sm font-medium text-gray-four">Description</p>
+            <input [(ngModel)]="shObj.description" name="description" required
+                class="text-sm flex-grow focus:outline-none text-gray-900 border-gray-one border-0.8 mt-2 px-4 pt-3 pb-7 rounded"
+                placeholder="Safty Hazard Description" type="text">
+        </div>
+        <div class="flex flex-col pt-12 pb-2 px-12">
+            <p class="text-sm font-medium text-gray-four">Personal Protective Equipment</p>
+            <input [(ngModel)]="shObj.personalProtectiveEquipment" name="personalProtectiveEquipmentDesc"
+                class="text-sm flex-grow focus:outline-none text-gray-900 border-gray-one border-0.8 mt-2 px-4 pt-3 pb-7 rounded"
+                placeholder="Safty Hazard Personal Protective Equipment" type="text">
+        </div>
+        <!-- input starts ends -->
+
+        <!-- Option section starts here -->
+        <div class="">
+            <!-- Category option starts here -->
+            <div class="flex flex-col pt-12 px-12">
+                <div class="flex flex-row">
+                    <div class="flex-grow space-y-1">
+                        <div class="flex flex-row items-center text-gray-four">
+                            <p class="text-xs mr-2">Category</p>
+                        </div>
+                    </div>
+                </div>
+                <select name="" id="" [(ngModel)]="shObj.saftyHazardCategoryId" name="saftyHazardCategoryId" required
+                    class="text-sm flex-grow text-gray-900 border-gray-one border-0.8 mt-2 px-4 py-3 rounded focus:outline-none bg-white-one">
+                    <option value="0">Select {{("Safety Hazard" | labelReplacement)| async}}s Category</option>
+                    <option [ngValue]="item.id" *ngFor="let item of SHwithCategories">{{item.description}}
+                    </option>
+                </select>
+
+            </div>
+            <!-- Category option ends here -->
+
+            <!-- Button section starts here -->
+            <div class="flex text-sm w-full justify-between px-12 py-6">
+                <button class="flex flex-row items-center" (click)="AddEditSHMenu=false">
+                    <p class="text-gray-900 text-sm font-normal">Cancel</p>
+                </button>
+                <button type="submit" [disabled]="form.invalid"
+                    class="flex flex-row text-sm font-medium text-green-one items-center border-2 border-green-one rounded px-4 py-2">
+                    {{SHMenuMode=='add'? 'Save ' :'Update '}} Safty Hazard
+                </button>
+            </div>
+        </div>
+        <!-- Option section ends here -->
+
+    </form>
+</ng-container>

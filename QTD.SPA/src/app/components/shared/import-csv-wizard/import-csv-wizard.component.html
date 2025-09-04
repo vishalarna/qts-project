@@ -1,0 +1,127 @@
+ <div class="py-4 sm:w-2/4 mx-auto" *ngIf="isImportVisible">
+    <!-- header starts here -->
+    <div class="flex flex-row justify-between border-b items-center py-6">
+      <h1 class="text-xl font-medium text-gray-900">Upload {{type | dynamicLabelReplacement | async}}</h1>
+    </div>
+    <!-- header ends here -->
+    <div class="bg-white-one rounded shadow-md">
+      <!-- form starts here -->
+      <form class="block text-sm space-y-6">
+        <div class="text-center">
+          <div class="flex flex-col items-center px-12 py-8">
+            <svg class="mb-2" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path
+                d="M34.644 17.7893C34.6507 17.6373 34.6667 17.488 34.6667 17.3333C34.6667 11.4426 29.8907 6.66663 24 6.66663C19.8533 6.66663 16.2667 9.03863 14.5027 12.4946C13.728 12.1813 12.8867 12 12 12C8.62667 12 5.868 14.5133 5.424 17.7653C2.27067 18.8386 0 21.8173 0 25.3333C0 29.752 3.58133 33.3333 8 33.3333H32C36.4187 33.3333 40 29.752 40 25.3333C40 21.8426 37.7613 18.8826 34.644 17.7893ZM24.9427 24.9426L20.9427 28.9426C20.6827 29.2026 20.3413 29.3333 20 29.3333C19.6587 29.3333 19.3173 29.2026 19.0573 28.9426L15.0573 24.9426C14.536 24.4213 14.536 23.5786 15.0573 23.0573C15.5787 22.536 16.4213 22.536 16.9427 23.0573L18.6667 24.7813V17.3333C18.6667 16.5973 19.2627 16 20 16C20.7373 16 21.3333 16.5973 21.3333 17.3333V24.7813L23.0573 23.0573C23.5787 22.536 24.4213 22.536 24.9427 23.0573C25.464 23.5786 25.464 24.4213 24.9427 24.9426Z"
+                fill="#E1E5E4" />
+            </svg>
+            <p class="text-gray-four px-20">Upload CSV file containing
+              {{ (this.uploadColumns.join(", ")) | dynamicLabelReplacement | async }}</p>
+          </div>
+          <div class="flex flex-col items-center">
+            <div class="flex flex-col items-center border-dashed border-2 border-gray-one p-6 rounded relative">
+              <div draggable="true" ngClass="{{dragAreaClass}}">
+              <p class="drag-caption"><a class="text-decoration-none" href="javascript:void(0)" (click)="file.click()">&nbsp;</a></p>
+            </div>
+              <input class="absolute left-0 text-2xl opacity-0 w-0" type="file"  #file  [name]="'file'+type" [id]="'upload'+ type +'-btn'"
+                aria-label="file upload" (change)="onFileSelected($event)">
+              <label class="flex flex-col items-center p-1 cursor-pointer" [for]="'upload'+ type +'-btn'">
+                <svg class="feather feather-plus mb-2 stroke-current text-gray-four" xmlns="http://www.w3.org/2000/svg"
+                  width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                  stroke-linecap="round" stroke-linejoin="round">
+                  <line x1="12" y1="5" x2="12" y2="19"></line>
+                  <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                <p class="text-gray-four">Click to upload or drag file from computer</p>
+              </label>
+            </div>
+            <label  *ngIf="this.fileName">{{this.fileName}}</label>
+            <div *ngIf="fileError" class="error-message">{{ fileError }}</div>
+            <div class="mt-3" >
+                <app-button text="Validate" size="sm" [disabled]="!isValidFile" (clicked)="validateCSVFile()"></app-button>
+            </div>
+          </div>
+        </div>
+      </form>
+      <!-- form ends here -->
+      <div class="block py-14 download-btn">
+        <app-button (clicked)="getTemplate()" variant="text" text="Download {{type | dynamicLabelReplacement | async}} Template"></app-button>
+    </div>
+    </div>
+</div>
+
+<div *ngIf="!isImportVisible">
+  <div class="py-4 sm:w-full mx-auto px-12" >
+    <!-- header starts here -->
+    <div class="flex flex-row justify-between items-center py-6">
+      <h1 class="text-xl font-medium text-gray-900">Match Column Labels</h1>
+      <div class="flex" *ngIf="!isConfirmed">
+        <mat-checkbox (change)="csvDownloadChange($event)" [checked]="isReturnFile" ></mat-checkbox>
+        <div class="space-y-0.5" style="font-weight: 600; font-size: 16px">
+          Download validated CSV
+        </div>
+      </div>
+      <div *ngIf="isConfirmed">
+        <app-button size="sm" color="primary" text="Download validated CSV" (clicked)="OnConfirmUpload.emit(true)" ></app-button>
+     </div>
+    </div>
+    <!-- header ends here -->
+   
+    <div class="flex flex-row space-x-4 text-sm justify-content-between align-items-center">
+      <div class="text-gray-400"> Records with validation errors will be skipped during import if the current file is confirmed for import.</div>
+      <div class="rounded py-2 px-3.5 bg-red-100">
+        <span class="text-red-400 text-xs font-medium">
+         {{getErrorRowsCount()}} row(s) have errors
+        </span>
+      </div>
+    </div>
+
+    <div class="filter-list-data">
+      <div class="p-3 px-4 filter-search-box">
+        <input class="py-2" type="text" name="searchBox" [value]="searchString" (keyup)="searchFilter($event)" placeholder="Enter value to Search" />
+        <app-button variant="text" class="mt-2 ml-12" (clicked)="clearFilter()" text="Clear Search" icon="clear" iconPosition="right"></app-button>
+      </div>
+      <mat-table matSort [dataSource]="setDataSource()" >
+        <ng-container *ngFor="let column of columnsForTable" [matColumnDef]="column">
+            <mat-header-cell *matHeaderCellDef class="px-2"> {{column | dynamicLabelReplacement| async}}
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span class="text-break">{{ getColumnValue(row,column) }}</span>
+            </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="columnsForTable"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: columnsForTable;" [ngClass]="{'row-with-error': row.validationErrors.length>0}"></mat-row>
+        <tr class="mat-row flex text-center " *matNoDataRow>
+            <td class="mat-cell w-full m-2 no-data-cell">No Data Found</td>
+        </tr>
+      </mat-table>
+    </div>
+
+    <div class="flex float-right rounded-t-md py-6 space-x-2">
+      <app-button *ngIf="!isConfirmed" size="sm" color="secondary" customClasses="mr-2" (clicked)="openDialog(content)" text="Back to upload" ></app-button>
+      <app-button *ngIf="!isConfirmed" size="sm" color="primary" text="Confirm Upload" (clicked)="OnConfirmUpload.emit(isReturnFile)" ></app-button>
+    </div>
+  </div>
+</div>
+<ng-template #content let-modal>
+  <div class="modal-header">
+    <h1 class="text-xl font-normal text-gray-900">
+      Are you sure want to go back?
+    </h1>
+    <button type="button" class="close" aria-label="Close" (click)="dialog.closeAll()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body">
+    <p class="text-sm">
+      The validated import file will be unset and you will have to start over with selecting an import file. Are you sure you want to go back to the file selection screen?
+    </p>
+  </div>
+  <div class="modal-footer">
+    <button class="flex flex-row items-center focus:outline-none" (click)="dialog.closeAll()">
+      <p class="text-gray-900 text-sm font-normal m-0 px-3 py2">Cancel</p>
+    </button>
+    <button (click)="goToUpload()" class=" text-sm font-medium focus:outline-none text-red-600 items-center border-1 border-red-600 rounded px-3.5 py-2 ml-12 " >
+      Go Back
+    </button>
+  </div>
+</ng-template>

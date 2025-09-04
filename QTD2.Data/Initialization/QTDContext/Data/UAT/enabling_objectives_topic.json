@@ -1,0 +1,191 @@
+[
+  {
+    "Id": 1,
+    "SubCategoryId": 1,
+    "Title": "Transmission and Distribution Systems",
+    "Number": 1,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 2,
+    "SubCategoryId": 1,
+    "Title": "Substations",
+    "Number": 2,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 3,
+    "SubCategoryId": 1,
+    "Title": "Power System Loads",
+    "Number": 3,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 4,
+    "SubCategoryId": 2,
+    "Title": "Components and Construction of AC Overhead Lines",
+    "Number": 1,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 5,
+    "SubCategoryId": 2,
+    "Title": "Components and Construction of Underground Cables",
+    "Number": 2,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 6,
+    "SubCategoryId": 2,
+    "Title": "Electrical Characteristics of AC Transmission Lines",
+    "Number": 3,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 7,
+    "SubCategoryId": 3,
+    "Title": "General Concepts and Principles",
+    "Number": 1,
+    "EffectiveDate": "2023-01-01"
+  },
+ {
+  "Id": 8,
+  "SubCategoryId": 3,
+  "Title": "Circuit Switchers",
+  "Number": 2
+ },
+  {
+    "Id": 9,
+    "SubCategoryId": 3,
+    "Title": "Disconnects and Disconnect Switches",
+    "Number": 3,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 10,
+    "SubCategoryId": 4,
+    "Title": "The Generator",
+    "Number": 1,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 11,
+    "SubCategoryId": 4,
+    "Title": "Power System Stabilizer",
+    "Number": 2,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 12,
+    "SubCategoryId": 4,
+    "Title": "The Turbine",
+    "Number": 3,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 13,
+    "SubCategoryId": 5,
+    "Title": "Basic Principles",
+    "Number": 1,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 14,
+    "SubCategoryId": 5,
+    "Title": "Components of a Fossil Plant",
+    "Number": 2,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 15,
+    "SubCategoryId": 6,
+    "Title": "Boiling Water Reactors",
+    "Number": 1,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 16,
+    "SubCategoryId": 6,
+    "Title": "Basic Physics of Nuclear Energy",
+    "Number": 2,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 17,
+    "SubCategoryId": 7,
+    "Title": "Hydro Units and Reservoirs",
+    "Number": 1,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 18,
+    "SubCategoryId": 7,
+    "Title": "Run-of-the-River Units",
+    "Number": 2,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 19,
+    "SubCategoryId": 7,
+    "Title": "Pumped Storage Units",
+    "Number": 3,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 20,
+    "SubCategoryId": 8,
+    "Title": "Principles of Relay Protection",
+    "Number": 1,
+    "EffectiveDate": "2023-01-01"
+  },
+
+  {
+    "Id": 22,
+    "SubCategoryId": 8,
+    "Title": "Types of Relays",
+    "Number": 3,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 23,
+    "SubCategoryId": 9,
+    "Title": "Transmission Lines",
+    "Number": 1,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 24,
+    "SubCategoryId": 9,
+    "Title": "Transformer Protection ",
+    "Number": 2,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 25,
+    "SubCategoryId": 9,
+    "Title": "Bus Protection",
+    "Number": 3,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 26,
+    "SubCategoryId": 10,
+    "Title": "System Underfrequency Protection (UFLS)",
+    "Number": 1,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 27,
+    "SubCategoryId": 10,
+    "Title": "Undervoltage Load Shedding Schemes (UVLS)",
+    "Number": 2,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 28,
+    "SubCategoryId": 10,
+    "Title": "Remedial Action Schemes (RAS)",
+    "Number": 3,
+    "EffectiveDate": "2023-01-01"
+  }
+]

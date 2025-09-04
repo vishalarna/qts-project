@@ -1,0 +1,161 @@
+<ng-container *ngIf="editCheck">
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <!-- {{oldProcedure ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+
+        <ng-container *ngIf="mode==='Edit'" >
+                  Edit Student Evaluation
+                </ng-container>
+        <ng-container *ngIf="mode==='Copy'">
+        Copy Student Evaluation
+      </ng-container>
+
+      </p>
+      <app-button (click)="closedefinition()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <form [formGroup]="editCopyEvaluationForm">
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'title'" [text]="'Evaluation Title '" class="mt-6 float-left label required"></app-label>
+          <app-textbox type="text" formControlName="title" required>
+          </app-textbox>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'ratingScale'" [text]="'Rating Scale '" class="mt-6 float-left label required"></app-label>
+            <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                <mat-select formControlName="ratingScale" placeholder="Select Rating Scale">
+                  <mat-option *ngFor="let i of ratingScaleList" [value]="i.id">
+                    {{i.ratingScaleDescription}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+            <app-label
+            [for]="'instructions'"
+            text="{{('Instruction' | labelReplacement)| async}}"
+            class="mt-6 float-left label"
+          ></app-label>
+          <ckeditor
+            name="instructions"
+            [editor]="editor"
+            formControlName="instructions"
+          >
+          </ckeditor>
+        </div>
+      </div>
+
+      <div class="flex flex-row-reverse px-14" >
+      <app-button (clicked)="addCheck = true;editCheck=false; importCheck=false" style="color:rgba(92, 155, 49, 1);" variant="text"  text="Add New Question" icon="add" iconPosition="left">
+      </app-button>
+      <app-button  (clicked)="addCheck = false;editCheck=false; importCheck=true" style="color:rgba(92, 155, 49, 1);" variant="text"  text="Add Import Existing Question" icon="add" iconPosition="left">
+      </app-button>
+      </div>
+
+
+
+
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'evaluationQuestions'" [text]="'Evaluation Questions'"></app-label>
+          <table [dataSource]="dataSource" mat-table  style="border: 1px solid #e5e7eb;">
+
+            <!--- Note that these columns can be defined in any order.
+                  The actual rendered columns are set as a property on the row definition" -->
+
+            <!-- Position Column -->
+            <ng-container matColumnDef="id">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+              <td mat-cell *matCellDef="let element;" class="pl-4">{{element.questionId}}</td>
+            </ng-container>
+
+            <!-- Name Column -->
+            <ng-container matColumnDef="question">
+              <th mat-header-cell *matHeaderCellDef> Student Evaluation Question </th>
+              <td mat-cell *matCellDef="let element" >
+                <div class="flex flex-row" class="pl-4"
+                [innerHTML]="element.stem"
+                >
+                </div>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="unlink">
+              <th mat-header-cell *matHeaderCellDef> Unlink Question
+              </th>
+              <td mat-cell *matCellDef="let element" matTooltip="Unlink Student Evaluation Question" (click)="unlinkStudentEvaluationQuestions(element.id)">
+                  <app-icon icon="link_off"></app-icon>
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row flex text-center" *matNoDataRow>
+              <td class="mat-cell w-full mt-2">No questions present in student evaluation</td>
+            </tr>
+          </table>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'EffectiveDate'" [text]="'Effective Date '"></app-label>
+          <app-date (ngModelChange)="dateChanged($event)" formControlName="EffectiveDate" placeholder="Select Date">
+          </app-date>
+          <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+          </app-input-error>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'notes'" [text]="'Notes/Reason '" class="label"></app-label>
+          <app-textarea type="text" formControlName="notes"
+            placeholder="Enter Notes"
+            [value]="editCopyEvaluationForm.get('notes')?.value || ''"
+            [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+          </app-textarea>
+        </div>
+      </div>
+
+
+
+
+
+      <div class="px-12 mt-8 float-right py-3">
+        <app-button *ngIf="mode === 'Edit'" class="mr-2"  [disabled]="editCopyEvaluationForm.invalid || dateError"
+        type="button" size="sm"  text="Edit and Publish" (clicked)="updateEvaluation(true)">
+      </app-button>
+
+        <app-button *ngIf="mode === 'Edit'"  [disabled]="editCopyEvaluationForm.invalid || dateError"
+          type="button" size="sm"  text="Edit" (clicked)="updateEvaluation(false)">
+        </app-button>
+
+        <app-button *ngIf="mode === 'Copy'"  [disabled]="editCopyEvaluationForm.invalid || dateError"
+        type="button" size="sm"  text="Copy" (clicked)="copyEvaluation()">
+      </app-button>
+      </div>
+
+
+    </form>
+  </ng-container>
+
+
+  <ng-container #questionflypanel *ngIf="addCheck && !editCheck && !importCheck">
+    <app-fly-panel-add-question
+    (closed)="addCheck=false;editCheck = true;importCheck=false">
+    </app-fly-panel-add-question>
+  </ng-container>
+
+  <ng-container #importExistingquestionflypanel *ngIf="!addCheck && !editCheck && importCheck">
+    <app-fly-panel-import-existing-questions [studentEvaluationId]="studentEvalId"
+    (closed)="addCheck=false;editCheck = true;importCheck=false"
+    (refresh)="GetLinkedQuestions()">
+    </app-fly-panel-import-existing-questions>
+  </ng-container>

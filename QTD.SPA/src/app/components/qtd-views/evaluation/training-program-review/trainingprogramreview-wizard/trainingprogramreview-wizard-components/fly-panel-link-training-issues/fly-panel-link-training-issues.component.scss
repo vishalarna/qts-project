@@ -1,0 +1,35 @@
+.search-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.56rem;
+}
+
+.caption-section > span {
+  color: #a1b2ad;
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 166%;
+  letter-spacing: 0.025rem;
+}
+
+.training-issues-list  {
+    margin-top: 1.4rem;
+    overflow: hidden;
+    border-radius: 0.25rem;
+    border: 0.5px solid #e1e5e4;
+    background: #fff;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+  }
+  
+  :host ::ng-deep .training-issues-list .mat-cell {
+    padding: 1rem;
+    font-style: normal !important;
+  }
+  :host ::ng-deep .training-issues-list .mat-header-cell {
+    color: #000000 !important;
+    font-size: 0.75rem;
+    font-weight: 600 !important;
+    line-height: 166%; /* 1.245rem */
+    letter-spacing: 0.025rem;
+  }

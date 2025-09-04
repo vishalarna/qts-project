@@ -1,0 +1,107 @@
+[
+  {
+    "Id": 1,
+    "CategoryId": 1,
+    "Title": "The Power System: Overview",
+    "Number": 1,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 2,
+    "CategoryId": 1,
+    "Title": "Transmission Lines and Associated Equipment",
+    "Number": 2,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 3,
+    "CategoryId": 1,
+    "Title": "Switching Devices",
+    "Number": 3,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 4,
+    "CategoryId": 2,
+    "Title": "Principles of Power Generation",
+    "Number": 1,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 5,
+    "CategoryId": 2,
+    "Title": "Fossil Fuel Units",
+    "Number": 2,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 6,
+    "CategoryId": 2,
+    "Title": "Nuclear Units",
+    "Number": 3,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 7,
+    "CategoryId": 2,
+    "Title": "Hydro Units",
+    "Number": 4,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 8,
+    "CategoryId": 3,
+    "Title": "Protection Equipment and Concepts",
+    "Number": 1,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 9,
+    "CategoryId": 3,
+    "Title": "Protection of Bulk Power Equipment",
+    "Number": 2,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 10,
+    "CategoryId": 3,
+    "Title": "Special Protective Schemes",
+    "Number": 3,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+
+  {
+    "Id": 11,
+    "CategoryId": 4,
+    "Title": "Operations Overview",
+    "Number": 1,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 12,
+    "CategoryId": 4,
+    "Title": "MW Control Principles",
+    "Number": 2,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  },
+  {
+    "Id": 13,
+    "CategoryId": 4,
+    "Title": "Voltage Control Principles and Procedures",
+    "Number": 3,
+    "Active": true,
+    "EffectiveDate": "2023-01-01"
+  }
+]

@@ -1,0 +1,17 @@
+.table-list {
+  margin-top: 1.125rem;
+  border-radius: 4px;
+  border: 0.5px solid #e1e5e4;
+  overflow: hidden;
+}
+
+:host ::ng-deep .table-list .mat-cell,
+:host ::ng-deep .table-list .mat-header-cell {
+  padding: 1rem;
+}
+
+:host ::ng-deep .table-list .mat-header-cell:nth-child(1),
+:host ::ng-deep .table-list .mat-cell:nth-child(1) {
+  max-width: 5rem;
+  align-self: flex-start;
+}

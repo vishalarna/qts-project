@@ -1,0 +1,57 @@
+[
+  {
+    "TaskId": 1,
+    "EmpId": 1,
+    "CriteriaMet": true,
+    "EvaluationId": 1,
+    "IsReleasedToEMP": true,
+    "TaskQualificationDate": "2023-05-15T09:00:00",
+    "Deleted": false,
+    "Active": true,
+    "TQStatusId": 1
+  },
+  {
+    "TaskId": 2,
+    "EmpId": 2,
+    "CriteriaMet": false,
+    "EvaluationId": 2,
+    "IsReleasedToEMP": true,
+    "TaskQualificationDate": "2023-06-15T09:00:00",
+    "Deleted": false,
+    "Active": true,
+    "TQStatusId": 2
+  },
+  {
+    "TaskId": 3,
+    "EmpId": 3,
+    "CriteriaMet": true,
+    "EvaluationId": 3,
+    "IsReleasedToEMP": false,
+    "TaskQualificationDate": "2023-04-15T09:00:00",
+    "Deleted": true,
+    "Active": false,
+    "TQStatusId": 3
+  },
+  {
+    "TaskId": 4,
+    "EmpId": 4,
+    "CriteriaMet": true,
+    "EvaluationId": 1,
+    "IsReleasedToEMP": true,
+    "TaskQualificationDate": "2023-03-15T09:00:00",
+    "Deleted": false,
+    "Active": true,
+    "TQStatusId": 4
+  },
+  {
+    "TaskId": 5,
+    "EmpId": 5,
+    "CriteriaMet": false,
+    "EvaluationId": 1,
+    "IsReleasedToEMP": false,
+    "TaskQualificationDate": "2023-02-15T09:00:00",
+    "Deleted": false,
+    "Active": true,
+    "TQStatusId": 5
+  }
+]

@@ -1,0 +1,236 @@
+.nav-wrap {
+    width: 100%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 17px 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 9px 10px #0000000a;
+  }
+ 
+  .back-icon {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background: rgba(92, 155, 49, 0.11);
+    box-shadow: 0px 0px 30px rgb(122 128 126 / 10%);
+    border-radius: 100px;
+    text-align: center;
+    line-height: 40px;
+    color: #5c9b31;
+  }
+ 
+  .back-icon mat-icon {
+    font-size: 16px;
+    width: 10px;
+    line-height: inherit;
+  }
+ 
+  .d-flex {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+ 
+  .navbar-heading {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 160%;
+ 
+    letter-spacing: 0.15px;
+ 
+    color: #000d09;
+    padding: 0 0 0 24px;
+  }
+ 
+  .btn {
+    font-weight: 500;
+    padding: 11px 24px;
+    font-size: 14px;
+    letter-spacing: 0.1px;
+    line-height: 157%;
+    border-radius: 4px;
+  }
+ 
+  .btn-outline-secondary {
+    color: #5c9b31;
+    border-color: #5c9b31;
+  }
+ 
+  .btn-success {
+    background-color: #5c9b31;
+    border-color: #5c9b31;
+    margin: 0 0 0 8px;
+  }
+ 
+  .section-header {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.15000000596046448px;
+    text-align: left;
+  }
+ 
+  .heighttop {
+    width: 100%;
+    box-shadow: 0px 0px 30px rgb(122 128 126 / 10%);
+    border-radius: 4px;
+    background: #fff;
+    padding: 18px 23px 23px 24px;
+    margin: 0 0 24px !important;
+  }
+ 
+ 
+.text-light-gray ,mat-header-cell{
+    color: rgba(122, 128, 126, 1) !important;
+    // font-weight: 400 !important;
+  }
+ 
+  .comments-container {
+    width: 100%;
+    padding: 10px;  /* Adjust padding as needed */
+  }
+ 
+  .para-text-very-sm{
+    font-size: smaller;
+  }
+ 
+  .textarea{
+    border: 1px rgba(122, 128, 126, 1);
+    resize: none;
+  }
+  .date-wrapper{
+    display: flex;
+    align-items: center;
+    padding-top: 27px;
+  }
+.date-wrapper mat-icon{
+  font-size: 20px;
+  line-height: 1;
+  margin-right: 0.5rem;
+  width: 20px;
+}
+.date-wrapper{
+  color:#979797
+}
+.date-wrapper .date-formate{
+   font-size: 14px;
+   line-height: 20px;
+}
+.instruction-title{
+  font-size: 16px;
+  line-height: 1.4;
+  margin:18px 0 12px;
+}
+.survey-instruction{
+  margin-bottom: 70px;
+}
+.source-number{
+  max-width: 130px;
+  width: 100%;
+}
+.data-source-table{
+  padding:20px 0
+}
+
+
+.complete-details{
+  width: 795px;
+  height: 319px;
+  top: 82px;
+  left: 325px;
+  border-radius: 4px;
+  border: 0.5px;
+}
+.done-btn{
+  width: 94px;
+  height: 44px;
+  top: 318px;
+  left: 380px;
+  padding: 11px, 30px, 11px, 31px;
+  border-radius: 4px;
+  gap: 10px;
+}
+
+.survey-wrapper {
+  display: block;
+  position: relative;
+    width: 100%;
+    
+}
+.survey-wrapper .flex.complete-details{
+  box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+  background: #fff;
+  max-width: 49.7rem;
+  position: absolute;
+  padding: 2rem 2.5rem;
+  width: 100%;
+}
+.survey-title-wrapper{
+  display: block;
+  font-size: 1rem;
+  font-weight: 500;
+  line-height: 2rem;
+  position: relative;
+  margin-bottom: 1rem;}
+  .survey-sub-title{
+    color: #979797;
+    font-size: 0.9rem;
+  }
+
+  :host ::ng-deep .dif-survey-header .header-back-button span mat-icon {
+    font-size: 30px;
+    position: relative;
+    bottom: 2px;
+    right: 5px;
+    color: #278f6d;
+  }
+  app-button.header-back-button {
+    background-color: rgba(39, 143, 109, 0.11);
+    border-radius: 50%;
+  }
+.survey-textarea-dis{
+  flex: 1 1 100%;
+  padding-left: 130px;
+  padding-top: 0.5rem;
+  padding-bottom: 0.8rem;
+}
+mat-row{
+  flex-wrap: wrap;
+  padding-top:24px;
+  height: fit-content;
+}
+
+.flex-10{
+  flex: 1 1 10%;
+}
+.flex-25{
+  flex: 1 1 25%;
+}
+.flex-15{
+  flex: 1 1 15%;
+}
+.header-rating-cell > span {
+  margin-right: 23px;
+}
+.survey-break-line {
+  margin: 20px 0;
+  border: 2px solid #ccc;
+}
+
+.comment-section {
+  margin-top: 20px;
+}
+
+.comment-label {
+  display: block;
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: 16px;
+}
+
+.step-controls-section {
+  margin-top: 10px;
+}

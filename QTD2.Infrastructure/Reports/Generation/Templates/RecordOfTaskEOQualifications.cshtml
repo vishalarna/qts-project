@@ -1,0 +1,286 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="width:100%;margin-bottom:0px;border-collapse:collapse">
+    <!-- Header -->
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.Employees != null && Model.TaskQualifications != null)
+    {
+        <tr>
+            <td style="border: none; padding:0px;" class="strip-container" colspan="12">
+                @{
+                    int j = 1;
+                }
+                @foreach (var employee in Model.Employees.Distinct())
+                {
+                    @if (employee.EmployeePositions.Where(t => t.Position.Position_Tasks.Where(s => s.Task.TaskQualifications.Any()).Any()).Any())
+                    {
+
+                        <div class="@(j%2==0?"strip-dark":"")"></div>
+                        <div style="padding: 0.8rem 0rem; " id="@("page" + j)" class="@(j%2==0?"strip":"")">
+                            <table style="width:100%;border-collapse:collapse">
+                                <tr style="color: #800000;">
+                                    <td colspan="2" style="border: none !important;width:9%; padding: 0px; padding-bottom:0px;">
+                                        <p style="display: block; min-width: 100px;font-weight:bolder; padding: 0 20px 0 0; font-size: 1.2rem;margin:0">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</p>
+                                    </td>
+                                    <td colspan="10" style="border: none !important; padding: 0px; padding-left: 15px; padding-bottom: 0px;">
+                                        <p style="display: block; padding: 0 15px 0 0; font-weight: 400; font-size: 1.2rem; margin: 0">@employee.Person?.LastName,@employee.Person?.FirstName</p>
+                                    </td>
+                                </tr>
+
+                                @foreach (var position in employee.EmployeePositions.Select(p => p.Position))
+                                {
+                                    @{
+                                        var positionTasks = position.Position_Tasks;
+                                        if (Model.PrintCompletedTasksFirst)
+                                        {
+                                            positionTasks = position?.Position_Tasks?.OrderBy(s => s.Task.TaskQualifications.OrderByDescending(q => q.TaskQualificationDate).FirstOrDefault()?.TaskQualificationDate)?.ThenBy(t => t.Task.SubdutyArea.DutyArea.Letter + "." + t.Task.SubdutyArea.DutyArea.Number + "." + t.Task.SubdutyArea.SubNumber + "." + t.Task.Number, new AlphaNumericSortHelper()).ToList();
+                                        }
+                                        else
+                                        {
+                                            positionTasks = position?.Position_Tasks?.OrderBy(t => t.Task.SubdutyArea.DutyArea.Letter + "." + t.Task.SubdutyArea.DutyArea.Number + "." + t.Task.SubdutyArea.SubNumber + "." + t.Task.Number, new AlphaNumericSortHelper()).ToList();
+                                        }
+                                    }
+                                    @if (position.Position_Tasks.Where(t => t.Task.TaskQualifications.Count() > 0).Count() > 0)
+                                    {
+                                        <tr>
+                                            <td colspan="2" style="border: none !important;width:9%; padding: 0px; padding-bottom:0px;padding-top:15px;">
+                                                <p style="display: block; min-width: 100px;font-weight:bolder; padding: 0 20px 0 0; font-size: 1.2rem;">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</p>
+                                            </td>
+                                            <td colspan="10" style="border: none !important; padding: 0px; padding-left: 15px; padding-bottom: 0px;padding-top:15px;">
+                                                <p style="display: block; padding: 0 15px 0 0; font-weight: 400; font-size: 1.2rem;">
+                                                    @if (employee.EmployeePositions.Where(t => t.PositionId == position.Id && t.Trainee == true).Any())
+                                                    {
+                                                        <span>@position.PositionTitle (@position.PositionAbbreviation) [Trainee]</span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span>@position.PositionTitle (@position.PositionAbbreviation)</span>
+                                                    }
+                                                </p>
+                                            </td>
+                                        </tr>
+
+                                        <tr style="border-collapse: collapse" class="open-border-table-row">
+                                            @if (Model.DisplayColumns.Where(r => r == "Task #").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid #000;vertical-align:middle; padding:0.8rem;width:10%">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))#</th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Task Description").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid #000; vertical-align: middle; padding: 0.8rem; width: 35%">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Description</th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "ILA Id/Name").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid #000; vertical-align: middle; padding: 0.8rem; width: 20%">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) ID / Name</th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Date").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid #000; vertical-align: middle; padding: 0.8rem; width: 10%;text-align: center ">Date</th>
+                                            }
+                                            @if (Model.IncludeEvaluatorDetails && Model.DisplayColumns.Where(r => r == "Evaluator").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid #000; vertical-align: middle; padding: 0.8rem; width: 10%; text-align: center ">Evaluator</th>
+                                            }
+                                            @if (Model.IncludeEvaluatorDetails && Model.DisplayColumns.Where(r => r == "Evaluation Method").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid #000; vertical-align: middle; padding: 0.8rem; width: 15%; text-align: center ">Evaluation Method</th>
+                                            }
+                                        </tr>
+
+                                        @foreach (var positionTask in positionTasks)
+                                        {
+                                            var taskQualifications = Model.TaskQualifications.Where(x => x.TaskId == positionTask.TaskId);
+                                            @foreach (var taskQualification in taskQualifications)
+                                            {
+                                                <tr class="open-border-table-row">
+                                                    @if (Model.DisplayColumns.Where(r => r == "Task #").Count() > 0)
+                                                    {
+                                                        <td style="border: none; padding:0.8rem;font-weight:500;vertical-align:top">@positionTask.Task.SubdutyArea.DutyArea.Letter@positionTask.Task.SubdutyArea.DutyArea.Number.@positionTask.Task.SubdutyArea.SubNumber.@positionTask.Task.Number</td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Task Description").Count() > 0)
+                                                    {
+                                                        <td style="border: none; padding:0.8rem;font-weight:500;vertical-align:top">@positionTask.Task.Description</td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "ILA Id/Name").Count() > 0)
+                                                    {
+                                                        <td style="border: none; padding:0.8rem;font-weight:500;vertical-align:top">TQ Checklist</td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Date").Count() > 0)
+                                                    {
+                                                        <td style="border: none;  text-align: center; padding: 0.8rem; vertical-align: top ">@taskQualification?.TaskQualificationDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</td>
+                                                    }
+                                                    @if (Model.IncludeEvaluatorDetails && Model.DisplayColumns.Where(r => r == "Evaluator").Count() > 0)
+                                                    {
+                                                        <td style="border: none;  text-align: center; padding: 0.8rem; vertical-align: top ">
+                                                            @foreach (var link in taskQualification.TaskReQualificationEmp_SignOff)
+                                                            {
+                                                                <p style="margin:0">@link.Evaluator.Person.FirstName @link.Evaluator.Person.LastName</p>
+                                                            }
+                                                        </td>
+                                                    }
+                                                    @if (Model.IncludeEvaluatorDetails && Model.DisplayColumns.Where(r => r == "Evaluation Method").Count() > 0)
+                                                    {
+                                                        var topLevelEvaluationMethod = taskQualification?.EvaluationMethod?.Description;
+                                                        var signOffEvaluationMethods = taskQualification?.TaskReQualificationEmp_SignOff.Where(signOff => signOff.IsCompleted == true && taskQualification.TaskQualification_Evaluator_Links
+                                                        .Any(link => link.EvaluatorId == signOff.EvaluatorId)).Select(m => m.EvaluationMethod?.Description).Where(description => !string.IsNullOrEmpty(description))
+                                                        .Distinct();
+
+                                                        var allEvaluationMethods = new HashSet<string>();
+
+                                                        if (!string.IsNullOrEmpty(topLevelEvaluationMethod))
+                                                        {
+                                                            allEvaluationMethods.Add(topLevelEvaluationMethod);
+                                                        }
+
+                                                        if (signOffEvaluationMethods != null)
+                                                        {
+                                                            foreach (var method in signOffEvaluationMethods)
+                                                            {
+                                                                allEvaluationMethods.Add(method);
+                                                            }
+                                                        }
+                                                        <td style="border: none; text-align: center; padding: 0.8rem; vertical-align: top "></td>
+                                                    }
+                                                </tr>
+
+
+
+                                                @{
+                                                    var eoLinks = taskQualification.Task?.Task_EnablingObjective_Links.Where(x => x.EnablingObjective != null)?.OrderBy(t => t.EnablingObjective.FullNumber, new AlphaNumericSortHelper()).ToList();
+                                                }
+
+                                                @if (eoLinks.Count() > 0)
+                                                {
+                                                    <tr>
+                                                        <td colspan="6" style="border: none; padding: 5px; padding-left:2rem;font-style:italic;text-decoration:underline ">@("Enabling Objective".ReplaceLabel(Model.ClientSettings_LabelReplacements))s Required to Perform @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))</td>
+                                                    </tr>
+                                                    @foreach (var eoLink in eoLinks)
+                                                    {
+                                                        <tr>
+                                                            <td style="border: none; padding:0px 5px; padding-left: 2rem;vertical-align:top ">
+                                                                @eoLink.EnablingObjective.FullNumber
+                                                            </td>
+                                                            <td style="border: none; padding: 0px 5px; vertical-align: top ">
+                                                                @eoLink.EnablingObjective.Description
+                                                            </td>
+                                                            <td style="border: none; padding: 0px 5px; vertical-align: top ">TQ Checklist</td>
+                                                            @if (Model.DisplayColumns.Where(r => r == "Date").Count() > 0)
+                                                            {
+                                                                <td style="border: none; padding: 0px 5px; text-align: center; vertical-align: top">@taskQualification?.TaskQualificationDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</td>
+                                                            }
+                                                            @if (Model.IncludeEvaluatorDetails)
+                                                            {
+                                                                <td style="border: none; padding: 0px 5px; vertical-align: top "></td>
+                                                                <td style="border: none; padding: 0px 5px; vertical-align: top "></td>
+                                                            }
+                                                        </tr>
+                                                    }
+                                                }
+                                                <tr><td colspan="6" style="padding:0;border:0;border-top:1px solid #000"></td></tr>
+                                            }
+                                        }
+
+                                    }
+                                }
+                            </table>
+                        </div>
+                    }
+                    @if (!employee.Equals(Model.Employees.Distinct().Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Employees.Distinct().Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

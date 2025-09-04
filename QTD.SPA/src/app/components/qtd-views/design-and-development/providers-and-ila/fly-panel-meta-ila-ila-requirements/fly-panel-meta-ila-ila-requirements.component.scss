@@ -1,0 +1,42 @@
+.container {
+    border-radius: 0.25rem;
+    border: 0.5px solid #E1E5E4;
+    background: #FFF;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.10);
+    margin-bottom: 9px;
+}
+
+.requirment-container {
+    padding: 29px;
+}
+
+.container_headers {
+    color: #7A807E;
+    font-size: 1rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 155%;
+    letter-spacing: 0.00938rem;
+    font-family: 'Roboto';
+    margin-bottom: 18px;
+}
+
+.container_data {
+    padding-left: 30px;
+    padding-bottom: 38px;
+}
+
+ul.container_data li {
+    list-style-type: disc;
+    color: #000D09;
+    font-size: 14px;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 155%;
+    letter-spacing: 0.00938rem;
+}
+
+.mat-table-wrapper mat-header-cell:first-of-type,
+.mat-table-wrapper mat-cell:first-of-type {
+    padding: 0;
+}

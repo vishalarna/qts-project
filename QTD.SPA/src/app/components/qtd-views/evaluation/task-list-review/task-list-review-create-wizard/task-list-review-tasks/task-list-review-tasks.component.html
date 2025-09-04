@@ -1,0 +1,28 @@
+<ng-container *ngIf = !inputTaskListReviewVM.taskReviews>
+  <app-data-loader></app-data-loader>
+</ng-container>
+<ng-container *ngIf = "inputTaskListReviewVM.taskReviews">
+<div class="d-flex justify-content-end  my-3">
+  <div>
+    <app-button
+      text="Select {{ 'Task' | labelReplacement | async }}s"
+      size="sm"
+      color="secondary"
+      (clicked)="openAddTaskFlyPanel(addTasktoReviewList)"
+    ></app-button>
+  </div>
+</div>
+
+<div class="step-controls-section">
+    <app-task-review-table #taskReviewTable (updateTableData) = "getUpdatedLinkedData($event)" [inputTaskReviewVMs] ="inputTaskListReviewVM.taskReviews" [inputTaskListReviewId] = "inputTaskListReviewVM.id" ></app-task-review-table>
+</div>
+
+<ng-template #addTasktoReviewList>
+  <app-flypanel-task-list-review-tasks
+    [positionIds] = "inputTaskListReviewVM.positionIds"
+    [alreadyLinked]="getAlreadyLinkedIds()"
+    (taskIdsToLink) = "addTasksToTaskListReviewAsync($event)"
+  ></app-flypanel-task-list-review-tasks>
+</ng-template>
+</ng-container>
+

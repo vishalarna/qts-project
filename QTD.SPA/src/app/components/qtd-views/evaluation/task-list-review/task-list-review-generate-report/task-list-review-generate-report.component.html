@@ -1,0 +1,39 @@
+<div class="header-spacing">
+  <div class="flex flex-row justify-between items-center">
+    <h1 class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+      Generate Report
+    </h1>
+    <button class="focus:outline-none" (click)="closed.emit()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+      </svg>
+    </button>
+  </div>
+
+  <div class="container mt-5">
+    <div class="w-full md:w-1/2">
+      <app-label text="{{ 'Task' | labelReplacement | async }} List Review Status" class="font-weight-bold text-xl"></app-label>
+      <app-textbox class="text-lg" [disabled]="true" [defaultValue]="inputTaskListReviewStatus ? 'ACTIVE' : 'INACTIVE'"></app-textbox>
+    </div>
+    <div class="mt-5">
+      <app-label text="Filter By" class="font-weight-bold text-xl"></app-label>
+      <mat-radio-group class="mt-4 flex flex-col" (change) = "filterDisplayColumns($event.value)">
+        <mat-radio-button class="m-3 wrap-content" [value] = "1" [checked] = "true">
+          <p><b>{{ 'Task' | labelReplacement | async }} List Review Results only</b></p>
+          <p class="text-gray-500">The {{ 'Task' | labelReplacement | async }} List Review table ({{ 'Task' | labelReplacement | async }} No., {{ 'Task' | labelReplacement | async }} Statement, Position, Reviewed By, Review Date, Findings, Notes) and the Conclusion/Signature</p>
+        </mat-radio-button>
+        <mat-radio-button class="m-3 wrap-content" [value] = "2"> 
+          <p><b>{{ 'Task' | labelReplacement | async }} List Review Results & Action Items</b></p>
+          <p class="text-gray-500">The {{ 'Task' | labelReplacement | async }} List Review table ({{ 'Task' | labelReplacement | async }} No., {{ 'Task' | labelReplacement | async }} Statement, Position, Reviewed By, Review Date, Findings, Notes), the Action Items for each {{ 'Task' | labelReplacement | async }}, Supporting Docs, Conclusion/Signature</p>
+        </mat-radio-button>
+        <mat-radio-button class="m-3 wrap-content" [value] = "3"> 
+          <p><b>{{ 'Task' | labelReplacement | async }} List Review & All {{ 'Task' | labelReplacement | async }} History</b></p>
+          <p class="text-gray-500">The {{ 'Task' | labelReplacement | async }} List Review table shows all the history entries for the {{ 'Task' | labelReplacement | async }}s</p>
+        </mat-radio-button>
+      </mat-radio-group>
+    </div>
+    <div class="flex justify-end mt-5">
+      <app-button [spinner]="spinner" [disabled]="spinner" text = "Generate Report" (click) = "onGenerateReportAsync()" size = "sm"></app-button>
+    </div>
+  </div>
+</div>

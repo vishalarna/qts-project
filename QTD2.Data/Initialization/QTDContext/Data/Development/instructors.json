@@ -1,0 +1,47 @@
+[
+  {
+    "ICategoryId": 1,
+    "InstructorNumber": "001",
+    "InstructorName": "Instructor 1",
+    "IsWorkBookAdmin": true,
+    "EffectiveDate": "2023-06-21T00:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ICategoryId": 2,
+    "InstructorNumber": "002",
+    "InstructorName": "Instructor 2",
+    "IsWorkBookAdmin": false,
+    "EffectiveDate": "2023-06-22T00:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ICategoryId": 3,
+    "InstructorNumber": "003",
+    "InstructorName": "Instructor 3",
+    "IsWorkBookAdmin": true,
+    "EffectiveDate": "2023-06-23T00:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ICategoryId": 4,
+    "InstructorNumber": "004",
+    "InstructorName": "Instructor 4",
+    "IsWorkBookAdmin": false,
+    "EffectiveDate": "2023-06-24T00:00:00",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ICategoryId": 5,
+    "InstructorNumber": "005",
+    "InstructorName": "Instructor 5",
+    "IsWorkBookAdmin": true,
+    "EffectiveDate": "2023-06-25T00:00:00",
+    "Deleted": false,
+    "Active": true
+  }
+]

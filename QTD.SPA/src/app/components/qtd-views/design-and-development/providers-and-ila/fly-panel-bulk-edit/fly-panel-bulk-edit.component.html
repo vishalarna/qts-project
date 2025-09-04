@@ -1,0 +1,159 @@
+<div>
+  <div class="bg-white-one shadow-md py-2 h-screen w-full overflow-x-hidden overflow-y-scroll">
+    <!-- header starts here -->
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">Bulk Edit</p>
+      <button type="button" (click)="flyPanelService.close()">
+        <app-icon icon="close"></app-icon>
+      </button>
+    </div>
+    <!--Mat Stepper starts here-->
+    <div>
+      <mat-stepper #stepper class="px-5 py-3">
+        <ng-template matStepperIcon="edit">
+          <app-icon icon="done"></app-icon>
+        </ng-template>
+
+        <mat-step label="Bulk Edit" [stepControl]="step1Form" [completed]="step1Form.valid">
+          <form class="flex flex-col" [formGroup]="step1Form">
+            <div>
+              <!--Change Provider-->
+              <!-- <div>
+                <div class="flex flex-row">
+                  <mat-checkbox class="mt-1" formControlName="changeProvider"></mat-checkbox>
+                  <h3 class="ml-3">Change Provider</h3>
+                </div>
+  
+                <h3>Change Provider</h3>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Change Provider</mat-label>
+                  <mat-select formControlName="providerId" [disabled]="step1Form.get('changeProvider')?.value === false">
+                    <mat-option *ngFor="let d of category" [value]="d.providerId"> 
+                      {{d.name}}
+                      </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div> -->
+
+               <!--Change Meta ILA Status-->
+             <!--   <div>
+                <div class="flex flex-row">
+                  <mat-checkbox class="mt-1" formControlName="changestatus"></mat-checkbox>
+                  <h3 class="ml-3">Change Meta ILA Status</h3>
+                </div>
+  
+                <h3>Change Meta ILA Status</h3>
+                <mat-form-field appearance="outline" class="w-full">
+                  <mat-label>Change Meta ILA Status</mat-label>
+                  <mat-select [disabled]="step1Form.get('changestatus')?.value === false">
+                  <mat-option *ngFor="let d of status"> 
+                      {{d.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+              </div> -->
+
+                 <!--Change Active/Inactive Status-->
+                 <div>
+                  <div class="flex flex-row">
+                    <mat-checkbox class="mt-1" formControlName="changeInactiveStatus"></mat-checkbox>
+                    <h3 class="ml-3">Change Active/Inactive Status</h3>
+                  </div>
+    
+                  <h3>Change Active/Inactive Status</h3>
+                  <mat-form-field appearance="outline" class="w-full">
+                    <mat-label>Change Active/Inactive Status</mat-label>
+                    <mat-select [disabled]="step1Form.get('changeInactiveStatus')?.value === false">
+                     <!--  <mat-option *ngFor="let d of category" [value]="d.title" 
+                      (onSelectionChange)="createNodeWithTitle(d.title, item.id)"> 
+                        {{d.title}}-->
+                        <mat-option>
+                        </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+                </div>
+
+                <div class="flex flex-col">
+                  <mat-checkbox class="text-base" formControlName="delete">
+                    Delete {{("ILA" | labelReplacement)| async}}s
+                  </mat-checkbox>
+                  <span class="pl-4 text-sm text-gray-400">By Selecting this option you are confirming to permanently delete the selected {{("ILA" | labelReplacement)| async}}s.
+                    This cannot be undone
+                  </span>
+                </div>
+             
+              </div>
+
+              <div class="self-end pt-12">
+                <app-button color="secondary" [disabled]="step1Form.invalid" text="Continue" size="sm"
+                (clicked)="stepper.next()"></app-button>
+              </div>
+            </form>
+        </mat-step>
+
+        <mat-step>
+          <!-- History Template in stepper-->
+          <ng-template matStepLabel [stepControl]="step2Form">History</ng-template>
+          <ng-template matStepContent [formGroup]="step2Form">
+            <div class="flex flex-col" style="width: 250px;">
+              <h3>Effective date</h3>
+              <app-date formControlName="effectiveDate"></app-date>
+            </div>
+            <div class="py-5">
+              <h3>Reason to change <span class="text-gray-400">(Optional)</span></h3>
+              <ckeditor [editor]="Editor" formControlName="reason"></ckeditor>
+            </div>
+            <div class="flex flex-col float-right">
+              <app-button (clicked)="stepper.next()" size="sm" variant="outlined" color="secondary" text="Continue">
+              </app-button>
+            </div>
+          </ng-template>
+        </mat-step>
+        <mat-step>
+          <!--Review & Publish template in stepper-->
+          <ng-template matStepLabel>Review & Publish</ng-template>
+          <ng-template matStepContent>
+            <div class="flex flex-col">
+              <p class="text-gray-400 text-sm pt-2">
+                By selecting publish below you are changing the Provider, Meta Status, Active/Inactive Status,
+                or selecting Delete the following {{("ILA" | labelReplacement)| async}}s. Review the table below to confirm whether the actions
+                can be completed.
+              </p>
+              <h3 class="py-4 text-sm">
+                Add Objectives to Segment
+              </h3>
+              <div>
+                <mat-table [dataSource]="DataSource" class="mb-4 border-gray-one shadow-xs border-0.5">
+                  <ng-container matColumnDef="number">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header> #
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"> {{row.num}} </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="type">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header> {{("ILA" | labelReplacement)| async}} Name
+                      </mat-header-cell>
+                      <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+                  </ng-container>
+                  <ng-container matColumnDef="description">
+                      <mat-header-cell *matHeaderCellDef mat-sort-header> Can Requested Bulk Edit be Performed?
+                      </mat-header-cell>
+                      <mat-cell [ngStyle]="{'color':row.action==='YES' ? 'rgb(92, 155, 49)' : 'red' }" *matCellDef="let row">
+                        {{row.action}}
+                        <app-icon *ngIf="row.action==='NO'" class="ml-3" style="color: lightgray !important;" icon="help_outline"></app-icon>
+                      </mat-cell>
+                  </ng-container>
+                  <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+                  <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+                </mat-table>
+              </div>
+            </div>
+            <p>Thses updates will be saved with an effective date of <strong>05-30-22</strong></p>
+            <div class="flex flex-col float-right">
+              <app-button (clicked)="publishClicked()" size="sm" variant="outlined" color="secondary" text="Publish">
+              </app-button>
+            </div>
+          </ng-template>
+        </mat-step>
+      </mat-stepper>
+    </div>
+</div>

@@ -1,0 +1,35 @@
+<div class="step-container">
+  <form [formGroup]="trainerSignOffForm">
+    <div class="mat-step-section">
+      <div class="step-header-section">
+        <h2 class="step-main-header">Training Dept Sign off</h2>
+        <p class="step-header-caption">Enter your credentials and select the sign off option to Publish the Review</p>
+      </div>
+      <div style="flex: 1 1 70%;">
+        <div class="step-controls-section">
+          <div class="step-control-container">
+            <div class="step-control-label">Trainer Name</div>
+            <div class="step-control">
+              <app-textbox type="text" formControlName="trainerName" (change)="trainerNameChange()" [placeholder]="'Enter Trainer Name'"></app-textbox>
+            </div>
+          </div>
+          <div class="step-control-container">
+            <div class="step-control-label required">Title</div>
+            <div class="step-control">
+              <app-textbox type="text" formControlName="trainerTitle" (change)="trainerTitleChange()" [placeholder]="'Enter Title'"></app-textbox>
+            </div>
+          </div>
+        </div>
+        <div class="step-controls-section mt-1">
+          <div class="consent-section">
+            <h4>Trainer Sign-Off*:</h4>
+            <div class="consent-control">
+              <mat-checkbox style="flex:1 1 6%;position: relative;top: 2px;" (change)="trainerSignOffClick($event)" formControlName="trainerSignOff"></mat-checkbox>
+              <p>The listed Training Program Review has been completed per our company-specific process</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

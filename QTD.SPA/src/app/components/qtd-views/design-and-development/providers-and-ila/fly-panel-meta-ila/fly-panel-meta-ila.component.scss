@@ -1,0 +1,102 @@
+:host ::ng-deep .ck-editor__editable {
+  min-height: 150px !important;
+  max-height: 300px !important;
+}
+
+.text-black{
+  color: #000D09;
+  font-weight: 400;
+}
+
+.text-green {
+  color: #5C9B31;
+  font-weight: 400;
+}
+.custom-pipe{
+  font-size: 1.5rem;
+  padding: 0 0.5rem;
+}
+.remove-icon{
+  position: absolute;
+  bottom: 0px;
+  right: 4px;
+  mat-icon{
+    color: rgb(92, 155, 49);
+  }
+}
+.position-r{
+  position:relative;
+}
+.dropdown-remove-btn{
+  position: absolute;
+  top: 16px;
+  right: 30px;
+}
+.summary-dropdown-close{
+  position: absolute;
+  right: 5px;
+  top: 20px;
+}
+
+:host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-infix {
+  padding-bottom: 0rem !important;
+}
+:host ::ng-deep  .mat-form-field-appearance-outline .mat-form-field-flex{
+  margin-top: 0  !important;
+}
+
+:host ::ng-deep .mat-form-field-outline{
+  background-color: white;
+}
+
+.credit-hr-heading{
+  color: rgb(92, 155, 49) ;
+}
+
+.styled-table {
+  border-collapse: collapse;
+  width: 90%;
+  margin: 25px 0;
+  font-size: 14px;
+  text-align: left;
+}
+
+.styled-table th, .styled-table td {
+  border: 1px solid #dddddd;
+  padding: 12px 15px;
+}
+
+.styled-table th {
+  background-color: #d0cccc;
+}
+
+.styled-table tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
+
+.styled-table tr:nth-child(odd) {
+  background-color: #ffffff;
+}
+
+.styled-table th, .styled-table td {
+  border-right: 1px solid #dddddd;
+}
+
+.styled-table th:last-child, .styled-table td:last-child {
+  border-right: none;
+}
+
+.no-data-found {
+  text-align: center;
+  font-size: 12px;
+}
+
+.padding-class td,.padding-class th{
+  padding: 5px 10px;
+}
+
+.spinner-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

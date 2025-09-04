@@ -1,0 +1,466 @@
+[
+ {
+  "Id": 1,
+  "SubDutyAreaId": 1,
+  "Description": "Continuously monitor all pertinent conditions on POWERCO and neighboring test systems , identify actual or potential problems, and determine need for corrective action",
+  "Number": 1,
+  "Conditions": "Ongoing continuous process",
+  "Standards": "Problems identified and corrective actions initiated in accordance with POWERCO, MISO and RFC criteria",
+  "Tools": "ECS screens (Alarm Summary, Station One-Lines, etc.) (Training Check sheet)  Wall charts (tie-lines, frequency, voltage, load, generation) (Training Check sheet)  Weather Monitoring and Forecasting Tools (Training Check sheet)  Scheduling Log\/Switching Log (Training Check sheet)  MCS (Training Check sheet)  Control Room Communication Tools (Training Check sheet)",
+  "References": "Transmission Line Rating Book  MISO Operating Guides",
+  "Active": true
+ },
+ {
+  "Id": 2,
+  "SubDutyAreaId": 1,
+  "Description": "Respond to actual or potential rating violations on transmission lines and equipment in accordance with company and regional operating procedures and current system conditions or oversee SO in the performance of this task",
+  "Number": 2,
+  "Conditions": "Actual or potential rating violation on transmission lines or equipment",
+  "Standards": "Actual SOL or equipment limit violations are responded to immediately and mitigated within 30 minutes and potential violations are responded to in order to ensure they do not cause a violation to exceed 30 minutes",
+  "Tools": "Mapboard  ECS (alarm summary, station one-lines, tie-line monitoring displays)  Call Duty list  Dispatcher Load Flow  SOL\/IROL Operating Horizon  Transmission Line Rating Book  Control Room Communication Tools  Switching Log  Scheduling Log",
+  "Active": true
+ },
+ {
+  "Id": 3,
+  "SubDutyAreaId": 1,
+  "Description": "Respond to actual or potential rating violations on transmission lines and equipment in accordance with company and regional operating procedures and current test system conditions",
+  "Number": 3,
+  "Conditions": "Actual or potential rating violation on transmission lines or equipment",
+  "Standards": "Actual SOL or equipment limit violations are responded to immediately and mitigated within 30 minutes and potential violations are responded to in order to ensure they do not cause a violation to exceed 30 minutes",
+  "Tools": "Mapboard  ECS screens (Alarm Summary, Station One-Lines, etc.) (Training Checksheet)  Call Duty list  Dispatcher Load Flow Tool  Control Room Communication Tools (Training Checksheet)  Scheduling Log\/Switching Log (Training Checksheet)",
+  "References": "SOL\/IROL Operating Horizon  Transmission Line Rating Book",
+  "Active": true
+ },
+ {
+  "Id": 4,
+  "SubDutyAreaId": 2,
+  "Description": "Evaluate work being performed at transmission and distribution substations and approve or deny",
+  "Number": 1,
+  "Conditions": "Upon request from field personnel to perform work at a substation",
+  "Standards": "The request to begin has been evaluated and approval to begin work is given or denied.",
+  "Tools": "Control Room Communication Tools (training checksheet)  Substation Activity Log (SAL)",
+  "Active": true
+ },
+ {
+  "Id": 5,
+  "SubDutyAreaId": 2,
+  "Description": "Monitor and control access to the TOCC or SEC Electric Building Office to prevent unauthorized entry",
+  "Number": 2,
+  "Conditions": "Ongoing",
+  "Standards": "Unauthorized personnel prevented from physical control center entry",
+  "Tools": "Visitor sign-in book  Control Center Security Cameras (Training Checksheet)  Control Room Communication Tools (Training Checksheet)",
+  "References": "US SBU Infrastructure Security Physical Asset and Personnel Security Plan v2.2, 12\/11\/2015  US SBU Infrastructure Security Cyber-Security Plan v2.2, 12\/11\/2015",
+  "Active": true
+ },
+ {
+  "Id": 7,
+  "SubDutyAreaId": 3,
+  "Description": "Continuously monitor voltage levels, reactive flows (VArs), and reactive resources to ensure that they remain within limits on an actual and contingency basis and determine need for corrective action",
+  "Number": 1,
+  "Conditions": "Ongoing",
+  "Standards": "test system voltages maintained within operating parameters",
+  "Tools": "ECS screens (Alarm Summary, Station One-Lines, etc. ) (Training Checksheet)  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation) (Training Checksheet)  Generation and load chart (wall or ECS)  Control Room Communication Tools (Training Checksheet)  Scheduling Log (Training Checksheet)  RCCS",
+  "Active": true
+ },
+ {
+  "Id": 8,
+  "SubDutyAreaId": 3,
+  "Description": "Respond to actual or contingency voltage or VAr deviations (including deviations from generator voltage schedules) in accordance with company procedures\/priorities and regional standards, policies, or guidelines",
+  "Number": 2,
+  "Conditions": "Actual or contingency voltage or Var deviation exists",
+  "Standards": "Actions implemented to return system voltages to within IPL operating parameters ",
+  "Tools": "ECS screens (Alarm Summary, Station One-Lines, etc. )  RCCS 13kV Cap Bank Control  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation)  Generation and load chart (wall or ECS)  Control Room Communication Tools  Scheduling Log    ",
+  "References": "Voltage Schedule (document)",
+  "Active": true
+ },
+ {
+  "Id": 9,
+  "SubDutyAreaId": 3,
+  "Description": "Given a deficiency in reactive reserve, restore to acceptable levels as soon as possible or oversee SO in the performance of this task",
+  "Number": 3,
+  "Conditions": "Deficiency in reactive reserve",
+  "Standards": "Reactive reserves restored to acceptable levels",
+  "Tools": "ECS screens (Alarm Summary, Station One-Lines, etc. )  RCCS 13kV Cap Bank Control  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation)  Generation and load chart (wall or ECS)  Control Room Communication Tools  Scheduling Log\/Switching Log      ",
+  "Active": false
+ },
+ {
+  "Id": 10,
+  "SubDutyAreaId": 4,
+  "Description": "(SEC) Ensure and direct IPL units to follow PowerCo electronic dispatch instructions ",
+  "Number": 1,
+  "Conditions": "Ongoing Continuous basis",
+  "Standards": "Units are following dispatch set points or corrective actions are implemented",
+  "Tools": "Communication Contact list  SEC Electric Building Office Communication Tools  ECS  nMarket  IPL Plant Capacity Log  Load Sheet  CROW   Portal  PI  SEC Daily Log  Unit Control Modes  ",
+  "References": "Energy and Operating Reserve Markets Business Practices Manual, Section 2.3.4  Roles and Responsibilities, Generation Owners\/Operators” and Section 8 Real-time Energy and Operating Reserve Market Activities",
+  "Active": true
+ },
+ {
+  "Id": 11,
+  "SubDutyAreaId": 4,
+  "Description": "Verify the status and availability of generator voltage regulators (AVRs); respond to deficiencies that may impact test system reliability and report any changes",
+  "Number": 2,
+  "Conditions": "A call from a Generator CRO or an ECS alarm is received",
+  "Standards": "AVR status reported to RC as required",
+  "Tools": "ECS screens (Alarm Summary, Station One-Lines, etc.) (Training Checksheet) Outage Scheduler (CROW)  AVR Logbook  Control Room Communication Tools (Training Checksheet)  Scheduling Log (Training Checksheet)",
+  "Active": true
+ },
+ {
+  "Id": 12,
+  "SubDutyAreaId": 4,
+  "Description": "Verify the status of AVRs and respond to any generators whose AVR is out of automatic.",
+  "Number": 3,
+  "Conditions": "Ongoing",
+  "Standards": "AVR status changes reported to TOCC\/MISO",
+  "Tools": "Communication Contact list  SEC Communication Tools  ECS screens (Alarm Summary, Station One-Lines, etc. )  CROW  Daily Log",
+  "References": "CROW User’s Guide",
+  "Active": true
+ },
+ {
+  "Id": 13,
+  "SubDutyAreaId": 5,
+  "Description": "(SEC) Manage planned generation outages in real-time",
+  "Number": 1,
+  "Conditions": "Planned outage is to be implemented",
+  "Standards": "Planned outages are identified, processed, and implemented and all required notifications and documentation is complete",
+  "Tools": "Communication Contact list  SEC Electric Building Office Communication Tools  ECS  IPL Plant Capacity Log  Load Sheet  CROW  MISO Portal  PI  SEC Daily Log  Unit Control Modes  ",
+  "References": "IPL Maintenance & Overhaul Schedule",
+  "Active": true
+ },
+ 
+ {
+  "Id": 14,
+  "SubDutyAreaId": 5,
+  "Description": "(SEC) Monitor the progress of generation outages; reschedule outage delay or put into reserve shutdown",
+  "Number": 2,
+  "Conditions": "Generation outage in progress",
+  "Standards": "Outage status has been determined  Outage duration is accurately reflected in CROW",
+  "Tools": "MISO Portal  OATI webTrader  MISO Outage Scheduler  SEC Communication Tools  SEC Daily Log  Communication Contact list  ECS screens (Alarm Summary, Station One-Lines, etc. )  Commercial Availability Sheet  Load Sheet  PI",
+  "References": "MISO CROW User Guide",
+  "Active": true
+ },
+ {
+  "Id": 15,
+  "SubDutyAreaId": 5,
+  "Description": "(SEC) When notified by the plant operator that a unit outage is complete, authorize return to service of generating unit and close out the outage ",
+  "Number": 3,
+  "Conditions": "Notification from plant personnel that unit is available for service",
+  "Standards": "Outage removed from CROW once released to operations; ",
+  "Tools": "CROW  MISO Portal  SEC Electric Building Office Communication Tools  SEC Daily Log  Communication Contact list  ECS  Gas Calculator Spreadsheet  Gas Nomination Sheet  Gas Turbine Daily Schedule  IPL Plant Capacity Log  Load Sheet  MISO Outage Scheduler  MISO Portal  nMarket  Unit Control Modes  ",
+  "Active": true
+ },
+ {
+  "Id": 16,
+  "SubDutyAreaId": 6,
+  "Description": "(SEC) Respond to a plant personnel's request to take a forced outage or unit limitation on a generator",
+  "Number": 1,
+  "Conditions": "Receipt of a request for a forced outage or limitation",
+  "Standards": "Request accepted or postponed based on system conditions in conjunction with TOCC and MISO evaluation",
+  "Tools": "Communication Contact list  SEC Electric Building Office Communication Tools  CROW  ECS  Gas Calculator Spreadsheet  IPL Plant Capacity Log  Load Sheet  MISO Portal  nMarket  SEC Daily Log  Unit Control Modes  ",
+  "References": "RTO-OP-010 Generator Operator Communication with MISO including EEE Procedure",
+  "Active": false
+ },
+ {
+  "Id": 17,
+  "SubDutyAreaId": 6,
+  "Description": "(SEC) Given an unplanned operation of a unit breaker, determine cause with plant personnel and TOCC",
+  "Number": 2,
+  "Conditions": "Notification of unplanned unit breaker operation and\/or receipt of alarm",
+  "Standards": "Operation investigated, notifications made, and event appropriately logged",
+  "Tools": "ECS   SEC Electric Building Office Communication Tools  SEC Daily Log  ",
+  "References": "NERC Standard TOP-006, R1.1 “Monitoring System Conditions”",
+  "Active": false
+ },
+ {
+  "Id": 18,
+  "SubDutyAreaId": 6,
+  "Description": "(SEC) Respond to a generating unit trip",
+  "Number": 3,
+  "Conditions": "Generator trips off-line",
+  "Standards": "Available generating unit outage information obtained and all notifications made ",
+  "Tools": "Communication Contact list  SEC Electric Building Office Communication Tools  ECS  IPL Plant Capacity Log  Load Sheet  CROW  MISO Portal  PI  SEC Daily Log  Unit Control Modes  ",
+  "References": "NERC Standard TOP-006, R1.1, R1.2  NERC Standard TOP-002, R3, R14.1, R15  NERC Standard TOP-001, R7.1, R7.3  NERC Standard TOP-003, R1.1  ",
+  "Active": false
+ },
+ {
+  "Id": 19,
+  "SubDutyAreaId": 7,
+  "Description": "(SO) Review generator output on ESA report and correct as necessary",
+  "Number": 1,
+  "Conditions": "Loss of data communications with generating plants",
+  "Standards": "Generating Plant output correctly accounted for and generator output in ESA is correct",
+  "Tools": "ESA report in ECS Energy Accounting module  PI  Communication tools  Scheduling Log",
+  "Active": true
+ },
+ {
+  "Id": 20,
+  "SubDutyAreaId": 7,
+  "Description": "(SO) Perform checkout of hourly tie line data at agreed-upon intervals with interconnects",
+  "Number": 2,
+  "Conditions": "At agreed-upon intervals – 0600, 1200, 1800, and 2400",
+  "Standards": "Checkout has been completed with neighboring entities",
+  "Tools": "ESA application  ESA report (paper)  Communication tools  Scheduling Log",
+  "Active": true
+ },
+ {
+  "Id": 21,
+  "SubDutyAreaId": 9,
+  "Description": "(LSO) Request transmission line-loading relief (TLR) when conditions warrant",
+  "Number": 1,
+  "Conditions": "Line loading relief procedures are required to maintain operations within operating limits",
+  "Standards": "TLR implementation requested in a timely manner",
+  "Tools": "ECS (alarm summary, station one-lines)  Dispatcher Load Flow study  Transmission Line Rating Book  Control Room Communication Tools  Switching log  ",
+  "References": "MISO Operating Guides",
+  "Active": true
+ },
+ {
+  "Id": 22,
+  "SubDutyAreaId": 9,
+  "Description": "Given congestion on the transmission test system, request the redispatch of resources as needed to relieve the congestion and communicate results to all affected parties",
+  "Number": 2,
+  "Conditions": "Congestion exists on the transmission test system",
+  "Standards": "Transmission congestion relieved",
+  "Tools": "ECS (alarm summary, station one-lines) (Training Checksheet)  Dispatcher Load Flow Tool  Control Room Communication Tools (Training Checksheet)  LMR  TOCC Current and Next-Day Operations Report  Scheduling Log\/Switching Log (Training Checksheet)",
+  "References": "Transmission Line Rating Book",
+  "Active": true
+ },
+ {
+  "Id": 23,
+  "SubDutyAreaId": 10,
+  "Description": "(SEC) Prepare demand forecast and submit demand bid",
+  "Number": 1,
+  "Conditions": "Daily by 1100 Eastern Standard Time (EST)",
+  "Standards": "Load forecasts developed and accurately submitted in MISO Portal by 10:00 EPT daily",
+  "Tools": "Demand Bid Sheet  ECS screens (Alarm Summary, Station One-Lines, etc. )  Tesla  PRT  Load Sheet  MISO Portal  OATI webTrader  SEC Daily Log  Weather Monitoring and Forecasting Tools",
+  "References": "MISO BPM-002- Energy and Capacity Reserve Markets",
+  "Active": true
+ },
+ {
+  "Id": 24,
+  "SubDutyAreaId": 10,
+  "Description": "(SEC) Manage load modifying resources (LMRs), complying with MISO or TOCC Operating Instructions",
+  "Number": 2,
+  "Conditions": "TOCC or MISO request the utilization of LMRs",
+  "Standards": "SEC implements operating instructions from the MISO or TOCC through the utilization of LMRs",
+  "Tools": "Communication Contact list  SEC Communication Tools  SEC Daily Log  ACLM Application  MISO MCS LMR application",
+  "References": "TOP-001-4, R3, R4, R5, R6  POWERCO Capacity and Energy Emergency Supply Plan  MISO BPM-002 “Energy and Operating Reserve Markets Business Practices Manual”, Section 2.3.5 ” Roles and Responsibilities, Load-Serving Entities”   MISO LMR Procedure",
+  "Active": true
+ },
+ {
+  "Id": 25,
+  "SubDutyAreaId": 10,
+  "Description": "(SEC) Update the PRT Load Forecast and 7-day load forecast",
+  "Number": 3,
+  "Conditions": "Daily \/ Ongoing",
+  "Standards": "7-day load forecast is verified in MISO Portal",
+  "Tools": "PRT  OATI webTrader  MISO Portal  Tesla",
+  "Active": true
+ },
+ {
+  "Id": 26,
+  "SubDutyAreaId": 11,
+  "Description": "(SEC) Re-dispatch generation resources based on verbal operating instructions issued by MISO GBAO, MISO RC or TOCC; includes MW dispatch and voltage levels",
+  "Number": 1,
+  "Conditions": "Given an operating instruction from the MISO GBAO, MISO RC or TOCC to redispatch generating units",
+  "Standards": "Generating unit output adjusted to the desired level or MISO GBAO, MISO RC, or TOCC LSO or SO",
+  "Tools": "SEC Communication Tools  ECS   OATI webTrader   PI",
+  "References": "IRO-001-4 R2, R3  TOP-001-4 R3, R4, R5, R6  VAR-002-4 R1, R2, R3, R4",
+  "Active": true
+ },
+ {
+  "Id": 27,
+  "SubDutyAreaId": 11,
+  "Description": "(SEC) Maintain the Wind Generation Offer– Hoosier Wind Park and Lakefield Wind Park",
+  "Number": 2,
+  "Conditions": "Daily",
+  "Standards": "Wind Generation Offer is updated and maintained",
+  "Tools": "SEC Communication Tools  Commercial Availability Sheet  Load Sheet  Hoosier Wind Park Offer Sheet  Lakefield Wind Park Offer Sheet  MISO Portal  OATI webTrader  SEC Daily Log",
+  "Active": false
+ },
+ {
+  "Id": 28,
+  "SubDutyAreaId": 11,
+  "Description": "(SEC) At the completion of day ahead market awards, identify additional resources or capacity limitations to be offered into RAC",
+  "Number": 3,
+  "Conditions": "MISO DA awards are distributed",
+  "Standards": "Additional resources accurately identified and properly uploaded to OATI webTrader and verified in the MISO Portal",
+  "Tools": "Load Sheet  Commercial Availability Sheet  SEC Daily Log  OATI webTrader  ECS screens (Alarm Summary, Station One-Lines, etc. )  MISO Portal  MISO Outage Scheduler  MISO MCS",
+  "References": "dictionary",
+  "Active": false
+ },
+ {
+  "Id": 29,
+  "SubDutyAreaId": 12,
+  "Description": "(LSO\/SO) Monitor telemetered tie-line MW data used for AGC operation; diagnose and correct telemetry problems",
+  "Number": 1,
+  "Conditions": "Ongoing on a continuous basis",
+  "Standards": "Telemetry problem identified and mitigated, and corrective actions initiated",
+  "Tools": "ECS screens (Alarm Summary, Station One-Lines, etc.) (Training Checksheet)  ESA application  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation) (Training Checksheet)  Control Room Communication Tools (Training Checksheet)  Switching Log (Training Checksheet)  Shift Change Rundown",
+  "Active": true
+ },
+ {
+  "Id": 30,
+  "SubDutyAreaId": 12,
+  "Description": "(SEC) In the event of an POWERCO AGC failure, initiate manual control of generation",
+  "Number": 2,
+  "Conditions": "Failure of POWERCO AGC",
+  "Standards": "Generating Unit operated manually to follow MISO dispatch instructions",
+  "Tools": "Communication Contact list  SEC Communication Tools  ECS screens (Alarm Summary, Station One-Lines, etc. )  MCS  MISO Portal  OATI webTrader  PI  SEC Daily Log",
+  "Active": true
+ },
+ 
+  {
+  "Id": 31,
+  "SubDutyAreaId": 13,
+  "Description": "(LSO) Prepare for an anticipated capacity emergency in accordance with procedure or oversee SO in the performance of this task",
+  "Number": 1,
+  "Conditions": "As needed",
+  "Standards": "GMD alerts are responded to and impacts are mitigated in accordance with the IPL TOCC_SEC-027 – Geo-Magnetic Disturbances ",
+  "Tools": "ECS screens (Alarm Summary, Station One-Lines, etc. )  Equipment Outage Schedule (EOS)  Short Term Load Forecasting  Dispatcher Load Flow tool  Weather Monitoring and Forecasting Tools  IROL\/SOL Operating Horizon  Control Room Communication Tools  Transmission Line Ratings Book  ",
+  "Active": true
+ },
+ {
+  "Id": 32,
+  "SubDutyAreaId": 13,
+  "Description": "(LSO\/SO) Prepare for an anticipated capacity emergency in accordance with procedure",
+  "Number": 2,
+  "Conditions": "As needed",
+  "Standards": "GMD alerts are responded to and impacts are mitigated in accordance with the POWERCO TOCC_SEC-027 – Geo-Magnetic Disturbances",
+  "Tools": "ECS screens (Alarm Summary, Station One-Lines, etc.) (Training Checksheet)  Equipment Outage Schedule (EOS)  Short Term Load Forecasting  Dispatcher Load Flow tool  Weather Monitoring and Forecasting Tools (Training Checksheet)  Control Room Communication Tools (Training Checksheet)",
+  "References": "IROL\/SOL Operating Horizon  Transmission Line Ratings Book",
+  "Active": true
+ },
+ {
+  "Id": 33,
+  "SubDutyAreaId": 14,
+  "Description": "(LSO\/SO) Respond to an identified IROL or SOL violation during real-time operations",
+  "Number": 1,
+  "Conditions": "Actual SOL\/IROL limit violation on transmission lines or equipment",
+  "Standards": "Actual SOL\/IROL violation mitigated within 30 minutes",
+  "Tools": "Control Room Communication Tools (Training Checksheet)  Dispatcher Load Flow Tool   ECS screens (Alarm Summary, Station One-Lines, etc.) (Training Checksheet)  Equipment Outage Schedule (EOS)  LMR  Mapboard  Scheduling Log\/Switching Log (Training Checksheet)  Station one-lines (paper-based)  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation) (Training Checksheet)",
+  "References": "IROL\/SOL Operating Horizon  Transmission Line Rating Book",
+  "Active": true
+ },
+ {
+  "Id": 34,
+  "SubDutyAreaId": 14,
+  "Description": "(LSO) Implement actions in response to a MISO RC directive",
+  "Number": 2,
+  "Conditions": "As needed",
+  "Standards": "MISO RC directives are responded to and implemented or justifications for not implementing are conveyed to the MISO RC ",
+  "Tools": "ECS screens (Alarm Summary, Station One-Lines, etc.)  Equipment Outage Schedule (EOS)  Short Term Load Forecasting  Dispatcher Load Flow Tool  Weather Monitoring and Forecasting Tools  IROL\/SOL Operating Horizon  Control Room Communication Tools  Transmission Line Ratings Book  ",
+  "Active": true
+ },
+ {
+  "Id": 35,
+  "SubDutyAreaId": 15,
+  "Description": "Following a wide area outage or major test system disturbance, determine the cause and extent of the disturbance, complete required notifications and, if applicable, develop a plan to restore the test system to a secure state",
+  "Number": 1,
+  "Conditions": "Wide area outage or major test system disturbance occurred",
+  "Standards": "Cause and extent of disturbance identified, all required notifications made, and plan for response developed",
+  "Tools": "Call duty list  Control Room Communication Tools (Training Checksheet)  ECS screens (Alarm Summary, Station One-Lines, etc.) (Training Checksheet)  Equipment Outage Schedule (EOS)  Weather Monitoring and Forecasting Tools (Training Checksheet)  Mapboard  Scheduling Log\/Switching Log (Training Checksheet)  Station one-lines (paper-based)  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation) (Training Checksheet)",
+  "References": "IROL\/SOL Operating Horizon  Transmission Line Rating Book",
+  "Active": true
+ },
+ {
+  "Id": 36,
+  "SubDutyAreaId": 15,
+  "Description": "(LSO\/SO) Following a wide area outage or major test system disturbance, direct (and\/or implement) actions to return the test system to a secure state in coordination with other entities as appropriate",
+  "Number": 2,
+  "Conditions": "Wide area outage or major test system disturbance has occurred and a plan for restoring the test system to a secure state has been developed",
+  "Standards": "test system has been returned to a secure state",
+  "Tools": "Control Room Communication Tools (Training Checksheet)  Dispatcher Load Flow Tool  ECS (Alarm Summary, Station One-Lines, etc.) (Training Checksheet)  Mapboard  Scheduling Log\/Switching Log (Training Checksheet)  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation) (Training Checksheet)",
+  "References": "IROL\/SOL Operating Horizon  Transmission Line Rating Book",
+  "Active": true
+ },
+ {
+  "Id": 37,
+  "SubDutyAreaId": 16,
+  "Description": "(LSO\/SO) Respond to telecommunication alarms\/failures or bad SCADA data",
+  "Number": 1,
+  "Conditions": "SCADA data points are suspect or there is failure of telecommunications",
+  "Standards": "Suspect data points overridden or telecommunications failure corrected",
+  "Tools": "Call duty list  Control Room Communication Tools (Training Checksheet)  ECS screens (Alarm Summary, Station One-Lines, etc.) (Training Checksheet)  Mapboard  Scheduling Log\/Switching Log (Training Checksheet)  Station one-lines (paper-based)  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation) (Training Checksheet)",
+  "Active": true
+ },
+ {
+  "Id": 38,
+  "SubDutyAreaId": 16,
+  "Description": "(LSO\/SO) Analyze the impact of data telecommunications\/telemetering outages on test system reliability and approve or postpone requests as appropriate",
+  "Number": 2,
+  "Conditions": "Request for data telecommunications\/telemetering outage",
+  "Standards": "Outage approved or denied based on current test system conditions",
+  "Tools": "Call duty list  Control Room Communication Tools (Training Checksheet)  ECS screens (Alarm Summary, Station One-Lines, etc.) (Training Checksheet)  Equipment Outage Schedule (EOS)  Mapboard  Scheduling Log\/Switching Log (Training Checksheet)  Station one-lines (paper-based)  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation) (Training Checksheet)",
+  "Active": true
+ },
+ {
+  "Id": 39,
+  "SubDutyAreaId": 17,
+  "Description": "(LSO\/SO) Respond to protection equipment alarms",
+  "Number": 1,
+  "Conditions": "Protection equipment alarm received",
+  "Standards": "Protection alarms evaluated and corrective actions initiated",
+  "Tools": "Call duty list  Control Room Communication Tools (Training Checksheet)  ECS screens (Alarm Summary, Station One-Lines, etc.) (Training Checksheet)  Equipment Outage Schedule (EOS)  Weather Monitoring and Forecasting Tools (Training Checksheet)  Mapboard  Scheduling Log\/Switching Log (Training Checksheet)  Station one-lines (paper-based)  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation) (Training Checksheet)",
+  "Active": true
+ },
+ {
+  "Id": 40,
+  "SubDutyAreaId": 17,
+  "Description": "(LSO) Analyze requests for relay and\/or SCADA equipment outages on impact to test system reliability and approve or postpone requests as appropriate",
+  "Number": 2,
+  "Conditions": "Request for relay or SCADA equipment outage is received",
+  "Standards": "Outage approved, denied, or postponed based on current test system conditions",
+  "Tools": "Call duty list  Control Room Communication Tools (Training Checksheet)  ECS (Training Checksheet)  EOS  Weather Monitoring and Forecasting Tools (Training Checksheet)  Mapboard  Scheduling Log\/Switching Log (Training Checksheet)  Station one-lines (paper-based)  Wall Charts (Tie-Lines, Frequency, Voltage, Load, Generation) (Training Checksheet)",
+  "Active": true
+ },
+ {
+  "Id": 41,
+  "SubDutyAreaId": 18,
+  "Description": "(LSO\/SO) Identify and respond to malfunctions of computers and other TOCC equipment",
+  "Number": 1,
+  "Conditions": "Malfunction of computer or other TOCC equipment has occurred",
+  "Standards": "Computer or other TOCC equipment malfunction corrected by TOCC personnel or appropriate POWERCO support group notified",
+  "Tools": "Call duty list  Control Room Communication Tools (Training Checksheet)  Scheduling Log\/Switching Log (Training Checksheet)",
+  "Active": true
+ },
+ {
+  "Id": 42,
+  "SubDutyAreaId": 18,
+  "Description": "(SEC) Monitor operation of SEC computer systems and software and report any malfunctions to the appropriate technical support personnel  ",
+  "Number": 2,
+  "Conditions": "Malfunction of SEC computer hardware\/software",
+  "Standards": "Computer malfunctions recognized and reported to the appropriate group in time frame appropriate to the criticality of the malfunction",
+  "Tools": "Communication Contact list  SEC Electric Building Office Communication Tools  ECS  IPL Plant Capacity Log  Load Sheet  MISO Outage Scheduler  MISO Portal  nMarket  PI  SEC Daily Log  Security cameras  Tesla  Unit Control Modes  ",
+  "Active": true
+ },
+ 
+  {
+  "Id": 43,
+  "SubDutyAreaId": 19,
+  "Description": "(SEC)  Record entries into NDT vs. Billable Sheet; distribute day-ahead award for Indy Load ",
+  "Number": 1,
+  "Conditions": "Ongoing  All test system conditions",
+  "Standards": "Day-ahead award information accurately entered on NDT vs. Billable Sheet   NDT vs. Billable Sheet updated hourly  Day-ahead award information sent to distribution list by 15:30 EST  Average day-ahead and real-time data for previous day sent to distribution list by 05:00 EST  ",
+  "Tools": "NDT vs. Billable Sheet  SEC Communication Tools  SEC Daily Log  MISO Portal    ",
+  "Active": false
+ },
+ {
+  "Id": 44,
+  "SubDutyAreaId": 19,
+  "Description": "(SEC) Maintain the Daily Energy Report",
+  "Number": 2,
+  "Conditions": "Completed Daily",
+  "Standards": "Daily Energy report is updated and maintained the most accurate information",
+  "Tools": "DAT program  Energy Summary Report  ",
+  "Active": true
+ },
+ {
+  "Id": 45,
+  "SubDutyAreaId": 19,
+  "Description": "(SEC) Complete the Daily Set-up in preparation for the next-day operation ",
+  "Number": 3,
+  "Conditions": "Completed daily after MISO DA Market clears",
+  "Standards": "SEC Daily Set-up is completed in preparation for the next-day operation and distributed to the appropriate recipients",
+  "Tools": "MISO Portal  OATI webTrader  SEC Communication Tools  DAT program  SEC Email  ",
+  "Active": true
+ }
+ ]

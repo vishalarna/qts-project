@@ -1,0 +1,327 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .rich-text p {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .rich-text figure {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .rich-text img {
+        width: 400px !important;
+        height: auto !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+    }
+
+    .rich-text ul, .rich-text ol {
+        margin: 0 !important;
+        padding: 0 0 0 0px !important;
+        list-style-position: inside !important;
+    }
+
+    .rich-text figure img {
+        width: 400px !important;
+        height: auto !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+    }
+
+    .rich-text li {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .rich-text .table table tr td{
+        border:1px solid #000;
+    }
+
+    .rich-text .table table{
+        border-collapse:collapse;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table" style="width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.ClassSchedule_StudentEvaluations_Links.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border:none;padding-top:0;" class="strip-container">
+                @{int j = 1;}
+
+                @foreach (var classScheduleLink in Model.ClassSchedule_StudentEvaluations_Links)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table class="table" style=" color:#000000;">
+                            @if (Model.DisplayColumns.Where(r => r == "ILA Number").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style=" border: none !important;font-size:18px; padding-top:0.6em; padding-bottom:3px;">
+                                        <div style="display: -webkit-box; display: flex; "> <b style="width: 140px">  @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #:</b><div> <b>@classScheduleLink?.ClassSchedule?.ILA?.Number</b></div></div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "ILA Name").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style=" border: none !important;font-size:18px; padding-top:0px; padding-bottom:3px;">
+                                        <div style="display: -webkit-box; display: flex; "> <b style="width: 140px">  @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title:</b><div> <b>@classScheduleLink?.ClassSchedule?.ILA?.Name</b></div></div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Provider").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style=" border: none !important; font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex; "> <b style="width: 140px"> Prov. ID :</b>  <div><b>@classScheduleLink?.ClassSchedule?.ILA?.Provider?.Name </b></div></div>
+                                    </td>
+                                </tr>
+                            }
+
+                            @if (Model.DisplayColumns.Where(r => r == "Class Start Date & Time").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style=" border: none !important; font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex; "><b style="width: 140px"> Class Start Date:</b> <div>@classScheduleLink.ClassSchedule.StartDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat) </div></div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Class End Date & Time").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style=" border: none !important; font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex; "><b style="width: 140px"> Class End Date:</b> <div> @classScheduleLink.ClassSchedule.EndDateTime.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat) </div></div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Instructor").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style=" border: none !important; font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex; "><b style="width: 140px">  @("Instructor".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b> <div>@classScheduleLink.ClassSchedule.Instructor?.InstructorName</div></div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Location").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style=" border: none !important; font-size: 18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex; "><b style="width: 140px">  @("Location".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b> <div> @(classScheduleLink.ClassSchedule.Location == null ? "" : classScheduleLink.ClassSchedule.Location.LocName) </div></div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Form Name").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style=" border: none !important; font-size:18px; padding-top: 3px; padding-bottom: 3px;">
+                                        <div style="display: -webkit-box; display: flex; "><b style="width: 140px"> Form Used:</b> <div>@classScheduleLink.StudentEvaluation.Title</div> </div>
+                                    </td>
+                                </tr>
+                            }
+
+                            <tr>
+                                <td colspan="9" style="padding: 0rem 0.7rem; padding-top: 0.5rem; text-decoration: underline; border: 0; padding-bottom: 2px">
+                                    <b>Please rate each question using the following scale, then add optional comment</b>
+                                </td>
+                            </tr>
+                            @if (Model.DisplayColumns.Where(r => r == "Evaluation Rating Scale").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="9" style="padding:0rem 0.7rem;padding-top: 0; color: #800000; border: 0; padding-bottom: 2px"><b>@classScheduleLink.StudentEvaluation.RatingScaleN.RatingScaleDescription</b>
+                                </tr>
+                            }
+
+                            @{
+                                var evaluationSettings = classScheduleLink.StudentEvaluation;
+                            }
+                            @{
+                                int i = 1;
+                            }
+                            @foreach (var question in @classScheduleLink.StudentEvaluation.StudentEvaluationQuestions.Select(r => r.QuestionBank).Distinct())
+                            {
+                                <tr style="font-weight:500">
+                                    <td style="font-weight: 600;border:none;padding:0px 5px;min-width:200px;" colspan="12">
+                                        <table style="border-collapse: collapse;table-layout:fixed;width:100%;">
+                                            <tr>
+                                                <td style="padding: 5px;border:none;width: @(evaluationSettings.IsAllowNAOption.HasValue && evaluationSettings.IsAllowNAOption.Value ? 68 : 70)%;vertical-align:top;">
+                                                    <div style="display: -webkit-box; display: flex;">
+                                                        <span style="white-space:nowrap;" class="rich-text">@i.ToString(). @(new RawString(question.Stem))</span>
+                                                    </div>
+                                                </td>
+                                                @{
+                                                    var ratingDescription = evaluationSettings.RatingScaleN.RatingScaleDescription;
+                                                    var ratingValues = new List<string>();
+                                                    if (!string.IsNullOrWhiteSpace(ratingDescription) && ratingDescription.Contains(';'))
+                                                    {
+                                                        ratingValues = ratingDescription.Split(';').Select(desc =>
+                                                        {
+                                                            var parts = desc.Split('=');
+                                                            return parts.Length > 0 ? parts[0].Trim() : null;
+                                                        })
+                                                        .Where(value => !string.IsNullOrEmpty(value))
+                                                        .ToList();
+                                                    }
+                                                    if (!string.IsNullOrWhiteSpace(ratingDescription) && ratingDescription.Contains(','))
+                                                    {
+                                                        ratingValues = ratingDescription.Split(',').Select(desc =>
+                                                        {
+                                                            var parts = desc.Split('=');
+                                                            return parts.Length > 0 ? parts[0].Trim() : null;
+                                                        })
+                                                        .Where(value => !string.IsNullOrEmpty(value))
+                                                        .ToList();
+                                                    }
+                                                }
+                                                @if (ratingValues.Count > 0)
+                                                {
+                                                    @for (int k = 0; k < ratingValues.Count; k++)
+                                                    {
+                                                        <td style="padding: 5px;border:none;vertical-align:top;width: @(evaluationSettings.IsAllowNAOption.HasValue && evaluationSettings.IsAllowNAOption.Value ? 5 : 6)%">
+                                                            <input type="radio" name="rating@i" value="@ratingValues[k]" disabled />
+                                                            @ratingValues[k]
+                                                        </td>
+                                                    }
+                                                }
+                                                @if (evaluationSettings.IsAllowNAOption.HasValue && evaluationSettings.IsAllowNAOption.Value)
+                                                {
+                                                    <td style="padding: 5px;border:none;width:7%;vertical-align:top;">
+                                                        <input type="radio" value="N/A" disabled />
+                                                        <span>N/A</span>
+                                                    </td>
+                                                }
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+
+
+                                @if (evaluationSettings.IsIncludeCommentSections.HasValue && evaluationSettings.IsIncludeCommentSections.Value)
+                                {
+                                    <tr>
+                                        <td colspan="12" style="border: 0; padding: 0rem; font-weight: 500; color: #000; padding-left:1.8rem; padding-bottom: 0.5rem;">
+                                            <div style="height:40px;">
+                                                <span style="text-decoration: underline;">Comments:</span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td style=" border: 0; padding: 0rem; padding-bottom: 1rem;">
+
+                                        </td>
+                                    </tr>
+                                }
+                                i++;
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Include General Comments Section").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: 0; padding: 0rem; font-weight: 500; color: #000;padding-bottom: 0.5rem;padding-left:0.75rem;">
+                                        <div>
+                                            <span style="text-decoration: underline;">Include General Comments:</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            <tr></tr>
+                        </table>
+                    </div>
+                    @if (!classScheduleLink.Equals(Model.ClassSchedule_StudentEvaluations_Links.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{j++;}
+
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.ClassSchedule_StudentEvaluations_Links.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

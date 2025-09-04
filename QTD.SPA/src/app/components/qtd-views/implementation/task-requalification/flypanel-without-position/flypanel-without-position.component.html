@@ -1,0 +1,62 @@
+<div class="p-5 flex flex-col" *ngIf="!neededForView && !isLoading">
+  <!-- header section -->
+  <section class="flex flex-row w-full justify-between" style="align-items:center;">
+    <span class="font-bold text-xl">{{("Employee" | labelReplacement)| async}}s without {{("Position" | labelReplacement)| async}}s  Qualification Date</span>
+    <app-icon (click)="closed.emit()" icon="close" class="cursor-pointer"></app-icon>
+  </section>
+
+  <!-- Information section -->
+  <section class="flex flex-col">
+    <span class="font-thin text-sm text-gray-600 mt-3 mb-3">{{this.dataSource.data.length}} {{("Employee" | labelReplacement)| async}}s without {{("Position" | labelReplacement)| async}}s
+      Qualification Date</span>
+    <span class="font-thin text-xs text-gray-400">The following {{("Employee" | labelReplacement)| async}}s do not have a {{("Position" | labelReplacement)| async}}s Qualification Date for
+      their assigned {{("Position" | labelReplacement)| async}}(s), and are not marked as a Trainee. Please review and update their {{("Employee" | labelReplacement)| async}} profile (My
+      Data > {{("Employee" | labelReplacement)| async}}s) as this missing information can result in discrepancies when generating {{("Task" | labelReplacement)| async}} (Re)Qualification
+      reports.</span>
+  </section>
+
+  <!-- table section -->
+  <section class="flex flex-col">
+    <table [dataSource]="dataSource" mat-table>
+      <ng-container matColumnDef="emp">
+        <th style="vertical-align: middle" mat-header-cell *matHeaderCellDef>
+          {{("Employee" | labelReplacement)| async}} Name
+        </th>
+        <td class="mt-4" mat-cell *matCellDef="let row">
+          <div class="flex flex-row">
+            <img [src]="row.empImage" onerror="this.src='assets/img/ImageNotFound.jpg'"
+              class="rounded-full mr-2 mt-1" style="width:2rem;height:2rem">
+            <div class="flex flex-col">
+              <span class="font-bold">{{(row.empLastName + ', ' + row.empFirstName)}}</span>
+              <span class="text-xs text-gray-400 font-thin">{{row.empEmail}}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="count">
+        <th style="vertical-align: middle;text-align: end;" mat-header-cell *matHeaderCellDef>
+          Without {{("Position" | labelReplacement)| async}}s Qualification Date
+        </th>
+        <td style="text-align: center;" mat-cell *matCellDef="let row">
+          <span
+            (click)="selectedImage = row.empImage === null || row.empImage === '' ? placeHolderImg :row.empImage ;selectedId = row.empId;selectedName = row.empFirstName + ' ' + row.empLastName;neededForView = true;"
+            class="ml-5 linkText cursor-pointer">{{row.posCount | number: '2.0'}}</span>
+        </td>
+      </ng-container>
+      <tr style="vertical-align: top;" mat-header-row class="pl-2 pr-2" *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row class="pr-2 pl-2" *matRowDef="let row; columns: displayedColumns"></tr>
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">No {{("Task" | labelReplacement)| async}} Qualifications Found</td>
+      </tr>
+    </table>
+  </section>
+</div>
+<app-data-loader *ngIf="isLoading"></app-data-loader>
+
+
+<ng-container *ngIf="neededForView">
+  <app-flypanel-task-requal-needed [empId]="selectedId" [empName]="selectedName" [empImage]="selectedImage"
+    (closed)="neededForView = false;"></app-flypanel-task-requal-needed>
+</ng-container>

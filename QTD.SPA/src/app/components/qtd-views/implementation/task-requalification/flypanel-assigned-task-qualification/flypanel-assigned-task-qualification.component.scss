@@ -1,0 +1,37 @@
+:host ::ng-deep .mat-row{
+  vertical-align: top;
+}
+
+:host ::ng-deep .mat-cell{
+  padding: 2rem 1rem 3rem 1rem;
+}
+
+.mat-header-cell{
+  padding-top: 1rem;
+}
+
+.customBorder{
+  border-left-width: 1px;
+  border-right-width: 1px;
+  border-top-width: 1px;
+  border-radius: 0.125rem;
+}
+
+
+.notSelected{
+  border: 1px solid #E4E6E5;
+  background-color: white;
+  color:#7A807E;
+  width: 49.9%;
+  justify-content: center;
+  align-items: center;
+}
+
+.selected{
+  border: 1px solid #5C9B31;
+  background-color: #5C9B311A;
+  color:#5C9B31;
+  width: 49.9%;
+  justify-content: center;
+  align-items: center;
+}

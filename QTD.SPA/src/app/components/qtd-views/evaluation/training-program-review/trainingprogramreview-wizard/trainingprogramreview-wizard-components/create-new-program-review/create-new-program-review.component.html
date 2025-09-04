@@ -1,0 +1,101 @@
+<form class="step-container" [formGroup]="createProgramReviewForm">
+  <div class="mat-step-section with-bottom-border">
+    <div class="step-header-section">
+      <h2 class="step-main-header">{{("Position" | labelReplacement)| async}}</h2>
+      <p class="step-header-caption">Select {{("Position" | labelReplacement)| async}}</p>
+    </div>
+    <div class="step-controls-section">
+      <div class="step-control-container label required">
+        <label class="step-control-label">{{("Position" | labelReplacement)| async}} </label>
+        <div class="step-control">
+          <mat-select formControlName="position" [disabled]="inputTPRViewModel.id !== undefined" (selectionChange)="positionClick($event)" placeholder="Select {{('Position' | labelReplacement)| async}}" class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+            <mat-option *ngFor="let position of positions"  [value]="position.id">
+              {{position.positionTitle}}
+            </mat-option>
+          </mat-select>
+          <div *ngIf="createProgramReviewForm.get('position').invalid" class="text-danger">
+            {{("Position" | labelReplacement)| async}} is required.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mat-step-section with-bottom-border">
+    <div class="step-header-section">
+      <h2 class="step-main-header">Training Program Type</h2>
+      <p class="step-header-caption">Select a Program Type</p>
+    </div>
+    <div class="step-controls-section">
+      <div class="step-control-container label required">
+        <label class="step-control-label">Training Program Type </label>
+        <div class="step-control">
+          <mat-select formControlName="trainingProgramType" placeholder="Select Training Program Type" [disabled]="inputTPRViewModel.id !== undefined" class="appearance-none rounded border w-full px-4 py-2.5 mt-2" (selectionChange)="trainingProgramTypeClick($event)">
+            <mat-option *ngFor="let trainingProgramType of trainingProgramTypes" [value]="trainingProgramType.id">
+              {{trainingProgramType.trainingProgramTypeTitle}}
+            </mat-option>
+          </mat-select>
+          <div *ngIf="createProgramReviewForm.get('trainingProgramType').invalid" class="text-danger">
+            Training Program Type is required.
+          </div>
+        </div>
+      </div>
+      <div class="step-control-container w-50 label required">
+        <label class="step-control-label">Version Number </label>
+        <div class="step-control">
+          <mat-select formControlName="versionNumber"  placeholder="Select Version" [disabled]="inputTPRViewModel.id !== undefined"  (selectionChange)="versionNumberClick($event)"class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+            <mat-option *ngFor="let trainingProgram of trainingPrograms" [value]="trainingProgram.id">
+               {{trainingProgram.version}}
+            </mat-option>
+          </mat-select> 
+          <div *ngIf="createProgramReviewForm.get('versionNumber').invalid" class="text-danger">
+            Version Number is required.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mat-step-section">
+    <div class="step-header-section">
+      <h2 class="step-main-header">Review Details</h2>
+      <p class="step-header-caption">Enter Training Program Review Details</p>
+    </div>
+    <div class="step-controls-section">
+      <div class="step-control-container">
+        <div class="add-reviewer-button" (click)="reviewerNamesClick(linkReviewers)">
+          <img src="./assets/icons/icon-link-item.svg" alt="icon_link_svg" style="margin-right: 10px" />
+          <span style="cursor: pointer">Reviewer Name(s)</span>
+        </div>
+        <div class="step-control">
+          <div class="bubbles-div">
+            <div class="bubble" *ngFor="let reviewer of inputTPRViewModel.reviewers">
+              {{reviewer.employeePersonFullName}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="step-control-container" style="width: 40%;">
+        <div class="step-control-label">Review Date</div>
+        <div class="step-control">
+          <app-date matInput formControlName="reviewDate"  class="form_field text-xs" (input)="reviewDateClick()"></app-date>
+        </div>
+      </div>
+      <div class="step-control-caption">Select the Review Time Period:</div>
+      <div class="step-control-container d-inline-block" style="width: 40%;">
+        <div class="step-control-label">Start Date</div>
+        <div class="step-control">
+          <app-date matInput formControlName="startDate" class="form_field text-xs" (input)="startDateClick()"></app-date>
+        </div>
+      </div>
+      <div class="step-control-container d-inline-block ml-4" style="width: 40%;">
+        <div class="step-control-label">End Date</div>
+        <div class="step-control">
+          <app-date matInput formControlName="endDate" class="form_field text-xs" (input)="endDateClick()"></app-date>
+        </div>
+      </div>
+    </div>
+  </div>
+</form>
+
+<ng-template #linkReviewers>
+  <app-fly-panel-link-reviewers [reviewers]="inputTPRViewModel.reviewers" [handleXClick]="closeFlyPanel" [handleSetReviewersClick]="setReviewers"></app-fly-panel-link-reviewers>
+</ng-template>

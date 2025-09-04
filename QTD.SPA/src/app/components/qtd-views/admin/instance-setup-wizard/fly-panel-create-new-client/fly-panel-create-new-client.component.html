@@ -1,0 +1,18 @@
+<div  class="flex flex-col px-12 py-12">
+    <ng-container>
+        <div class="flex flex-row justify-between">
+            <p class="font-bold text-lg m-0 p-0">New Client</p>
+            <app-button ButtonType="icon" icon="close" (clicked)="closed.emit()"></app-button>
+        </div>
+    </ng-container>
+   
+    <form [formGroup]="clientForm">
+        <div class="mt-4">
+          <label>Client Name</label>
+          <app-textbox type="text" placeholder="Enter client name" formControlName="clientId"></app-textbox>
+        </div>
+      </form>
+    <section class="flex w-full ml-2 mt-3" style="justify-content:flex-end;">
+        <app-button [spinner]="loader" [disabled]="!clientForm.get('clientId').value" (clicked)="createClientAsync()" ButtonType="button" color="secondary" size="sm" text="Save"></app-button>
+      </section>
+  </div>

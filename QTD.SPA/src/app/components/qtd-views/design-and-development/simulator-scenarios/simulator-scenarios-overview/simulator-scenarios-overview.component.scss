@@ -1,0 +1,131 @@
+.publish {
+  background-color: #eef7ff;
+  color: #4d8bc4;
+}
+
+.draft {
+  background-color: #fff9e8;
+  color: #ffd97f;
+}
+
+.step-controls-section {
+  padding: 1.5rem 2rem;
+  flex: 1 1 70%;
+  border-radius: 0.25rem;
+  border: 0.5px solid #e1e5e4;
+  background: #fff;
+  box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+}
+
+.keyword-input {
+  align-items: center;
+  svg {
+    margin-right: 8px;
+  }
+  input {
+    width: 100%;
+  }
+}
+.icon-wrap {
+  background-color: #eefff2;
+  padding: 20px;
+  border-radius: 4px;
+  width: fit-content;
+}
+.published-dif-icon {
+  color: #13c525;
+  font-size: 28px;
+  width: 100%;
+}
+.draft-icon {
+  color: #8595a6;
+  font-size: 28px;
+  width: 100%;
+}
+.employees-icon {
+  color: #5c9b31;
+  font-size: 28px;
+  width: 100%;
+}
+.gap-2 {
+  gap: 1rem;
+}
+.status {
+  font-size: 1rem;
+  font-weight: 600;
+  color: #15372c;
+}
+.card-heading-style {
+  color: #15372c;
+  font-size: 0.7rem;
+  font-weight: 400;
+}
+.mat-table-header {
+  color: #7a807e;
+}
+.customcolor {
+  background-color: rgba(92, 155, 49, 0.1);
+  width: 120px;
+  display: inline-block;
+  text-align: center;
+  margin-top: 12px;
+}
+
+.custom-dev-status {
+  border: 2px solid rgb(137, 214, 137);
+  border-radius: 8px;
+  font-weight: bold;
+  padding: 8px;
+  width: 100px;
+  display: inline-block;
+  text-align: center;
+  margin-top: 12px;
+}
+.closed-cell {
+  opacity: 0.5;
+}
+.closed-row {
+  opacity: 0.6;
+  font-style: italic;
+}
+.inActive-row {
+  opacity: 0.6;
+  font-style: italic;
+}
+.w-2\/4 {
+  width: 40%;
+}
+
+.status-badge {
+  width: 74px;
+  height: 24px;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 24px;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.status-badge.customcolorgreen {
+  background-color: #e7f1ee;
+  color: #000d09;
+  width: 81px;
+  height: 33px;
+  line-height: 32px;
+  font-weight: 500;
+}
+
+.overview-spinner {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.disabled-button {
+  cursor: default;
+  opacity: 0.6;
+}
+.card-heading {
+  min-height: 3rem;
+}

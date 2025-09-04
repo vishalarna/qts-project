@@ -1,0 +1,85 @@
+:host ::ng-deep .meta-test-header .meta-test-back-button span mat-icon {
+  font-size: 30px;
+  position: relative;
+  bottom: 2px;
+  right: 5px;
+  color: #5C9B31;
+}
+app-button.meta-test-back-button {
+  background-color: rgba(92, 155, 49, 0.10);
+  border-radius: 50%;
+}
+
+.meta-test-header {
+  padding: 1.12rem 1.5rem;
+  background-color: white;
+  box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+  justify-content: space-between;
+  .create-meta-test-heading {
+    flex: 1 1 78%;
+    color: #000d09;
+    font-size: 1.25rem;
+    font-style: normal;
+    font-weight: 500;
+    line-height: 160%; /* 2rem */
+    letter-spacing: 0.00938rem;
+  }
+}
+
+:host ::ng-deep .meta-test-header {
+  .header-button {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 143%;
+    letter-spacing: 0.00938rem;
+  }
+  .meta-test-continue-button {
+    color: #fff;
+    padding: 0.75rem 1.87rem;
+  }
+}
+
+.meta-test-container {
+    background-color: #fcfcfc;
+    padding: 4rem 2rem;
+  }
+
+  :host ::ng-deep .meta-test-stepper .mat-step-header {
+    .mat-step-icon {
+      margin-bottom: 0.69rem;
+      width: 28px;
+      height: 28px;
+    }
+    .mat-step-label {
+      color: #5c9b31;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 166%; /* 1.245rem */
+      letter-spacing: 0.025rem;
+      .mat-step-optional {
+        display: none;
+      }
+    }
+  }
+  :host ::ng-deep .meta-test-stepper .mat-step-header[aria-disabled="true"] {
+    .mat-step-icon {
+      background: #e3e4e4;
+      border: 1px solid #a1b2ad;
+      color: #a1b2ad;
+    }
+    .mat-step-label {
+      color: #a1b2ad;
+    }
+  }
+  
+  :host ::ng-deep .meta-test-stepper .mat-horizontal-content-container {
+    padding: 3.63rem 1rem;
+  }
+  
+  :host::ng-deep button.disabled-pointer:disabled{
+    cursor: default;
+    opacity: 0.65 !important;
+    color: #fff;
+    background-color: grey;
+    border-color: grey;
+  }

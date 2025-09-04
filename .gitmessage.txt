@@ -1,0 +1,21 @@
+TicketID: <TicketId>
+
+# Summary:
+# <One-line summary of the change>
+
+# Description:
+# - What was changed?
+# - Why was it changed?
+
+# Impact:
+# - Requires DB migration? (yes/no)
+# - Requires config change? (yes/no)
+
+# Test Instructions:
+# - How to manually test this
+# - Any automated tests added or modified
+# - Local setup notes (if relevant)
+
+# Notes:
+# - Additional context, edge cases, or reviewer tips
+# - Related links (Jira, Slack, diagrams, etc.)

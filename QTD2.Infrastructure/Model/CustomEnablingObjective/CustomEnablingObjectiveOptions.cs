@@ -1,0 +1,13 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace QTD2.Infrastructure.Model.CustomEnablingObjective
+{
+    public class CustomEnablingObjectiveOptions
+    {
+        public string ActionType { get; set; }
+    }
+}

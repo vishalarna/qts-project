@@ -1,0 +1,127 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    @@media print {
+        .table-header {
+            text-align: left;
+        }
+
+        .table-header-row {
+            border-bottom: 2px solid #000 !important;
+        }
+    }
+</style>
+<table id="content-table" class="table" style="width:100%;  border-collapse: collapse;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="display: -webkit-box; -webkit-box-pack: justify;display: flex; align-items: center; justify-content: space-between; border-bottom: 3px solid #020378; margin: 0 0 10px 0;">
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center; "><b>@Model.Title </b></div>
+                <div ><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.IDPReviews.Count() > 0)
+    {
+        <tr>
+            <td style=" border: none !important;">
+                <b>  IDP Review Title:</b>
+            <td colspan="@Model.DisplayColumns.Count()" style=" border: none !important;">
+                @(Model.IDPReviews.First().ReleaseDate.HasValue ? Model.IDPReviews.First().ReleaseDate.Value.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString("MM/dd/yyyy") : "")
+            </td>
+        </tr>
+
+        <tr>
+            <td style=" border: none !important;">
+                <b> IDP Review End Date: </b>
+            </td>
+            <td colspan="@Model.DisplayColumns.Count()" style=" border: none !important;">
+                @(Model.IDPReviews.First().CompletedDate.HasValue ? Model.IDPReviews.First().CompletedDate.Value.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString("MM/dd/yyyy") : "")
+            </td>
+        </tr>
+
+        <tr style="border: none !important;">
+            <td style=" border: none !important;">
+                <b> IDP Review Open:</b>
+            </td>
+            <td colspan="@Model.DisplayColumns.Count()" style=" border: none !important;">
+                @Model.IDPReviews.First().IDP_ReviewStatus.Name.ToString()
+            </td>
+        </tr>
+
+        <tr class="table-header-row" style="border-top:0px; border-bottom: 2px solid #000; border-collapse:collapse">
+            @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+            {
+                <th class="table-header" style="border-bottom: 2px solid #000; border-collapse: collapse; border-top: 0px; " align="left">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Position Abbreviation").Count() > 0)
+            {
+                <th class="table-header" style="border-bottom: 2px solid #000; border-collapse: collapse; border-top: 0px; " align="left">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Abbr.</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Release Date").Count() > 0)
+            {
+                <th class="table-header" style="border-bottom: 2px solid #000; border-collapse: collapse; border-top: 0px; " align="left">Release Date</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Completed Date").Count() > 0)
+            {
+                <th class="table-header" style="border-bottom: 2px solid #000; border-collapse: collapse; border-top: 0px; " align="left">Completed Date</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "Completion Status").Count() > 0)
+            {
+                <th class="table-header" style="border-bottom: 2px solid #000; border-collapse: collapse; border-top: 0px; " align="left">Completion Status</th>
+            }
+            @if (Model.DisplayColumns.Where(r => r == "IDP Review Response").Count() > 0)
+            {
+                <th class="table-header" style="border-bottom: 2px solid #000; border-collapse: collapse; border-top: 0px; " align="left">IDP Review Response</th>
+            }
+        </tr>
+
+        @foreach (var idpReview in Model.IDPReviews)
+        {
+            <tr>
+                @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                {
+                    <td style=" border: none !important;">@idpReview.Employee.Person.FirstName @idpReview.Employee.Person.LastName</td>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Position Abbreviation").Count() > 0)
+                {
+                    <td style=" border: none !important;">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) @("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements)) (all or latest?)</td>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Release Date").Count() > 0)
+                {
+                    <td style=" border: none !important;">@((Model.IDPReviews.First().ReleaseDate.HasValue ? Model.IDPReviews.First().ReleaseDate.Value.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString("MM/dd/yyyy") : ""))</td>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Completed Date").Count() > 0)
+                {
+                    <td style=" border: none !important;">@((Model.IDPReviews.First().CompletedDate.HasValue ? Model.IDPReviews.First().CompletedDate.Value.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString("MM/dd/yyyy") : ""))</td>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "Completion Status").Count() > 0)
+                {
+                    <td style=" border: none !important;">@idpReview.IDP_ReviewStatus.Name.ToString()</td>
+                }
+                @if (Model.DisplayColumns.Where(r => r == "IDP Review Response").Count() > 0)
+                {
+                    <td style=" border: none !important;">??</td>
+                }
+            </tr>
+        }
+    }
+
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>

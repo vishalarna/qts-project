@@ -1,0 +1,78 @@
+
+<section class="mat-elevation-z8 w-full mt-4 bg-white">
+
+<app-data-loader *ngIf="isLoading"></app-data-loader>
+    <!-- calendar section -->
+    <div class="flex flex-col" *ngIf="!isLoading">
+      <div class="flex flex-row flex-wrap ml-4 mr-4 mt-3 justify-between space-x-4 mb-2">
+        <mat-button-toggle-group>
+          <mat-button-toggle mwlCalendarPreviousView [view]="view" [(viewDate)]="viewDate"
+            (viewDateChange)="closeOpenMonthViewDay()"> <app-icon
+              icon="keyboard_arrow_left"></app-icon></mat-button-toggle>
+          <mat-button-toggle mwlCalendarToday [(viewDate)]="viewDate">{{ viewDate | calendarDate:(view +
+            'ViewTitle'):'en' }}</mat-button-toggle>
+
+          <mat-button-toggle mwlCalendarNextView [view]="view" [(viewDate)]="viewDate"
+            (viewDateChange)="closeOpenMonthViewDay()"> <app-icon
+              icon="keyboard_arrow_right"></app-icon></mat-button-toggle>
+
+        </mat-button-toggle-group>
+        <div>
+          <mat-button-toggle-group>
+            <mat-button-toggle (click)="setView(CalendarView.Day)" [class.active]="view === CalendarView.Day">
+              Day</mat-button-toggle>
+              <mat-button-toggle  (click)="setView(CalendarView.Week)"
+              [class.active]="view === CalendarView.Week">Week</mat-button-toggle>
+              <mat-button-toggle [class.active]="view === CalendarView.Month" (click)="setView(CalendarView.Month)">
+                Month</mat-button-toggle>
+            <!-- <mat-button-toggle [disabled]="true" (click)="setView(CalendarView.Week)"
+              [class.active]="view === CalendarView.Week">Week</mat-button-toggle> -->
+
+
+
+          </mat-button-toggle-group>
+        </div>
+      </div>
+
+      <div [ngSwitch]="view">
+        <mwl-calendar-month-view [openDayEventsTemplate]="monthEventTitle" *ngSwitchCase="CalendarView.Month" [viewDate]="viewDate" [events]="events"
+          [refresh]="refresh" [activeDayIsOpen]="activeDayIsOpen" (dayClicked)="dayClicked($event.day)"
+          (eventClicked)="handleEvent('Clicked', $event.event)" (eventTimesChanged)="eventTimesChanged($event)"
+          [eventActionsTemplate]="eventActionsTemplate">
+        </mwl-calendar-month-view>
+        <mwl-calendar-week-view *ngSwitchCase="CalendarView.Week" [viewDate]="viewDate" [events]="events"
+          [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)"
+          [eventActionsTemplate]="eventActionsTemplate" (eventTimesChanged)="eventTimesChanged($event)">
+        </mwl-calendar-week-view>
+        <mwl-calendar-day-view *ngSwitchCase="CalendarView.Day"
+          [viewDate]="viewDate" [events]="events"
+          [refresh]="refresh" (eventClicked)="handleEvent('Clicked', $event.event)"
+          [eventActionsTemplate]="eventActionsTemplate" (eventTimesChanged)="eventTimesChanged($event)">
+        </mwl-calendar-day-view>
+      </div>
+    </div>
+  </section>
+
+  <ng-template #eventActionsTemplate let-event="event" let-trackByActionId="trackByActionId"></ng-template>
+
+    <ng-template let-events="events" let-isOpen="isOpen" #monthEventTitle>
+      <div *ngIf="isOpen" class="flex flex-col w-full p-3">
+        <div class="my-2 flex justify-between" *ngFor="let event of events">
+          <div class="flex" style="align-items:baseline;">
+            <span class="rounded-full mr-3" style="height: 0.6rem;width: 0.6rem;background:#5C9B31"></span>
+            <div class="flex flex-col">
+              <div class="flex flex-row">
+                <span class="linkText font-bold text-base mr-2">{{event?.provider ?? "N/A"}} -</span>
+                <span class="linkText font-bold text-base">{{event?.ila ?? "N/A"}}</span>
+              </div>
+              <div class="flex flex-row">
+                <span class="text-gray-400 text-base mr-2">{{event?.location ?? "N/A"}} by</span>
+                <span class="text-gray-400 text-base">{{event?.instructor ?? "N/A"}}</span>
+              </div>
+            </div>
+
+          </div>
+          <mwl-calendar-event-actions [event]="event" [customTemplate]="eventActionsTemplate"></mwl-calendar-event-actions>
+        </div>
+      </div>
+    </ng-template>

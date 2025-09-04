@@ -1,0 +1,48 @@
+<!--Inactive option for topic starts-->
+<ng-container *ngIf=" isTopicInactive">
+    <!-- <mat-dialog-content >
+        <div class="flex flex-row justify-between items-center mt-5 mb-8" >
+           <p class="text-xl font-semibold text-gray-900">Make Topic Inactive</p>
+           <app-button ButtonType='icon' class="mt--4" icon="close" mat-dialog-close="true"></app-button>
+       </div>
+   
+       <p class="mt-8">You are selecting to make the Topic. This will remove the Topic as an option when creating an ILA, and will remove the Topic name from existing ILAs. Are you sure you want to continue?</p>
+   </mat-dialog-content>
+   
+   
+   <mat-dialog-actions align="end">
+       <app-button type="button"  text="Yes" color="primary" size="sm" class="mr-2" mat-dialog-close></app-button>
+   </mat-dialog-actions> -->
+
+   <app-qtd-dialogue [header]="header"
+        [description]="description"
+        [cancelText]="cancelText"
+        [confirmText]="confirmText">
+    </app-qtd-dialogue>
+   
+</ng-container>
+<!--Inactive option for topic ends-->
+
+<!--Active option for ila starts-->
+<ng-container *ngIf="!isTopicInactive">
+    <!-- <mat-dialog-content >
+        <div class="flex flex-row justify-between items-center mt-5 mb-8" >
+           <p class="text-xl font-semibold text-gray-900">Make Topic Active</p>
+           <app-button ButtonType='icon' class="mt--4" icon="close" mat-dialog-close="true"></app-button>
+       </div>
+   
+       <p class="mt-8"> You are selecting to make the Topic Active. Are you sure you want to continue? </p>
+   </mat-dialog-content>
+   
+   
+   <mat-dialog-actions align="end">
+       <app-button type="button" text="Yes" color="primary" size="sm" class="mr-2" mat-dialog-close></app-button>
+    </mat-dialog-actions> -->
+   
+    <app-qtd-dialogue [header]="header"
+        [description]="description"
+        [cancelText]="cancelText"
+        [confirmText]="confirmText">
+    </app-qtd-dialogue>
+</ng-container>
+<!--Active option for ila ends-->

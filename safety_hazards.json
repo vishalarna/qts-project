@@ -1,0 +1,100 @@
+[
+ {
+  "ID": 1,
+  "CategoryID": 1,
+  "Number": "CH-001",
+  "Title": "Liquids, cleaning products, paints, ",
+  "Active": true
+ },
+ {
+  "ID": 2,
+  "CategoryID": 1,
+  "Number": "CH-002",
+  "Title": "Vapors, fumes, asbestos",
+  "Active": true
+ },
+ {
+  "ID": 3,
+  "CategoryID": 1,
+  "Number": "CH-003",
+  "Title": "Gases",
+  "Active": true
+ },
+ {
+  "ID": 4,
+  "CategoryID": 1,
+  "Number": "CH-004",
+  "Title": "Flammable materials",
+  "Active": true
+ },
+ {
+  "ID": 5,
+  "CategoryID": 2,
+  "Number": "PHY-001",
+  "Title": "Noise",
+  "Active": true
+ },
+ {
+  "ID": 6,
+  "CategoryID": 2,
+  "Number": "PHY-002",
+  "Title": "Temperature",
+  "Active": true
+ },
+ {
+  "ID": 7,
+  "CategoryID": 2,
+  "Number": "PHY-003",
+  "Title": "Lighting",
+  "Active": true
+ },
+ {
+  "ID": 8,
+  "CategoryID": 2,
+  "Number": "PHY-004",
+  "Title": "Radiation",
+  "Active": true
+ },
+ {
+  "ID": 9,
+  "CategoryID": 3,
+  "Number": "ERG-001",
+  "Title": "Lifting",
+  "Active": true
+ },
+ {
+  "ID": 10,
+  "CategoryID": 3,
+  "Number": "ERG-002",
+  "Title": "Sitting ",
+  "Active": true
+ },
+ {
+  "ID": 11,
+  "CategoryID": 3,
+  "Number": "ERG-003",
+  "Title": "Posture",
+  "Active": true
+ },
+ {
+  "ID": 12,
+  "CategoryID": 4,
+  "Number": "BIO-001",
+  "Title": "Plants and Insects",
+  "Active": true
+ },
+ {
+  "ID": 13,
+  "CategoryID": 4,
+  "Number": "BIO-002",
+  "Title": "Blood and bodily fluids",
+  "Active": true
+ },
+ {
+  "ID": 14,
+  "CategoryID": 4,
+  "Number": "BIO-003",
+  "Title": "Fungi and mold",
+  "Active": true
+ }
+]

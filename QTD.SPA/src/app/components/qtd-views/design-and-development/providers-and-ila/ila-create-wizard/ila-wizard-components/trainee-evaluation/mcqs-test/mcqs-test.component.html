@@ -1,0 +1,66 @@
+<!--Question Box Starts Here-->
+<form class="ml-12 mr-12 mt-2" [formGroup]="QuestionAnswerForm">
+  <mat-label class="font-medium text-sm">Question</mat-label>
+  <ckeditor [editor]="Editor" formControlName="quesAns" (ready)="onReady($event)"></ckeditor>
+  <app-input-error class="mt--2"
+    *ngIf="QuestionAnswerForm.get('quesAns')?.invalid && (QuestionAnswerForm.get('quesAns')?.hasError('required'))"
+    [text]="'Question is Required'"></app-input-error>
+</form>
+<!--Question Box Ends Here-->
+
+<!--Distractors Starts Here-->
+<div class="ml-12 mr-12 mt-16">
+  <mat-label class="font-medium text-sm">Distractors</mat-label>
+  <p class="text-gray-four text-xs">Enter the options below and select the correct one</p>
+
+  <form [formGroup]="distractorsForm">
+    <!-- <mat-radio-group formControlName="correctAnswer"> -->
+    <div *ngFor="let dis of distractors" class="flex flex-row border rounded mb-3"
+      style="border-color: rgb(92, 155, 49) !important;">
+      <app-icon icon="drag_indicator" class="text-gray-500 mr-1 mt-4"></app-icon>
+      <div class="w-full flex flex-row">
+        <mat-checkbox [checked]="dis.isCorrect" class="mr-3 mt-4" (change)="changeSelection($event,dis)">
+        </mat-checkbox>
+        <div class="flex flex-col">
+          <app-textarea class="mt-4" formControlName="quesAns{{dis.id}}" [placeholder]="'Type option here...'"
+            [value]="dis.choiceDescription"
+            [customClasses]="'text-sm custom_width h-auto hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+          </app-textarea>
+          <app-input-error *ngIf="distractorsForm.get('quesAns' + dis.id)?.status === 'INVALID'"
+            text="Answer description is required"></app-input-error>
+        </div>
+      </div>
+      <app-button *ngIf="distractors.length > 4" (click)="OnDelete(dis.id)" ButtonType='icon' class="float-right"
+        icon="delete"></app-button>
+    </div>
+    <!-- </mat-radio-group> -->
+    <app-input-error *ngIf="selection.selected.length < 1" text="Please Select Atleast one correct option">
+    </app-input-error>
+  </form>
+  <!--add new button starts-->
+  <div class="flex flex-col">
+    <app-button variant="text" text="Add another distractor" iconPosition="left" icon="add" (clicked)="AddInput()">
+    </app-button>
+    <app-input-error *ngIf="distractors.length < 1" text="At least One Distractor is required"></app-input-error>
+  </div>
+
+  <!--add new button ends-->
+
+</div>
+<!--Distractors Ends Here-->
+
+<!--Save Button Starts-->
+<div class="flex flex-row float-right mr-12 mt-16">
+  <div *ngIf="!update && showSaveButton">
+    <app-button [spinner]="saveSpinner" [disabled]="!QuestionAnswerForm.valid || !distractorsForm.valid || distractors.length < 1
+    || selection.selected.length < 1 || saveSpinner || saveandAddSpinner" class="mr-2" (clicked)="OnSave(false)"
+      type="button" size="sm" color="secondary" text="Save"></app-button>
+    <app-button [spinner]="saveandAddSpinner" [disabled]="!QuestionAnswerForm.valid || !distractorsForm.valid || distractors.length < 1
+    || selection.selected.length < 1 || saveSpinner || saveandAddSpinner" (clicked)="OnSave(true)" type="button"
+      size="sm" color="secondary" text="Save & Add New"></app-button>
+  </div>
+  <app-button (clicked)="updateData()" *ngIf="update && showSaveButton" [spinner]="updateSpinner" [disabled]="!QuestionAnswerForm.valid || !distractorsForm.valid || distractors.length < 1
+    || selection.selected.length < 1 || updateSpinner" type="button" size="sm" color="primary" text="Update">
+  </app-button>
+</div>
+<!--Save Button Ends-->

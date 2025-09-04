@@ -1,0 +1,100 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <!-- {{oldProcedure ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+        <ng-container *ngIf="mode==='Add'">
+           Link {{("Certification" | labelReplacement)| async}}s
+          </ng-container>
+          <ng-container *ngIf="mode==='Edit'">
+            Edit {{("Certification" | labelReplacement)| async}}s
+           </ng-container>
+      </p>
+      <app-button (click)="closedefinition()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <div class="ml-12">
+      <app-button  variant="text" iconPosition="left"
+      icon="add" text="Add New Certificate" class="mb-4"
+      (click)="openFlyInPanel(addCert)"></app-button>
+    </div>
+
+    <form [formGroup]="certificationnempLinkForm">
+        <div class="flex flex-row px-12" *ngIf="mode==='Add'">
+            <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+                <app-label required [for]="'certificate'" [text]="'Certificate Name'"
+                class="mt-6 float-left label required">
+              </app-label>
+                <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                    <mat-select formControlName="certificate" placeholder="Select Certificate"  >
+                      <mat-option [hidden]="!i.active" *ngFor="let i of certList" [value]="i.id" (click)="changeClient(i.renewalInterval,i.effectiveDate)">
+                        {{i.name}}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+           </div>
+
+       </div>
+
+       <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+            <app-label [for]="'certnumber'" text="{{('Certification' | labelReplacement)| async}} Number"></app-label>
+            <app-textbox type="text" formControlName="certnumber" (input)="onCertNumberChange($event)"
+            placeholder="Enter {{('Certification' | labelReplacement)| async}} Number">
+          </app-textbox>
+        </div>
+      </div>
+
+    <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+            <app-label [for]="'certDate'" text="Issue Date"></app-label>
+                <app-date formControlName="certDate" placeholder="Select Date">
+                </app-date>
+<!--                 <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+                </app-input-error> -->
+          </div>
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+            <app-label [for]="'renewDate'" [text]="'Renewal Date '"></app-label>
+            <app-date [minDate]="certificationnempLinkForm.get('certDate')?.value" formControlName="renewDate" placeholder="Select Date" (input)="getDiffDays()" >
+            </app-date>
+<!--             <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+            </app-input-error> -->
+       </div>
+       <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+         <app-label [for]="'exptDate'" [text]="'Expiration Date '"></app-label>
+            <app-date formControlName="exptDate" placeholder="Select Date" [minDate]="certificationnempLinkForm.get('renewDate')?.value">
+            </app-date>
+<!--             <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+            </app-input-error> -->
+      </div>
+
+
+
+
+      </div>
+
+
+<div class="px-12 mt-8 float-left py-3" *ngIf="mode==='Add'">
+    <mat-checkbox formControlName="AddAnother" name="AddAnotherInstructorCategory">
+      Add Another {{("Certification" | labelReplacement)| async}}s
+    </mat-checkbox>
+  </div>
+      <div class="px-12 mt-8 float-right py-3"  *ngIf="mode==='Add'">
+        <app-button [spinner]="showSpinner" [disabled]="certificationnempLinkForm.invalid || showSpinner || dateError"
+          type="button" size="sm"  text="Save" (click)="LinkCertificationtoEmployee()" [disabled] = "isAlreadyPresentCertNumber">
+        </app-button>
+      </div>
+      <div class="px-12 mt-8 float-right py-3"  *ngIf="mode==='Edit'">
+        <app-button [spinner]="showSpinner" [disabled]="showSpinner || dateError"
+        type="button" size="sm"  text="Update" (click)="UpdateCertification()" [disabled] = "isAlreadyPresentCertNumber">
+      </app-button>
+    </div>
+    </form>
+  </ng-container>
+
+  <ng-template #addCert>
+    <app-fly-panel-add-certification (closed)="flyPanelSrvc.close()">
+
+    </app-fly-panel-add-certification>
+
+  </ng-template>
+

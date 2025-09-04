@@ -1,0 +1,363 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+  <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBack()">
+  </app-button>
+  <div class="flex flex-row items-center space-x-4 w-full justify-between">
+    <h1 *ngIf="mode === 'create'">New Student Evaluation</h1>
+    <h1 *ngIf="mode === 'edit'">Edit Student Evaluation</h1>    
+    <div class="justify-between">
+      <app-button type="button" [disabled]="evaluationInfoForm.invalid" variant="text" text="Save as Draft" (clicked)="saveAsDraft()" style="margin-right: 2rem">
+      </app-button>
+      <app-button type="button" text="Continue" *ngIf="currentIndex === 0"
+        [disabled]="evaluationInfoForm.invalid" (click)="SaveOrUpdateStudentEvaluation()">
+      </app-button>
+      <app-button type="button" text="Continue" *ngIf="currentIndex === 1" (click)="PreviewDetails()">
+      </app-button>
+      <app-button type="button" text="Publish" *ngIf="currentIndex === 2"
+        (click)="PublishStudentEvaluationModal(publishevaluation)">
+      </app-button>
+    </div>
+  </div>
+</mat-toolbar>
+<mat-stepper labelPosition="bottom" [linear]="true" #stepper (selectionChange)="selectedChanged($event)"
+  [orientation]="(stepperOrientation | async)!">
+  <!-- Change edit icon -->
+  <ng-template matStepperIcon="edit">
+    <app-icon icon="done"></app-icon>
+  </ng-template>
+
+  <mat-step label="Add Evaluation Information" [stepControl]="evaluationInfoForm"
+    [completed]="evaluationInfoForm.valid">
+    <div class="flex w-full" style="justify-content: center">
+      <div style="width: 70%" class="flex flex-col">
+        <form [formGroup]="evaluationInfoForm">
+          <section class="
+            flex flex-row
+            border-b-0.8 border-gray-one
+            pt-4
+            pb-4
+            rounded-sm
+          ">
+            <div class="flex flex-col" style="width: 23%">
+              <app-label text="Evaluation Information" class="font-medium"></app-label>
+              <app-label text="Enter title for assessment" class="text-gray-300 text-small"></app-label>
+            </div>
+            <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 72%">
+
+              <div class="">
+                <div class="flex flex-row">
+                  <div class="flex flex-col float-left mb-6 w-full">
+                    <app-label [for]="'title'" [text]="'Title '" class="label required"></app-label>
+                    <app-textbox type="text" formControlName="title" required>
+                    </app-textbox>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- Rating Scale Section -->
+          <section class="
+            flex flex-row
+            border-b-0.8 border-gray-one
+            pt-4
+            pb-4
+            rounded-sm
+          ">
+            <div class="flex flex-col" style="width: 23%">
+              <app-label text="Rating Scale" class="font-medium"></app-label>
+              <app-label text="Choose from list of pre populated rating scales"
+                class="text-gray-300 text-small"></app-label>
+            </div>
+            <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 72%">
+              <div class="">
+                <div class="flex flex-row">
+                  <div class="flex flex-col float-left w-full">
+                    <app-label [for]="'ratingScale'" [text]="'Rating Scale'" class="label required"></app-label>
+                    <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                      <mat-select formControlName="ratingScale" placeholder="Select Rating Scale" required>
+                        <mat-option *ngFor="let i of ratingScaleList" [value]="i.id">
+                          {{ i.ratingScaleDescription }}
+                        </mat-option>
+                      </mat-select>
+                    </mat-form-field>
+                    <p>
+                      Not finding your favorite rating scale? Submit a ticket in the 2.0 Support Portal and we can add it for you.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        </form>
+        <section class="
+            flex flex-row
+            border-b-0.8 border-gray-one
+            pt-4
+            pb-4
+            rounded-sm
+          ">
+          <div class="flex flex-col" style="width: 23%">
+            <app-label text="Additional Evaluation Options" class="font-medium"></app-label>
+            <app-label text="Select from the checkbox if you want any additional options"
+              class="text-gray-300 text-small"></app-label>
+          </div>
+          <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 72%">
+            <form [formGroup]="additionalOptionsForm">
+              <div>
+                <div class="flex flex-row">
+                  <mat-checkbox class="example-margin" formControlName="availableForAllIlas">Make Student Evaluation
+                    available for all
+                    {{("ILA" | labelReplacement)| async}}s</mat-checkbox>
+                </div>
+                <div class="flex flex-row">
+                  <mat-checkbox class="example-margin" formControlName="availableForSelectedIlas">Make Student
+                    Evaluation available for selected {{("ILA" | labelReplacement)| async}}s
+                    (ability to select {{("ILA" | labelReplacement)| async}}s to link the Evaluation
+                    to)</mat-checkbox>
+                </div>
+                <div class="flex flex-row">
+                  <mat-checkbox class="example-margin" formControlName="allowNAoption">Allow N/A option</mat-checkbox>
+                </div>
+                <div class="flex flex-row">
+                  <mat-checkbox class="example-margin" formControlName="includeComments">Include Comments Section
+                    following each
+                    question</mat-checkbox>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+        <section class="
+            flex flex-row
+            border-b-0.8 border-gray-one
+            pt-4
+            pb-4
+            rounded-sm
+          ">
+          <div class="flex flex-col" style="width: 23%">
+            <app-label text="{{('Instruction' | labelReplacement)| async}}s " class="font-medium"></app-label>
+            <app-label text="Enter {{('Instruction' | labelReplacement)| async}}s , on how to solve evaluation form."
+              class="text-gray-300 text-small"></app-label>
+          </div>
+          <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 72%">
+            <form [formGroup]="instructionsform">
+              <div>
+                <div class="flex flex-row w-full">
+                  <div class="flex flex-col w-full">
+                    <!-- <app-label [for]="'instructions'" [text]="'Instructions'" class="mt-6 float-left label"></app-label> -->
+                    <ckeditor name="instructions" [editor]="editor" formControlName="instructions">
+                    </ckeditor>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </mat-step>
+  <mat-step label="Add & Sequence Evaluation Questions">
+    <div class="flex" style="justify-content: center;">
+      <div class="flex flex-col" style="width: 70%;">
+        <div class="border-0.5 rounded h-auto w-17/24 ml-20 bg-white-one px-8 mt-2" style="width: 87%">
+          <div class="row justify-between">
+            <div class="w-full mt-3 mb-2 cursor-pointer" (click)="openFlyInPanel(questionflypanel)">
+              <app-label [for]="'addNewQuestion'" [text]="'Add New Question'" class="font-medium">
+              </app-label>
+              <app-icon icon="arrow_forward_ios" style="color : #5C9B31;" class="float-right bg-green-hover"></app-icon>
+
+            </div>
+          </div>
+        </div>
+        <div class="border-0.5 rounded h-auto w-17/24 ml-20 bg-white-one px-8 mt-2" style="width: 87%">
+          <div class="row justify-between">
+            <div class="w-full mt-3 mb-2 cursor-pointer" (click)="openFlyInPanel(importExistingquestionflypanel)">
+              <app-label [for]="'importExistingQuestions'" [text]="'Import Existing Questions'" class="font-medium">
+              </app-label>
+
+              <app-icon icon="arrow_forward_ios" style="color : #5C9B31;" class="float-right bg-green-hover"></app-icon>
+            </div>
+          </div>
+        </div>
+
+        <div class="w-full flex" style="justify-content: center">
+          <div class="flex-col mt-5" style="width: 87%">
+            <div class="flex flex-row justify-between mb-3" style="align-items: center">
+              <div>
+                <p class="font-bold text-lg mb-0">Student Evaluation Questions</p>
+                <!-- <p class="text-gray-three">Link or add new Positions to the training program by clicking the link icon</p> -->
+              </div>
+
+              <p class="text-xs text-gray-four pt-2">
+                {{ alreadyLinked?.length }} Questions Added
+              </p>
+            </div>
+            <div class="flex w-full">
+              <div class="w-full flex border-0.5 bg-white-one rounded shadow-sm" style="justify-content: center">
+                <div style="width: 100%">
+                  <div class="flex-row bg-white-one rounded-b-md shadow-sm">
+                    <div class="flex w-full" style="justify-content: center">
+                      <table [dataSource]="dataSource" matSort mat-table style="border: 1px solid #e5e7eb; width: 100%"
+                        cdkDropList [cdkDropListData]="dataSource" (cdkDropListDropped)="dropTable($event)">
+                        <ng-container matColumnDef="order">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header></th>
+                          <td mat-cell *matCellDef="let element">
+                            <app-icon cdkDragHandle matTooltip="Drag to reorder the row" style="
+                            pointer-events: all;
+                            color: darkgrey !important;
+                            cursor: move;
+                          " icon="drag_indicator">
+                            </app-icon>
+                          </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="id">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                            ID
+                          </th>
+                          <td mat-cell *matCellDef="let element">
+                            {{ element.questionId }}
+                          </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="stem">
+                          <th mat-header-cell *matHeaderCellDef mat-sort-header>
+                            Student Evaluation Question
+                          </th>
+
+                          <td mat-cell *matCellDef="let element">
+                            <div class="flex flex-row" [innerHTML]="element.stem"></div>
+                          </td>
+                        </ng-container>
+
+                        <ng-container matColumnDef="unlink">
+                          <th mat-header-cell *matHeaderCellDef> Unlink Question
+                          </th>
+                          <td mat-cell *matCellDef="let element" matTooltip="Unlink Student Evaluation Question" (click)="unlinkStudentEvaluationQuestions(element.id)">
+                              <app-icon style="cursor: pointer;" icon="link_off"></app-icon>
+                          </td>
+                        </ng-container>
+                        <tr mat-header-row *matHeaderRowDef="displayColumns"></tr>
+                        <tr mat-row *matRowDef="let row; columns: displayColumns" cdkDrag [cdkDragData]="row"></tr>
+
+                        <tr class="mat-row text-center" *matNoDataRow>
+                          <td [attr.colspan]="displayColumns.length" class="mat-cell text-center mt-2">
+                            No questions present in student evaluation
+                          </td>
+                        </tr>
+                      </table>
+
+                 <!--      <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons #shPaging
+                      aria-label="Select page of periodic elements">
+                  </mat-paginator> -->
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </mat-step>
+  <mat-step label="Preview and Publish">
+    <div class="flex" style="justify-content: center;">
+      <div class="w-full flex flex-row mt-16" style="width: 70%;">
+        <div class="block text-sm h-auto w-full">
+          <div class="flex flex-col pb-12">
+            <div class="border-0.5 bg-white-one rounded shadow-sm" style="padding-left: 7rem; padding-right: 9rem">
+              <div class="flex flex-col">
+                <div class="flex flex-row justify-between items-center pt-5 pb-3">
+                  <span class="text-2xl font-bold">
+                    {{ studentEvalObj?.title }}
+                  </span>
+                </div>
+                <div class="flex flex-col">
+                  <div class="
+                      flex flex-row
+                      justify-between
+                      border-b
+                      items-center
+                      py-3
+                      mb-3
+                    ">
+                    <span class="text-base font-bold text-lg">{{("Instruction" | labelReplacement)| async}}s </span>
+                  </div>
+                </div>
+
+                <p class="text-lg" [innerHTML]="studentEvalObj?.instructions">
+                  <!-- Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum. -->
+                </p>
+
+
+                <div class="flex flex-col">
+                  <div class="
+                      flex flex-row
+                      justify-between
+                      border-b
+                      items-center
+                      py-3
+                      mb-3
+                    ">
+                    <span class="text-base font-bold text-lg">Rating Scale </span>
+                  </div>
+                </div>
+                <div>
+                  <p class="text-lg mb-5">
+                    {{ studentEvalObj?.ratingScaleN.ratingScaleDescription }}
+                  </p>
+                </div>
+
+                <div class="mb-4 flex flex-col">
+                  <span class="font-bold text-lg">Student Evaluation Questions</span>
+
+                  <div *ngIf="dataSource">
+                    <mat-table [dataSource]="dataSource" matSort class="table-bordered">
+                      <ng-container matColumnDef="id">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                          ID
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                          {{ row.questionId }}
+                        </mat-cell>
+                      </ng-container>
+                      <ng-container matColumnDef="question">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                          Student Evaluation Question
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                          <div class="flex flex-row" [innerHTML]="row.stem"></div>
+                        </mat-cell>
+                      </ng-container>
+
+                      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                      <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+                      <tr class="mat-row flex text-center" *matNoDataRow>
+                        <td class="mat-cell w-full m-2">No data to display</td>
+                      </tr>
+                    </mat-table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </mat-step>
+</mat-stepper>
+<ng-template #questionflypanel>
+  <app-fly-panel-add-question (closed)="flyPanelService.close()" [mode]="evalQuestionMode">
+  </app-fly-panel-add-question>
+</ng-template>
+<ng-template #importExistingquestionflypanel>
+  <app-fly-panel-import-existing-questions (closed)="flyPanelService.close()"
+    [studentEvaluationId]="studentEvaluationId" (refresh)="GetLinkedQuestions()" [alreadyLinked]="alreadyLinked">
+  </app-fly-panel-import-existing-questions>
+</ng-template>
+<ng-template #publishevaluation>
+  <app-fly-panel-publish-student-evaluation [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="PublishEvaluation($event)"></app-fly-panel-publish-student-evaluation>
+</ng-template>

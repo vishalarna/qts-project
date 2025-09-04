@@ -1,0 +1,55 @@
+canvas{
+    width:380px;
+  }
+  
+  /* Chrome, Safari, Edge, Opera */
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  
+  /* Firefox */
+  input[type=number] {
+    -moz-appearance: textfield;
+  }
+  
+  :host ::ng-deep app-button > button{
+    outline:none;
+  }
+  
+
+  
+  .mat-column-employee {
+    flex: 0 0 70px;
+  }
+  
+  .mat-column-empName {
+    flex: 0 0 180px;
+  }
+  
+  .mat-column-position {
+    
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+ :host::ng-deep td.status-mat-chip-list .mat-chip-list-wrapper{
+     justify-content: center;
+  }
+
+  .w-8{
+    width: 8%;
+  }
+
+  .w-18{
+    width: 18%;
+  }
+  
+  .w-19{
+    width: 19%;
+  }
+
+  .w-3{
+    width: 3%;
+  }

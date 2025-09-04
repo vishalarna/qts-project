@@ -1,0 +1,26 @@
+<!-- <header style="text-align: center;" class="mt-3">
+    <div class="col-sm-3" style="width:800px; margin:0 auto;">
+        <label class="inline-block text-gray-700 font-medium mr-2" translate>L.SelectLanguage</label>
+        <ngx-select-dropdown #langSelect  [config]="ngSelectConfig" [options]="translate.getLangs()" class="col-sm-3"
+            (keyup)="changLocale()" [(ngModel)]="lang"></ngx-select-dropdown>
+    </div>
+</header> -->
+<mat-sidenav-container fullscreen [hasBackdrop]="(hasbackdrop | async)" >
+    <mat-sidenav #left position="start" [mode]="(menuMode | async)" [disableClose]="(disableClose | async) === true || (freezeMenu | async) === true"
+        (closedStart)="menuClosed($event)" [opened]="(((toggleMenu  | async) === 'open') ? true:(freezeMenu | async) === true)" *ngIf="isLoggedIn && !isTfaRequired"
+        style="width: 20%;">
+        <app-main-nav-bar *ngIf="isEmpSideBar==='false' && isInitialSideBar==='false'" ></app-main-nav-bar>
+        <app-nav-bar *ngIf = "isInitialSideBar=='true'"></app-nav-bar>
+        <app-emp-nav-bar *ngIf="isEmpSideBar==='true' && isInitialSideBar==='false'" ></app-emp-nav-bar>
+    </mat-sidenav>
+
+    <mat-sidenav #right position="end" mode="over" [disableClose]="true" class="w-2/4">
+        <ng-template [cdkPortalOutlet]="flyInPanelSrvc.panelPortal | async">
+        </ng-template>
+    </mat-sidenav>
+
+    <mat-sidenav-content>
+        <router-outlet></router-outlet>
+    </mat-sidenav-content>
+
+</mat-sidenav-container>

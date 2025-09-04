@@ -1,0 +1,66 @@
+﻿[
+  {
+    "ClientSettings_LicenseId": 1,
+    "ProductName": "Test Development Tool",
+    "ProductAcronym": "TDT",
+    "Version": "V1",
+    "ReleaseDate": "06/09/2023",
+    "Enabled": true
+  },
+  {
+    "ClientSettings_LicenseId": 1,
+    "ProductName": "Employee Portal",
+    "ProductAcronym": "EMP",
+    "Version": "V1",
+    "ReleaseDate": "06/09/2023",
+    "Enabled": true
+  },
+  {
+    "ClientSettings_LicenseId": 1,
+    "ProductName": "Instructor Workbook",
+    "ProductAcronym": "IWP",
+    "Version": "V1",
+    "ReleaseDate": "06/09/2023",
+    "Enabled": false
+  },
+  {
+    "ClientSettings_LicenseId": 1,
+    "ProductName": "Manager Portal",
+    "ProductAcronym": "MP",
+    "Version": "V1",
+    "ReleaseDate": "06/09/2023",
+    "Enabled": false
+  },
+  {
+    "ClientSettings_LicenseId": 2,
+    "ProductName": "Test Development Tool",
+    "ProductAcronym": "TDT",
+    "Version": "V1",
+    "ReleaseDate": "06/09/2023",
+    "Enabled": true
+  },
+  {
+    "ClientSettings_LicenseId": 2,
+    "ProductName": "Employee Portal",
+    "ProductAcronym": "EMP",
+    "Version": "V1",
+    "ReleaseDate": "06/09/2023",
+    "Enabled": true
+  },
+  {
+    "ClientSettings_LicenseId": 2,
+    "ProductName": "Instructor Workbook",
+    "ProductAcronym": "IWP",
+    "Version": "V1",
+    "ReleaseDate": "06/09/2023",
+    "Enabled": false
+  },
+  {
+    "ClientSettings_LicenseId": 2,
+    "ProductName": "Manager Portal",
+    "ProductAcronym": "MP",
+    "Version": "V1",
+    "ReleaseDate": "06/09/2023",
+    "Enabled": false
+  }
+]

@@ -1,0 +1,266 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    .row-inactive {
+        color: darkgray;
+        font-style: italic;
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div class="header-combined-line" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img class="header-logo" src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.Positions.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{
+                    int j = 1;
+                }
+                @foreach (var position in Model.Positions.OrderBy(p => p.PositionNumber).ThenBy(p => p.PositionTitle))
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:separate;border-spacing:0">
+                            <thead>
+                                <tr>
+                                    <td colspan="12" style="border: none !important; padding-top: 0; font-size: 18px;padding-bottom:10px;">
+                                        <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s : </b>
+                                        <b>@position.PositionNumber - @position.PositionTitle </b>
+                                    </td>
+                                </tr>
+                                <tr style="border-collapse: collapse">
+                                    @{
+                                        var nercColspan = Model.DisplayColumns.Where(r => r == "NERC CEHs-Total").Count() + Model.DisplayColumns.Where(r => r == "NERC CEHs-Stand").Count() + Model.DisplayColumns.Where(r => r == "NERC CEHs-Sim").Count();
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Provider ID/Individual Learning A").Count() > 0)
+                                    {
+                                        <th style="border: 1px solid #000; border-left: 0 !important; border-bottom: 2px solid #000; border-right: 1px solid #000; vertical-align: bottom;padding-bottom:1px" rowspan="2">Provider ID/Individual Learning A</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Individual Learning Activity Title").Count() > 0)
+                                    {
+                                        <th style="border: 1px solid #000; border-left: 0 !important; border-bottom: 2px solid #000; border-right: 1px solid #000; vertical-align: bottom; padding-bottom: 1px" rowspan="2">Individual Learning Activity Title</th>
+                                    }
+                                    @if (nercColspan > 0)
+                                    {
+                                        <th style="border: 1px solid #000; vertical-align: bottom; border-left: 0 !important; padding: 0px 0px 0px 1px !important; text-align: center; border-bottom:0" colspan="@nercColspan"> NERC CEHs </th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "PER-005-EOPs").Count() > 0)
+                                    {
+                                        <th style="border: 1px solid #000; vertical-align: bottom; border-left: 0 !important; padding: 0px 0px 0px 1px !important; text-align: center; border-bottom:0" colspan="1"> PER -005</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Reg").Count() > 0)
+                                    {
+                                        <th style="border-left: 0px !important; border: 1px solid #000; vertical-align: bottom; padding: 0px 5px 0px 5px !important " rowspan="2">Reg</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Prof").Count() > 0)
+                                    {
+                                        <th style="border-left: 0px !important; border: 1px solid #000; vertical-align: bottom; padding: 0px 5px 0px 5px !important " rowspan="2">Prof</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Other").Count() > 0)
+                                    {
+                                        <th style="border-left: 0px !important; border: 1px solid #000; vertical-align: bottom; padding: 0px 5px 0px 5px !important" rowspan="2">Other</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Total").Count() > 0)
+                                    {
+                                        <th style="border-left: 0px !important; border-right: 0px !important; border: 1px solid #000; vertical-align: bottom; padding: 0px 5px 0px 5px !important " rowspan="2">Total</th>
+                                    }
+                                </tr>
+
+                                <tr>
+                                    @if (Model.DisplayColumns.Where(r => r == "NERC CEHs-Total").Count() > 0)
+                                    {
+                                        <th style="border-left: 0px !important; border: 1px solid #000; border-right: 0px !important; vertical-align: bottom; padding: 0px 5px 0px 5px !important; text-align: center"> Total</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "NERC CEHs-Stand").Count() > 0)
+                                    {
+                                        <th style="border-left: 0px !important; border: 1px solid #000; vertical-align: bottom; border-right: 0px; padding: 0px 5px 0px 5px !important; text-align: center "> Stand</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "NERC CEHs-Sim").Count() > 0)
+                                    {
+                                        <th style="border-left: 0px !important; border: 1px solid #000; vertical-align: bottom; padding: 0px 5px 0px 5px !important; text-align: center ">Sim</th>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "PER-005-EOPs").Count() > 0)
+                                    {
+                                        <th style="border-left: 0px !important; border: 1px solid #000; vertical-align: bottom; padding: 0px 5px 0px 5px !important; text-align: center "> EOPs</th>
+                                    }
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var trainingProgram in position.TrainingPrograms)
+                                {
+                                    <tr>
+                                        <td colspan="3" style="border: none; padding: 5px; ">
+                                            <b>Version :</b>  @trainingProgram.TPVersionNo
+                                            <span style="margin-left:20px;"><b>@trainingProgram.StartDate.ToShortDateString() - @(trainingProgram.EndDate != null ? ((DateTime)trainingProgram.EndDate).ToShortDateString() : "")</b></span>
+                                        </td>
+
+                                    </tr>
+                                    @foreach (var ila in trainingProgram.TrainingProgram_ILA_Links.Select(r => r.ILA))
+                                    {
+
+                                        var nercCertLink = ila.ILACertificationLinks.Where(r => r.Certification.CertifyingBodyId == 1).FirstOrDefault();
+                                        var emergencyCertLink = ila.ILACertificationLinks.Where(r => r.Certification.InternalIdentifier == "Emergency Response").FirstOrDefault();
+                                        var regCertLink = ila.ILACertificationLinks.Where(r => r.Certification.InternalIdentifier == "Reg").FirstOrDefault();
+                                        var reg2CertLink = ila.ILACertificationLinks.Where(r => r.Certification.InternalIdentifier == "Reg2").FirstOrDefault();
+                                        var local = ila.ILACertificationLinks.Where(r => r.Certification.CertDesc == "Local Regulations").FirstOrDefault();
+                                        var inactive = ila.Active == false;
+
+                                        <tr style="border:none !important" class="@(inactive==true ? "row-inactive":"")">
+
+                                            @if (Model.DisplayColumns.Where(r => r == "Provider ID/Individual Learning A").Count() > 0)
+                                            {
+                                                <td style="border: none; padding: 5px; ">
+                                                    @(ila.Provider.Name.ToString() + " / " + ila.Number.ToString())
+                                                </td>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Individual Learning Activity Title").Count() > 0)
+                                            {
+                                                <td style="border: none; padding: 5px; ">
+                                                    @ila.Name
+                                                </td>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "NERC CEHs-Total").Count() > 0)
+                                            {
+                                                <td style="border: none; padding: 5px;text-align: center ">@nercCertLink?.CEHHours.GetValueOrDefault()</td>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "NERC CEHs-Stand").Count() > 0)
+                                            {
+                                                @if (nercCertLink != null)
+                                                {
+                                                    var standardsSubLink = nercCertLink.ILACertificationSubRequirementLink.Where(r => r.CertificationSubRequirement.ReqName == "Standards").FirstOrDefault();
+                                                    <td style="border: none; padding: 5px;text-align: center ">@(standardsSubLink == null ? 0 : standardsSubLink.ReqHour)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="border: none; padding: 5px; "></td>
+                                                }
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "NERC CEHs-Sim").Count() > 0)
+                                            {
+                                                @if (nercCertLink != null)
+                                                {
+                                                    var simSubLink = nercCertLink.ILACertificationSubRequirementLink.Where(r => r.CertificationSubRequirement.ReqName == "Simulations").FirstOrDefault();
+                                                    <td style="border: none; padding: 5px;text-align: center ">@(simSubLink == null ? 0 : simSubLink.ReqHour)</td>
+                                                }
+                                                else
+                                                {
+                                                    <td style="border: none; padding: 5px;text-align: center "></td>
+                                                }
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "PER-005-EOPs").Count() > 0)
+                                            {
+                                                <td style="border: none; padding: 5px; text-align: center">@emergencyCertLink?.CEHHours.GetValueOrDefault()</td>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Reg").Count() > 0)
+                                            {
+                                                <td style="border: none; padding: 5px; ">@regCertLink?.CEHHours.GetValueOrDefault()</td>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Prof").Count() > 0)
+                                            {
+                                                <td style="border: none; padding: 5px; "></td>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Other").Count() > 0)
+                                            {
+                                                <td style="border: none; padding: 5px; ">@(local == null ? 0 : local.CEHHours.GetValueOrDefault())</td>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Total").Count() > 0)
+                                            {
+                                                <td style="border: none; padding: 5px; ">@ila.TotalTrainingHours.GetValueOrDefault()</td>
+                                            }
+                                        </tr>
+                                    }
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Positions.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

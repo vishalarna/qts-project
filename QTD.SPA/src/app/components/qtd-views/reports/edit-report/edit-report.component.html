@@ -1,0 +1,155 @@
+<div *ngIf="!isRunReport">
+    <div class="panel-spin" *ngIf="spinner">
+        <app-spinner *ngIf="spinner" color="rgb(92, 155, 49)" class="items-center"></app-spinner>
+    </div>
+    <ng-container *ngIf="!spinner">
+        <div class="nav-wrap">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="navbrand-wrap col-md-6">
+                        <div class="d-flex">
+                            <div class="back-icon" (click)="goBack()">
+                                <mat-icon>arrow_back_ios</mat-icon>
+                            </div>
+                            <div *ngIf="selectedReport; else createHeading">
+                                <h2 class="navbar-heading m-0">Edit Report</h2>
+                            </div>
+                            <ng-template #createHeading>
+                                <h2 class="navbar-heading m-0">Create New Report</h2>
+                            </ng-template>
+                        </div>
+                    </div>
+                    <div class="navbrand-wrap col-md-6">
+                        <div class="d-flex justify-content-end">
+                            <button type="button" class="btn btn-success" (click)="onSaveReport()">Save Report</button>
+                            <button type="button" class="btn btn-success" (click)="onRunReport()">Run Report</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="content-mid-wrapper"
+            *ngIf="(!selectedReport && selectedReportSkeleton) || (selectedReport && !selectedReportSkeleton)">
+            <div class="col-md-12">
+             <div class="row heighttop align-items-center">
+                    <p class="report-comp-section-heading">Set up the Report Criteria</p>
+                    <div class="col-md-12 p-0">
+                        <div class="row m-0 report-comp-section-padding-wrapper">
+                            <div class="col-md-6 p-0 report-comp-section-padding"
+                                *ngIf="selectedReport; else createTitle">
+                                <label class="report-comp-section-label">Official Report Title</label>
+                                <input type="text" class="form-control" 
+                                    [ngModel]="(this.selectedReport.officialReportTitle | dynamicLabelReplacement) | async " (ngModelChange) = "this.selectedReport.officialReportTitle = $event" readonly />
+                            </div>
+                            <ng-template #createTitle>
+                                <div class="col-md-6 p-0 report-comp-section-padding">
+                                    <label class="report-comp-section-label">Official Report Title</label>
+                                    <input type="text" class="form-control"
+                                        [ngModel]="(this.selectedReportSkeleton.defaultTitle | dynamicLabelReplacement) | async"  (ngModelChange) = "this.selectedReportSkeleton.defaultTitle = $event" readonly />
+                                </div>
+                            </ng-template>
+                            <div class="col-md-6 p-0 report-comp-section-padding"
+                                *ngIf="selectedReport; else createInternalTitle">
+                                <label class="report-comp-section-label">Internal Report Title</label>
+                                <input type="text" class="form-control"
+                                    (ngModelChange)="internalReportTitleChange($event)"
+                                    [(ngModel)]="this.selectedReport.internalReportTitle" />
+                            </div>
+                            <ng-template #createInternalTitle>
+                                <div class="col-md-6 p-0 report-comp-section-padding">
+                                    <label class="report-comp-section-label">Internal Report Title</label>
+                                    <input type="text" class="form-control"
+                                        (ngModelChange)="internalReportTitleChange($event)"
+                                        [(ngModel)]="this.selectedReportSkeleton.internalReportTitle" />
+                                        <span *ngIf = "titleError" class="title-err">Internal Report Title is required to Save</span>
+                                </div>
+                            </ng-template>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="d-block heighttop align-items-start">
+                    <p class="report-comp-section-heading">Filter</p>
+                    <div class="d-flex align-items-start justify-content-between">
+                        <ng-container *ngFor="let item of reportSkeletonFilters">
+                            <div class="col-md-12 pl-0">
+                                <app-filter-parent [reportSkeletonFilter]="item" [reportMode]="reportMode"
+                                    [filterOption]="getReportSkeletonFilterOption(item)"
+                                    [valueType]="getValueTypeName(item.valueType)"
+                                    [propertyType]="getPropertyTypeName(item.propertyType)"
+                                    (OnFilterUpdated)="getFilterOptionChange($event)"
+                                    [reportData] = "selectedReport"
+                                    ></app-filter-parent>
+                            </div>
+                        </ng-container>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12 switch-box" *ngIf="isDataColumnHidden">
+                <div class="row heighttop align-items-center">
+                    <p class="report-comp-section-heading p-0">Manage Data Columns</p>
+                    <div *ngIf = "listDetails?.length <= 0" class="no-data-columns">
+                        <span>There are no data column options for this report</span>
+                    </div>
+                    <ng-container *ngIf = "listDetails?.length > 0">
+                        <div class="col-md-12 p-0">
+                            <label class="report-comp-section-label p-0" style="color: #7A807E;">Select the data columns
+                                that
+                                you
+                                want to show on the report.</label>
+                        </div>
+                    <div class="row align-items-center m-0 pt-4">
+                        <div class="example-container">
+                            Enabled Columns
+                            <div class="col-md-12 p-0">
+                            </div>
+
+                            <div cdkDropList #enabledList="cdkDropList" [cdkDropListData]="listEnabled"
+                                [cdkDropListConnectedTo]="[disabledList]" class="example-list"
+                                (cdkDropListDropped)="drop($event)">
+                                <div class="example-box" *ngFor="let item of listEnabled" >
+                                    <div class="d-flex">
+                                        <mat-icon>drag_indicator</mat-icon>
+                                        <p class="report-comp-drag-text m-0">{{(item.columnName| dynamicLabelReplacement) | async}}</p>
+                                    </div>
+                                    <div class="col-md-2 custom-control custom-switch text-right p-0">
+                                        <input type="checkbox" class="custom-control-input" [checked]="true"
+                                            (change)="onToggleChanged($event,item)" id="{{item.columnName}}">
+                                        <label class="custom-control-label pr-3" for="{{item.columnName}}"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row align-items-center m-0">
+                        <div class="example-container">
+                            Disabled Columns
+                            <div cdkDropList #disabledList="cdkDropList" [cdkDropListData]="listDisabled"
+                                [cdkDropListConnectedTo]="[enabledList]" class="example-list"
+                                (cdkDropListDropped)="drop($event)">
+                                <div style="color:#AAAAAA;" class="example-box" *ngFor="let item of listDisabled">
+                                    <div class="d-flex" style="background-color: #fbfbfb;">
+                                        <mat-icon>drag_indicator</mat-icon>
+                                        <p class="report-comp-drag-text m-0">{{(item.columnName| dynamicLabelReplacement) | async}}</p>
+                                    </div>
+                                    <div class="col-md-2 custom-control custom-switch text-right p-0">
+                                        <input type="checkbox" class="custom-control-input"
+                                            (change)="onToggleChanged($event,item)" id="{{item.columnName}}">
+                                        <label class="custom-control-label pr-3" for="{{item.columnName}}"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </ng-container>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+</div>
+<div *ngIf="isRunReport">
+    <app-report-view [reportMode]="reportMode" [reportContent]="reportViewContent" [reportId]="reportId"
+        [reportCreateorUpdate]="reportUpdateOptions" (goBackevent)="getRunReportValue($event)"></app-report-view>
+</div>

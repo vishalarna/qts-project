@@ -1,0 +1,74 @@
+.section-header {
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    letter-spacing: 0.15000000596046448px;
+    text-align: left;
+ }
+.schedule-header {
+    position: absolute;
+    width: 852px;
+    height: 39px;
+    left: 488px;
+    top: 130px;
+}
+.align-icon{
+    padding: 20px 25px 0 0;
+}
+
+// .btn-label {
+//     font-family: Roboto;
+//     font-size: 12px;
+//     font-weight: 400;
+//     line-height: 20px;
+//     letter-spacing: 0em;
+//     text-align: left;
+//     color: #7A807E;
+// }
+
+.sub-header {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 600;
+    line-height: 19px;
+    letter-spacing: 0.15000000596046448px;
+    text-align: left;
+    margin:0;
+}
+
+.edit-area {
+    height: 260px;
+    width: 750px;
+    border-radius: 4px;
+}
+
+.heighttop {
+    width: 100%;
+    box-shadow: 0px 0px 30px rgb(122 128 126 / 10%);
+    border-radius: 4px;
+    background: #fff;
+    padding: 1.375em 3.31em;
+    margin: 0 0 0.5em;
+}
+
+.panel-heading {
+    font-size: 1.375em;
+    line-height: 143%;
+    letter-spacing: 0.15px;
+    color: #7A807E;
+    border-bottom: 1px solid rgba(122, 128, 126, 0.2);
+    padding: 0 0 0.5em;
+    margin: 0em 0 0.81em;
+}
+
+.txt-label {
+    font-family: Roboto;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.4000000059604645px;
+    text-align: left;
+}
+.finalNotifcation, .secondNotifcation {
+    width: 100%;
+}

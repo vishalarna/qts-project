@@ -1,0 +1,161 @@
+<ng-container *ngIf="!showPosPanel">
+    <!-- header starts here -->
+    <div class="flex flex-row justify-between items-center px-12">
+        <h1 class="text-xl font-medium text-gray-900" translate>{{mode == 'add'?'Add':'Edit'}} {{("Employee" | labelReplacement)| async}} {{("Position" | labelReplacement)| async}}s</h1>
+        <button type="button" class="focus:outline-none" (click)="flyPanelSrvc.close()">
+            <svg class="w-7 h-7 stroke-current text-gray-four" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+            </svg>
+        </button>
+    </div>
+    <!-- header ends here -->
+    <!-- form starts here -->
+    <form class="block text-sm space-y-6 py-12" [formGroup]="form" (ngSubmit)="AddEmpPositions()">
+        <div class="flex flex-row px-6 float-right">
+            <button class="font-medium text-green-one" (click)="togglePosPanel()">Add new {{("Position" | labelReplacement)| async}}s</button>
+        </div>
+        <div class="flex px-6 flex-row justify-between">
+            <div class="sm:w-80">
+                <label class="block text-gray-700 font-medium">
+                    Current {{("Position" | labelReplacement)| async}}s
+                </label>
+                <mat-form-field appearance="outline" class="text-sm">
+                    <mat-label class="text-sm">Select {{("Position" | labelReplacement)| async}}s</mat-label>
+                    <mat-select formControlName="positionId">
+                        <mat-option *ngFor="let position of positions" [value]="position.id">{{position.name}}
+                        </mat-option>
+                    </mat-select>
+                </mat-form-field>
+                <app-input-error *ngIf="form.controls.positionId.errors?.['required']" text="Please
+                     select valid value"></app-input-error>
+
+            </div>
+        </div>
+
+        <div class="flex px-6 flex-row justify-between">
+            <div class="sm:w-80">
+                <label class="block text-gray-700 font-medium">Start Date</label>
+                <app-date placeholder="MM/DD/YYYY" formControlName="startDate"></app-date>
+                <app-input-error *ngIf=" form.controls.startDate.dirty &&
+                form.controls.startDate.errors?.['required']" text="Please
+                select valid value"></app-input-error>
+
+            </div>
+            <div class="sm:w-80">
+                <label class="inline-block text-gray-700 font-medium">End Date</label>
+                <app-date placeholder="MM/DD/YYYY" formControlName="endDate"></app-date>
+
+            </div>
+        </div>
+
+        <!-- trainee confirmation starts here -->
+        <div class="flex px-6 pt-6 flex-row space-x-4">
+            <p>Is the {{("Employee" | labelReplacement)| async}} a trainee?</p>
+            <div>
+                <input type="checkbox" class="mr-2" formControlName="isTrainee" [checked]="empPos.trainee"
+                    (change)="checkChanged()">
+                <p class="inline-block">Yes</p>
+            </div>
+
+            <div>
+                <input type="checkbox" class="mr-2" formControlName="isTrainee" [checked]="!empPos.trainee"
+                    (change)="checkChanged()">
+                <p class="inline-block">No</p>
+            </div>
+            <app-input-error *ngIf=" form.controls.isTrainee.touched &&
+            form.controls.isTrainee.errors?.['required']" text="Please
+            select valid value"></app-input-error>
+
+        </div>
+        <!-- trainee confirmation ends here -->
+
+        <div class="flex px-6 flex-row justify-between">
+            <div class="sm:w-80">
+                <label class="block text-gray-700 font-medium">Trainee Program</label>
+                <mat-form-field appearance="outline" class="text-sm">
+                    <mat-label class="text-sm">Select Training Program</mat-label>
+                    <mat-select formControlName="trainingProgram">
+                        <mat-option>Transmission Operation</mat-option>
+                        <mat-option>Systems Operator</mat-option>
+                    </mat-select>
+                </mat-form-field>
+            </div>
+            <div class="sm:w-80" *ngIf="!empPos.trainee">
+                <label class="inline-block text-gray-700 font-medium">Qualification Date</label>
+                <app-date placeholder="MM/DD/YY" formControlName="qualificationDate"></app-date>
+            </div>
+        </div>
+
+
+        <!-- form ends here -->
+
+        <!-- task qualification confirmation starts here -->
+        <div class="flex flex-row px-6 pb-12 items-baseline" *ngIf="!empPos.trainee">
+            <input type="checkbox" class="mr-4">
+            <p class="text-sm">I have verified that {{("Task" | labelReplacement)| async}} Qualification records for the latest version of
+                {{("Position" | labelReplacement)| async}}s-related
+                {{("Task" | labelReplacement)| async}}s have been entered in QTD. Once a Qualification date is entered, the {{("Employee" | labelReplacement)| async}} will no longer be a
+                trainee.</p>
+        </div>
+        <!-- task qualification confirmation ends here -->
+        <div class="modal-footer relative py-6 px-6 overflow-hidden text-sm font-medium border-t">
+            <!-- button starts -->
+
+            <app-button type="submit" [disabled]="form.invalid" text="Save"></app-button>
+
+            <!-- button ends -->
+        </div>
+    </form>
+
+
+    <div class="flex flex-col" *ngIf="mode=='edit'">
+
+        <div class="border-t flex flex-row items-center px-12 pt-6 pb-8 justify-between">
+            <p class="focus:outline-none font-medium text-green-one">{{("Position" | labelReplacement)| async}}s History</p>
+            <button type="button" class="focus:outline-none" (click)="toggleShowHistory()">
+                <svg *ngIf="showHistory" class="w-5 h-5 mr-6 stroke-current text-gray-four" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path>
+                </svg>
+                <svg *ngIf="!showHistory" class="w-5 h-5 mr-6 stroke-current text-gray-four" fill="none"
+                    stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </button>
+        </div>
+        <div *ngIf="showHistory" class="history-list px-12 h-44 overflow-auto w-11/12">
+            <div class="flex flex-grow flex-row items-center space-x-4 mb-8">
+                <img class="w-10 h-10" src="../assets/image_one.png" alt="avatar">
+                <div class="space-y-1">
+                    <p class="text-sm font-normal text-gray-five"><b>Sarah Lucy</b> changed the <b>Cert No.</b> 3 hours
+                        ago
+                    </p>
+                    <p class="text-xs">08/14/2022 <span class="text-gray-four px-1.5">to</span> 12/01/2024</p>
+                </div>
+            </div>
+            <div class="flex flex-grow flex-row items-center space-x-4 mb-8">
+                <img class="w-10 h-10" src="../assets/image_one.png" alt="avatar">
+                <div class="space-y-1">
+                    <p class="text-sm font-normal text-gray-five"><b>Sarah Lucy</b> changed the <b>Cert No.</b> 3 hours
+                        ago
+                    </p>
+                    <p class="text-xs">08/14/2022 <span class="text-gray-four px-1.5">to</span> 12/01/2024</p>
+                </div>
+            </div>
+            <div class="flex flex-grow flex-row items-center space-x-4 mb-8">
+                <img class="w-10 h-10" src="../assets/image_one.png" alt="avatar">
+                <div class="space-y-1">
+                    <p class="text-sm font-normal text-gray-five"><b>Sarah Lucy</b> changed the <b>Cert No.</b> 3 hours
+                        ago
+                    </p>
+                    <p class="text-xs">08/14/2022 <span class="text-gray-four px-1.5">to</span> 12/01/2024</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</ng-container>
+
+<ng-container *ngIf="showPosPanel">
+    <app-fly-panel-positions (closed)="showPosPanel=false"></app-fly-panel-positions>
+</ng-container>

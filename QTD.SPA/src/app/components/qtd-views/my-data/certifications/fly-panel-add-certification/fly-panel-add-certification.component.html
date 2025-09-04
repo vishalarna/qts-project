@@ -1,0 +1,278 @@
+<ng-container *ngIf="addCert">
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <ng-container *ngIf="mode==='Add'">
+           Add New {{("Certification" | labelReplacement)| async}}
+          </ng-container>
+        <ng-container *ngIf="mode==='Edit'" >
+                 Edit {{("Certification" | labelReplacement)| async}}
+                </ng-container>
+        <ng-container *ngIf="mode==='Copy'">
+        Copy {{("Certification" | labelReplacement)| async}}
+      </ng-container>
+
+    </p>
+    <app-button (click)="closeLocation()" ButtonType='icon' icon="close"></app-button>
+  </div>
+
+  <form [formGroup]="certificationForm">
+    <div class="flex flex-row px-12 ">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <div class="flex flex-row justify-between">
+              <app-label required [for]="'certifyingbodyid'" [text]="'Issuing Authority'"
+                class="mt-6 float-left label required">
+              </app-label>
+
+              <app-button variant="text" (clicked)="openIAPanel()" text="Add new Issuing Authority" icon="add"
+              iconPosition="left" class="mt-6"></app-button>
+            </div>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+              <mat-select formControlName="certifyingbodyid" placeholder="Select Issuing Authority" >
+                <mat-option [hidden]="!i.active" *ngFor="let i of certifyingBodyList" [value]="i.id">
+                  {{i.name}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+            <app-input-error *ngIf="certificationForm.get('certifyingbodyid')?.invalid" text="Issuing Authority Is Required"></app-input-error>
+      </div>
+    </div>
+
+    <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'certnumber'" text="{{('Certification'| labelReplacement)| async}} Acronym " class="mt-6 float-left label required"></app-label>
+          <app-textbox type="text" formControlName="certacronym"
+            placeholder="Enter {{('Certification' | labelReplacement)| async}} Acronym">
+          </app-textbox>
+          <app-input-error *ngIf="certificationForm.get('certacronym')?.invalid  || certificationForm.get('certacronym')?.hasError('whitespaceOnly')" text="{{('Certification' | labelReplacement)| async}} Acronym Is Required Or Contains WhiteSpaces"></app-input-error>
+        </div>
+    </div>
+
+    <!-- <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'certifyingbodyid'" [text]="'Certifying Body ID'" class="mt-6 float-left label required"></app-label>
+          <app-textbox type="text" formControlName="certnumber"
+            [placeholder]="'Enter Certifying body id'">
+          </app-textbox>
+        </div>
+      </div> -->
+
+       <div class="flex flex-row px-12">
+
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'name'" [text]="'Certificate Name '" class="mt-6 float-left label required"></app-label>
+          <app-textbox type="text" formControlName="name"
+            [placeholder]="'Enter Certifying body name'">
+          </app-textbox>
+          <app-input-error *ngIf="certificationForm.get('name')?.invalid || certificationForm.get('name')?.hasError('whitespaceOnly')" text="Name Is Required Or Contains WhiteSpaces"></app-input-error>
+        </div>
+      </div>
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'certdesc'" [text]="'Description'"></app-label>
+          <app-textarea type="text" formControlName="certdesc"
+            placeholder="'Enter {{('Certification' | labelReplacement)| async}} Description'"
+            [value]="certificationForm.get('certdesc')?.value || ''"
+            [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+          </app-textarea>
+        </div>
+      </div>
+
+
+      <div>
+    </div>
+
+
+      <div class="flex flex-row">
+        <div class="px-12 mt-8 float-left">
+          <div class="flex flex-row">
+            <p class="text-xl font-medium text-gray-900">Customize Certificate Settings:</p>
+            <app-icon *ngIf="disableCertSettings > 0"   icon="help" matTooltip="'Cannot edit {{('Certification' | labelReplacement)| async}} Settings. This certificate has been linked to an Employee’s profile'"></app-icon>
+          </div>
+            <p class="text-sm text-gray-900">Select all settings that apply for this certificate</p>
+      </div>
+    </div>
+
+    <div class="flex flex-row justify-between">
+    <div class="px-12 float-left py-3 flex flex-col">
+      <mat-checkbox [disabled]="disableCertSettings > 0" [(ngModel)]="showhide4" formControlName="renewaltimeframe" name="renewaltimeframe">
+        Renewal Time frame
+      </mat-checkbox>
+
+      <mat-form-field *ngIf="showhide4" >
+        <mat-label >Select Years</mat-label>
+        <mat-select [(value)]="selected" formControlName="renewalinterval" >
+          <mat-option value="1"> 1 </mat-option>
+          <mat-option value="2"> 2 </mat-option>
+          <mat-option value="3"> 3 </mat-option>
+          <mat-option value="4"> 4 </mat-option>
+          <mat-option value="5"> 5 </mat-option>
+        </mat-select>
+      </mat-form-field>
+      <p>Existing selection: {{selected}} Years</p>
+    </div>
+
+
+    <div class="flex flex-row">
+      <div class="px-12 float-left py-3">
+        <mat-checkbox [disabled]="disableCertSettings > 0" formControlName="credithrsreq" [(ngModel)]="showhide1"  name="credithrsreq" >
+          Credit Hours required to renew certificate
+        </mat-checkbox>
+        <app-textbox type="number" formControlName="credithrs" *ngIf="showhide1"
+            [placeholder]="'Enter Credit Hours'">
+          </app-textbox>
+      </div>
+    </div>
+    </div>
+
+    <div class="flex flex-col px-12">
+      <div class="float-left py-3">
+        <div>
+          <mat-checkbox [disabled]="disableCertSettings > 0" formControlName="certsubreq" 
+            [checked]="this.certificationForm?.controls?.certsubreq?.value"  (change)="onCertSubReqChange()">
+            {{("Certification" | labelReplacement)| async}} Sub-Requirements
+          </mat-checkbox>
+
+        </div>
+
+
+
+
+        <!--div for dynamic sub requirements name and hours-->
+        <div>
+          <div class="flex flex-col justify-between" *ngIf="showhide2">
+            <div class="flex flex-row" [formGroup]="myForm">
+              <div class="flex flex-col w-2/4 mr-2" style="display: none;" formArrayName="certificationSubRequirementId">
+                <div *ngFor="let textbox of certificationSubRequirementId.controls; let i = index">
+                  <div class="flex-grow">
+                    <app-label text="Id"></app-label>
+                    <app-textbox [formControlName]="i"  [placeholder]="'Enter Id'"></app-textbox>
+                  </div>
+                </div>
+              </div>
+
+                <div class="flex flex-col w-2/4 mr-2" formArrayName="certsubreqname">
+                  <div *ngFor="let textbox of certsubreqname.controls; let i = index">
+                    <div class="flex-grow">
+                      <app-label text="Name"></app-label>
+                      <app-textbox type="text" [formControlName]="i"  [placeholder]="'Enter Sub Req Name'"></app-textbox>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="flex flex-col w-2/4 mr-2" formArrayName="certsubreqhours">
+                  <div *ngFor="let textbox of certsubreqhours.controls; let i = index" class="flex items-center space-x-2">
+                    <div class="flex-grow w-1/4">
+                      <app-label text="Required Hours"></app-label>
+                      <app-textbox [formControlName]="i" type="number" [placeholder]="'Enter Hours'"></app-textbox>
+                    </div>
+                    <div class="subrequirementbtn">
+                      <app-button variant="text" text="X" size="md" class="text-red-500" (clicked)="removeSubRequirement(i)"></app-button>
+                    </div>
+                  </div>
+                  
+                </div>
+            </div>
+
+            <app-button variant="text"  text="Add Another {{('Certification' | labelReplacement)| async}} Sub-Requirement" icon="add"  iconPosition="left" (clicked)="addTextbox()"></app-button>
+
+          <div>
+        </div>
+
+          </div>
+        </div>
+
+
+
+      </div>
+
+
+
+    </div>
+
+
+
+    <div class="flex flex-col ">
+      <div class="px-12 float-left">
+        <mat-checkbox [disabled]="disableCertSettings > 0" formControlName="certmembernum" name="certmembernum">
+          {{('Employee' | labelReplacement)| async}} Certificate Number
+        </mat-checkbox>
+        </div>
+
+        <div class="px-12 float-left">
+        <mat-checkbox [disabled]="disableCertSettings > 0" formControlName="certifieddate" name="certifieddate">
+          Certified On Date/ Issue Date
+        </mat-checkbox>
+      </div>
+
+      <div class="px-12 float-left">
+        <mat-checkbox [disabled]="disableCertSettings > 0" formControlName="renewaldate" name="renewaldate">
+          Renewal Date
+        </mat-checkbox>
+      </div>
+
+
+
+        <div class="px-12 float-left">
+        <mat-checkbox [disabled]="disableCertSettings > 0" formControlName="expirationdate" name="expirationdate">
+          Expiration Date
+        </mat-checkbox>
+        </div>
+
+        <div class="px-12 float-left">
+        <mat-checkbox [disabled]="disableCertSettings > 0" formControlName="allowrolloverhours"  name="allowrolloverhours" [(ngModel)]="showhide3">
+          Allow Rollover Hours
+        </mat-checkbox>
+        <app-textbox  type="number" formControlName="additionalhours"  *ngIf="showhide3"
+            [placeholder]="'Enter Rollover hours'">
+          </app-textbox>
+      </div>
+      </div>
+
+      <div class="flex flex-row">
+      <div class="px-12 mt-8 float-left py-3">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'EffectiveDate'" [text]="'Effective Date '"></app-label>
+          <app-date formControlName="EffectiveDate" placeholder="Select Date">
+          </app-date>
+          <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+          </app-input-error>
+        </div>
+      </div>
+      </div>
+
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col mb-6" style="width: 50vw;">
+          <app-label [for]="'Note'" [text]="'Notes'" class="label required"></app-label>
+          <app-textarea [value]="certificationForm.get('Notes')?.value || ''" type="text" formControlName="Notes" [placeholder]="'Enter Note'"
+            [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+          </app-textarea>
+          <app-input-error *ngIf="certificationForm.get('Notes')?.invalid || certificationForm.get('Notes')?.hasError('whitespaceOnly')" text="Notes Are Required Or Contains WhiteSpaces"></app-input-error>
+        </div>
+      </div>
+
+
+      <div class="flex flex-row flex-grow justify-between pt-12 px-12"  *ngIf="mode==='Add'">
+        <mat-checkbox formControlName="AddAnother">Add Another Certificate</mat-checkbox>
+
+            <app-button [spinner]="showSpinner" [disabled]="certificationForm.invalid || showSpinner || dateError" (clicked)="createNewCertification()"
+            type="button" size="sm"  text="Save">
+          </app-button>
+      </div>
+
+      <div class="flex flex-row-reverse px-12">
+          <app-button *ngIf="mode==='Edit'" [spinner]="showSpinner" [disabled]="certificationForm.invalid || showSpinner || dateError || hasInvalidSubRequirement()" (clicked)="updateCertification()"
+          type="button" size="sm"  text="Update">
+          </app-button>
+
+          <app-button  *ngIf="mode==='Copy'" [spinner]="showSpinner" [disabled]="certificationForm.invalid || showSpinner || dateError" (clicked)="createNewCertification()"
+          type="button" size="sm"  text="Copy">
+          </app-button>
+      </div>
+
+
+        </form>
+      </ng-container>
+
+<app-fly-panel-add-issuingauthority (refresh)="getCertifyingBodiesList()" *ngIf="addIA" (closed)="closeIAPanel()"></app-fly-panel-add-issuingauthority>

@@ -1,0 +1,13 @@
+  .w-56{
+    width: 16.5rem !important;
+  }
+
+  .multiline-tooltip{
+    white-space: pre-line;
+  }
+  
+  
+  ::ng-deep .mat-tooltip {
+    white-space: pre-line;
+  }
+

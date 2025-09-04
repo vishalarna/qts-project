@@ -1,0 +1,459 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+  <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="openConfirmDialog(confirmDialog)">
+  </app-button>
+
+  <div class="flex flex-row items-center space-x-4 w-full justify-between">
+    <h1>Add New {{("Procedure" | labelReplacement)| async}} Review</h1>
+    <div class="justify-between">
+      <app-button *ngIf="stepIndex === 25" type="button" variant="text" text="Cancel"
+        (clicked)="openConfirmDialog(confirmDialog)" style="margin-right: 2rem">
+      </app-button>
+      <app-button *ngIf="stepIndex === 0" type="button" text="Continue" [disabled]="procedureForm.invalid"
+        (clicked)="moveToEmployeeStep()">
+      </app-button>
+      <app-button *ngIf="stepIndex === 1" type="button" text="Continue"
+        (clicked)="moveToPublishStep()">
+      </app-button>
+      <app-button *ngIf="stepIndex === 2" type="button" text="Close" color="secondary"
+        (clicked)="openConfirmDialog(confirmDialog)"
+        class="ml-3 mr-3">
+      </app-button>
+      <app-button *ngIf="stepIndex === 2" type="button" text="Publish"
+        (clicked)="publishData()">
+      </app-button>
+    </div>
+  </div>
+</mat-toolbar>
+
+<mat-stepper #stepper [linear]="true" labelPosition="bottom"
+  [selectedIndex]="stepIndex"
+  (selectionChange)="selectedChanged($event)"
+  [orientation]="(stepperOrientation | async)!">
+  <!-- Change edit icon -->
+  <ng-template matStepperIcon="edit">
+    <app-icon icon="done"></app-icon>
+  </ng-template>
+
+  <mat-step label="{{('Procedure' | labelReplacement)| async}} Review Details" [completed]="procedureForm.valid">
+    <div class="flex w-full" style="justify-content: center">
+      <div style="width: 70%" class="flex flex-col">
+        <!-- Provider And ILA Section -->
+        <section class="flex flex-row border-gray-one pt-4 pb-4 rounded-sm">
+          <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 100%">
+            <span class="text-lg font-bold ml-2">Issuing Authority and {{("Procedure" | labelReplacement)| async}}</span>
+            <form [formGroup]="procedureForm">
+              <div class="flex flex-row mb-3">
+                <div class="flex flex-col float-left mb-6 w-full m-2">
+                  <app-label for="provider" text="Issuing Authority" class="label required"></app-label>
+
+                  <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                    <mat-select placeholder="Select Authority" formControlName="issueAuthorityId"
+                      class="appearance-none rounded border w-full px-4 py-2.5 align-item-end bg-white"
+                      (selectionChange)="selectAuthority($event.value)">
+                      <input matInput class="pt-3 pb-3 pl-3" type="text" formControlName="searchTxt"
+                        (keyup)="issuingAuthoritySearch()" placeholder="Enter Text to Search">
+                      <mat-option *ngFor="let i of authority_list" [value]="i" [hidden]="!i.active">
+                        {{ i.title }}
+                      </mat-option>
+                    </mat-select>
+                  </mat-form-field>
+
+                  <app-input-error *ngIf="noAuthFound" text="No Authority found"></app-input-error>
+                </div>
+
+                <div class="flex flex-col float-left mb-2 w-full m-2">
+                  <app-label for="ila" text="{{('Procedure' | labelReplacement)| async}}" class="label required"></app-label>
+                  <mat-form-field appearance="outline" class="text-sm dropdown w-full"
+                    [floatLabel]="isILALoading ? 'never' : 'auto'">
+
+                    <mat-select #selectControl formControlName="procedureId"
+                      (selectionChange)="selectProcedure($event.value)"
+                      [panelClass]="isILALoading ? 'hide-deferred-select-dummy-option' : ''"
+                      class="appearance-none rounded border  w-full px-4 py-2.5 align-item-end bg-white"
+                      placeholder="Select {{('Procedure' | labelReplacement)| async}}">
+
+                      <input matInput class="pt-3 pb-3 pl-3" type="text" formControlName="searchProcedureTxt"
+                        (keyup)="procedureSearch()" placeholder="Enter Text to Search">
+                      <mat-option *ngFor="let option of procedures_list" [value]="option" [hidden]="!option.active">
+                        {{ option.number + ' - ' + option.title }}
+                      </mat-option>
+
+                    </mat-select>
+                    <app-spinner *ngIf="isILALoading" class="spinner internal-spinner"></app-spinner>
+                  </mat-form-field>
+                  <app-input-error *ngIf="noILAFound" text="No {{('Procedure' | labelReplacement)| async}} found"></app-input-error>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+        <section class="flex flex-row border-gray-one pt-4 pb-4 rounded-sm">
+          <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 100%">
+            <span class="text-lg font-bold ml-2">{{("Procedure" | labelReplacement)| async}} Review Title</span>
+            <form [formGroup]="procedureForm">
+              <div class="">
+                <div class="flex flex-row mb-12">
+                  <div class="flex flex-col float-left mb-6 w-full m-2">
+                    <app-label for="reviewTitle" text="Enter Review Title:" class="label required"></app-label>
+                    <app-textbox formControlName="reviewTitle"></app-textbox>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Date and Time Section -->
+        <section class="flex flex-row border-gray-one pt-4 pb-4 rounded-sm">
+          <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 100%">
+            <span class="text-lg font-bold ml-2">Select Date & Time</span>
+            <form [formGroup]="procedureForm">
+              <div class="flex flex-row mb-1">
+                <div class="flex flex-col float-left mb-6 w-full m-2">
+                  <app-label for="startDate" text="Release Date" class="label required"></app-label>
+                  <app-date formControlName="startDate" [minDate]="todayDate"></app-date>
+                </div>
+                <div class="flex flex-col float-left mb-6 w-full m-2">
+                  <app-label for="startTime" text="Start Time" class="label required"></app-label>
+                  <mat-form-field appearance="outline">
+                    <input matInput type="time" formControlName="startTime" />
+                  </mat-form-field>
+                </div>
+                <div class="flex flex-col float-left mb-6 w-full m-2">
+                  <app-label for="endDate" text="Due Date" class="label required"></app-label>
+                  <app-date formControlName="endDate" [minDate]="todayDate"></app-date>
+                </div>
+                <div class="flex flex-col float-left mb-6 w-full m-2">
+                  <app-label for="endTime" text="End Time" class="label required"></app-label>
+                  <mat-form-field appearance="outline">
+                    <input matInput type="time" formControlName="endTime" />
+                  </mat-form-field>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Course Instruction Section -->
+        <section class="flex flex-row border-gray-one pt-4 pb-4 rounded-sm">
+          <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 100%">
+            <span class="text-lg font-bold ml-2">{{("Procedure" | labelReplacement)| async}} Review {{("Instruction" | labelReplacement)| async}}s</span>
+
+            <form [formGroup]="procedureForm">
+              <div class="flex flex-row mb-12">
+                <div class="flex flex-col float-left mb-6 w-full m-2">
+                  <div class="flex flex-row w-full">
+                    <div class="flex flex-col w-full">
+                      <ckeditor name="instructions" [editor]="editor" formControlName="courseInstruction">
+                      </ckeditor>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <section class="flex flex-row border-gray-one pt-4 pb-4 rounded-sm">
+          <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 100%">
+            <span class="text-lg font-bold ml-2">{{("Procedure" | labelReplacement)| async}} Review Acknowledgement</span>
+            <form [formGroup]="procedureForm">
+              <div class="flex flex-row mb-12">
+                <div class="flex flex-col float-left mb-6 w-full m-2">
+                  <div class="flex flex-row w-full">
+                    <div class="flex flex-col w-full">
+                      <span class="text-gray-400">{{("Employee" | labelReplacement)| async}} responses to {{("Procedure" | labelReplacement)| async}} Reviews
+                        are defaulted to True or False response </span>
+                      <ckeditor name="acknowledgements" [editor]="editor" formControlName="acknowledgement">
+                      </ckeditor>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+
+        <!-- Webinar section -->
+        <section class="flex flex-row border-gray-one pt-4 pb-4 rounded-sm">
+          <div class="flex flex-col bg-white mat-elevation-z3 p-4 ml-3" style="width: 100%">
+            <span class="text-lg font-bold ml-2">{{("Procedure" | labelReplacement)| async}} Hyperlinks & PDFs</span>
+
+            <form [formGroup]="procedureForm">
+              <div class="flex flex-row mb-12">
+                <div class="flex flex-col float-left mb-6 w-full m-2">
+                  <span class="text-gray-400">
+                    The hyperlinks and PDFs included below were included when creating the
+                    {{("Procedure" | labelReplacement)| async}} under {{("My Data" | labelReplacement)| async}} > {{("Procedure" | labelReplacement)| async}}s. To update the hyperlink or PDF
+                    information below edit this {{("Procedure" | labelReplacement)| async}} from the {{("My Data" | labelReplacement)| async}} > {{("Procedure" | labelReplacement)| async}}s page.
+                  </span>
+
+                  <div class="flex flex-row mb-3">
+                    <div class="flex flex-col float-left mb-6 w-full m-2">
+                      <app-label for="Procedure" text="{{('Procedure' | labelReplacement)| async}} Link" class="label"></app-label>
+                      <app-textbox formControlName="procedureLink"></app-textbox>
+                    </div>
+                    <div class="flex flex-col float-left mb-2 w-full m-2">
+                      <app-label for="PDF" text="PDF" class="label"></app-label>
+                      <app-textbox formControlName="procedureFileName"></app-textbox>
+                    </div>
+                  </div>
+                  <mat-checkbox formControlName="isEmployeeShowResponses" class="example-margin" >
+                    <p>
+                      Require {{("Employee" | labelReplacement)| async}}(s) to click on the link or PDF prior to showing the
+                      submission responses (True/False)
+                    </p>
+                  </mat-checkbox>
+                  <span class="text-gray-400">
+                    Selecting this option will ensure that the {{("Employee" | labelReplacement)| async}}s read the {{("Procedure" | labelReplacement)| async}} and
+                    simply do not click the responses. The {{("Employee" | labelReplacement)| async}}s will not be able to record
+                    their response in EMP until the hyperlink was clicked or the PDF was
+                    downloaded.
+                  </span>
+                </div>
+              </div>
+            </form>
+          </div>
+        </section>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step label="Assign {{('Employee' | labelReplacement)| async}}s">
+    <div class="flex w-full" style="justify-content: center">
+      <app-spinner *ngIf="!procedureReviewId"
+        class="spinner internal-spinner">
+      </app-spinner>
+
+      <div *ngIf="procedureReviewId" style="width: 70%" class="flex flex-col">
+        <div *ngIf="empDataSource" class="flex flex-col px-12 pb-12 mt-12">
+          <div *ngIf="selection.selected.length" class="rounded-t-md py-4 space-x-2">
+            <mat-toolbar class="h-28 app-toolbar-sticky w-full">
+              <div class="flex flex-row items-center space-x-4 w-full justify-between">
+                <span class="text-sm">
+                  {{ selection.selected.length }} {{("Employee" | labelReplacement)| async}} has been selected
+                </span>
+                <div class="flex flex-row space-x-4 m-3 text-sm float-right">
+                  <!-- <app-button color="secondary" text="Remove" size="sm"> </app-button> -->
+                  <app-button color="secondary" text="Remove {{('Employee' | labelReplacement)| async}}s" size="sm" icon="delete"
+                    (clicked)="openDialog(deleteDialog)" iconPosition="left">
+                  </app-button>
+                </div>
+              </div>
+            </mat-toolbar>
+          </div>
+          <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8">
+            <div class="m-3">
+              <app-button text="Add {{('Employee' | labelReplacement)| async}}" size="sm" icon="add" (clicked)="openFlyInPanelAddEmployee(editRoaster)"
+                iconPosition="left" class="float-right"></app-button>
+            </div>
+
+            <!-- search and buttons starts -->
+            <!-- table starts -->
+            <div class="flex-row bg-white-one rounded-b-md m-2 ">
+              <table mat-table [dataSource]="empDataSource" matSort style="width: 100%;">
+
+                <!-- Checkbox Column -->
+                <ng-container matColumnDef="index">
+                  <th mat-header-cell *matHeaderCellDef>
+                    <mat-checkbox (change)="$event ? toggleAllRows() : null"
+                      [checked]="selection.hasValue() && isAllSelected()"
+                      [indeterminate]="selection.hasValue() && !isAllSelected()" [aria-label]="checkboxLabel()">
+                    </mat-checkbox>
+                  </th>
+                  <td mat-cell *matCellDef="let row">
+                    <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+                      [checked]="selection.isSelected(row)" [aria-label]="checkboxLabel(row)">
+                    </mat-checkbox>
+                  </td>
+                </ng-container>
+
+                <ng-container matColumnDef="imageUrl">
+                  <th mat-header-cell *matHeaderCellDef> </th>
+                  <td mat-cell *matCellDef="let row"> <img style="border-radius: 50%;width: 50px;height: 50px;"
+                      class="img-fluid mr-2 mt-2 ml-2 mb-2" [src]="row.employeeImage"
+                      onerror="this.src='assets/img/ImageNotFound.jpg'"> </td>
+                </ng-container>
+                <!-- procedure Column -->
+                <ng-container matColumnDef="empName">
+                  <th mat-header-cell *matHeaderCellDef> Name </th>
+                  <td mat-cell *matCellDef="let row" class="cursor-pointer">
+
+                    <div id="container">
+                      <div id="1"> {{row.employeeName}} </div>
+                      <div id="2">
+                        <div class="box">
+                          {{row.employeeEmail}}
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                </ng-container>
+
+                <!-- title Column -->
+                <ng-container matColumnDef="position">
+                  <th mat-header-cell *matHeaderCellDef> {{("Position" | labelReplacement)| async}}</th>
+                  <td mat-cell *matCellDef="let element"> {{element.employeePosition}} </td>
+                </ng-container>
+
+                <!-- name Column -->
+                <ng-container matColumnDef="organization">
+                  <th mat-header-cell *matHeaderCellDef> Organization </th>
+                  <td mat-cell *matCellDef="let element"> {{element.employeeOrganization}} </td>
+                </ng-container>
+                <ng-container matColumnDef="action">
+                  <th mat-header-cell *matHeaderCellDef> </th>
+                  <td mat-cell *matCellDef="let element">
+                    <div class="flex flex-row items-center text-gray-four btn-group">
+                      <button mat-icon-button>
+                        <app-icon icon="delete"></app-icon>
+                      </button>
+                      <!-- </mat-menu> -->
+                    </div>
+                  </td>
+                </ng-container>
+
+                <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+                <tr mat-row *matRowDef="let row; columns: displayedColumns;" (click)="selection.toggle(row)">
+                </tr>
+              </table>
+
+              <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+                aria-label="Select page of periodic elements">
+              </mat-paginator>
+            </div>
+            <!-- table ends -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step label="Review and Publish">
+    <div class="flex w-full pt-4" style="justify-content: center">
+      <div style="width: 70%" class="flex flex-col">
+        <div class="border-gray-one border-0.5 bg-white-one rounded pb-4 pt-4 pl-16 pr-16">
+          <div class="flex flex-row justify-between">
+            <div class="flex flex-row justify-between mb-4">
+              <p>You are adding a new {{("Procedure" | labelReplacement)| async}} Review with the following Details:</p>
+            </div>
+            <p class="text-gray-400 ml-2"></p>
+          </div>
+          <table id="dataset">
+            <tr class="border-b-0.8 border-gray-one">
+              <td><span class="text-gray-400">Release Date/Time</span></td>
+              <td>
+                <span class="text-lg font-bold">
+                  {{releaseDateTime | date:'yyyy-MM-dd hh:mm a'}}
+                </span>
+              </td>
+            </tr>
+            <tr class="border-b-0.8 border-gray-one">
+              <td>
+                <span class="text-gray-400">Due Date/Time </span>
+              </td>
+              <td>
+                <span class="text-lg font-bold">
+                  {{dueDateTime | date:'yyyy-MM-dd hh:mm a'}}
+                </span>
+              </td>
+            </tr>
+
+            <tr class="border-b-0.8 border-gray-one">
+              <td>
+                <span class="text-gray-400">Total {{("Employee" | labelReplacement)| async}}s Enrolled</span>
+              </td>
+              <td>
+                <span class="text-lg font-bold">
+                  {{empDataSource.data.length}} {{("Employee" | labelReplacement)| async}}s
+                </span>
+              </td>
+            </tr>
+            <tr class="border-b-0.8 border-gray-one">
+              <td>
+                <span class="text-gray-400">{{("Procedure" | labelReplacement)| async}} Review Email Notification enabled</span>
+              </td>
+              <td>
+                <span class="text-lg font-bold">{{notificationEnabled ? "Yes" : "No"}}</span>
+              </td>
+            </tr>
+            <tr class="border-b-0.8 border-gray-one">
+              <td>
+                <span class="text-gray-400">{{("Instruction" | labelReplacement)| async}}s </span>
+              </td>
+              <td>
+                <div  class="text-lg font-bold" [innerHTML]="this.procedureReview?.procedureReviewInstructions"> </div>
+              </td>
+            </tr>
+            <tr class="border-b-0.8 border-gray-one">
+              <td>
+                <span class="text-gray-400">Acknowledgement </span>
+              </td>
+              <td>
+                <div  class="text-lg font-bold" [innerHTML]="this.procedureReview?.procedureReviewAcknowledgement"> </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </mat-step>
+</mat-stepper>
+
+<!-- <pre>{{procedureForm.value | json}}</pre> -->
+<ng-template #editRoaster>
+  <app-fly-panel-add-employee (closed)="flyPanelSrvc.close()">
+  </app-fly-panel-add-employee>
+</ng-template>
+
+<ng-template #deleteDialog>
+  <mat-dialog-content>
+    <!-- header starts here -->
+    <div class="flex flex-row justify-between items-center mt-2">
+      <p mat-dialog-title textContent="Remove {{('Employee' | labelReplacement)| async}}"></p>
+      <!-- <app-textbox mat-dialog-title [(ngModel)]="header" [disabled]="true"></app-textbox> -->
+      <app-button ButtonType='icon' icon="close" (clicked)="dialog.closeAll()"></app-button>
+    </div>
+    <hr class="mt-1 mb-8">
+    <!--  <app-textbox [(ngModel)]="description" [disabled]="true"></app-textbox> -->
+    <div class="flex flex-row justify-between mb-3" style="align-items: baseline;">
+      <span class="mt-3">{{("Employee" | labelReplacement)| async}}s Selected</span>
+      <span class="text-gray-400">{{selection.selected.length}}</span>
+    </div>
+    <div>
+      <mat-chip-list *ngFor="let emp of selection.selected">
+        <mat-chip>{{emp.employeeName}}</mat-chip>
+      </mat-chip-list>
+    </div>
+    <!--
+        <div class="flex flex-row justify-between" *ngFor="let o of oldOrg">
+            <p class="mt-3">Employees Selected</p>
+            <mat-chip-list [disabled]="true">
+                <mat-chip *ngFor="let item of filteredList">One fish</mat-chip>
+            </mat-chip-list>
+        </div> -->
+    <p class="mt-3">Are you sure you want to continue?</p>
+    <!-- header ends here -->
+  </mat-dialog-content>
+
+
+  <mat-dialog-actions class="flex flex-row justify-end">
+    <!-- (clicked)="confirm()"
+        (clicked)="cancel()" -->
+    <app-button type="button" (clicked)="dialog.closeAll()" color="grey" size="sm" class="mr-2">
+    </app-button>
+    <app-button type="button" (clicked)="removeEMP()" color="secondary" size="sm" text="Yes"
+      class="mr-2"></app-button>
+  </mat-dialog-actions>
+  <!-- <app-qtd-dialogue [header]="'Remove Employee'" [description]="" [confirmText]="'Yes'" [cancelText]="'No'"
+        (canceled)="dialog.closeAll()" [showEffectiveDateAndReason]="false"
+        (confirmed)="removeEMP()"></app-qtd-dialogue> -->
+</ng-template>
+
+<ng-template #confirmDialog>
+  <app-qtd-dialogue header="Disclaimer" [description]="confirmDialogDesc"
+    cancelText="No" confirmText="Yes" [showEffectiveDateAndReason]="false"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="saveChangesAndExit()">
+  </app-qtd-dialogue>
+</ng-template>

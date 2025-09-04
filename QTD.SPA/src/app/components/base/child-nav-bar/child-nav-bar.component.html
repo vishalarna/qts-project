@@ -1,0 +1,5 @@
+<tr *ngFor="let item of Data; let i = index;" >
+    <div class="data-panel flex flex-row" >
+    <app-link  [text]="item.title" [routerLink]="item.routePath"  customClasses="ml-2"></app-link>
+    </div>
+  </tr>

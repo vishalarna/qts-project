@@ -1,0 +1,82 @@
+<ng-container *ngIf="openPanel === 'main'">
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-bold text-gray-900">Add {{("Employee" | labelReplacement)| async}}s</p>
+    <app-button (click)="flyPanelSrvc.close()" ButtonType="icon" icon="close" ></app-button>
+  </div>
+
+  <div class="mt-4 flex flex-row justify-around px-2 w-100" *ngIf="selection.selected.length>0">  
+    <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded w-100">
+      <div class="flex flex-row w-full justify-between align-items-center" >
+        <p class="text-xs text-gray-four pt-2">
+          {{selection.selected.length + " " + ('Employee' | labelReplacement | async) + "(s) selected"}}
+        </p>
+        <app-button (clicked)="addEmployeeeToDifSurveyAsync()"  class="mb-2" type="button" color="secondary" size="sm" text="Add to Survey">
+        </app-button>
+      </div>
+    </div>
+  </div> 
+
+  <div class="flex flex-col px-12 pb-12">
+    <!-- search and buttons starts -->
+    <div class=" flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+      <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" ></path>
+      </svg>
+      <input  (input)="getSearchValue($event)" class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text" [value]="searchString" />
+      <div class="flex flex-row space-x-4 text-sm align-items-center">
+        <div *ngIf = "org != null || pos != null">
+          <div class="text-lg font-weight-bold pb-2">Filtered Applied</div>
+            <div *ngIf = "pos != null"><span class="font-weight-600 pr-2">{{("Position" | labelReplacement)| async}}:</span>{{pos?.name}}</div>
+            <div *ngIf = "org != null"><span class="font-weight-600 pr-2">{{("Organization" | labelReplacement)| async}}:</span>{{org?.name}}</div>
+        </div>
+        <app-button variant="text"  text="Clear Filters" customClasses="clear-icon-btn" class="ml-12 filter-icon" *ngIf="org != null || pos != null || searchString != ''" (clicked)="clearFilters()" icon="clear" iconPosition="left"></app-button>
+        <app-button color="secondary" text="Filters" size="sm" icon="filter_alt" iconPosition="left" (click)="openPanel = 'filter'"  >
+        </app-button>
+      </div>
+    </div>
+    <!-- search and button ends -->
+    <app-data-loader *ngIf="!employeeData"></app-data-loader>
+    <div *ngIf="employeeData" class="flex flex-col employee-list-data">
+      <mat-table matSort class="w-full" style="border-top: 0.8px solid #e1e5e4; width: 100%" mat-table [dataSource]="EmployeeDataSource" >
+        <ng-container matColumnDef="id">
+          <mat-header-cell *matHeaderCellDef  class="table-employee">
+            <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()" class="mr-3" ></mat-checkbox>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row" class="table-employee">
+            <mat-checkbox  *ngIf="!isLinked(row.id)" (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)" ></mat-checkbox>
+          <app-icon *ngIf="isLinked(row.id)" class="mr-2" style="color: rgb(92, 155, 49);" icon="link"></app-icon>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="allEmployee">
+          <mat-header-cell *matHeaderCellDef class="px-2">
+            <span class="font-bold text-gray-500 employee-header">All {{("Employee" | labelReplacement)| async}}s</span>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 ml-2 mb-2" [src]="row.person.image" onerror="this.src='assets/img/ImageNotFound.jpg'" />
+            <div [ngClass]="{'linked-row': isLinked(row.id)}">
+              <div class="font-bold  mb-1 employee-name">{{ row.person.firstName }} {{ row.person.lastName }}</div>
+              <div  [ngClass]="{'linked-row': isLinked(row.id)}" class="text-gray-500">{{ row.person.username }}</div>
+            </div>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row class="pl-2 pr-2" *matHeaderRowDef="displayedColumns"></mat-header-row>
+        <mat-row class="pr-2 pl-2" *matRowDef="let row; columns: displayedColumns" ></mat-row>
+
+        <tr class="no-data-mat-row flex text-center" *matNoDataRow>
+          <td class="mat-cell w-full m-2">No data to display</td>
+        </tr>
+      </mat-table>
+    </div>
+  </div>
+</ng-container>
+<ng-container *ngIf="openPanel === 'filter'">
+  <app-fly-in-filter-add-dif-survey-employees  
+  [selectedOrg]="org"
+  [selectedPos]="pos"
+  (orgSelected)="org = $event"
+  (posSelected)="pos = $event"
+  (setFilters)="filterByValues()"
+  (closed)="openPanel = 'main'"
+  ></app-fly-in-filter-add-dif-survey-employees>
+</ng-container>
+

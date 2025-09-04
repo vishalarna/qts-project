@@ -1,0 +1,93 @@
+<div class="nav-wrap">
+    <div class="container-fluid">
+        <div class="row nav-bar-inner-wrap">
+            <div class="navbrand-wrap col-md-6">
+                <div class="d-flex">
+                    <div class="back-icon" (click)="goBack()">
+                        <mat-icon>arrow_back_ios</mat-icon>
+                    </div>
+                    <h2 class="navbar-heading m-0">Preview</h2>
+                </div>
+            </div>
+            <div class="navbrand-wrap col-md-6">
+                <div class="d-flex justify-content-end align-items-center">
+                    <div class="px-4">
+                        <p class="navbar-date">Last edited today at {{currentTime}} by {{loggedInUser}}</p>
+                    </div>
+                    <app-button color="secondary" variant="outlined" (clicked)="onShareClick(true)" size="sm"
+                        class="mr-3" text="Share">
+                    </app-button>
+                    <app-button color="secondary" variant="outlined" (clicked)="onExportClick(true)" size="sm"
+                        class="mr-3" text="Export">
+                    </app-button>
+                    <app-button size="sm" class="mr-3" text="Print" (clicked)="onPrintClick()">
+                    </app-button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="report-summary-container-fluid">
+</div>
+<div class="report-summary-content-mid-wrapper" id="print-section" >
+    <div [innerHTML]="renderedHtml" ></div>
+</div>
+<div *ngIf="openSharePopup" class="modal-wrap">
+    <div class="modal-header">
+        <h4 class="modal-title">Share</h4>
+        <button type="button" class="close" aria-label="Close" (click)="onShareClick(false)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="d-flex align-items-center">
+            <label for="email" class="block text-gray-700 font-medium modal-header-label m-0" translate>Email Address
+                :</label>
+            <input type="email"  placeholder="Email Address" [(ngModel)]="emailAddress"  (ngModelChange)="onEmailAddressChange($event)"
+                class="text-base border h-5 px-4 py-6 w-75 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded" required>
+        </div>
+        <div class="d-flex align-items-center">
+            <label class="block text-gray-700 font-medium modal-header-label m-0" translate>Select Format :</label>
+            <select name="Export" id="Export" required (change)="onExportTypeChange($event)" style="margin: 20px 30px 0px 0;"
+                class="text-sm flex-grow text-gray-900 border-gray-one border-0.8 px-4 py-3 rounded focus:outline-none bg-white-one">
+                <option value="-1">Select</option>
+                <option value="2">Pdf</option>
+                <option value="1">Excel</option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <app-button [spinner]="shareSpinner" (clicked)="onShare()" size="sm" class="mr-3" text="Share">
+        </app-button>
+        <app-button color="secondary" variant="outlined" (clicked)="onShareClick(false)" size="sm" class="mr-3"
+            text="Close">
+        </app-button>
+    </div>
+</div>
+
+<div *ngIf="openExportPopup" class="modal-wrap">
+    <div class="modal-header">
+        <h4 class="modal-title">Export</h4>
+        <button type="button" class="close" aria-label="Close" (click)="onExportClick(false)">
+            <span aria-hidden="true">&times;</span>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div class="d-flex align-items-center">
+            <label class="block text-gray-700 font-medium m-0  modal-header-label" translate>Select Format :</label>
+            <select name="Export" id="Export" required (change)="onExportTypeChange($event)" 
+                class="text-sm flex-grow text-gray-900 border-gray-one border-0.8 px-4 py-3 rounded focus:outline-none bg-white-one">
+                <option value="-1">Select</option>
+                <option value="2">Pdf</option>
+                <option value="1">Excel</option>
+            </select>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <app-button [spinner]="exportSpinner" (clicked)="onExport()" [disabled]="isButtonDisabled" size="sm" class="mr-3 btn-spin" text="Export">
+        </app-button>
+        <app-button color="secondary" variant="outlined" (clicked)="onExportClick(false)" size="sm" class="mr-3"
+            text="Close">
+        </app-button>
+    </div>
+</div>

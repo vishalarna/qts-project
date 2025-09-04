@@ -1,0 +1,122 @@
+ 
+h3{
+    color: #7A807E;
+}
+ 
+#container {
+    display: flex;                  
+    flex-direction: row;            
+    flex-wrap: nowrap;              
+    justify-content: space-between;
+  }
+  #container > div {
+    width: auto;
+    height: 100%;
+  }
+ 
+  .d-flex{
+    display: flex;
+  }
+ 
+  .toggle-details{
+    padding-left:32px;
+  }
+ 
+  :host ::ng-deep .available-class-table mat-header-cell,:host ::ng-deep .available-class-table mat-cell{
+    padding:10px;
+  }
+ 
+  .spinner-class{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+ 
+  .info-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+ 
+  .info-table th,
+  .info-table td {
+    border: 1px solid #ccc;
+    padding: 8px 12px;
+    text-align: left;
+  }
+ 
+  .info-table th {
+    background: #f5f5f5;
+    width: 50%;
+  }
+ 
+  .sticky-header {
+    position: sticky;
+    top: 0;          
+    z-index: 100;      
+    background: #fff;  
+  }
+ 
+ :host ::ng-deep .action-button button{
+    padding: 5px 10px;
+  }
+
+  .selectedTab {
+  border: solid 1px #bdffb7 !important;
+  color: rgb(0, 0, 0);
+  background-color: #47bd781a;
+  cursor: default;
+}
+
+.pointerClass {
+  cursor: pointer;
+}
+
+:host ::ng-deep .highlight-event-date > div > span{
+    border: 1px solid rgb(0, 255, 0) !important;
+    border-radius: 4px;
+  }
+
+  .blueBg {
+    background-color: #345e951a !important;
+    border-color: #345e95;
+    border-radius: 5px;
+    border-width: 1px;
+  }
+  
+  .whiteBg {
+    background-color: white !important;
+  }
+
+  .blurBg {
+    color: #6b7280; 
+  }
+
+   .calender-width{
+    width: 90%;
+  }
+
+   :host ::ng-deep .cal-month-view .cal-day-cell {
+    min-height: 20px;
+    border-left: none;
+    border-right: none;
+    border-radius: 1rem;
+    width: 50%;
+  }
+
+  :host ::ng-deep .cal-month-view .cal-day-cell.cal-today {
+    background-color: white;
+  }
+  
+  :host ::ng-deep .cal-month-view .cal-cell-row .cal-cell:hover,
+  .cal-month-view .cal-cell.cal-has-events.cal-open {
+    background-color: white;
+  }
+
+  :host ::ng-deep .cal-month-view .cal-cell-row:hover {
+    background-color: white;
+  }
+
+  .infoLabel{
+    color: #09849f;
+    font-style: italic;
+  }

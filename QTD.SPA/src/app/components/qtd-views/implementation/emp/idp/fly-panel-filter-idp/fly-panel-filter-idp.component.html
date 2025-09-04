@@ -1,0 +1,177 @@
+<ng-container>
+  <div class="flex flex-col">
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">{{"Filters"}}
+      </p>
+      <app-icon (click)="closeFlyPanel()" class="cursor-pointer" icon="close"></app-icon>
+    </div>
+  </div>
+
+  <div class="items-center px-10 mt-2">
+    <form [formGroup]="IlaFilterForm">
+    <div class="flex flex-col px-2 py-3">
+      <app-label text="{{('ILA' | labelReplacement)| async}} Status"></app-label>
+      <mat-select formControlName="SelectedStatus" class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+        <mat-option [value]="1">
+          All
+        </mat-option>
+        <mat-option [value]="2">
+          Active
+        </mat-option>
+        <mat-option [value]="3">
+          Inactive
+        </mat-option>
+      </mat-select>
+    </div>
+
+    <div class="flex flex-col px-2 py-3">
+      <app-label text="Planned Date"></app-label>
+      <mat-select formControlName="plannedDate" #plannedDate class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+        <mat-option [value]="1">
+          No Planned Date
+        </mat-option>
+        <mat-option [value]="2" (click)="plannedDate.open();"  style="height:15vh">
+          <div class="flex flex-col">
+            <div>
+              <app-label text="Select Range"></app-label>
+            </div>
+
+
+            <div class="flex-flex-row mb-3" style="width:50%">
+              <app-date formControlName="plannedDateStart">
+
+              </app-date>
+              <span> - </span>
+              <app-date formControlName="plannedDateEnd">
+
+              </app-date>
+            </div>
+            <div>
+
+            </div>
+          </div>
+        </mat-option>
+
+      </mat-select>
+    </div>
+
+    <div class="flex flex-col px-2 py-3">
+      <app-label text="Start Date"></app-label>
+      <mat-select formControlName="startDate" #startDate class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+        <mat-option [value]="1">
+          No Start Date
+        </mat-option>
+        <mat-option [value]="2" (click)="startDate.open()" style="height:15vh">
+          <div class="flex flex-col">
+            <div>
+              <app-label text="Select Range"></app-label>
+            </div>
+
+
+            <div class="flex-flex-row mb-3" style="width:50%">
+              <app-date formControlName="startDateStart">
+
+              </app-date>
+              <span> - </span>
+              <app-date formControlName="endDateStart">
+
+              </app-date>
+            </div>
+            <div>
+
+            </div>
+          </div>
+        </mat-option>
+
+      </mat-select>
+    </div>
+
+    <div class="flex flex-col px-2 py-3">
+      <app-label text="Completed Date"></app-label>
+      <mat-select formControlName="EndDate" #endDate class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+        <mat-option [value]="1">
+          No Completed Date
+        </mat-option>
+        <mat-option [value]="2" (click)="endDate.open()" style="height:15vh">
+          <div class="flex flex-col">
+            <div>
+              <app-label text="Select Range"></app-label>
+            </div>
+
+
+            <div class="flex-flex-row mb-3" style="width:50%">
+              <app-date formControlName="startDateEnd">
+
+              </app-date >
+              <span> - </span>
+              <app-date formControlName="endDateEnd">
+
+              </app-date>
+            </div>
+            <div>
+
+            </div>
+          </div>
+        </mat-option>
+
+      </mat-select>
+    </div>
+
+    <div class="flex flex-col px-2 py-3">
+      <app-label text="Grade"></app-label>
+      <mat-select formControlName="selectedGrade" #select
+        class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+        <mat-option [value]="0">
+          All
+        </mat-option>
+        <mat-option [value]="1">
+          No Grades
+        </mat-option>
+        <mat-option [value]="2" (click)="select.open();innerSelect.open()">
+          Select Grades
+        </mat-option>
+
+      </mat-select>
+      <mat-select formControlName="selectedGradeOptions"  (closed)="select.close();select" class="innerCls w-full px-4 py-2.5 mt-2 align-item-end bg-white" style="color:white" #innerSelect
+        multiple placeholder="Select Grades">
+        <mat-option value="P">
+          P - Pass
+        </mat-option>
+        <mat-option value="F">
+          F - Fail
+        </mat-option>
+        <mat-option value="W">
+          W - Waived
+        </mat-option>
+        <mat-option value='O'>
+          O - Observed
+        </mat-option>
+      </mat-select>
+    </div>
+    <div class="flex flex-col px-2 py-3">
+      <app-label text="Self-Registration Enabled"></app-label>
+      <mat-select formControlName="IsSelfRegestrationEnabled" class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+        <mat-option [value]="0">
+          All
+        </mat-option>
+        <mat-option [value]="1">
+          Yes
+        </mat-option>
+        <mat-option [value]="2">
+          No
+        </mat-option>
+      </mat-select>
+
+    </div>
+
+    <div class="flex  px-2 py-3" style="float: right;">
+      <app-button  (clicked)="ApplyFiltersIlasTable()"
+      text="Apply Filter(s)" size="sm" ButtonType="button"></app-button>
+
+    </div>
+  </form>
+  </div>
+
+
+
+</ng-container>

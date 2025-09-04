@@ -1,0 +1,94 @@
+<app-spinner  *ngIf="DataSource === undefined"></app-spinner>
+<div *ngIf="DataSource !== undefined && showTool" class="p-4">
+  <div class="flex flex-row justify-between items-center px-3 mt-4">
+    <p class="text-xl font-bold text-gray-900">Import Existing Questions</p>
+    <app-button (clicked)="closed.emit('fp-edit-tools')" ButtonType='icon' icon="close">
+    </app-button>
+  </div>
+  <div class="flex flex-row items-center border-b-0.8 border-gray-one">
+    <div class="flex flex-grow">
+        <app-icon icon="search"></app-icon>
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+            (input)="filterData($event)">
+    </div>
+
+</div>
+
+<!--Heading ends-->
+
+<div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+
+    <div class="cursor-pointer">
+        <span> Showing:
+            <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+                <p *ngIf="showActive" class="font-bold">
+                    Active
+                </p>
+                <p *ngIf="!showActive" class="font-bold">
+                    Inactive
+                </p>
+
+            </label>
+            <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+        </span>
+
+        <mat-menu #menu="matMenu">
+            <label mat-menu-item *ngIf="!showActive" (click)="filterStatus(true)">
+                Active</label>
+
+            <label mat-menu-item *ngIf="showActive" (click)="filterStatus(false)">
+                Inactive</label>
+        </mat-menu>
+    </div>
+
+</div>
+  <div>
+    <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="unlinkIds.length > 0">
+      <div class="flex flex-row w-full justify-between mb-3">
+        <p class="text-xs text-gray-four pt-2">{{unlinkIds.length}} Questions selected</p>
+        <app-button [disabled]="spinner" [spinner]="spinner" class="mb-2" type="button" color="secondary" size="sm" (click)="ImportQuestionsToEvaluation()"
+          text="Import to Evaluation">
+        </app-button>
+      </div>
+    </div>
+    <mat-table [dataSource]="DataSource" matSort class="table-bordered ">
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef>
+         <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selectrow(row) : null"
+           [checked]="row.isLinked || selection.isSelected(row)" [disabled]="row.isLinked">
+          </mat-checkbox>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="questionId">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> ID
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{row.questionId}}
+           </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="stem">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Student Evaluation Question
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <div class="flex flex-row"
+          [innerHTML]="row.stem"
+          >
+           
+          </div>
+           </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+
+      <tr class="mat-row flex text-center " *matNoDataRow>
+        <td class="mat-cell w-full m-2">No data to display</td>
+      </tr>
+
+    </mat-table>
+  </div>
+</div>

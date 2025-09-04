@@ -1,0 +1,85 @@
+.form-check {
+  margin: 0 0 26px;
+  padding: 0;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 157%;
+  display: flex;
+  align-items: center;
+  letter-spacing: 0.1px;
+  color: #000D09;
+  flex-wrap: wrap;
+}
+.navbar-heading {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 160%;
+  letter-spacing: 0.15px;
+  color: #000D09;
+  padding: 0 0 20px 0;
+}
+.mat-paginator {
+  display: flex;
+  justify-content: flex-start;
+} 
+
+.filter-list-data{
+  margin-top: 1.125rem;
+  box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.10);
+  border-radius: 4px;
+  border: 0.5px solid #E1E5E4;
+  overflow: hidden;
+}
+
+:host ::ng-deep .filter-list-data .mat-header-cell:nth-child(1),
+  :host ::ng-deep .filter-list-data .mat-cell:nth-child(1) {
+    max-width: 50px;
+  }
+
+:host ::ng-deep .filter-list-data .mat-cell,:host ::ng-deep .filter-list-data .mat-header-cell {
+  padding: 1rem;
+}
+
+:host ::ng-deep .filter-list-data .mat-cell.no-data-cell{
+  flex: 1 1 100%;
+  max-width: unset;
+  border-bottom: none;
+}
+
+.save-btn-div {
+  display: flex;
+  justify-content: flex-end;
+  .save-filter-button {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 143%;
+    letter-spacing: 0.00938rem;
+    color: #fff;
+    padding: 0.75rem 1.87rem;
+  }
+}
+
+.filter-search-box{
+  display: flex;
+  justify-content: space-between;
+  border-bottom: 1px solid #e1e5e4;
+  input{
+    flex: 1 1 70%;
+  }
+
+}
+
+:host ::ng-deep.checkbox-label{
+  padding-top: 2rem;
+} 
+
+.warning-span{
+  padding-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.warning-color{
+  color: rgb(245, 53, 53);;
+}

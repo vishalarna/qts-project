@@ -1,0 +1,386 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Entities.Core
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .inner-table {
+        margin-left: 25px;
+        margin-right: 25px;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+@{
+    var taskQualificationData = Model.TaskQualifications.GroupBy(p => p.EmpId).Select(group => new
+    {
+        EmployeeId = group.Key,
+        TaskQualDataList = group.ToList()
+    }).ToList();
+}
+
+<table id="content-table" class="table" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !    important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center;word-break:break-word;width:60%;">
+                    <b style="display: block; color: #020378; font-weight: bold; font-size: 16px; text-align: center; margin-top: 8px;">@Model.Title </b>
+                </div>
+                <div><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+
+    @if (taskQualificationData.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{ int j = 1;}
+                @foreach (var taskQual in taskQualificationData)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            <tr>
+                                <td style="border: none !important; font-size: 1rem; padding: 10px">
+                                    <b>@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b>
+                                    <span style="font-size:0.8rem;margin-left:5px">@taskQual.TaskQualDataList.First()?.Employee?.Person?.LastName , @taskQual.TaskQualDataList.First()?.Employee?.Person?.FirstName </span>
+                                </td>
+                            </tr>
+                            @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                            {
+                                var posList = taskQual.TaskQualDataList.First().Employee?.EmployeePositions?
+                                                .Select(empPos => empPos.Position?.PositionTitle).ToList();
+
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px">
+                                        <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@(new RawString(string.Join(" , ", posList)))</span>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td style="border: 0; padding: 0" class="strip-container">
+                                    <table class="table">
+                                        <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                            @if (Model.DisplayColumns.Contains("Task Number"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;width:3%">
+                                                    Task #
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Task Description"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 35%">
+                                                    Task Desc
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Met Criteria"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 3%">
+                                                    Met Criteria
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Date"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 4%">
+                                                    Eval Date
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Evaluator"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 14%">
+                                                    Evaluator
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Evaluation Method"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 14%">
+                                                    Evaluation Method
+                                                </th>
+                                            }
+                                            @if (Model.DisplayColumns.Contains("Comments"))
+                                            {
+                                                <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 27%">
+                                                    Comments
+                                                </th>
+                                            }
+                                        </tr>
+                                        @foreach (var taskQualData in taskQual.TaskQualDataList.OrderBy(t => t.Task.FullNumber, new AlphaNumericSortHelper()))
+                                        {
+                                            <tr>
+                                                @if (Model.DisplayColumns.Contains("Task Number"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 3%">
+                                                        @taskQualData?.Task?.FullNumber
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Task Description"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: left; width: 35%">
+                                                        @taskQualData?.Task?.Description
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Met Criteria"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 3%">
+                                                        @(taskQualData?.CriteriaMet == true ? "Yes" : "No")
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Date"))
+                                                {
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 4%">
+                                                        @taskQualData?.TaskQualificationDate?.ToShortDateString()
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Evaluator"))
+                                                {
+                                                    var evaluatorList = taskQualData?.TaskQualification_Evaluator_Links.Select(m => $"{m.Evaluator?.Person?.FirstName}  {m.Evaluator?.Person?.LastName}").Distinct().ToList();
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 14%">
+                                                        @(new RawString(string.Join(" , ", evaluatorList)))
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Evaluation Method"))
+                                                {
+                                                    var topLevelEvaluationMethod = taskQualData?.EvaluationMethod?.Description;
+                                                    var signOffEvaluationMethods = taskQualData?.TaskReQualificationEmp_SignOff.Select(m => m.EvaluationMethod?.Description).Where(description => !string.IsNullOrEmpty(description)).Distinct();
+
+                                                    var allEvaluationMethods = new HashSet<string>();
+
+                                                    if (!string.IsNullOrEmpty(topLevelEvaluationMethod))
+                                                    {
+                                                        allEvaluationMethods.Add(topLevelEvaluationMethod);
+                                                    }
+
+                                                    if (signOffEvaluationMethods != null)
+                                                    {
+                                                        foreach (var method in signOffEvaluationMethods)
+                                                        {
+                                                            allEvaluationMethods.Add(method);
+                                                        }
+                                                    }
+
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 14%">
+                                                        @(new RawString(string.Join(" , ", allEvaluationMethods)))
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Comments"))
+                                                {
+                                                    var ojtPopulate = taskQualData?.ClassSchedule?.ClassSchedule_Employee.Where(m => m.EmployeeId == taskQual.EmployeeId)?.FirstOrDefault()?.PopulateOJTRecord ?? false;
+                                                    var ila = taskQualData?.ClassSchedule?.ILA;
+                                                    var topLevelComments = taskQualData?.Comments;
+                                                    var signOffComments = taskQualData?.TaskReQualificationEmp_SignOff.Select(m => m.Comments).Where(c => !string.IsNullOrEmpty(c)).ToList() ?? new List<string>();
+
+                                                    var allComments = new List<string>();
+
+                                                    if (!string.IsNullOrEmpty(topLevelComments))
+                                                    {
+                                                        allComments.Add(topLevelComments);
+                                                    }
+
+                                                    allComments.AddRange(signOffComments);
+
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 27%">
+                                                        @if (ojtPopulate)
+                                                        {
+                                                            @(ila != null ? $"{ila.Number} - {ila.Name}" : "")
+                                                        }
+                                                        
+                                                        @(new RawString(string.Join("\n", allComments)))
+                                                    </td>
+                                                }
+
+                                            </tr>
+
+                                            <tr>
+                                                <td style="border: 0; padding: 0;padding-top:8px" class="strip-container" colspan="10">
+                                                    @{
+                                                        var allTaskSteps = taskQualData?.Task?.Task_Steps.OrderBy(m => m.Number)?.Concat(taskQualData?.Task?.Task_MetaTask_Links?.SelectMany(mtl => mtl?.Task?.Task_Steps)).ToList();
+                                                        var anyTaskSteps = taskQualData.TaskQualification_Evaluator_Links.Any(evalLink =>
+                                                            allTaskSteps.Any(step =>
+                                                                taskQualData?.TaskReQualificationEmp_Steps?.Any(qs => qs?.TaskStepId == step?.Id && qs?.EvaluatorId == evalLink?.EvaluatorId) == true
+                                                            )
+                                                        );
+                                                    }
+                                                    @if (anyTaskSteps)
+                                                    {
+                                                        <table class="inner-table">
+                                                            <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                                @if (Model.DisplayColumns.Contains("Step Met"))
+                                                                {
+                                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 3% ">
+                                                                        Met
+                                                                    </th>
+                                                                }
+                                                                @if (Model.DisplayColumns.Contains("Step #"))
+                                                                {
+                                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 8%">
+                                                                        Step #
+                                                                    </th>
+                                                                }
+                                                                @if (Model.DisplayColumns.Contains("Step/Sub-Step"))
+                                                                {
+                                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 45%">
+                                                                        Step/Sub-Step
+                                                                    </th>
+                                                                }
+                                                                @if (Model.DisplayColumns.Contains("Step Qualification Date"))
+                                                                {
+                                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 10%">
+                                                                        Step Qualification Date
+                                                                    </th>
+                                                                }
+                                                                @if (Model.DisplayColumns.Contains("Step Evaluator"))
+                                                                {
+                                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;">
+                                                                        Step Evaluator
+                                                                    </th>
+                                                                }
+                                                                @if (Model.DisplayColumns.Contains("Step Comments"))
+                                                                {
+                                                                    <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: center; border-right: 1px solid #000; vertical-align: bottom; padding: 5px; width: 24%">
+                                                                        Step Comments
+                                                                    </th>
+                                                                }
+                                                            </tr>
+
+                                                            @foreach (var evalLink in taskQualData.TaskQualification_Evaluator_Links)
+                                                            {
+                                                                var k = 1;
+                                                                @foreach (var step in allTaskSteps)
+                                                                {
+                                                                    var qualStep = taskQualData?.TaskReQualificationEmp_Steps?.FirstOrDefault(qs => qs?.TaskStepId == step?.Id && qs?.EvaluatorId == evalLink?.EvaluatorId);
+                                                                    <tr>
+                                                                        @if (Model.DisplayColumns.Contains("Step Met"))
+                                                                        {
+                                                                            <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 3% ">
+                                                                                <input type="checkbox" disabled checked="@qualStep?.IsCompleted" />
+                                                                            </td>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Step #"))
+                                                                        {
+                                                                            <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 8%">
+                                                                                @taskQualData?.Task?.FullNumber.@k
+                                                                            </td>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Step/Sub-Step"))
+                                                                        {
+                                                                            <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 45%">
+                                                                                @(new RawString(step?.Description))
+                                                                            </td>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Step Qualification Date"))
+                                                                        {
+                                                                            <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 10%">
+                                                                                @(qualStep != null && qualStep.IsCompleted ? qualStep?.CommentDate.ToShortDateString() : "")
+                                                                            </td>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Step Evaluator"))
+                                                                        {
+                                                                            <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 10%">
+                                                                                @evalLink?.Evaluator?.Person?.LastName , @evalLink?.Evaluator?.Person?.FirstName
+                                                                            </td>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Step Comments"))
+                                                                        {
+                                                                            <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 24%">
+                                                                                @(new RawString(qualStep?.Comments))
+                                                                            </td>
+                                                                        }
+                                                                    </tr>
+                                                                    @{ k++;}
+                                                                }
+                                                            }
+
+                                                        </table>
+                                                    }
+                                                    else
+                                                    {
+                                                        <div style="color: red; text-align: center; font-style: italic; ">No Steps available for Task</div>
+                                                    }
+                                                </td>
+                                            </tr>
+
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                    @if (!taskQual.Equals(taskQualificationData.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{j++;}
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= taskQualificationData.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

@@ -1,0 +1,112 @@
+<div class="flex flex-row justify-between items-center px-12 mb-3">
+    <div class="flex flex-row">
+        <button type="button" (click)="getOrganizationList()" class="focus:outline-none" *ngIf="!showlistOrganization">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7">
+                </path>
+            </svg>
+        </button>
+        <h1 class="text-lg font-medium text-gray-900">{{orgHeader}}</h1>
+    </div>
+
+    <button type="button" class="focus:outline-none" (click)="flyInPanelSrvc.close()" *ngIf="showlistOrganization">
+        <svg class="w-7 h-7 stroke-current text-gray-four" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </button>
+    <button type="button" class="focus:outline-none" (click)="getOrganizationList()" *ngIf="!showlistOrganization">
+        <svg class="w-7 h-7 stroke-current text-gray-four" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+    </button>
+</div>
+<ng-container *ngIf="showlistOrganization">
+    <!-- search starts here -->
+    <div class="flex flex-row items-center pb-2 border-b-0.8 mx-12 border-gray-one">
+        <svg class="w-4 h-4 mr-2 stroke-current text-gray-four " fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+            (keyup)="filterOrganziations($event)">
+    </div>
+    <!-- search starts ends -->
+
+    <!-- sub-header starts here -->
+    <div class="flex flex-row items-center px-12">
+        <div class="flex-grow space-y-1">
+            <div class="flex flex-row items-center text-gray-four">
+                <p class="text-xs mr-2">Sort by Category (A - Z)</p>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                </svg>
+            </div>
+        </div>
+
+        <div class="flex flex-row items-center text-green-one">
+            <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6">
+                </path>
+            </svg>
+            <button class="font-medium text-xs xl:text-sm" (click)="addOrganization()">Add
+                new
+                Organization
+            </button>
+        </div>
+    </div>
+    <!-- sub-header ends here -->
+
+    <!-- list starts here -->
+    <div class="flex flex-col text-sm">
+        <div class="py-6 border-b-0.8 border-gray-one px-12 hover:bg-white-three flex flex-row justify-between"
+            *ngFor="let item of listOrganization">
+            <div class="flex flex-nowrap items-center">
+                <input type="checkbox" class="mr-3 bg-green-300">
+                <p>{{item.name}}</p>
+            </div>
+            <div class="flex flex-row items-center text-gray-four">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                    <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu" class="p-2">
+                    <label mat-menu-item translate (click)="editOrganization(item)">L.Edit</label>
+                    <label mat-menu-item translate (click)="deleteOrganization(item.id)">L.Delete</label>
+                </mat-menu>
+            </div>
+        </div>
+    </div>
+    <!-- list ends here -->
+</ng-container>
+<ng-container *ngIf="!showlistOrganization">
+
+    <!-- form starts here -->
+    <form class="block text-sm px-6">
+        <div class="mt-12">
+            <label class="inline-block text-gray-500" for="organization name">Organization
+                name</label>
+            <input aria-label="organization name" type="text" placeholder="Enter organization name" name="organization"
+                [(ngModel)]="orgName" *ngIf="orgHeader.startsWith('Add')"
+                class="border w-full h-5 px-4 py-5 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded">
+
+            <input aria-label="organization name" type="text" placeholder="Enter organization name" name="organization"
+                [(ngModel)]="OrgUpdateOpt.name" *ngIf="orgHeader.startsWith('Edit')"
+                class="border w-full h-5 px-4 py-5 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded">
+        </div>
+        <div class="flex justify-between mt-6">
+            <button type="button" class="focus:outline-none" (click)="getOrganizationList()">Cancel</button>
+            <button type="button" class="focus:outline-none btn-icon-secondary" *ngIf="orgHeader.startsWith('Add')"
+                (click)="createNewOrganization()">Add
+                Organization</button>
+            <button type="button" class="focus:outline-none btn-icon-secondary" *ngIf="orgHeader.startsWith('Edit')"
+                (click)="updateOrganization()">Update
+                Organization</button>
+        </div>
+    </form>
+    <!-- form ends here -->
+</ng-container>

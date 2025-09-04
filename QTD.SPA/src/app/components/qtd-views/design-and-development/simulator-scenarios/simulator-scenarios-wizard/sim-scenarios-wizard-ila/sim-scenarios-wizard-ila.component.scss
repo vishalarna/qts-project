@@ -1,0 +1,26 @@
+.add-requisites-button {
+    display: flex;
+    align-items: center;
+    color: #5c9b31;
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 143%;
+    letter-spacing: 0.00938rem;
+  }
+
+  :host::ng-deep .disabled-pointer {
+    pointer-events: none;
+    filter: grayscale(100%) brightness(80%) contrast(90%);
+    opacity: 0.8;
+  }
+
+  .table-list {
+    margin-top: 1.125rem;
+    border-radius: 4px;
+    border: 0.5px solid #E1E5E4;
+    overflow: hidden;
+  }
+
+  mat-toolbar.h-100-important {
+    height: 100% !important;
+  }

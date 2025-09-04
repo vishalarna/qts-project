@@ -1,0 +1,35 @@
+﻿<div class="alert alert-warning">
+    <form asp-controller="Clients" asp-action="Create" method="post">
+        <label>Client Name</label>
+        <input type="text" class="form-control" name="Name" />
+        <br />
+        <input type="submit" />
+    </form>   
+</div>
+
+<table class="table table-striped" id="clients-table">
+    <thead>
+        <tr>
+            <th>Client Name</th>
+            <th>Create Database</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+@section Scripts
+{
+    <script>
+        // prabhu - you can remove this, this is just for my testing.
+        $(document).ready(function () {
+            $.get('@Url.Action("Get", "Clients")', function (data) {
+
+                $('#clients-table tbody').empty();
+
+                $.each(data, function (i, item) {
+                    $('#clients-table tbody').append(`<tr><td><a href="@Url.Action("Client", "Clients")?name=${item.name}">${item.name}</a></td><td><form action="@Url.Action("CreateDatabase", "Clients")" method="post"><input type="hidden" name="Name" value="${item.name}" /> <input type="submit" value="Create Database" /> </form></td></tr>`)
+                })
+            });
+        });
+    </script>
+}

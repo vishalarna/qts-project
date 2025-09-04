@@ -1,0 +1,165 @@
+[
+ {
+  "ID": 1,
+  "SubCategoryID": 1,
+  "Title": "Transmission and Distribution Systems",
+  "Number": 1
+ },
+ {
+  "ID": 2,
+  "SubCategoryID": 1,
+  "Title": "Substations",
+  "Number": 2
+ },
+ {
+  "ID": 3,
+  "SubCategoryID": 1,
+  "Title": "Power System Loads",
+  "Number": 3
+ },
+ {
+  "ID": 4,
+  "SubCategoryID": 2,
+  "Title": "Components and Construction of AC Overhead Lines",
+  "Number": 1
+ },
+ {
+  "ID": 5,
+  "SubCategoryID": 2,
+  "Title": "Components and Construction of Underground Cables",
+  "Number": 2
+ },
+ {
+  "ID": 6,
+  "SubCategoryID": 2,
+  "Title": "Electrical Characteristics of AC Transmission Lines",
+  "Number": 3
+ },
+ {
+  "ID": 7,
+  "SubCategoryID": 3,
+  "Title": "General Concepts and Principles",
+  "Number": 1
+ },
+ {
+  "ID": 8,
+  "SubCategoryID": 3,
+  "Title": "Circuit Switchers",
+  "Number": 2
+ },
+ {
+  "ID": 9,
+  "SubCategoryID": 3,
+  "Title": "Disconnects and Disconnect Switches",
+  "Number": 3
+ },
+ {
+  "ID": 10,
+  "SubCategoryID": 4,
+  "Title": "The Generator",
+  "Number": 1
+ },
+ {
+  "ID": 11,
+  "SubCategoryID": 4,
+  "Title": "Power System Stabilizer",
+  "Number": 2
+ },
+ {
+  "ID": 12,
+  "SubCategoryID": 4,
+  "Title": "The Turbine",
+  "Number": 3
+ },
+ {
+  "ID": 13,
+  "SubCategoryID": 5,
+  "Title": "Basic Principles",
+  "Number": 1
+ },
+ {
+  "ID": 14,
+  "SubCategoryID": 5,
+  "Title": "Components of a Fossil Plant",
+  "Number": 2
+ },
+ {
+  "ID": 15,
+  "SubCategoryID": 6,
+  "Title": "Boiling Water Reactors",
+  "Number": 1
+ },
+ {
+  "ID": 16,
+  "SubCategoryID": 6,
+  "Title": "Basic Physics of Nuclear Energy",
+  "Number": 2
+ },
+ {
+  "ID": 17,
+  "SubCategoryID": 7,
+  "Title": "Hydro Units and Reservoirs",
+  "Number": 1
+ },
+ {
+  "ID": 18,
+  "SubCategoryID": 7,
+  "Title": "Run-of-the-River Units",
+  "Number": 2
+ },
+ {
+  "ID": 19,
+  "SubCategoryID": 7,
+  "Title": "Pumped Storage Units",
+  "Number": 3
+ },
+ {
+  "ID": 20,
+  "SubCategoryID": 8,
+  "Title": "Principles of Relay Protection",
+  "Number": 1
+ },
+ 
+ {
+  "ID": 22,
+  "SubCategoryID": 8,
+  "Title": "Types of Relays",
+  "Number": 3
+ },
+ {
+  "ID": 23,
+  "SubCategoryID": 9,
+  "Title": "Transmission Lines",
+  "Number": 1
+ },
+ {
+  "ID": 24,
+  "SubCategoryID": 9,
+  "Title": "Transformer Protection ",
+  "Number": 2
+ },
+ {
+  "ID": 25,
+  "SubCategoryID": 9,
+  "Title": "Bus Protection",
+  "Number": 3
+ },
+ {
+  "ID": 26,
+  "SubCategoryID": 10,
+  "Title": "System Underfrequency Protection (UFLS)",
+  "Number": 1
+ },
+ {
+  "ID": 27,
+  "SubCategoryID": 10,
+  "Title": "Undervoltage Load Shedding Schemes (UVLS)",
+  "Number": 2
+ },
+ {
+  "ID": 28,
+  "SubCategoryID": 10,
+  "Title": "Remedial Action Schemes (RAS)",
+  "Number": 3
+ }
+]

@@ -1,0 +1,22 @@
+
+
+.radio-filter-options {
+  display: flex;
+  flex-direction: column;
+}
+
+.container-spacing{
+  padding: 1.5rem 1.5rem 1.5rem 3rem;
+}
+
+.non-clickable {
+  pointer-events: none; 
+  opacity: 0.5; 
+}
+
+.filter-spinner{
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

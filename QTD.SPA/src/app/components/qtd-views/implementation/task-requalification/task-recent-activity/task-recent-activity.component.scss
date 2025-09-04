@@ -1,0 +1,36 @@
+.initial{
+  background-color: #EEF7FF;
+  color: #4D4D4D;
+}
+
+.overdue{
+  background-color: #EEF7FF;
+  color: #FF6F6F;
+}
+
+.common{
+  width: 65%;
+}
+
+:host ::ng-deep .mat-row{
+  vertical-align: top;
+}
+
+:host ::ng-deep .mat-cell{
+  padding: 1rem 0rem 1rem 1rem;
+}
+
+.mat-header-cell{
+  padding-left:1rem;
+  padding-top: 1rem;
+}
+
+.label_style:hover {
+  background-color: #5c9b31;
+  color: white;
+}
+
+:host ::ng-deep .tq-comments p{
+  display: inline;
+  margin:0;
+}

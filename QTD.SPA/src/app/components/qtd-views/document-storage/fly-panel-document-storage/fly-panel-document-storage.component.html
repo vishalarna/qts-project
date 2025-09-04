@@ -1,0 +1,170 @@
+<div class="row m-0">
+  <div class="flex w-full" style="justify-content: center">
+    <div style="width: 100%" class="flex flex-col design-general">
+      <form
+        class="flex flex-row border-gray-one pt-0 pb-4 rounded-sm"
+        [formGroup]="documentStorageForm"
+      >
+      <div class="flex flex-col bg-white p-4 pl-0" style="width: 100%">
+          <div class="panel-heading d-flex">
+            <span *ngIf="documentDisplayMode === modes.Add"
+              >Add New Document</span
+            >
+            <span *ngIf="documentDisplayMode === modes.Edit"
+              >Edit Document</span
+            >
+            <span *ngIf="documentDisplayMode === modes.View"
+              >View Document</span
+            >
+            <app-button
+              (click)="closeClick()"
+              ButtonType="icon"
+              icon="close"
+            ></app-button>
+          </div>
+
+          <div class="flex flex-column align-items-center mt-4">
+            <app-label
+              text="Upload Document"
+              class="text-gray-300 company-text"
+            ></app-label>
+            <div class="flex flex-col float-left mb-6 w-full input-length">
+              <div
+                draggable="true"
+                ngClass="{{ dragAreaClass }}"
+                *ngIf="!isFileAttached"
+              >
+                <div class="drag-area text-center">
+                  <div class="cloud-upload-input">
+                    <mat-icon>cloud_upload</mat-icon>
+                    <div class="drag-caption flex-column">
+                      <a href="javascript:void(0)" (click)="file.click()"
+                        >&nbsp; Choose file to upload
+                      </a>
+                      <p class="mb-0">or</p>
+                      Drag and Drop your file here
+                    </div>
+                  </div>
+                  <input
+                    type="file"
+                    #file
+                    [multiple]="false"
+                    (change)="onFileChange($event)"
+                    style="display: none"
+                  />
+                  <img class="genral-setting-img-upload" />
+                </div>
+              </div>
+              <div *ngIf="isFileAttached" class="file-uploaded-div">
+                <mat-icon>description</mat-icon>
+                <span>{{
+                  documentDisplayMode == modes.Add
+                    ? attachedDocument.fileName
+                    : document.fileName
+                }}</span>
+              </div>
+              <div class="error" *ngIf="error">
+                {{ this.error }}
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-column align-items-center">
+            <app-label
+              text="Document Type"
+              class="text-gray-300 company-text"
+            ></app-label>
+            <div class="flex flex-col float-left mb-6 w-full">
+              <div class="d-flex align-items-center select-flexdata">
+                <mat-select
+                  formControlName="documentType"
+                  placeholder="Select Document Type"
+                  class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+                  (selectionChange)="documentTypeClick($event.value)"
+                >
+                  <mat-option *ngFor="let d of documentTypes" [value]="d.id">{{
+                    d.name
+                  }}</mat-option>
+                </mat-select>
+              </div>
+            </div>
+          </div>
+          <div class="panel-spin" *ngIf="spinner">
+            <app-spinner *ngIf="spinner" color="rgb(92, 155, 49)" class="items-center"></app-spinner>
+          </div>
+        <div *ngIf="!hasInputLinkedData && (documentDisplayMode === modes.Add || (documentDisplayMode === modes.Edit && editedLinkedData))">
+          <app-tree-item-selector
+            *ngIf="linkToDataTreeItem"
+            [inputTreeItem]="linkToDataTreeItem"
+            [handleTreeItemSelection]="handleLinkToDataSelected"
+            [parentDataChangedEventEmitter]="documentTypeChanged"
+          ></app-tree-item-selector>
+        </div>
+        <div class="flex align-items-end" *ngIf="hasInputLinkedData || documentDisplayMode === modes.View || (documentDisplayMode === modes.Edit && !editedLinkedData)">
+          
+          <div class="pr-3">
+            <app-label
+            text="Linked Data"
+            class="text-gray-300 company-text"
+          ></app-label>
+            <input type="text"
+              class="form-control resize-none"
+              formControlName="linkedDataName"
+            >
+          </div>
+            <app-button
+              *ngIf="!hasInputLinkedData && documentDisplayMode === modes.Edit"
+              color="secondary"
+              (clicked)="editLinkedData()"
+              size="md"
+              text="Change Linked Data"
+              class="save-btn mr-2"
+              customClasses="disabled-pointer"
+            >
+            </app-button>
+          </div>
+          <div class="flex flex-column align-items-center mt-3">
+            <app-label
+              text="Comments (Optional)"
+              class="text-gray-300 company-text"
+            ></app-label>
+            <div class="flex flex-col float-left mb-6 w-full">
+              <textarea
+                class="form-control resize-none"
+                formControlName="comments"
+              >
+              </textarea>
+            </div>
+          </div>
+          <div class="flex flex-row justify-content-end gap-2 mt-5">
+            <app-button
+              *ngIf="documentDisplayMode !== modes.View"
+              type="submit"
+              [disabled]="documentStorageForm.invalid || !isFileAttached || !isLinkedToData || saveSpinner"
+              color="primary"
+              [spinner]="saveSpinner"
+              (clicked)="saveClick($event)"
+              size="md"
+              text="Save"
+              class="save-btn mr-2"
+              customClasses="disabled-pointer"
+            >
+            </app-button>
+            <app-button
+              *ngIf="documentDisplayMode === modes.Add"
+              [disabled]="documentStorageForm.invalid || !isFileAttached || !isLinkedToData || saveAndNewSpinner"
+              type="submit"
+              color="secondary"
+              [spinner]="saveAndNewSpinner"
+              (clicked)="saveAndAddNewClick($event)"
+              size="md"
+              text="Save & Add New"
+              class="save-btn"
+              customClasses="disabled-pointer"
+            >
+            </app-button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

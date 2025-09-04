@@ -1,0 +1,56 @@
+[
+  {
+    "Id": 1,
+    "Name": "Annual Training Program Reviews",
+    "LinkedDataType": "TrainingPrograms",
+    "DocumentTypeId": 1
+  },
+  {
+    "Id": 2,
+    "Name": "Employee Details",
+    "LinkedDataType": "Employees",
+    "DocumentTypeId": 2
+  },
+  {
+    "Id": 3,
+    "Name": "DIF Survey",
+    "LinkedDataType": "Positions",
+    "DocumentTypeId": 3
+  },
+  {
+    "Id": 4,
+    "Name": "OJT",
+    "LinkedDataType": "Employees",
+    "DocumentTypeId": 5
+  },
+  {
+    "Id": 5,
+    "Name": "Other Employee Course Completion Info",
+    "LinkedDataType": "Employees",
+    "DocumentTypeId": 5
+  },
+  {
+    "Id": 6,
+    "Name": "Sign In Sheet",
+    "LinkedDataType": "ILAs",
+    "DocumentTypeId": 6
+  },
+  {
+    "Id": 7,
+    "Name": "Student Evaluation",
+    "LinkedDataType": "ILAs",
+    "DocumentTypeId": 7
+  },
+  {
+    "Id": 8,
+    "Name": "Task Qualification",
+    "LinkedDataType": "Employees",
+    "DocumentTypeId": 8
+  },
+  {
+    "Id": 9,
+    "Name": "Test",
+    "LinkedDataType": "Employees",
+    "DocumentTypeId": 9
+  }
+]

@@ -1,0 +1,36 @@
+.back-icon {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background: rgba(92, 155, 49, 0.11);
+    box-shadow: 0px 0px 30px rgb(122 128 126 / 10%);
+    border-radius: 100px;
+    text-align: center;
+    line-height: 40px;
+    color: #5C9B31;
+  
+  
+  }
+  
+  .back-icon mat-icon {
+    font-size: 16px;
+    width: 10px;
+    line-height: inherit;
+  }
+
+  .nav-wrap {
+    background-color: #fff;
+    box-shadow: 0px 0px 30px 0px #7A807E1A;
+    padding: 0.9rem 0;
+  }
+  
+  .navbar-heading{
+    padding: 0 0 0 1rem;
+  }
+  .ceh-table-spacing{
+    margin-top: 3rem;
+  }
+  .ceh-table-spacing .mat-header-row{
+    background-color: rgb(219 219 219);
+  }
+  

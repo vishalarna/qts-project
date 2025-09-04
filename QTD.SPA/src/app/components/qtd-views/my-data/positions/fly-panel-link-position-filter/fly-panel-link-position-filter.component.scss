@@ -1,0 +1,32 @@
+.panel-header {
+  color: #000;
+}
+.form-option-wrapper {
+  display: flex;
+  margin: 1rem 0rem;
+  column-gap: 1.2rem;
+  & > div {
+    width: 100%;
+    label.report-comp-section-label {
+      font-size: 15px;
+      font-weight: 500;
+    }
+  }
+}
+
+.btn-select{
+  width:12%;
+  float:right;
+}
+
+.btn{
+  position: absolute;
+  right: 16px;
+  top: 0px;
+  padding: 0;
+  background: #fff;
+}
+.mat-icon{
+  font-size: 18px;
+}
+

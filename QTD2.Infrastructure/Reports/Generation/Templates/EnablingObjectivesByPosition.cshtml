@@ -1,0 +1,231 @@
+﻿@using QTD2.Domain.Entities.Core
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse; width:98%;margin:auto;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.PositionEOsOptions.Count() > 0)
+    {
+        <tr>
+            <td style="border:none;padding-top:0;" class="strip-container">
+                @{
+                    int j = 1;
+                }
+                @foreach (var positionEO in Model.PositionEOsOptions.Where(m => m.EnablingObjectives.Count() > 0))
+                {
+                    var position = positionEO.Position;
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table>
+                            <tr>
+                                <td style="border: none !important; font-size:24px;" colspan="12">
+                                    <div style="display:flex">
+                                        <span style="flex:1 1 70%">
+                                            <b style="display:block">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s: @position.PositionTitle (@position.PositionAbbreviation)</b>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            @{
+                                var allEoList = new List<EnablingObjective>();
+                                if (Model.IncludeObjectives.Contains(1))
+                                {
+                                    var eos = positionEO.EnablingObjectives.Where(x => x.IsSkillQualification==false && x.isMetaEO==false).ToList();
+                                    allEoList.AddRange(eos);
+                                }
+                                if (Model.IncludeObjectives.Contains(2))
+                                {
+                                    var metaEos = positionEO.EnablingObjectives.Where(x => x.isMetaEO == true).ToList();
+                                    allEoList.AddRange(metaEos);
+                                }
+                                if (Model.IncludeObjectives.Contains(3))
+                                {
+                                    var sqEos = positionEO.EnablingObjectives.Where(x => x.IsSkillQualification == true).ToList();
+                                    allEoList.AddRange(sqEos);
+                                }
+                            }
+                            @{
+                                var categories = allEoList.Where(eo => eo.EnablingObjective_Category!=null).Select(eo => eo.EnablingObjective_Category)?.Distinct().OrderBy(s => s.Number);
+                            }
+                            @foreach (var category in categories)
+                            {
+                                <tr>
+                                    <td style="border: none !important; font-size:22px;padding-top:0;padding-bottom:7px;padding-left:25px" colspan="12">
+                                        <span style="font-weight:600;">@category?.Number - @category?.Title</span>
+                                    </td>
+                                </tr>
+                                @{
+                                    var subcategories = allEoList.Where(eo => eo.EnablingObjective_Category?.Id == category?.Id && eo.EnablingObjective_SubCategory != null)?.Select(eo => eo.EnablingObjective_SubCategory)?.Distinct().OrderBy(s => s.Number);
+                                }
+                                @foreach (var subcategory in subcategories)
+                                {
+                                    <tr>
+                                        <td style="border: none !important; font-size:20px;padding-bottom:7px;padding-top:0;padding-left:45px" colspan="12">
+                                            <span style="font-weight:600;">@category?.Number.@subcategory?.Number - @subcategory?.Title </span>
+                                        </td>
+                                    </tr>
+
+                                    @{
+                                        var topics = allEoList.Where(eo => eo.EnablingObjective_SubCategory?.Id == subcategory?.Id && eo.EnablingObjective_Topic != null)?.Select(eo => eo.EnablingObjective_Topic)?.Distinct().OrderBy(s => s.Number);
+                                    }
+                                    @{
+                                        var eos = allEoList.Where(eo => eo?.EnablingObjective_SubCategory?.Id == subcategory?.Id && eo.EnablingObjective_Topic == null)?.Distinct().OrderBy(s => s.Number);
+                                    }
+                                    @foreach (var eo in eos)
+                                    {
+                                        <tr>
+                                            <td style="border: none !important; font-size:16px;padding-top:0;padding-bottom:7px;padding-left:65px" colspan="12">
+
+                                                @if (eo.isMetaEO==true)
+                                                {
+                                                    <span style="color:green">(Meta)</span>
+                                                }
+                                                @if (eo.IsSkillQualification==true)
+                                                {
+                                                    <span style="color:#567DFF">(SQ)</span>
+                                                }
+                                                <span>@eo?.FullNumber &nbsp;&nbsp; @eo?.Description</span>
+                                            </td>
+                                        </tr>
+                                        @if (eo.isMetaEO == true && Model.IncludeObjectives.Contains(2))
+                                        {
+                                            @foreach (var metaEo in eo.EnablingObjective_MetaEO_Links.OrderBy(t => t.EnablingObjective.FullNumber, new AlphaNumericSortHelper()))
+                                            {
+                                                <tr>
+                                                    <td style="border: none !important; font-size:16px;padding-top:0;padding-bottom:7px;padding-left:105px" colspan="12">
+                                                        <span>@metaEo.EnablingObjective?.FullNumber &nbsp;&nbsp; @metaEo.EnablingObjective?.Description</span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+
+                                    @foreach (var topic in topics)
+                                    {
+                                        <tr>
+                                            <td style="border: none !important; font-size:18px;padding-top:0;padding-bottom:7px;padding-left:65px" colspan="12">
+                                                <span>@category.Number.@subcategory.Number.@topic.Number - @topic.Title</span>
+                                            </td>
+                                        </tr>
+                                        @{
+                                            var topicEOs = allEoList.Where(eo => eo.EnablingObjective_Topic?.Id == topic.Id)?.Distinct().OrderBy(t => t.FullNumber, new AlphaNumericSortHelper()).ToList();
+                                        }
+                                        @foreach (var eo in topicEOs)
+                                        {
+                                            <tr>
+                                                <td style="border: none !important; font-size:16px;padding-top:0;padding-bottom:7px;padding-left:85px" colspan="12">
+
+                                                    @if (eo.isMetaEO==true)
+                                                    {
+                                                        <span style="color:green">(Meta)</span>
+                                                    }
+                                                    @if (eo.IsSkillQualification==true)
+                                                    {
+                                                        <span style="color:#567DFF">(SQ)</span>
+                                                    }
+                                                    <span>@eo?.FullNumber &nbsp;&nbsp; @eo?.Description</span>
+                                                </td>
+                                            </tr>
+                                            @if (eo.isMetaEO == true && Model.IncludeObjectives.Contains(2))
+                                            {
+                                                @foreach (var metaEo in eo.EnablingObjective_MetaEO_Links.OrderBy(t => t.EnablingObjective.FullNumber, new AlphaNumericSortHelper()))
+                                                {
+                                                    <tr>
+                                                        <td style="border: none !important; font-size:16px;padding-top:0;padding-bottom:7px;padding-left:105px" colspan="12">
+                                                            <span>@metaEo.EnablingObjective?.FullNumber &nbsp;&nbsp; @metaEo.EnablingObjective?.Description</span>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                            <tr style="display:none;"></tr>
+                        </table>
+                    </div>
+                    @if (!position.Equals(Model.PositionEOsOptions.Select(p => p.Position).Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    j++;
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+    @for (int i = 1; i <= Model.PositionEOsOptions.Where(m => m.EnablingObjectives.Count() > 0).Select(p => p.Position).Count(); i++)
+    {
+        <a href=@("#page" + i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

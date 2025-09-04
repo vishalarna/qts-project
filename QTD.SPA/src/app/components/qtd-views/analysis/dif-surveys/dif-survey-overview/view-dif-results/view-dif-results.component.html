@@ -1,0 +1,380 @@
+<mat-toolbar
+  class="app-toolbar-sticky flex align-items-center dif-survey-header"
+>
+  <div class="flex items-center header w-100">
+    <app-button
+      type="button"
+      ButtonType="icon"
+      icon="keyboard_arrow_left"
+      class="header-back-button"
+      (click)="goBack()"
+    ></app-button>
+    <div class="d-flex justify-between w-100">
+      <div class="edit-dif-survey-heading ml-4">
+        <h3>Results</h3>
+      </div>
+      <div class="d-flex">
+        <mat-icon class="mr-2">calendar_today</mat-icon>
+        <p class="mb-0 ps-3 nav-date">{{ startDate }} - {{ dueDate }}</p>
+      </div>
+    </div>
+  </div>
+</mat-toolbar>
+<section class="panel-section">
+  <div class="view-enroll-btn result-view-enrollment">
+    <app-button
+      text="View Enrollments"
+      size="sm"
+      color="secondary"
+      (clicked)="viewEnrollments()"
+    ></app-button>
+  </div>
+  <div class="pb-5">
+    <div class="d-flex header-gap">
+      <div class="header-wrap">
+        <p class="text-light-gray header-text">Project</p>
+        <p class="font-bold header-text">{{ this.difSurveyResults?.title }}</p>
+      </div>
+      <div class="header-wrap">
+        <p class="text-light-gray header-text">{{("Position" | labelReplacement)| async}}</p>
+        <p class="font-bold header-text">
+          {{ this.difSurveyResults?.position?.positionTitle }}
+        </p>
+      </div>
+    </div>
+  </div>
+  <div class="pb-5">
+    <div class="row">
+      <div>
+        <p class="me-3 header-text text-light-gray mr-5">Rating Scale :</p>
+      </div>
+      <div>
+        <p class="header-text mr-5">1 - Strongly Disagree</p>
+      </div>
+      <div>
+        <p class="header-text mr-5">2 - Disagree</p>
+      </div>
+      <div>
+        <p class="header-text mr-5">3 - Netural</p>
+      </div>
+      <div>
+        <p class="header-text mr-5">4 - Agree</p>
+      </div>
+      <div>
+        <p class="header-text mr-5">5 - Strongly Agree</p>
+      </div>
+    </div>
+  </div>
+  <div class="shadow-sm">
+    <div class="flex flex-col mt-3">
+      <!-- search and buttons starts -->
+      <div
+        class="
+          flex flex-row
+          bg-white-one
+          rounded-t-md
+          py-4
+          px-6
+          space-x-2
+          border-b-0.8 border-gray-one
+          w-full
+        "
+      >
+        <span class="table-heading">{{("Task" | labelReplacement)| async}} Ratings</span>
+      </div>
+    </div>
+    <mat-table
+      class="table-position tbl-resultBx"
+      [dataSource]="dataSource" (matSortChange)="sortDataSource($event)"
+      matSort
+    >
+      <ng-container matColumnDef="fullNumber">
+        <mat-header-cell class="task-rating-number" *matHeaderCellDef mat-sort-header>
+          <div class="font-weight-normal text-gray-400 text-sm">#</div>
+        </mat-header-cell>
+        <mat-cell class="task-rating-number" *matCellDef="let row">{{ row?.task?.fullNumber }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="description">
+        <mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          colspan="2"
+          class="task-description-col"
+        >
+          <div class="font-weight-normal text-gray-400 text-sm">
+            {{("Task" | labelReplacement)| async}} Description
+          </div>
+        </mat-header-cell>
+        <mat-cell
+          *matCellDef="let row"
+          class="task-description-col"
+          colspan="2"
+          [ngClass]="{ 'inactive-description': !row?.task?.active }"
+        >
+          <div>{{ row?.task?.description }}</div>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="status">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="font-weight-normal text-gray-400 text-sm">
+            {{("Task" | labelReplacement)| async}} Status
+          </div>
+        </mat-header-cell>
+        <mat-cell
+          *matCellDef="let row"
+          [ngClass]="{ 'closed-cell': !row?.task?.active }"
+        >
+          <div class="d-inline-block">
+            <p
+              class="
+                py-2
+                px-4
+                rounded
+                flex flex-row
+                text-center text-xs
+                font-medium font-weight-bold
+                customcolor
+              "
+              [ngClass]="{ 'inactive-text': !row?.task?.active }"
+            >
+              {{ row?.task?.active ? "ACTIVE" : "INACTIVE" }}
+            </p>
+          </div>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="averageDifficulty">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="font-weight-normal text-gray-400 text-sm">Average Difficulty</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row?.averageDifficulty }}</mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="averageImportance">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="font-weight-normal text-gray-400 text-sm">Average Implementation</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" class="cursor-pointer">
+          <div>{{ row?.averageImportance }}</div>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="averageFrequency">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="font-weight-normal text-gray-400 text-sm">Average Frequency</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">{{ row?.averageFrequency }} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="defaultTrainingStatus">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="font-weight-normal text-gray-400 text-sm w-100">
+            Default Training Status
+          </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row"
+          >{{
+            row?.trainingStatus_Calculated?.status.toUpperCase()
+          }}
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="override">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="font-weight-normal text-gray-400 text-sm">Override</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row" class="cursor-pointer">
+          <div
+            class="flex flex-col tool-bar"
+            *ngIf="editType === 'overrideStatus' && editId === row.id"
+          >
+            <div
+              class="flex flex-row mat-elevation-z3 p-2"
+              style="align-items: center"
+            >
+              <select
+                placeholder="select"
+                [(ngModel)]="valueToUpdate"
+                (change)="onOverrideTaskStatusChange($event, row)"
+              >
+                <option *ngFor="let i of difSurveyTaskStatus" [value]="i.id">
+                  {{ i.status }}
+                </option>
+              </select>
+              <app-button
+                ButtonType="icon"
+                icon="check"
+                [disabled]="valueToUpdate === null || valueToUpdate === ''"
+                class="mx-3 linkText"
+                (clicked)="
+                  valueToUpdate === null || valueToUpdate === ''
+                    ? false
+                    : updateValue(row.id)
+                "
+              ></app-button>
+              <mat-icon
+                class="linkText"
+                (click)="editType = 'none'; editId = ''"
+                >close</mat-icon
+              >
+            </div>
+          </div>
+          <div
+            style="width: fit-content"
+            class="
+              cursor-pointer
+              text-md
+              font-italic font-weight-bold
+            "
+            [ngClass]="{'text-warning': row.trainingStatus_OverrideId !== null}"
+            *ngIf="editType !== 'overrideStatus' || editId !== row.id"
+            (click)="
+              editId = row.id;
+              editType = 'overrideStatus';
+              valueToUpdate =
+                row.trainingStatus_OverrideId === null
+                  ? ''
+                  : row.trainingStatus_OverrideId
+            "
+          >
+            {{
+              row.trainingStatus_OverrideId === null
+                ? "-"
+                : getTaskStatusOverrideStatus(row)
+            }}
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="trainingFrequency">
+        <mat-header-cell
+          *matHeaderCellDef
+          mat-sort-header
+          class="text-secondary"
+        >
+          <div class="font-weight-normal text-gray-400 text-sm">
+            Training Frequency
+          </div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <div
+            class="flex flex-col tool-bar"
+            *ngIf="editType === 'taskFrequency' && editId == row.id"
+          >
+            <div
+              class="flex flex-row mat-elevation-z3 p-2"
+              style="align-items: center"
+            >
+              <select
+                placeholder="select"
+                [(ngModel)]="valueToUpdate"
+                (change)="onTaskFrequencyChange($event, row)"
+              >
+                <option *ngFor="let i of taskTrainingFrequency" [value]="i.id">
+                  {{ i.status }}
+                </option>
+              </select>
+              <app-button
+                ButtonType="icon"
+                icon="check"
+                [disabled]="valueToUpdate === null || valueToUpdate === ''"
+                class="mx-3 linkText"
+                (clicked)="
+                  valueToUpdate === null || valueToUpdate === ''
+                    ? false
+                    : updateValue(row.id)
+                "
+              ></app-button>
+              <mat-icon
+                class="linkText"
+                (click)="editType = 'none'; editId = ''"
+                >close</mat-icon
+              >
+            </div>
+          </div>
+          <div
+            style="width: fit-content"
+            class="cursor-pointer font-weight-normal"
+            *ngIf="editType !== 'taskFrequency' || editId !== row.id"
+            (click)="
+              editId = row.id;
+              editType = 'taskFrequency';
+              valueToUpdate =
+                row.difSurvey_Task_TrainingFrequencyId === null
+                  ? ''
+                  : row.difSurvey_Task_TrainingFrequencyId
+            "
+          >
+            {{
+              row.difSurvey_Task_TrainingFrequencyId == null
+                ? "-"
+                : getTrainingTaskFrequency(row)
+            }}
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <ng-container matColumnDef="comments">
+        <mat-header-cell *matHeaderCellDef mat-sort-header>
+          <div class="font-weight-normal text-gray-400 text-sm">Comments</div>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <div
+            class="flex flex-col"
+            *ngIf="editType === 'comment' && editId == row.id"
+          >
+            <div
+              class="flex flex-row mat-elevation-z3 p-2"
+              style="align-items: center"
+            >
+              <textarea
+                [value]="valueToUpdate"
+                (input)="onCommentChange(row, $event)"
+                class="tbl-comment-ta"
+              ></textarea>
+              <app-button
+                ButtonType="icon"
+                icon="check"
+                [disabled]="valueToUpdate === null || valueToUpdate === ''"
+                class="mx-3 linkText"
+                (clicked)="
+                  editId = row.id;
+                  valueToUpdate === null || valueToUpdate === ''
+                    ? false
+                    : updateValue(row.id)
+                "
+              ></app-button>
+              <mat-icon
+                class="linkText"
+                (click)="editType = 'none'; editId = ''"
+                >close</mat-icon
+              >
+            </div>
+          </div>
+          <div
+            style="width: fit-content"
+            class="cursor-pointer"
+            *ngIf="editType !== 'comment' || editId !== row.id"
+            (click)="
+              editId = row.id;
+              editType = 'comment';
+              valueToUpdate = row.comments === null ? '' : row.comments
+            "
+          >
+            {{ row.comments == null ? "Add Comments" : row.comments }}
+          </div>
+        </mat-cell>
+      </ng-container>
+
+      <mat-header-row
+        *matHeaderRowDef="displayedColumns"
+        class="text-secondary"
+      ></mat-header-row>
+      <mat-row
+        *matRowDef="let row; columns: displayedColumns"
+        class="mat-row-custom"
+      ></mat-row>
+
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row flex text-center" *matNoDataRow>
+        <td class="mat-cell w-full m-2">No data matching the filter</td>
+      </tr>
+    </mat-table>
+  </div>
+</section>

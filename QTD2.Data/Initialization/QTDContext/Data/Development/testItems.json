@@ -1,0 +1,185 @@
+[
+  {
+    "TestItemTypeId": 1,
+    "TaxonomyId": 1,
+    "EOId": 1,
+    "IsActive": true,
+    "Description": "What is the colour colour of a stoplight?",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 1,
+    "TaxonomyId": 2,
+    "EOId": 2,
+    "IsActive": true,
+    "Description": "Who is the captain of India?",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 1,
+    "TaxonomyId": 3,
+    "EOId": 3,
+    "IsActive": true,
+    "Description": "Who is Captain of Indian Cricket Test Team?",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 1,
+    "TaxonomyId": 4,
+    "EOId": 4,
+    "IsActive": true,
+    "Description": "Who is Captain of RCB Cricket Team?",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 1,
+    "TaxonomyId": 5,
+    "EOId": 5,
+    "IsActive": true,
+    "Description": "Who has won the asia cup last year?",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 3,
+    "TaxonomyId": 2,
+    "EOId": 1,
+    "IsActive": true,
+    "Description": "The atomic number for lithium is 17",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 3,
+    "TaxonomyId": 1,
+    "EOId": 2,
+    "IsActive": true,
+    "Description": "A cross between a horse and a zebra is called a 'Hobra'",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 3,
+    "TaxonomyId": 2,
+    "EOId": 3,
+    "IsActive": true,
+    "Description": "The black box in a plane is black",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 3,
+    "TaxonomyId": 5,
+    "EOId": 4,
+    "IsActive": true,
+    "Description": "Alliumphobia is a fear of garlic",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 3,
+    "TaxonomyId": 4,
+    "EOId": 5,
+    "IsActive": true,
+    "Description": "Marrakesh is the capital of Morocco",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 2,
+    "TaxonomyId": 4,
+    "EOId": 1,
+    "IsActive": true,
+    "Description": "Children enjoy _____ the TV programs",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 2,
+    "TaxonomyId": 3,
+    "EOId": 2,
+    "IsActive": true,
+    "Description": "Today student should be reconciled _____the way things are changing",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 2,
+    "TaxonomyId": 1,
+    "EOId": 3,
+    "IsActive": true,
+    "Description": "In a classroom student are to be trained to love _____",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 2,
+    "TaxonomyId": 5,
+    "EOId": 4,
+    "IsActive": true,
+    "Description": "You have all come well prepared. I ____ you to pass this exam",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 2,
+    "TaxonomyId": 2,
+    "EOId": 5,
+    "IsActive": true,
+    "Description": "A  ____ of Japanese artists stepped off the coach amidst warm welcome",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 4,
+    "TaxonomyId": 2,
+    "EOId": 1,
+    "IsActive": true,
+    "Description": "What is Capital of India?",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 4,
+    "TaxonomyId": 2,
+    "EOId": 2,
+    "IsActive": true,
+    "Description": "what is the capital of Australia?",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 4,
+    "TaxonomyId": 3,
+    "EOId": 3,
+    "IsActive": true,
+    "Description": "Which is the smallest country in the world?",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 4,
+    "TaxonomyId": 5,
+    "EOId": 4,
+    "IsActive": true,
+    "Description": "which country has the highest life expectancy?",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "TestItemTypeId": 4,
+    "TaxonomyId": 4,
+    "EOId": 5,
+    "IsActive": true,
+    "Description": "Which country has the best education system?",
+    "Deleted": false,
+    "Active": true
+  }
+]
+
+
+

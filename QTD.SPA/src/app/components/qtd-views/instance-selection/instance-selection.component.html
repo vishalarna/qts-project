@@ -1,0 +1,116 @@
+<app-header title="Instance Selection" [canGoBack]="false"></app-header>
+
+<div class="flex flex-col px-12">
+  <div class="border-b py-8">
+    <div class="flex flex-row items-center py-4">
+      <h1 class="flex-auto font-medium text-xl">Select Client and Instance</h1>
+    </div>
+    <!-- table starts -->
+    <!-- table header ends -->
+
+    <!-- table content starts -->
+
+    <div class="flex-row bg-white-one rounded-b-md m-2">
+      <div
+        class="flex flex-row items-center justify-between bg-white-one rounded-t-md py-3 px-6 space-x-2 border-b-0.8 border-gray-one ">
+        <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
+        <div class="flex flex-row" style="width:-webkit-fill-available">
+          <input class="text-sm flex-grow focus:outline-none" [value]="searchString" placeholder="Search" type="text" (input)="inputSearchString($event)">
+          <span *ngIf="searchString" class="clear-icon" id="clearIcon" (click)="clearSearchString()">&#10006;</span>
+        </div>
+      </div>
+      <mat-table [dataSource]="clientDataSource" matSort [multiTemplateDataRows]="true">
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Client Name
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <app-button variant="text" icon="arrow_drop_down" [ngClass]="{'side-arrow-icon': expandedData != row}"
+              (clicked)="(expandedData = expandedData === row ?null:row);getClientsInstances(row);$event.stopPropagation();">
+            </app-button>{{ row.name }}
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="obj">
+          <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="flex flex-row items-center text-gray-four btn-group">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <app-icon icon="more_vert" class="horizontal-icon"></app-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <label mat-menu-item translate (click)="openClientWizard(row.id)"
+                  [disabled]="isAdminUser === undefined">Edit</label>
+              </mat-menu>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+
+        <ng-container matColumnDef="expandedDetail">
+          <mat-cell *matCellDef="let row" [attr.colspan]="clientDisplayColumn">
+            <div style="width: 100%;" class="example-element-detail">
+              <!--List View in expanded details-->
+              <div class="mt-4" [attr.colspan]="instanceDisplayColumns">
+                <ng-container class="mt-4" [attr.colspan]="instanceDisplayColumns"
+                  *ngTemplateOutlet="expandedTable"></ng-container>
+              </div>
+            </div>
+          </mat-cell>
+        </ng-container>
+
+        <mat-header-row *matHeaderRowDef="clientDisplayColumn"></mat-header-row>
+        <!-- <mat-row *matRowDef="let row; columns: clientDisplayColumn"></mat-row> -->
+        <mat-row class="example-element-row" [class.example-expanded-row]="expandedData === row"
+          *matRowDef="let row; columns: clientDisplayColumn"></mat-row>
+
+        <mat-row [ngStyle]="{'display' : expandedData===row ? 'block' : 'none'} "
+          *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></mat-row>
+
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row flex text-center" *matNoDataRow>
+          <td class="mat-cell w-full m-2">No data to display</td>
+        </tr>
+      </mat-table>
+      <app-data-loader *ngIf="!clientDataSource"></app-data-loader>
+
+    </div>
+    <!--template for expanded row table-->
+    <ng-template #expandedTable>
+      <app-data-loader *ngIf="!expandedData"></app-data-loader>
+      <mat-table *ngIf="expandedData" [dataSource]="instanceDataSource">
+        <ng-container matColumnDef="name">
+          <mat-header-cell *matHeaderCellDef mat-sort-header>
+            Instance Name
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> {{ row.name }} </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="obj">
+          <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+            <div class="flex flex-row items-center text-gray-four btn-group">
+              <button mat-icon-button [matMenuTriggerFor]="menu">
+                <app-icon icon="more_vert" class="horizontal-icon"></app-icon>
+              </button>
+              <mat-menu #menu="matMenu">
+                <label mat-menu-item (click)="setClient(row.name)">Select Instance</label>
+                <label mat-menu-item (click)="openInstanceWizard(row)"
+                  [disabled]="isAdminUser === undefined">Edit</label>
+              </mat-menu>
+            </div>
+          </mat-cell>
+        </ng-container>
+        <mat-header-row *matHeaderRowDef="instanceDisplayColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: instanceDisplayColumns"></mat-row>
+
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row flex text-center" *matNoDataRow>
+          <td class="mat-cell w-full m-2">No data to display</td>
+        </tr>
+      </mat-table>
+    </ng-template>
+  </div>
+</div>

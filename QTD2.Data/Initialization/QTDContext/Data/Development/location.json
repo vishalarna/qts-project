@@ -1,0 +1,42 @@
+[
+  {
+    "LocCategoryID": 1,
+    "LocNumber": "001",
+    "LocName": "Location 1",
+    "EffectiveDate": "2023-06-21",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "LocCategoryID": 2,
+    "LocNumber": "002",
+    "LocName": "Location 2",
+    "EffectiveDate": "2023-06-22",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "LocCategoryID": 3,
+    "LocNumber": "003",
+    "LocName": "Location 3",
+    "EffectiveDate": "2023-06-23",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "LocCategoryID": 4,
+    "LocNumber": "004",
+    "LocName": "Location 4",
+    "EffectiveDate": "2023-06-24",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "LocCategoryID": 5,
+    "LocNumber": "005",
+    "LocName": "Location 5",
+    "EffectiveDate": "2023-06-25",
+    "Deleted": false,
+    "Active": true
+  }
+]

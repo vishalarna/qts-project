@@ -1,0 +1,12 @@
+.label_style:hover{
+  background-color: #5C9B31;
+  color: white;
+}
+
+:host ::ng-deep .arrowButton button{
+  outline: none;
+}
+
+.inactive{
+  color:gray;
+}

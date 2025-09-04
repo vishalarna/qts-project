@@ -1,0 +1,44 @@
+<form class="block text-sm" [formGroup]="addCoverSheetForm">
+    <div class="bg-white-one shadow-md py-2 h-screen w-full overflow-x-hidden overflow-y-scroll">
+        <div class="flex flex-row justify-between items-center px-12 mt-5">
+            <p class="text-xl font-bold text-gray-900">Add as New Coversheet Template</p>
+            <app-button type="button" ButtonType="icon" icon="close" (clicked)="flyPanelSrvc.close()"></app-button>
+        </div>
+
+        <div class="px-12 mt-4">
+            <app-label [for]="'Title'" [text]="'Title '" class="label required"></app-label>
+            <app-textbox type="text" [name]="'Title'" formControlName="Title" [defaultValue]="Title"
+                [placeholder]="'Enter name'">
+            </app-textbox>
+            <app-input-error
+                *ngIf="addCoverSheetForm.get('Title')?.invalid && addCoverSheetForm.get('Title')?.hasError('required')"
+                [text]="'Title is Required'">
+            </app-input-error>
+
+        </div>
+
+        <div class="px-12 mt-4">
+            <app-label [for]="'Type'" [text]="'Type (Optional) '"></app-label>
+            <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                <mat-select (selectionChange)="selectType($event)" placeholder="Select Type">
+                    <mat-option *ngFor="let i of typeList" [value]="i.id" #matOption>
+                        {{i.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+
+        </div>
+
+        <div class="px-12">
+          <span> {{("Instruction" | labelReplacement)| async}}s</span>
+          <ckeditor formControlName="Instructions" [editor]="Editor" required></ckeditor>
+          <app-input-error *ngIf="addCoverSheetForm.get('Instructions')?.invalid && addCoverSheetForm.get('Instructions')?.hasError('required')" text=" {{('Instruction' | labelReplacement)| async}}s are Requred"></app-input-error>
+        </div>
+
+        <app-button [disabled]="!addCoverSheetForm.valid" type="button" size="sm" color="secondary" text="Add to my coversheet Library"
+            (clicked)="AddCoverSheetTemplate()" class="mr-5 pb-4 px-12 mt-8 float-right">
+        </app-button>
+
+    </div>
+
+</form>

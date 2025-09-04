@@ -1,0 +1,154 @@
+<!--Heading starts-->
+<div class="flex flex-col px-12 py-12">
+    <ng-container *ngIf="linkEOs">
+        <div class="flex flex-row justify-between">
+            <h2>Link {{("Enabling Objective" | labelReplacement)| async}} to {{("Safety Hazard" | labelReplacement)| async}}s</h2>
+            <app-button ButtonType="icon" icon="close" (clicked)="closed.emit('fp-sh-eo-link-closed')"></app-button>
+
+        </div>
+
+        <div class="flex flex-row items-center border-b-0.8 border-gray-one">
+            <div class="flex flex-grow">
+                <app-icon icon="search"></app-icon>
+                <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+                    (input)="filterDataNew(showActive)" [(ngModel)]="filterEOString">
+                    <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+
+            </div>
+
+        </div>
+
+        <!--Heading ends-->
+
+        <div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+
+            <div class="cursor-pointer">
+                <span> Showing:
+                    <label mat-button class="mb-0">
+                        <p *ngIf="showActive" class="font-bold">
+                            Active
+                        </p>
+                      <!--   <p *ngIf="!showActive" class="font-bold">
+                            Inactive
+                        </p> -->
+
+                    </label>
+                 <!--    <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon> -->
+                </span>
+
+               <!--  <mat-menu #menu="matMenu">
+                    <label mat-menu-item *ngIf="!showActive" (click)="toggleFilter(true)">
+                        Active</label>
+
+                    <label mat-menu-item *ngIf="showActive" (click)="toggleFilter(false)">
+                        Inactive</label>
+                </mat-menu> -->
+            </div>
+            <app-button variant="text" icon="add" iconPosition="left" text="Add new {{('Enabling Objective' | labelReplacement)| async}}s"
+                (clicked)="linkEOs=false;addEO=true"></app-button>
+
+        </div>
+
+        <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="linkedIds.length > 0">
+            <div class="flex flex-row w-full justify-between mb-3">
+                <p class="text-xs text-gray-four pt-2">{{linkedIds.length}} {{("Enabling Objective" | labelReplacement)| async}} selected</p>
+                <app-button [spinner]="showLinkEOLoader" [disabled]="showLinkEOLoader" class="mb-2" type="button" color="secondary" size="sm"
+                    text="Link to {{('Safety Hazard' | labelReplacement)| async}}s" (clicked)="linkEOToSafetyHazard()">
+                </app-button>
+            </div>
+            <hr>
+            <p class="text-xs text-gray-four mt-3">Selecting a Category or Sub Categories will select all {{("Enabling Objective" | labelReplacement)| async}}s linked
+                to
+                the given category</p>
+        </div>
+        <!-- *ngIf="active_tasks" -->
+
+        <app-data-loader *ngIf="isEOLoading"></app-data-loader>
+
+    <ng-container *ngIf="dataSourceWithTopic.data.length < 1 && !isEOLoading">
+      <div>No Data Found</div>
+    </ng-container>
+    <ng-container *ngIf="dataSourceWithTopic.data.length > 0">
+      <div class="flex flex-col ">
+        <mat-tree [dataSource]="dataSourceWithTopic" [treeControl]="treeControl" class="qtd-tree">
+
+          <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+            <ng-container *ngIf="node.checkbox">
+              <mat-checkbox style="margin-left:0.2rem;" (change)="onEOChange($event,node)" [checked]="node.selected">
+                {{node.description}} <span *ngIf="node.IsEO"
+                  class="ml-1 qtd-meta-box p-1 font-bold">{{'EO'|uppercase}}</span>
+                <span *ngIf="node.IsMeta"
+                      class="ml-1 qtd-meta-box p-1 font-bold">{{'META'|uppercase}}</span>
+
+                <span *ngIf="node.IsSq"
+                      class="ml-1 qtd-meta-box p-1 font-bold">{{'SQ'|uppercase}}</span>
+              </mat-checkbox>
+            </ng-container>
+            <ng-container *ngIf="node.checkbox !== undefined && !node.checkbox">
+              <app-icon style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;<span
+                style="color: rgb(92, 155, 49);">{{node.description}}</span>
+            </ng-container>
+            <ng-container *ngIf="node.checkbox === undefined">
+              <span style="color:black;margin-left:1.8rem">{{node.description}}</span>
+            </ng-container>
+
+          </mat-tree-node>
+
+          <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+            <div class="mat-tree-node">
+              <!-- <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.description"> -->
+                <app-icon matTreeNodeToggle class="cursor-pointer" [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'expand_less'">
+                </app-icon>
+              <!-- </button> -->
+
+              <mat-checkbox [checked]="node.selected" [indeterminate]="node.indeterminate && !node.selected"
+                (change)="itemToggle($event.checked,node)">{{node.description}}</mat-checkbox>
+            </div>
+
+            <div *ngIf="treeControl.isExpanded(node)" role="group">
+              <ng-container matTreeNodeOutlet></ng-container>
+            </div>
+          </mat-nested-tree-node>
+        </mat-tree>
+
+      </div>
+    </ng-container>
+
+        <!-- <ng-container *ngIf="dataSourceWithoutTopic.data.length > 0">
+            <div class="flex flex-col ">
+                <mat-tree [dataSource]="dataSourceWithoutTopic" [treeControl]="treeControl" class="qtd-tree">
+                    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                      <ng-container *ngIf="node.checkbox">
+                        <mat-checkbox (change)="onEOChange($event,node)" [checked]="node.selected">
+                          {{node.description}}</mat-checkbox>
+                      </ng-container>
+                      <ng-container *ngIf="!node.checkbox">
+                        <app-icon style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;<span
+                          style="color: rgb(92, 155, 49);">{{node.description}}</span>
+                      </ng-container>
+                    </mat-tree-node>
+
+                    <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+                      <div class="mat-tree-node">
+                        <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.description">
+                          <app-icon [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'">
+                          </app-icon>
+                        </button>
+
+                        <mat-checkbox [checked]="node.selected" [indeterminate]="node.indeterminate && !node.selected"
+                          (change)="itemToggle($event.checked,node)">{{node.description}}</mat-checkbox>
+                      </div>
+
+                      <div [class.qtd-tree-invisible]="!treeControl.isExpanded(node)" role="group">
+                        <ng-container matTreeNodeOutlet></ng-container>
+                      </div>
+                    </mat-nested-tree-node>
+                  </mat-tree>
+
+            </div>
+        </ng-container> -->
+    </ng-container>
+
+
+    <app-flypanel-add-eo *ngIf="addEO" (closed)="addEO=false;linkEOs=true;refreshData()" (refresh)="refreshData()"></app-flypanel-add-eo>
+</div>

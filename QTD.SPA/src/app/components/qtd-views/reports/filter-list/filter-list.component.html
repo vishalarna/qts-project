@@ -1,0 +1,87 @@
+<div class="p-4">
+  <app-icon (click)="closed.emit()" icon="close" class="text-gray-500 cursor-pointer float-right"></app-icon>
+  <div class="col-6 p-0">
+    <h2 class="navbar-heading m-0">{{(reportSkeletonFilter.name | dynamicLabelReplacement) | async}}</h2>
+  </div>
+  <div class="flex justify-content-center align-items-center">
+    <app-spinner *ngIf="!filterPositionData"></app-spinner>
+  </div>
+  <div *ngIf="filterPositionData">
+    <div class="d-block">
+      <div class="mb-3"><span style="padding-left: 4px;font-size: 14px;font-weight:500;color: #616161;">{{selectedFilterOptions.length}} selected of {{positionData.length}}</span></div>
+      <div class="form-check pl-0" *ngIf="isFilterOptionParent">
+        <div class="col-md-4 p-0 report-comp-section-padding pt-2 pl-2" *ngFor="let filterOptionParent of filterPositionData[0]?.filterOptionParents">
+          <ng-container *ngIf="filterOptionParent.controlType.toLowerCase() == 'dropdown' ">
+            <label class="report-comp-section-label">{{(filterOptionParent?.name | dynamicLabelReplacement) | async}}</label>
+            <mat-select  [placeholder]="'Select '+ filterOptionParent?.name | dynamicLabelReplacement | async" [disabled]="getCurrentState(filterOptionParent?.name)"  [value]="getSelectedValue(filterOptionParent?.name)" (selectionChange)="setDropdownValue($event,filterOptionParent?.name)" class="appearance-none rounded border w-full px-4 py-2.5 mt-2" #parentSelect="matSelect">
+              <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" [value]="searchParentTextMap.get(filterOptionParent.name)" (input)="parentDropdownSearch($event,filterOptionParent.name)" (blur) = "resetSearch(filterOptionParent.name)" (keydown)="handleKeydown($event)">
+              <mat-option *ngFor="let value of this.optionDropdownObj.get(filterOptionParent.name)" [value]="value" >
+                {{value}}
+              </mat-option>
+            </mat-select>
+          </ng-container>
+          <ng-container *ngIf="filterOptionParent.controlType.toLowerCase() == 'checkbox' ">
+            <mat-checkbox (change)="setCheckBoxValue($event,filterOptionParent?.name)" [checked]="getSelectedValue(filterOptionParent?.name) == 'true'" >
+            </mat-checkbox>
+            <label class="report-comp-section-label checkbox-label">{{(filterOptionParent?.name | dynamicLabelReplacement) | async}}</label>
+          </ng-container>
+        </div>
+      </div>
+      <div class="filter-list-data">
+        <div class="p-3 px-4 filter-search-box">
+          <input class="py-2" type="text" name="searchBox" [value]="searchString" (keyup)="searchFilter($event)" placeholder="Enter Name to Search" />
+          <app-button variant="text" class="mt-2 ml-12" (clicked)="clearFilter()" text="Clear Search" icon="clear"
+          iconPosition="right"></app-button>
+        </div>
+        <mat-table matSort [dataSource]="filterListData" >
+          <ng-container matColumnDef="checkbox">
+            <mat-header-cell *matHeaderCellDef> 
+              <mat-checkbox  (change)="onSelectAll()" [checked]="isAllOptionChecked"></mat-checkbox>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" >
+              <mat-checkbox [checked]="getFilterCheckedValues(row.id)" (change)="OnFilterValueChange(row.id)">
+              </mat-checkbox>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="name">
+            <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2"> Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span>{{row.name}}</span>
+            </mat-cell>
+          </ng-container>
+          <ng-container *ngIf="isFilterHasExtraColumns">
+            <ng-container *ngFor="let filterTableColumn of getExtraTableColumns()" [matColumnDef]="filterTableColumn.name">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2"> {{(filterTableColumn.name | dynamicLabelReplacement) | async}}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span>{{getExtraColumnDataForTable(row,filterTableColumn.name)}}</span>
+              </mat-cell>
+            </ng-container>
+          </ng-container>
+          <ng-container *ngIf="isFilterOptionParent">
+            <ng-container *ngFor="let filterOptionParent of getColumnsFromFilters()" [matColumnDef]="filterOptionParent.name">
+              <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2"> {{(filterOptionParent.name | dynamicLabelReplacement) | async}}
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span>{{getOptionDataForTable(row,filterOptionParent.name)}}</span>
+              </mat-cell>
+            </ng-container>
+          </ng-container>
+            <mat-header-row *matHeaderRowDef="filterListColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: filterListColumns;"></mat-row>
+          <!-- Row shown when there is no matching data.-->
+          <tr class="mat-row flex text-center " *matNoDataRow>
+              <td class="mat-cell w-full m-2 no-data-cell" >No Data Found</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+    <mat-paginator #filterListPaginator="matPaginator" [showFirstLastButtons]="true" [length]="length" [pageSizeOptions]="[20, 40, 60]" aria-label="Select page">
+    </mat-paginator>
+    <div class="save-btn-div">
+      <app-button type="button" text="Save" size="sm" customClasses="save-filter-button" (clicked)="filterSave()" [disabled] = "maxAllowedSelectionExceed"> </app-button>
+    </div>
+    <div *ngIf ="maxAllowedSelections && maxAllowedSelectionExceed" class="warning-span"><span class="warning-color" >You cannot select more than {{maxAllowedSelections}}</span></div>
+  </div>
+</div>

@@ -1,0 +1,127 @@
+<aside class="sidebar h-screen sticky top-0 flex flex-col overflow-auto " *ngIf="!isBulkEdit">
+    <div class="items-centers ml-12 mt-4 mb-4 px-4">
+        <div class="float-left mt-4">
+            <app-button type="button" ButtonType='icon' icon='menu' (clicked)="toggleMainMenu()"
+                class="float-left btn-text">
+            </app-button>
+        </div>
+        <div class="ml-4">
+            <img class="flex-auto w-1/2 h-auto" src="./assets/img/qtd.png">
+        </div>
+    </div>
+
+   <h3><b class="cursor-pointer px-4" routerLink="/my-data/positions/overview"> {{("Position" | labelReplacement)| async}}s</b></h3>
+    <div class="mr-4 mb-2 flex flex-row ">
+        <input [(ngModel)]="filter" (ngModelChange)="searchFilter($event)" placeholder="Search  {{('Position' | labelReplacement)| async}}"
+             class="py-2 px-4 w-full" />
+        <app-icon icon="close" class="cursor-pointer pt-2" (click)="clearFilter()"></app-icon>
+
+
+    </div>
+
+    <div class="flex flex-row  items-center text-gray-four  text-xs btn-group mb-2 px-4">
+        <div class="flex flex-row cursor-pointer">
+            <span> Showing:
+                <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+                    <p *ngIf="showActive" class="font-bold">
+                        Active
+                    </p>
+                    <p *ngIf="!showActive" class="font-bold">
+                        Inactive
+                    </p>
+
+                </label>
+                <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+            </span>
+        </div>
+        <mat-menu #menu="matMenu">
+            <label mat-menu-item *ngIf="!showActive" (click)="showActive=true;createList();">
+                Active</label>
+
+            <label mat-menu-item *ngIf="showActive" (click)="showActive=false;createList();">
+                Inactive</label>
+        </mat-menu>
+    </div>
+
+    <div class="flex flex-col  text-sm text-black">
+        <h5 class="px-4" id="loading" *ngIf="navList === undefined">Loading ...</h5>
+        <h5 class="px-4" *ngIf="navList.length < 1 && isNavBarLoading == false">No Data Found</h5>
+        <app-spinner *ngIf="isNavBarLoading" class="px-4"></app-spinner>
+     <!--    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="qtd-tree"> -->
+            <!-- This is the tree node template for leaf nodes -->
+            <!-- There is inline padding applied to this node using styles.
+              This padding value depends on the mat-icon-button width. -->
+<!--             <mat-tree-node [ngClass]="selectedItem && selectedItem.id === node.id && selectedItem.type === node.type ? 'active_menu':''" *matTreeNodeDef="let node" matTreeNodeToggle class="mb-3 mt-3 greenHover">
+                <ng-container *ngIf="!node.RoutePath">
+                    <app-label [text]="node.Title " customClasses="cursor-pointer">
+                    </app-label>
+                </ng-container>
+                <div *ngIf="node.RoutePath">
+                    <app-link (clicked)="selectedItem = node;" [routerLink]="node.RoutePath" [text]="node.Title " customClasses="cursor-pointer link">
+                    </app-link>
+                </div>
+
+
+
+            </mat-tree-node> -->
+            <!-- This is the tree node template for expandable nodes -->
+           <!--  <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+                <div class="mat-tree-node greenHover" [ngClass]="selectedItem && selectedItem.id === node.id && selectedItem.type === node.type ? 'active_menu':''">
+                    <button style="outline:none;" mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
+                        <app-icon [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'expand_less'">
+                        </app-icon>
+                    </button>
+                    <ng-container *ngIf="!node.RoutePath">
+                        <app-label [text]="node.Title " customClasses="cursor-pointer">
+                        </app-label>
+                    </ng-container>
+                    <ng-container *ngIf="node.RoutePath">
+                        <app-link (clicked)="treeControl.expand(node);selectedItem = node;" [routerLink]="node.RoutePath" [text]="node.Title " customClasses="cursor-pointer">
+                        </app-link>
+                    </ng-container>
+                </div> -->
+                <!-- There is inline padding applied to this div using styles.
+                    This padding value depends on the mat-icon-button width.  -->
+              <!--   <div [class.qtd-tree-invisible]="!treeControl.isExpanded(node)" role="group">
+                    <ng-container matTreeNodeOutlet></ng-container>
+                </div> -->
+           <!--  </mat-nested-tree-node> -->
+   <!--      </mat-tree> -->
+    <div class="flex flex-row space-x-4 text-sm mt-4 mb-3 px-4">
+      <app-button icon="add" size="sm" type="button" color="primary" (clicked)="openFlyInPanel(addPosition)"
+              text="Add New" iconPosition="left"></app-button>
+
+      <app-button variant="text" class="mt-2" text="Bulk Edit" icon="edit" iconPosition="left"
+          routerLink="/my-data/position-bulkedit" ></app-button>
+    </div>
+      <ng-container *ngIf="navList !== undefined && navList.length>0">
+            <span *ngFor="let m of toFilter">
+
+                <div class='flex flex-row nav-cont text-sm mb-1 px-6'>
+                    <div class='p-nav greenHover'>
+                        <div class="flex flex-row pt-2 pb-2 pl-4"
+                        [ngClass]="selectedItem && selectedItem.id === m.id && selectedItem.type === m.type ? 'active_menu':''" class=" py-3 greenHover">
+                        <div *ngIf="!m.RoutePath">
+                            <app-link  (clicked)="selectedItem = m;" [routerLink]="m.RoutePath"
+                            [text]="m.Title " customClasses="greenHover" style="cursor: pointer;">
+                        </app-link>
+                        </div>
+
+                            <div *ngIf="m.RoutePath">
+                                <app-link (clicked)="selectedItem = m;" [routerLink]="m.RoutePath" [text]="m.Title " customClasses="cursor-pointer link">
+                                </app-link>
+                            </div>
+                        </div>
+                    </div>
+                  </div>
+
+            </span>
+        </ng-container>
+    </div>
+
+</aside>
+
+
+<ng-template #addPosition>
+    <app-fly-panel-add-position [shouldNavigate]="true"  [positionCheck]="positionCheck" (refreshNavBar)="createList()" (closed)="flyPanelService.close()"></app-fly-panel-add-position>
+</ng-template>

@@ -1,0 +1,111 @@
+::ng-deep .mat-horizontal-stepper-header
+{
+    width:25%;
+}
+.toggleILA {
+    outline: none;
+    color: rgba(122, 128, 126, 1);
+    font-weight: medium;
+    border: 1px solid rgba(122, 128, 126, 0.2);
+    border-bottom-right-radius: 0.25rem;
+    border-top-right-radius: 0.25rem;
+    //width: 40%;
+
+  }
+  .toggleCalender {
+      outline: none;
+      color: rgba(122, 128, 126, 1);
+      font-weight: medium;
+      border: 1px solid rgba(122, 128, 126, 0.2);
+      border-bottom-left-radius: 0.25rem;
+      border-top-left-radius: 0.25rem;
+      //width: 40%;
+
+    }
+
+    #dataset th, td {
+      padding: 15px;
+      word-wrap: break-word;
+    }
+   #dataset table {
+      border-collapse: collapse;
+      table-layout: fixed;
+      //width: 310px;
+    }
+
+    #dataset {
+      width: 100%;
+    }
+
+    :host ::ng-deep .modifiedTextbox input {
+      border: none !important;
+      padding-top: 0rem !important;
+      padding-bottom: 0rem !important;
+      height:2rem;
+      width: 5.6rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .float-container {
+      border: 3px solid #fff;
+      padding: 20px;
+  }
+
+  .float-child {
+      width: 50%;
+      float: left;
+      padding: 75px  198px 46px;
+  }
+
+
+  .dropdown-toggle::after {
+    content: none !important;
+  }
+  
+  .mat-column-index {
+    flex: 0 0 60px;
+  }
+  
+  .mat-column-imageUrl {
+    flex: 0 0 70px;
+  }
+  
+  .mat-column-empName {
+    flex: 0 0 180px;
+  }
+  
+  .mat-column-position {
+    
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+  
+  .mat-column-id{
+    flex: 0 0 auto;
+  }
+  
+  
+  
+  .customcolorgreen{
+    background-color: rgba(92, 155, 49, 0.1);
+    color: rgba(92, 155, 49, 1);
+  }
+  
+  .customcolorgray{
+    background-color: rgba(122, 128, 126, 0.2);
+    color: rgba(122, 128, 126, 1);
+  }
+  
+  .box {
+    inline-size: 120px;
+      overflow-wrap: break-word;
+  }
+  #container {
+    display: flex;
+    justify-content:space-between;
+    flex-direction:column;
+  }
+  #id{
+    width: 100px;
+    margin: 10px;
+  }

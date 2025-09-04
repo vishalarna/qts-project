@@ -1,0 +1,71 @@
+.overview-spinner {
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.version-history {
+  font-family: Arial, sans-serif;
+  margin: 20px;
+  padding: 20px;
+}
+
+.version-history h1 {
+  font-size: 1.5em;
+  margin-bottom: 20px;
+}
+
+.details,
+.changes,
+.added-linked-edited,
+.unlinked-deleted,
+.notes {
+  margin-bottom: 20px;
+}
+
+.details p,
+.changes p,
+.added-linked-edited p,
+.unlinked-deleted p,
+.notes p {
+  margin: 5px 0;
+}
+
+.added-linked-edited ul,
+.unlinked-deleted ul {
+  list-style: disc;
+  padding-left: 20px;
+}
+
+.header-spacing{
+  padding: 1.5rem 1.5rem 1.5rem 1.5rem;
+}
+
+.action-button{
+  padding-left: 1rem;
+}
+
+:host ::ng-deep .version-table .mat-header-cell:nth-child(1),
+:host ::ng-deep .version-table .mat-cell:nth-child(1){
+  max-width: 100px;
+}
+
+:host ::ng-deep .version-table .mat-header-cell:nth-child(2),
+:host ::ng-deep .version-table .mat-cell:nth-child(2){
+  max-width: 200px;
+}
+
+:host ::ng-deep .version-table .mat-header-cell:nth-child(3),
+:host ::ng-deep .version-table .mat-cell:nth-child(3){
+  max-width: 400px;
+}
+
+:host ::ng-deep .version-table .mat-header-cell:nth-child(4){
+  padding-left: 2rem;
+}
+
+:host ::ng-deep .version-table .mat-cell.no-data-cell{
+  flex: 1 1 100%;
+  max-width: unset;
+  border-bottom: none;
+}

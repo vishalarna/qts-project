@@ -1,0 +1,54 @@
+<ng-container>
+  <div class="flex flex-col">
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">{{"Release IDP Review"}}
+      </p>
+      <app-icon (click)="closeFlyPanel()" class="cursor-pointer" icon="close"></app-icon>
+    </div>
+  </div>
+
+  <form [formGroup]="releaseIDPForm" class="items-center px-12 mt-5">
+    <div class="flex flex-col w-full">
+      <div>
+        <app-label text="IDP Review Title"></app-label>
+        <app-textbox formControlName="title" placeholder="Enter Review title here"></app-textbox>
+        <app-input-error *ngIf="releaseIDPForm.get('title')?.hasError('required')"
+          text="IDP Review Title is Required"></app-input-error>
+      </div>
+
+    </div>
+    <div class="flex flex-row">
+
+      <div class="mt-3" style="width: 50%;">
+        <app-label text="Release Date"></app-label>
+        <app-date formControlName="release"></app-date>
+        <app-input-error *ngIf="releaseIDPForm.get('release')?.hasError('required')"
+          text="IDP Review Release Date is Required"></app-input-error>
+      </div>
+      <div class="ml-5 mt-3" style="width: 50%;">
+        <app-label text="End Date"></app-label>
+        <app-date formControlName="end"></app-date>
+        <app-input-error *ngIf="releaseIDPForm.get('end')?.hasError('required')"
+          text="IDP Review End Date is Required"></app-input-error>
+      </div>
+    </div>
+
+    <div class="mt-3">
+      <app-label text="{{('Instruction' | labelReplacement)| async}}s"></app-label>
+      <app-textarea formControlName="instruction" placeholder="Enter {{('Instruction' | labelReplacement)| async}}s"></app-textarea>
+    </div>
+
+    <div class="flex flex-row mt-5" style="justify-content: flex-end;">
+
+      <app-button [disabled]="releaseIDPForm.invalid || spinner" [spinner]="spinner" text="Release IDP" size="sm"
+        class="savebtn" (click)="releaseIDP(releaseIdpModal)"></app-button>
+    </div>
+  </form>
+
+</ng-container>
+
+<ng-template #releaseIdpModal>
+  <app-qtd-dialogue header="Delete Student Evaluation" [description]="releaseDescription" cancelText="No"
+    confirmText="Yes" [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()" (confirmed)="Release($event)">
+  </app-qtd-dialogue>
+</ng-template>

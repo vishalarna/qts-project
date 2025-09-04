@@ -1,0 +1,64 @@
+:host ::ng-deep .mat-step-header .mat-step-icon-selected,
+:host ::ng-deep .mat-step-header .mat-step-icon-state-done,
+:host ::ng-deep .mat-step-header .mat-step-icon-state-edit {
+  background-color: rgb(92, 155, 49) !important;
+  color: #fff;
+}
+
+:host ::ng-deep .mat-stepper-horizontal,
+:host ::ng-deep .mat-stepper-vertical {
+  background-color: transparent;
+}
+
+:host ::ng-deep .create-ila-stepper {
+  &.mode-edit .mat-step-header {
+    cursor: pointer;
+  }
+
+  .mat-horizontal-stepper-header-container {
+    padding: 1rem 0rem;
+    .mat-step-header {
+      height: unset !important;
+      .mat-step-label {
+        .mat-step-optional {
+          display: none;
+        }
+      }
+    }
+  }
+}
+
+:host ::ng-deep .create-ila-stepper:not(.mode-edit) {
+  .mat-horizontal-stepper-header-container .mat-step-header {
+    &:not(.interacted):not(:first-child) {
+      overflow: visible;
+      .mat-step-icon {
+        background: #ca5858 !important;
+        border: 1px solid #ca5858 !important;
+      }
+      .mat-step-label {
+        color: #ca5858 !important;
+      }
+
+      &:not(.mat-stepper-horizontal-line.interacted + .mat-step-header)::after {
+        display: none;
+        content: "You must complete the previous steps first";
+        position: absolute;
+        top: 30px;
+        left: 0px;
+        background: #ca5858;
+        color: white;
+        padding: 4px;
+        border-radius: 3px;
+      }
+      &:not(.mat-stepper-horizontal-line.interacted
+          + .mat-step-header):hover::after {
+        display: block;
+      }
+    }
+  }
+}
+
+// ::ng-deep .mat-horizontal-stepper-header{
+//   pointer-events: none !important;
+// }

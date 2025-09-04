@@ -1,0 +1,9 @@
+::ng-deep .mat-horizontal-stepper-header
+{
+    width:50%;
+}
+
+:host ::ng-deep .ck-editor__editable
+{
+    min-height: 9rem;
+}

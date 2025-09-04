@@ -1,0 +1,112 @@
+:host ::ng-deep .training-issues-header .training-back-button span mat-icon {
+    font-size: 30px;
+    position: relative;
+    bottom: 2px;
+    right: 5px;
+    color: #278f6d;
+  }
+  
+  app-button.training-back-button {
+    background-color: rgba(39, 143, 109, 0.11);
+    border-radius: 50%;
+  }
+  
+  .training-issues-header {
+    padding: 1.12rem 1.5rem;
+    background-color: white;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+    justify-content: space-between;
+    .create-review-heading {
+      color: #7a807e;
+      font-size: 1.25rem;
+      font-weight: 400;
+      flex: 1 1 78%;
+      line-height: 160%;
+      h3 > span {
+        color: #000d09;
+        font-weight: 500;
+      }
+    }
+    .edit-review-heading {
+      flex: 1 1 78%;
+      color: #000d09;
+      font-size: 1.125rem;
+      font-weight: 500;
+      line-height: 160%; /* 1.8rem */
+      letter-spacing: 0.00938rem;
+      display: flex;
+      flex-direction: column;
+      h4 {
+        color: #7a807e;
+        font-size: 0.875rem;
+        font-weight: 400;
+        line-height: 143%; /* 1.25125rem */
+        span {
+          color: #000d09;
+        }
+      }
+    }
+  }
+  :host ::ng-deep .training-issues-header {
+    .header-button {
+      font-size: 0.875rem;
+      font-weight: 500;
+      line-height: 143%;
+      letter-spacing: 0.00938rem;
+    }
+    .training-cancel-button {
+      color: #a1b2ad !important;
+      padding:0.75rem;
+    }
+    .training-continue-button {
+      color: #fff;
+      padding: 0.75rem 1.87rem;
+    }
+  }
+  .training-review-container {
+    background-color: #fcfcfc;
+    padding: 4rem 7.38rem;
+  }
+  :host ::ng-deep .training-review-stepper .mat-step-header {
+    .mat-step-icon {
+      margin-bottom: 0.69rem;
+      width: 28px;
+      height: 28px;
+    }
+    .mat-step-label {
+      color: #5c9b31;
+      font-size: 0.75rem;
+      font-weight: 500;
+      line-height: 166%; /* 1.245rem */
+      letter-spacing: 0.025rem;
+      .mat-step-optional {
+        display: none;
+      }
+    }
+  }
+  :host ::ng-deep .training-review-stepper .mat-step-header[aria-disabled="true"] {
+    .mat-step-icon {
+      background: #e3e4e4;
+      border: 1px solid #a1b2ad;
+      color: #a1b2ad;
+    }
+    .mat-step-label {
+      color: #a1b2ad;
+    }
+  }
+  
+  :host ::ng-deep .training-review-stepper .mat-horizontal-content-container {
+    padding: 5.37rem 2.18rem;
+  }
+  
+  :host::ng-deep button.disabled-pointer:disabled{
+    cursor: default;
+    opacity: 0.65 !important;
+    color: #fff;
+    background-color: grey;
+    border-color: grey;
+  }
+  .title{
+    color: #7A807E;
+  }
+  

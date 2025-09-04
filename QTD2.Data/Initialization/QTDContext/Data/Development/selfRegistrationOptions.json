@@ -1,0 +1,58 @@
+[
+  {
+    "ILAId": 1,
+    "MakeAvailableForSelfReg": true,
+    "RequireAdminApproval": false,
+    "AcknowledgeRegDisclaimer": true,
+    "LimitForLinkedPositions": false,
+    "CloseRegOnStartDate": true,
+    "EnableWaitlist": false,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 2,
+    "MakeAvailableForSelfReg": false,
+    "RequireAdminApproval": true,
+    "AcknowledgeRegDisclaimer": true,
+    "LimitForLinkedPositions": true,
+    "CloseRegOnStartDate": false,
+    "EnableWaitlist": true,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 3,
+    "MakeAvailableForSelfReg": true,
+    "RequireAdminApproval": true,
+    "AcknowledgeRegDisclaimer": false,
+    "LimitForLinkedPositions": false,
+    "CloseRegOnStartDate": false,
+    "EnableWaitlist": false,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 4,
+    "MakeAvailableForSelfReg": false,
+    "RequireAdminApproval": false,
+    "AcknowledgeRegDisclaimer": true,
+    "LimitForLinkedPositions": true,
+    "CloseRegOnStartDate": true,
+    "EnableWaitlist": false,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 5,
+    "MakeAvailableForSelfReg": true,
+    "RequireAdminApproval": true,
+    "AcknowledgeRegDisclaimer": true,
+    "LimitForLinkedPositions": true,
+    "CloseRegOnStartDate": false,
+    "EnableWaitlist": true,
+    "Deleted": true,
+    "Active": false
+  }
+
+]

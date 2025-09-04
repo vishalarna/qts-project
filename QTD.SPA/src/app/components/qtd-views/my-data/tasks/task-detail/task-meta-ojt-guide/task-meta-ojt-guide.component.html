@@ -1,0 +1,306 @@
+<app-data-loader *ngIf="task === undefined || steps === undefined"></app-data-loader>
+<ng-container *ngIf="task !== undefined && steps !== undefined">
+  <div class="mainGrid w-full">
+    <div class="flex flex-col w-full">
+      <div class="mainBorder pr-5">
+        <div class="flex flex-row justify-between">
+          <div class="flex flex-col m-0">
+            <h2 class="mb-2">Steps/Sub-Steps</h2>
+            <p *ngIf="steps !== undefined" class="text-xs" class="text-gray-400">Showing {{steps.length}} Step(s)</p>
+          </div>
+          <div *ngIf="steps !== undefined">
+            <div class="flex flex-row gap-3 mt-3">
+              <app-button  [disabled]="isActive" [matMenuTriggerFor]="addNewMenu" variant="text" icon="add"
+                iconPosition="left" text="Add new">
+              </app-button>
+              <app-icon class="text-gray-500" icon="more_horiz" [matMenuTriggerFor]="menu"></app-icon>
+              <mat-menu #menu="matMenu">
+                <label>Add Events here</label>
+              </mat-menu>
+              <mat-menu #addNewMenu>
+
+                  <label [disabled]="isActive" mat-menu-item (click)="openStepFlyPanel(addStep,undefined,0)"
+                    class="cursor-pointer">Step/Sub-Steps</label>
+                  <label [disabled]="isActive" mat-menu-item (click)="openQuestionFlyPanel(addQuestion,undefined)"
+                    class="cursor-pointer">Question And
+                    Answers</label>
+                  <label [disabled]="isActive" mat-menu-item (click)="openSuggestionFlyPanel(addSuggestion,undefined)"
+                    class="cursor-pointer">{{("Task" | labelReplacement)| async}} Specific
+                    Suggestions</label>
+              </mat-menu>
+            </div>
+          </div>
+        </div>
+        <app-data-loader *ngIf="steps === undefined"></app-data-loader>
+        <div [cdkDropListDisabled]="isActive" cdkDropList class="flex flex-col">
+          <div *ngFor="let item of steps,index as i">
+            <div class=" bg-white shadow-sm p-3 overflow-hidden w-full mt-3">
+              <div class="flex flex-row justify-between">
+                <div class="flex flex-row gap-1">
+                  <app-icon [cdkDragHandleDisabled]="isActive" cdkDragHandle class="mr-2" icon="drag_indicator"
+                    style="color: darkgrey!important;cursor:not-allowed">
+                  </app-icon>
+                  <p class="m-0 text-sm font-bold">Step/Sub-Steps {{i+1}}</p>
+                  <!-- <p class="text-xs m-1 text-gray-400">Created May 05, 2021 by Lucy</p> -->
+                </div>
+                <div>
+                  <app-icon icon="more_horiz" [matMenuTriggerFor]="stepMenu"></app-icon>
+                  <mat-menu #stepMenu>
+                    <label mat-menu-item [disabled]="isActive || !item.isCreated" (click)="openStepFlyPanel(addStep,item,i)"
+                    class="cursor-pointer">Edit</label>
+                      <label mat-menu-item [disabled]="isActive || !item.isCreated" (click)="deleteStep(deleteDialog,item.id)"
+                        class="cursor-pointer">Delete</label>
+                  </mat-menu>
+                </div>
+              </div>
+              <div class="mt-4 ml-4 mr-0 w-fit">
+                <div [innerHtml]="item.description"></div>
+                <app-button *ngIf="images[i] !== undefined"
+                  [text]="(collapseImage[i] ? 'Collapse' : 'Expand' )+ ' attached Image'"
+                  (clicked)="collapseImage[i] = !collapseImage[i]" variant="text"
+                  [icon]="collapseImage[i] ? 'expand_more': 'expand_less'"></app-button>
+                <!-- <span class="text-gray-500 text-sm" *ngIf="images[i] === undefined">No Image Attached</span> -->
+                <div *ngIf="collapseImage[i]" [innerHtml]="images[i]"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="mainBorder pr-5 pt-4">
+        <div class="flex flex-row justify-between">
+          <div class="flex flex-col m-0">
+            <h2 class="mb-2">Question Answers</h2>
+            <p class="text-xs" class="text-gray-400">Showing {{questions.length}} Question Answers</p>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <table cdkDropList mat-table [dataSource]="Datasource" class="table-bordered ">
+            <ng-container matColumnDef="order">
+              <mat-header-cell *matHeaderCellDef> Reorder
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <app-icon [cdkDragHandleDisabled]="isActive" cdkDragHandle class="pt-0 mr-2" icon="drag_indicator"
+                style="color: darkgrey!important;cursor:not-allowed"></app-icon>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="number">
+              <mat-header-cell *matHeaderCellDef> Number
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row,index as i">
+                <span>{{i + 1}}</span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="question">
+              <mat-header-cell *matHeaderCellDef> Question
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span class="questionClass" [innerHtml]="row.question"></span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="answer">
+              <mat-header-cell *matHeaderCellDef> Answer
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span class="questionClass" [innerHtml]="row.answer"></span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="buttons">
+              <mat-header-cell *matHeaderCellDef="">Actions</mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <app-icon icon="more_verti" [matMenuTriggerFor]="QAMenu"></app-icon>
+                <mat-menu #QAMenu="matMenu">
+                  <label mat-menu-item [disabled]="isActive || !row.isCreated" (click)="openQuestionFlyPanel(addQuestion,row)"
+                  class="cursor-pointer">Edit</label>
+                  <label mat-menu-item [disabled]="isActive || !row.isCreated" (click)="deleteQuestion(deleteDialog,row)"
+                  class="cursor-pointer"><span>Delete</span></label>
+                </mat-menu>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+              <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+
+          </table>
+          <mat-paginator #questionPaginator="matPaginator" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+            aria-label="Select page of Question Answers">
+          </mat-paginator>
+        </div>
+      </div>
+      <div class="mainBorder pr-5 pt-4">
+        <div class="flex flex-row justify-between">
+          <div class="flex flex-col m-0">
+            <h2 class="mb-2">{{("Task" | labelReplacement)| async}} Specific Suggestions</h2>
+            <p class="text-xs" class="text-gray-400">Showing {{suggestions.length}} {{("Task" | labelReplacement)| async}} Specific Suggestions</p>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <table mat-table [dataSource]="SuggestionSource" class="table-bordered w-full">
+            <ng-container matColumnDef="order">
+              <mat-header-cell *matHeaderCellDef> Reorder
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <app-icon [cdkDragHandleDisabled]="isActive" cdkDragHandle class="pt-0 mr-2" icon="drag_indicator"
+                style="color: darkgrey!important;cursor:not-allowed"></app-icon>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="number">
+              <mat-header-cell *matHeaderCellDef> Number
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row,index as i">
+                <span>{{i + 1}}</span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="description">
+              <mat-header-cell *matHeaderCellDef> Suggestion
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <span [innerHtml]="row.description"></span>
+              </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="buttons">
+              <mat-header-cell *matHeaderCellDef="">Actions</mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                <app-icon icon="more_verti" [matMenuTriggerFor]="suggestionMenu"></app-icon>
+                <mat-menu #suggestionMenu>
+                  <label mat-menu-item [disabled]="isActive || !row.isCreated" (click)="openSuggestionFlyPanel(addSuggestion,row)"
+                  class="cursor-pointer">Edit</label>
+                    <label mat-menu-item [disabled]="isActive || !row.isCreated" (click)="deleteSuggestion(deleteDialog,row)"
+                      class="cursor-pointer">Delete</label>
+                </mat-menu>
+              </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="suggestionDisplay"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: suggestionDisplay;"></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+              <td class="mat-cell w-full m-2">No data to display</td>
+            </tr>
+
+          </table>
+          <mat-paginator #suggestionPaginator="matPaginator" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+            aria-label="Select page of Question Answers">
+          </mat-paginator>
+        </div>
+      </div>
+    </div>
+    <div *ngIf="!ojtData">
+      <app-data-loader></app-data-loader>
+    </div>
+    <div *ngIf="ojtData">
+      <div class="flex flex-col p-3 bottomBorder">
+        <div class="flex flex-row justify-between">
+          <h2>Conditions</h2>
+          <app-button  [disabled]="true" variant="text" icon="edit"
+            iconPosition="left" text="Edit"></app-button>
+        </div>
+        <div *ngIf="ojtData" class="text-sm text-gray-500">
+          <ol>
+            <li *ngFor="let item of ojtData.metaConditions">
+              <div [innerHTML]="item"></div>
+            </li>
+          </ol>
+        </div>
+      </div>
+      <div class="flex flex-col p-3 bottomBorder">
+        <div class="flex flex-row justify-between">
+          <h2>Criteria</h2>
+          <app-button [disabled]="true" variant="text" icon="edit"
+            iconPosition="left" text="Edit"></app-button>
+        </div>
+        <div *ngIf="ojtData" class="text-sm text-gray-500">
+          <ol>
+            <li *ngFor="let item of ojtData.metaCriteria">
+              <div [innerHTML]="item"></div>
+            </li>
+          </ol>
+        </div>
+      </div>
+      <div class="flex flex-col p-3 bottomBorder">
+        <div class="flex flex-row justify-between">
+          <h2>References</h2>
+          <app-button  [disabled]="true" variant="text" icon="edit"
+            iconPosition="left" text="Edit"></app-button>
+        </div>
+        <div *ngIf="ojtData" class="text-sm text-gray-500">
+          <ol>
+            <li *ngFor="let item of ojtData.metaReferences">
+              <div [innerHTML]="item"></div>
+            </li>
+          </ol>
+        </div>
+      </div>
+      <div class="flex flex-col p-3 bottomBorder">
+        <div class="flex flex-row justify-between">
+          <h2>{{("Tool" | labelReplacement)| async}}s</h2>
+          <app-button [disabled]="true" variant="text" icon="edit"
+            iconPosition="left" text="Edit"></app-button>
+        </div>
+        <div class="flex flex-row flex-wrap">
+          <ng-container *ngFor="let tool of tools">
+            <div class="mr-2 p-2 circularBorder mb-3">
+              <p class="text-xs mb-0 text-gray-500">{{tool.name}}</p>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+      <div class="flex flex-col p-3">
+        <div class="flex flex-row justify-between">
+          <h2>Training Groups</h2>
+          <app-button [disabled]="true" variant="text" icon="edit"
+            iconPosition="left" text="Edit"></app-button>
+        </div>
+        <div class="flex flex-row flex-wrap">
+          <ng-container *ngFor="let group of trainingGroup">
+            <div class="mr-2 p-2 circularBorder mb-3">
+              <p class="text-xs mb-0 text-gray-500">{{group.groupName}}</p>
+            </div>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #addStep>
+  <app-fly-panel-add-step [editStep]="selectedStep" [taskId]="task.id" (refresh)="closeAndRefreshSteps()"
+    (closed)="flypanelSrvc.close()">
+  </app-fly-panel-add-step>
+</ng-template>
+
+<ng-template #addQuestion>
+  <app-fly-panel-add-question [editQuestion]="taskQuestion" (refresh)="refreshQuestions()" [taskId]="task.id"
+    (closed)="flypanelSrvc.close()">
+  </app-fly-panel-add-question>
+</ng-template>
+
+<ng-template #addSuggestion>
+  <app-fly-panel-add-suggestion  [editSuggestion]="taskSuggestion" [taskId]="task.id" (refresh)="refreshSuggestion()"
+    (closed)="flypanelSrvc.close()">
+  </app-fly-panel-add-suggestion>
+</ng-template>
+<!--
+<ng-template #editCondition>
+  <app-fly-panel-edit-condition (refresh)="refreshConditions($event)" [data]="task.conditions" [taskId]="task.id"
+    (closed)="flypanelSrvc.close()"></app-fly-panel-edit-condition>
+</ng-template>
+
+<ng-template #editCriteria>
+  <app-fly-panel-edit-criteria (refresh)="refreshCriteria($event)" [data]="task.criteria" [taskId]="task.id"
+    (closed)="flypanelSrvc.close()"></app-fly-panel-edit-criteria>
+</ng-template>
+
+<ng-template #editReference>
+  <app-fly-panel-edit-references (refresh)="refreshReference($event)" [data]="task.references" [taskId]="task.id"
+    (closed)="flypanelSrvc.close()"></app-fly-panel-edit-references>
+</ng-template> -->
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue [header]="dialogTitle" [description]="dialogDesc" cancelText="No" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" [reasonOnly]="!canDeleteOJTData" (canceled)="dialog.closeAll()" (confirmed)="getDeleteData($event)">
+  </app-qtd-dialogue>
+</ng-template>

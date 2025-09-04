@@ -1,0 +1,73 @@
+<ng-container *ngIf="(!showReasonModal && !reasonOnly)">
+    <mat-dialog-content class="p-0" style="max-height: unset;">
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2 px-4" style="border-bottom: 1px solid #E1E5E4;">
+            <p mat-dialog-title [textContent]="header"></p>
+            <app-button *ngIf="!detailsInfo" ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+        </div>
+        <div class="table-captions px-4">You are selecting to unlink the following R-R {{("Task" | labelReplacement)| async}}(s): </div>
+        <div class="selected-tasks-list mx-3">
+            <mat-table class="selected-tasks-list-mat-table" matSortActive="number" matSortDirection="asc" matSort [dataSource]="r5TasksToUnlinkData">
+                <ng-container matColumnDef="number">
+                  <mat-header-cell *matHeaderCellDef mat-sort-header> #
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row" >
+                    <span *ngIf="row.active">{{row.impactedTaskFullNumber}}</span>
+                    <span *ngIf="!row.active" class="italic text-gray-four">{{row.impactedTaskFullNumber}}</span>
+                  </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="description" >
+                  <mat-header-cell *matHeaderCellDef mat-sort-header class="px-2"> Task Statement
+                  </mat-header-cell>
+                  <mat-cell *matCellDef="let row" class="justify-content-start">
+                    <span *ngIf="row.active">{{row.impactedTaskDescription}} </span>
+                    <span *ngIf="!row.active" class="italic text-gray-four">{{row.impactedTaskDescription}} </span>
+                  </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayColumns;" [class.inActiveItem]="!row.active"></mat-row>
+                <!-- Row shown when there is no matching data.-->
+                <tr class="mat-row flex text-center " *matNoDataRow>
+                  <td class="mat-cell w-full m-2">No data to display</td>
+                </tr>
+              </mat-table>
+        </div>
+
+        <div *ngIf="reasonName && !isHTML  && !detailsInfo" class="flex flex-row">
+            <span class="font-bold" [textContent]="reasonName"></span>
+        </div>
+        <div class="mb-3 table-captions px-4 pb-4" style="border-bottom: 1px solid #E1E5E4;" >This will remove the R5 impact linkage. Are you sure you want to continue?</div>
+        <!-- header ends here -->
+    </mat-dialog-content>
+    <mat-dialog-actions class="flex flex-row justify-end">
+        <app-button type="button" (clicked)="closeDialog()" [text]="cancelText" color="grey" size="sm" class="mr-2">
+        </app-button>
+        <app-button type="button" (clicked)="onConfirm($event)" [text]="confirmText" color="secondary" size="sm"
+            class="mr-2" [mat-dialog-close]="!showEffectiveDateAndReason"></app-button>
+    </mat-dialog-actions>
+</ng-container>
+
+<ng-container *ngIf="(showReasonModal || reasonOnly)">
+    <mat-dialog-content>
+        <!-- header starts here -->
+        <div class="flex flex-row justify-between items-center mt-2">
+            <p mat-dialog-title [textContent]="header"></p>
+            <app-button ButtonType='icon' icon="close" (clicked)="closeDialog()"></app-button>
+        </div>
+        <hr class="mt-1 mb-4">
+        <p  class="mb-4 text-sm" [textContent]="reasonDescription"></p>
+        <hr *ngIf="reasonDescription" class="mt-1 mb-8">
+        <div class="flex flex-col">
+            <app-label style="color: #7A807E;" text="Effective Date"></app-label>
+            <app-date  [(ngModel)]="effectiveDate"></app-date>
+            <app-label style="color: #7A807E;" text="Note/Reason " class="mt-2 label required"></app-label>
+            <app-textarea [(ngModel)]="reason" required></app-textarea>
+            <app-input-error *ngIf="!reason" text="Note/Reason is Required"></app-input-error>
+        </div>
+        <!-- header ends here -->
+    </mat-dialog-content>
+    <mat-dialog-actions class="flex flex-row justify-end">
+        <app-button type="button" (clicked)="onSaveReason($event)" [disabled]="!reason" text="Save" color="primary" size="sm" class="mr-2">
+        </app-button>
+    </mat-dialog-actions>
+</ng-container>

@@ -1,0 +1,11 @@
+<div class="flex flex-col" id="da_Cntnr">
+    <app-textbox type="text" name="text" [placeholder]="Placeholder" [(ngModel)]="textValue"></app-textbox>
+    <div class="flex flex-row justify-between mt-2">
+        <app-button type="submit" variant="text" text="Cancel" icon="block" iconPosition="left"
+            (clicked)="Cancelled.emit($event)">
+        </app-button>
+        <app-button type="submit" variant="text" icon="add" iconPosition="left" text="Save"
+            (clicked)="Saved.emit(textValue)">
+        </app-button>
+    </div>
+</div>

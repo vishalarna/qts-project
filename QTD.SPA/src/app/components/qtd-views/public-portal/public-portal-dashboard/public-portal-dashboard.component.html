@@ -1,0 +1,390 @@
+<div class="flex flex-col pt-2 px-4 w-full">
+    <div class="min-vh-100">
+        <div class="flex flex-row w-100">
+            <div class="w-50 mr-4">
+                <img [src]="companyLogo" class="w-32 h-auto mr-4" alt="Company Logo" />
+            </div>
+        </div>
+        <div class="flex flex-row justify-center w-100">
+            <div class="flex flex-col w-75">
+                <div class="flex flex-row pl-4 w-full"
+                    style="background-image: url('./assets/img/emp_portalBanner.png');background-repeat: no-repeat;min-height: 12rem;align-items: center;background-size: contain;">
+                    <span class="text-2xl">{{companyName}} Course Catalog</span>
+                </div>
+            </div>
+ 
+        </div>
+        <div *ngIf="showLoader" class="loader-class">
+            <app-spinner></app-spinner>
+        </div>
+        <div class="flex flex-col pt-3 px-6" *ngIf="!showLoader">
+ 
+            <div class="flex flex-row justify-center pb-2" style="align-items:baseline;">
+                <div class="flex flex-row" style="justify-content: flex-end; width:75%;">
+                    <span (click)="selectedTab = 'dashboard'"
+                        [ngClass]="selectedTab === 'dashboard' ? 'selectedTab':'pointerClass'" class="border-2 p-2"
+                        style="border-radius: 4px 0px 0px 4px;text-align: center;">Calendar View</span>
+ 
+                    <span (click)="onDetailViewClick()"
+                        [ngClass]="selectedTab === 'detail' ? 'selectedTab':'pointerClass'" class="border-2 p-2"
+                        style="text-align: center;">Detail View</span>
+                </div>
+            </div>
+            <div *ngIf="selectedTab === 'dashboard'" class="flex flex-col justify-center">
+                <div class="flex flex-row w-full justify-center mb-3">
+                    <!-- Calendar View -->
+                    <div class="bg-white flex flex-col calender-width">
+                        <mwl-calendar-month-view [headerTemplate]="monthHeader" [cellTemplate]="monthCell"
+                            [viewDate]="newDate" (beforeViewRender)="calendarBeforeViewRender($event)">
+                        </mwl-calendar-month-view>
+                    </div>
+                </div>
+                <div class="flex flex-row justify-center w-100">
+                    <span *ngIf="dateClassesDataSource.data.length==0"
+                        class="bg-white rounded px-3 mx-4 py-2 d-flex justify-center shadow-sm w-75 text-2xl text-danger">No courses available for the selected date.</span>
+                    <div *ngIf="dateClassesDataSource.data.length>0"
+                        class="bg-white rounded m-3 py-2 px-3 mx-4 shadow-sm public-classes w-75">
+                        <div class="flex flex-row justify-between">
+                            <span class="text-lg font-bold">List of Classes</span>
+                        </div>
+                        <mat-table [dataSource]="dateClassesDataSource" matSort [multiTemplateDataRows]="true">
+                            <ng-container matColumnDef="expand">
+                                <mat-header-cell *matHeaderCellDef style="max-width: 100px">
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row;" style="max-width: 100px">
+                                    <app-button variant="text"
+                                        [icon]="expandedElement === row ? 'expand_less' : 'expand_more'"
+                                        (clicked)="getExpandedElement(row); $event.stopPropagation()">
+                                    </app-button>
+                                </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="ilaName">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Course Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.ilaObject.ilaNickName}}</mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="totalTrainingHours">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Total Training Hours
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.ilaObject.totalTrainingHours}}</mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="ilaDescription">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Description
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row"><app-textarea [value]="row.ilaObject.description" type="text" [isDisabled]="true" class="w-full"></app-textarea></mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="moreInformation">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    More Information
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <app-button ButtonType="button" size="sm" text="View Classes & Register"
+                                        class="pr-2 action-button"
+                                        (clicked)="openPublicClassFlyPanel(PublicClass,row.ilaObject.id);"></app-button>                                    
+                                </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="ClassDetails">
+                                <mat-cell *matCellDef="let row" [attr.colspan]="columnsToDisplay"
+                                    [class.sub-table-cell]="true" class="py-0">
+                                    <div style="width: 100%">
+                                        <div class="pl-3">
+                                            <ng-container class="mt-4"
+                                                *ngTemplateOutlet="classDetailsTable"></ng-container>
+                                        </div>
+                                    </div>
+                                </mat-cell>
+                            </ng-container>
+ 
+                            <mat-header-row *matHeaderRowDef="displayedDateColumns"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: displayedDateColumns"></mat-row>
+                            <mat-row [ngStyle]="{ display: expandedElement === row ? 'block' : 'none' }"
+                                *matRowDef="let row; columns: ['ClassDetails']" class="overview-detail-row"></mat-row>
+                        </mat-table>
+                    </div>
+                </div>
+            </div>
+ 
+            <div *ngIf="selectedTab === 'detail'" class="flex flex-col justify-center">
+                <div class="flex flex-row justify-center w-100">
+                    <span *ngIf="publicallyAvailableCourses.data.length==0"
+                        class="bg-white rounded m-3 py-3 px-3 mx-4 d-flex justify-center shadow-sm w-75 text-2xl ">No
+                        Courses Available. Check back again later</span>
+                    <div *ngIf="publicallyAvailableCourses.data.length>0"
+                        class="bg-white rounded m-3 py-3 px-3 mx-4 shadow-sm w-75">
+                        <mat-table [dataSource]="publicallyAvailableCourses" matSort [multiTemplateDataRows]="true">
+                            <ng-container matColumnDef="expand">
+                                <mat-header-cell *matHeaderCellDef style="max-width: 100px">
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row;" style="max-width: 100px">
+                                    <app-button variant="text"
+                                        [icon]="expandedElement === row ? 'expand_less' : 'expand_more'"
+                                        (clicked)="getExpandedElement(row); $event.stopPropagation()">
+                                    </app-button>
+                                </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="ilaNumber">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Course Number
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.ilaObject.ilaNumber}}</mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="ilaName">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Course Name
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.ilaObject.ilaNickName}}</mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="deliveryMethodName">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Delivery Method
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.ilaObject.deliveryMethodName}}</mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="creditHours">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Credit Hours
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.ilaObject.creditHours}}</mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="classesCount">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Class Count
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">{{row.ilaObject.classesCount}}</mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="action">
+                                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                                    Action
+                                </mat-header-cell>
+                                <mat-cell *matCellDef="let row">
+                                    <app-button ButtonType="button" size="sm" class="pr-2 action-button"
+                                        text="View Classes & Register"
+                                        (clicked)="openPublicClassFlyPanel(PublicClass,row.ilaObject.id)"></app-button>
+ 
+                                </mat-cell>
+                            </ng-container>
+                            <ng-container matColumnDef="expandedDetail">
+                                <mat-cell *matCellDef="let row" [attr.colspan]="columnsToDisplay"
+                                    [class.sub-table-cell]="true" class="py-0">
+                                    <div style="width: 100%">
+                                        <div class="pl-3">
+                                            <ng-container class="mt-4" *ngTemplateOutlet="expandedTable"></ng-container>
+                                        </div>
+                                    </div>
+                                </mat-cell>
+                            </ng-container>
+ 
+ 
+                            <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+                            <mat-row *matRowDef="let row; columns: columnsToDisplay"></mat-row>
+                            <mat-row [ngStyle]="{ display: expandedElement === row ? 'block' : 'none' }"
+                                *matRowDef="let row; columns: ['expandedDetail']" class="overview-detail-row"></mat-row>
+ 
+                        </mat-table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <footer>
+        <div class="w-100">
+            <div class="flex flex-row justify-center">
+                Copyright by <img [src]="companyLogo" style="width: 30px; height: auto; margin: 0px 5px;"
+                    alt="Company Logo" /> {{currentDate.getFullYear()}}
+            </div>
+        </div>
+    </footer>
+</div>
+ 
+<ng-template #expandedTable>
+    <app-data-loader *ngIf="!expandedElement"></app-data-loader>
+    <mat-table *ngIf="expandedElement" [dataSource]="expandedTableSource" matSort class="w-full">
+        <ng-container matColumnDef="classStartDateTime">
+            <mat-header-cell mat-sort-header *matHeaderCellDef>
+                Class Detail
+            </mat-header-cell>
+            <mat-cell class="pt-3 pb-3" *matCellDef="let row">
+                <span>{{row.startDateTime | date: 'shortDate' }} {{row.startDateTime | date:'shortTime'}} -
+                    {{row.endDateTime | date: 'shortDate'}} {{row.endDateTime | date:'shortTime'}}</span>
+            </mat-cell>
+        </ng-container>
+ 
+        <ng-container matColumnDef="location">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Location
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.locationName}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="instructor">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Instructor Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.instructorName}}</mat-cell>
+        </ng-container>
+ 
+ 
+        <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Action
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <app-button ButtonType="button" size="sm" class="pr-2 action-button" text="Submit Request"
+                    (clicked)="submitRequestClick(onRegister, row.id);"></app-button>
+            </mat-cell>
+        </ng-container>
+ 
+        <mat-header-row *matHeaderRowDef="expandedColumnsToDisplay"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: expandedColumnsToDisplay;"></mat-row>
+    </mat-table>
+</ng-template>
+ 
+<ng-template #monthHeader>
+    <div class="flex flex-row justify-between w-full px-2 py-3">
+        <button (click)="previousAndNextClick('previous')">
+            <app-icon mwlCalendarPreviousView class="cursor-pointer text-gray-500" matTooltip="Go To Previous Month"
+                view="month" [(viewDate)]="newDate" icon="arrow_back_ios">
+            </app-icon>
+        </button>
+        <div class="flex flex-row align-items-center">
+            <span mwlCalendarToday class="mr-2 cursor-pointer" matTooltip="Go To Current Date" [(viewDate)]="newDate"
+                (mwlClick)="classCellClick(newDate)">
+                {{selectedDay | date:'MMMM yyyy'}}
+            </span>
+            <app-icon [matMenuTriggerFor]="months" style="color:#456FA5;" class="linkText"
+                icon="expand_more"></app-icon>
+            <mat-menu #months="matMenu">
+                <div *ngFor="let month of monthInfo">
+                    <button mat-menu-item (click)="changeMonth(month.number) ">
+                        {{month.title}}
+                    </button>
+                </div>
+            </mat-menu>
+        </div>
+        <button (click)="previousAndNextClick('next')">
+            <app-icon mwlCalendarNextView class="cursor-pointer text-gray-500" matTooltip="Go To Next Month"
+                view="month" [(viewDate)]="newDate" icon="arrow_forward_ios">
+            </app-icon>
+        </button>
+    </div>
+    <div class="d-flex w-100">
+        <span *ngFor="let day of daysInfo" style="width: 15%; display: block;font-weight: 600; text-align: center;">
+            {{day}}
+        </span>
+    </div>
+</ng-template>
+<ng-template #monthCell let-highlightDay="highlightDay" let-unhighlightDay="unhighlightDay"
+    let-eventClicked="eventClicked" let-eventTimesChanged="eventTimesChanged" let-day="day">
+  <div class="flex p-2"
+      [ngClass]="{
+        'cursor-pointer': day.inMonth,
+        'cursor-default': !day.inMonth
+      }"
+      style="border-top: 1px dashed lightgray; align-items: center; justify-content: center;"
+      (click)="day.inMonth && onClickDate(day.date)">
+    
+    <span class="p-3"
+        [ngClass]="{
+          'blueBg': day.date.toDateString() === selectedDayString
+                   || day.date.toDateString() === currentDate.toDateString(),
+          'whiteBg': day.inMonth
+                     && day.date.toDateString() !== currentDate.toDateString()
+                     && day.date.toDateString() !== selectedDayString,
+          'blurBg': !day.inMonth
+        }"
+        [style.pointer-events]="day.inMonth ? 'auto' : 'none'"
+        [style.opacity]="day.inMonth ? '1' : '0.3'">
+      {{ day.date | date:'d' }}
+    </span>
+  </div>
+</ng-template>
+
+ 
+ 
+<ng-template #classDetailsTable>
+    <app-data-loader *ngIf="!expandedElement"></app-data-loader>
+    <mat-table *ngIf="expandedElement" [dataSource]="expandedTableSource" matSort class="w-full">
+        <ng-container matColumnDef="classStartDateTime">
+            <mat-header-cell mat-sort-header *matHeaderCellDef>
+                Start Date
+            </mat-header-cell>
+            <mat-cell class="pt-3 pb-3" *matCellDef="let row">
+                <span>{{row.startDateTime | date: 'shortDate' }} {{row.startDateTime | date:'shortTime'}} </span>
+            </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="classEndDateTime">
+            <mat-header-cell mat-sort-header *matHeaderCellDef>
+                End Date
+            </mat-header-cell>
+            <mat-cell class="pt-3 pb-3" *matCellDef="let row">
+                <span>{{row.endDateTime | date: 'shortDate' }} {{row.endDateTime | date:'shortTime'}}</span>
+            </mat-cell>
+        </ng-container>
+ 
+        <ng-container matColumnDef="location">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Location
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.locationName}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="instructor">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+                Instructor Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.instructorName}}</mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>              
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">                
+                <app-button ButtonType="button" size="sm" text="Submit Request" class="pr-2 action-button"
+                    (clicked)="submitRequestClick(onRegister, row.id);"></app-button>
+            </mat-cell>
+        </ng-container>
+ 
+        <mat-header-row *matHeaderRowDef="dashBoardClassDetails"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: dashBoardClassDetails;"></mat-row>
+    </mat-table>
+</ng-template>
+ 
+<ng-template #disclaimer>
+    <app-disclaimer-dialog (closed)="dialog.closeAll();">
+    </app-disclaimer-dialog>
+</ng-template>
+
+<ng-template #onRegister>
+  <mat-dialog-content>
+    <div class="flex flex-row justify-between items-center pb-4 pt-4">
+      <p class="text-xl font-semibold text-gray-900">Confirm: Are you a member of our training community?</p>
+      <app-button ButtonType='icon' class="mt--4" icon="close" (clicked)="dialog.closeAll()"></app-button>
+    </div>
+
+    <p class="mt-2">If you have previously completed training with our company, log into your Employee Portal account to
+      complete your self-registration request.</p>
+
+    <p class="mt-2">If you have not previously completed training with our company, or are not sure if you have an
+      Employee Portal account with our company, proceed with completing the Registration form.</p>
+  </mat-dialog-content>
+  <mat-dialog-actions>
+      <div class="flex justify-between w-full">
+    <app-button type="button" text="Employee Portal" color="primary" size="sm" class="mr-2"
+      (clicked)="redirectToEmployee()">
+    </app-button>
+    <app-button type="button" text="New Registration" color="primary" size="sm" class="mr-2"
+      (clicked)="openRegisterationFlyPanel(registerFlyPanel)">
+    </app-button>
+</div>
+  </mat-dialog-actions>
+</ng-template>
+
+<ng-template #PublicClass>
+    <app-fly-panel-public-class-detail-view
+        [selectedClass]="selectedClass" [instanceName]="instanceName" (register)="openRegistrationForm(registerFlyPanel, $event);"></app-fly-panel-public-class-detail-view>
+</ng-template>
+
+<ng-template #registerFlyPanel>
+    <app-fly-panel-registration-page [classId]="selectedClassId" [classDetails]="selectedClassDetails" [instanceName]="instanceName"></app-fly-panel-registration-page>
+</ng-template>
+

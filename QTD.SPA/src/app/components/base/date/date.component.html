@@ -1,0 +1,24 @@
+<input type="date" [name]="name" [placeholder]="placeholder" [min]="minDate" [max]="maxDate" [(ngModel)]="defaultValue" [value]="defaultValue" [disabled]="disabled"
+  text="text" (input)="valueChanged($event)" class="
+    text-sm
+    border
+    h-5
+    px-4
+    py-6
+    mt-2
+    w-full
+    hover:outline-none
+    focus:outline-none
+    focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50
+    rounded
+  "
+  />
+
+<!--
+<mat-form-field appearance="outline">
+  <mat-label>{{placeholder==='' ? "Select Date" : placeholder}}</mat-label>
+  <input matInput [matDatepicker]="picker" (input)="valueChanged($event)" (change)="valueChanged($event)">
+  <mat-hint>MM/DD/YYYY</mat-hint>
+  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+  <mat-datepicker #picker></mat-datepicker>
+</mat-form-field> -->

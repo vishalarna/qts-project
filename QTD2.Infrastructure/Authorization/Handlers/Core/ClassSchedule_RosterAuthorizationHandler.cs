@@ -1,0 +1,40 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Authorization.Infrastructure;
+using QTD2.Domain.Entities.Core;
+using QTD2.Infrastructure.Authorization.Operations.Core;
+
+namespace QTD2.Infrastructure.Authorization.Handlers.Core
+{
+    public class ClassSchedule_RosterAuthorizationHandler : QTDHandler<OperationAuthorizationRequirement, ClassSchedule_Roster>
+    {
+        protected override System.Threading.Tasks.Task HandleRequirementAsync(AuthorizationHandlerContext context, OperationAuthorizationRequirement requirement, ClassSchedule_Roster resource)
+        {
+            if (requirement.Name == ClassSchedule_RosterOperations.Create.Name)
+            {
+                context.Succeed(requirement);
+            }
+
+            if (requirement.Name == ClassSchedule_RosterOperations.Read.Name)
+            {
+                context.Succeed(requirement);
+            }
+
+            if (requirement.Name == ClassSchedule_RosterOperations.Update.Name)
+            {
+                context.Succeed(requirement);
+            }
+
+            if (requirement.Name == ClassSchedule_RosterOperations.Delete.Name)
+            {
+                context.Succeed(requirement);
+            }
+
+            return System.Threading.Tasks.Task.CompletedTask;
+        }
+    }
+}

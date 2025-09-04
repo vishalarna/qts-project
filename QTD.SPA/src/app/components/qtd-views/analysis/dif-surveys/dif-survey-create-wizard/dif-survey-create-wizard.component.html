@@ -1,0 +1,78 @@
+<mat-toolbar
+  class="app-toolbar-sticky flex align-items-center dif-survey-header"
+>
+  <div class="flex items-center">
+    <app-button
+      type="button"
+      ButtonType="icon"
+      icon="keyboard_arrow_left"
+      class="header-back-button"
+      (click) ="goBack()"
+    ></app-button>
+    <div class="edit-dif-survey-heading ml-4">
+      <h3>Create new DIF Survey</h3>
+    </div>
+  </div>
+  <div class="flex flex-row items-center">
+    <app-button customClasses="dif-survey-cancel-button header-button mr-2" (click) ="goBack()"  variant="text" text="Cancel">
+    </app-button>
+    <app-button
+      *ngIf="currentStep != 4"
+      type="button"
+      text="Continue"
+      size="sm"
+      [disabled]="!isStep1FormValid"
+      customClasses="dif-survey-continue-button header-button disabled-pointer"
+      (clicked)="continueClickAsync($event)"
+    >
+    </app-button>
+    <app-button
+      *ngIf="currentStep == 4"
+      type="button"
+      text="Publish"
+      size="sm"
+      (clicked)="publishClickAsync()"
+      customClasses="dif-survey-continue-button header-button disabled-pointer"
+    >
+    </app-button>
+  </div>
+</mat-toolbar>
+
+<div class="dif-survey-container">
+  <mat-stepper
+    [linear]="true"
+    labelPosition="bottom"
+    [orientation]="(stepperOrientation | async)!"
+    class="dif-survey-stepper"
+    #stepper
+    (selectionChange)="onSelectionChange($event)"
+  >
+    <ng-template matStepperIcon="edit">
+      <app-icon icon="done"></app-icon>
+    </ng-template>
+    <mat-step [completed]="inputDifId">
+      <ng-template matStepLabel>Create DIF Survey</ng-template>
+      <ng-template matStepContent>
+        <app-dif-create-survey [inputDifSurveyVM] ="difSurveyVM" (formStatus)="isStep1FormValid=$event" #createSurvey></app-dif-create-survey>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Assign {{("Task" | labelReplacement)| async}}</ng-template>
+      <ng-template matStepContent>
+        <app-dif-assign-task [inputDifSurveyVM] ="difSurveyVM"></app-dif-assign-task>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Assign {{("Employee" | labelReplacement)| async}}s</ng-template>
+      <ng-template matStepContent>
+        <app-dif-assign-employees [inputDifSurveyVM] ="difSurveyVM"></app-dif-assign-employees>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel>Review and Publish</ng-template>
+      <ng-template matStepContent>
+        <app-dif-review-and-publish [inputDifSurveyVM] ="difSurveyVM"></app-dif-review-and-publish>
+      </ng-template>
+    </mat-step>
+  </mat-stepper>
+</div>

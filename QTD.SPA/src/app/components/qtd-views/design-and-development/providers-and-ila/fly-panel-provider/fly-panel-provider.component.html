@@ -1,0 +1,265 @@
+<!--Add New Provider Starts-->
+<ng-container *ngIf="provider_edit_mode && !provider_change_mode">
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-bold text-gray-900" *ngIf="this.provider_edit_mode===true && this.oldProvider === undefined">Add New Provider</p>
+    <p class="text-xl font-bold text-gray-900" *ngIf="this.provider_edit_mode === true && this.oldProvider !== undefined && this.provider_copy_mode === true">Copy Provider</p>
+    <p class="text-xl font-bold text-gray-900" *ngIf="this.provider_edit_mode === true && this.oldProvider !== undefined && this.provider_copy_mode === false">Edit Provider</p>
+    <app-button [disabled]="showSpinner" (click)="closeProvider()" ButtonType='icon' icon="close"></app-button>
+  </div>
+  <div [formGroup]="providerForm">
+    <div class="flex flex-row items-center px-12">
+      <mat-checkbox formControlName="priority">
+        Mark as priority
+      </mat-checkbox>
+    </div>
+    <div class="flex flex-row items-center px-12">
+      <mat-checkbox (change)="changeNERCStatus($event.checked)" formControlName="nercProvider" name="NERCProvider" [disabled]="providerRow?.ilaCount>0 && providerRow?.isNerc">
+        This is a NERC Provider <app-icon icon="help_outline" class="ml-2" matTooltip="Selecting Yes indicates that this Provider will be used to store and maintain {{('ILA' | labelReplacement)| async}}s that are submitted to NERC SOCCED. Enabling this feature will allow you to assign NERC credit hours for {{('ILA' | labelReplacement)| async}}s, assign Operating, Standards, and Simulation Hours to {{('ILA' | labelReplacement)| async}} Segments, and complete the {{('ILA' | labelReplacement)| async}} Application. Do not select this option if this Provider will not be used for NERC {{('ILA' | labelReplacement)| async}}s"></app-icon>
+      </mat-checkbox>
+    </div>
+
+
+    <div class="flex flex-row mt-3 border-b border-gray-300 ml-12 mr-8">
+      <p class="text-base font-medium text-gray-900">{{providerInfo}}</p>
+    </div>
+
+    <div class="flex flex-row px-12 py-3">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-label class="label required" [for]="'ProviderName'" [text]="'Name'"></app-label>
+        <app-textbox type="text" formControlName="ProviderName" [defaultValue]="ProviderName?.value"
+          [placeholder]="'Name'">
+        </app-textbox>
+        <app-input-error text="Provider Name is required" *ngIf="providerForm.get('ProviderName')?.invalid">
+        </app-input-error>
+      </div>
+      <div class="flex flex-col float-right pl-3" style="width: 50vw;">
+        <div *ngIf="NERCChecked === false">
+          <app-label class="label required" [for]="'ProviderNumber'" [text]="'Number'"></app-label>
+          <app-textbox type="text" [name]="'ProviderNumber'"
+            formControlName="ProviderNumber" [placeholder]="'Enter Number'">
+          </app-textbox>
+          <app-input-error text="Provider Number is required" *ngIf="providerForm.get('ProviderNumber')?.invalid">
+          </app-input-error>
+        </div>
+        <div *ngIf="NERCChecked === true">
+          <app-label [for]="'ProviderNumber'" [text]="'NERC ID'" class="label required"></app-label>
+          <app-textbox type="text" [name]="'ProviderNumber'" formControlName="ProviderNumber"
+            [placeholder]="'Enter Id'">
+          </app-textbox>
+          <app-input-error text="Provider Number is required" *ngIf="providerForm.get('ProviderNumber')?.invalid">
+          </app-input-error>
+        </div>
+
+      </div>
+    </div>
+
+
+    <div *ngIf="NERCChecked === true" class="mt-8 w-full px-12 py-3">
+      <app-label [for]="'ProviderLevel'" [text]="'Provider Level'" class="pt-4 mt-6 label required"> </app-label> <app-icon icon="help_outline" class="ml-2" matTooltip="Refer to the latest NERC Credential Maintenance Program Administrative Manual for more information on the Provider levels."></app-icon>
+      <mat-select formControlName="nercChecked" 
+        class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+        <mat-option *ngFor="let p of providerLevel" [value]="p.id">
+          {{p.name}}
+        </mat-option>
+      </mat-select>
+    </div>
+
+    <div class="flex flex-row ml-12 mr-8 border-b border-gray-300">
+      <p class="text-base font-medium text-gray-900 pt-6">Contact Information</p>
+    </div>
+
+
+    <div class="flex flex-row  px-12 py-3">
+      <div class="flex flex-col float-left pr-4 " style="width: 50vw;">
+        <app-label class="label required" [for]="'ContactName'" [text]="'Name'"></app-label>
+        <app-textbox type="text" [name]="'ContactName'" formControlName="ContactName" [placeholder]="'Enter Name'">
+        </app-textbox>
+        <app-input-error text="Contact Name is required" *ngIf="providerForm.get('ContactName')?.invalid">
+        </app-input-error>
+      </div>
+      <div class="flex flex-col float-right ml-6 " style="width: 50vw;">
+        <app-label  [for]="'ContactTitle'" [text]="'Title'"></app-label>
+        <app-textbox type="text" [name]="'ContactTitle'" formControlName="ContactTitle" [placeholder]="'Enter Title'">
+        </app-textbox>
+      <!--   <app-input-error text="Contact Title is required" *ngIf="providerForm.get('ContactTitle')?.invalid">
+        </app-input-error> -->
+      </div>
+    </div>
+
+    <div class="flex flex-row px-12 py-3">
+      <div class="flex flex-col float-left pr-4 mt-6" style="width: 50vw;">
+        <app-label [for]="'ContactPhone'" [text]="'Phone'"></app-label>
+        <app-textbox (keypress)="keyPressNumbersContact($event)" type="text" [name]="'ContactPhone'"
+          formControlName="ContactPhone" [placeholder]="'443-755-0790'">
+        </app-textbox>
+        <app-input-error text="Please enter following format 443-755-0790" *ngIf="providerForm.get('ContactPhone')?.invalid">
+        </app-input-error>
+      </div>
+      <div class="flex flex-col float-right ml-6 mt-6" style="width: 50vw;">
+        <app-label [for]="'ContactExt'" [text]="'Ext.'"></app-label>
+        <app-textbox (keypress)="keyPressNumbers($event)" type="text" [name]="'ContactExt'" formControlName="ContactExt"
+          [placeholder]="'000'">
+        </app-textbox>
+        <app-input-error text="Please enter a valid number" *ngIf="providerForm.get('ContactExt')?.invalid">
+        </app-input-error>
+      </div>
+    </div>
+
+    <div class="flex flex-row  px-12 py-3">
+      <div class="flex flex-col float-left pr-4 mt-6" style="width: 50vw;">
+        <app-label [for]="'ContactMobile'" [text]="'Mobile'"></app-label>
+        <app-textbox (keypress)="keyPressNumbersContact($event)" type="text" [name]="'ContactMobile'"
+          formControlName="ContactMobile" [placeholder]="'443-755-0790'" class="pb-4">
+        </app-textbox>
+      </div>
+      <div class="flex flex-col float-right ml-6 mt-6" style="width: 50vw;">
+        <app-label [for]="'ContactEmail'" [text]="'Email'"></app-label>
+        <app-textbox type="text" [name]="'ContactEmail'" formControlName="ContactEmail" [placeholder]="'xyz@gmail.com'"
+          class="pb-4">
+        </app-textbox>
+        <app-input-error text="Enter Valid Contact Email" *ngIf="providerForm.get('ContactEmail')?.invalid">
+        </app-input-error>
+      </div>
+    </div>
+    <br />
+
+    <div class="flex flex-col align-left px-12 pb-3">
+      <app-label [for]="'CompanyWebsite'" [text]="'Company Website'"></app-label>
+      <app-textbox type="text" [name]="'CompanyWebsite'" formControlName="CompanyWebsite"
+        [placeholder]="'www.qualitytrainingsystems.com'" class="w-1/2">
+      </app-textbox>
+    </div>
+
+    <div class="w-full px-12">
+
+    </div>
+    <div class="flex flex-row mt-3 border-b border-gray-300 ml-12 mr-8">
+      <p class="text-base font-medium text-gray-900">Training Representative Signature</p>
+    </div>
+
+    <div class="px-12">
+      <mat-checkbox (change)="changeValidation($event)" formControlName="isSameAsContact" class="mt-4" name="SameAsContactInformation">
+        Same as Contact Information
+      </mat-checkbox>
+    </div>
+
+    <div *ngIf="!providerForm.get('isSameAsContact')?.value">
+      <div class="flex flex-row px-12 py-3">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'RepName'" [text]="'Name'"></app-label>
+          <app-textbox type="text" [name]="'RepName'"
+            formControlName="RepName" [placeholder]="'Enter Name'">
+          </app-textbox>
+          <app-input-error text="Representative Name is required" *ngIf="providerForm.get('RepName')?.invalid">
+          </app-input-error>
+          <!-- <app-input-error text="Representative Name is required" *ngIf="providerForm.get('RepName')?.invalid">
+          </app-input-error> -->
+        </div>
+        <div class="flex flex-col float-right mb-6" style="width: 50vw;">
+          <app-label [for]="'RepTitle'" [text]="'Title'"></app-label>
+          <app-textbox  type="text" [name]="'RepTitle'"
+            formControlName="RepTitle" [placeholder]="'Enter Title'">
+          </app-textbox>
+       <!--    <app-input-error text="Representative Title is required" *ngIf="providerForm.get('RepTitle')?.invalid">
+          </app-input-error> -->
+        </div>
+      </div>
+
+      <div class="flex flex-row px-12 py-3">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'RepEmail'" text="Representative Email"></app-label>
+          <app-textbox type="text" [name]="'RepEmail'"
+            formControlName="RepEmail" [placeholder]="'Enter Representative Email'"></app-textbox>
+          <!-- <app-input-error text="Enter valid Representative email" *ngIf="providerForm.get('RepEmail')?.invalid">
+          </app-input-error> -->
+        </div>
+        <div class="flex flex-col float-right  mb-6" style="width: 50vw;">
+          <app-label [for]="'RepPhone'" text="Representative Phone"></app-label>
+          <app-textbox (keypress)="keyPressNumbersContact($event)" type="text" [name]="'RepPhone'" formControlName="RepPhone"
+            [placeholder]="'Enter Representative Phone No.'"></app-textbox>
+        </div>
+      </div>
+    </div>
+    <!--Signature div start-->
+    <div class="flex flex-col items-center px-12 py-3 mt-6">
+      <app-label [for]="'Signature'" [text]="'Signature'"></app-label>
+      <div class="w-full border-dashed border-2 border-gray-one py-6">
+
+        <input dropzone="link" *ngIf="!csvLoaded" class="absolute left-0 text-2xl opacity-0 w-0" type="file" name="file"
+          accept="image/*" multiple="false" id="upload-btn" aria-label="file upload" (change)="uploadCSVFile($event)">
+        <label *ngIf="!csvLoaded  && !imageProvider" class="flex flex-col items-center p-1 cursor-pointer" for="upload-btn">
+          <app-icon icon="cloud"></app-icon>
+          <p class="underline" style="color: rgb(92, 155, 49) !important;">Choose files to upload</p>
+          <p class="text-gray-four">or</p>
+          <p class="text-gray-four">Drag and Drop your files here</p>
+        </label>
+        <div *ngIf="csvLoaded" style="width: fit-content;margin-left: 12vw;" class="flex flex-col">
+          <app-icon class="flex float-right cursor-pointer" style="width: fit-content;" (click)="clearImage()"
+            icon="close"></app-icon>
+          <img class="flex float-right" style="width: 17vw;height: 25vh;" [src]="imageInBase64">
+        </div>
+       <div *ngIf="imageProvider" style="width: fit-content;margin-left: 12vw;" class="flex flex-col">
+        <app-icon class="flex float-right cursor-pointer" style="width: fit-content;" (click)="clearImage()"
+        icon="close"></app-icon>
+          <img [src]="imageProvider" class="flex float-right" style="width: 17vw;height: 25vh;" >
+        </div>
+
+
+      </div>
+    </div>
+
+    <!-- Form Ends Here-->
+  </div>
+  <!--Signature div end-->
+
+  <div class="float-left flex flex-row px-12 mt-8" *ngIf="this.provider_edit_mode===true && this.oldProvider === undefined">
+    <mat-checkbox [(ngModel)]="anotherCheck"></mat-checkbox> <span class="ml-1">Add another Provider</span>
+  </div>
+
+  <div class="px-12 mt-8 float-right">
+    <app-button [spinner]="showSpinner" [disabled]="providerForm.invalid || showSpinner" type="button" size="sm"
+      (clicked)="saveProvider()" color="secondary" text="Save">
+    </app-button>
+  </div>
+</ng-container>
+<!--Add New Provider Ends-->
+
+
+<!--Change Provider Starts-->
+<ng-container *ngIf="!provider_edit_mode && provider_change_mode">
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-bold text-gray-900">Change Provider for {{("ILA" | labelReplacement)| async}}</p>
+    <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+  </div>
+
+  <!--Provider title-->
+  <div class="ml-12 mr-12 mt-8">
+    <div class="flex flex-row justify-between">
+      <p class="font-medium">Provider</p>
+      <app-button (clicked)="OnAddNewProvider()" variant="text" text="Add New Provider"></app-button>
+    </div>
+    <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+      <mat-select placeholder="Select Provider" [(ngModel)]="newProviderId">
+        <mat-option [hidden]="!i.active" *ngFor="let i of provider_dropdown" [value]="i.id">
+          {{i.name}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+    <!--             <app-textbox type="text" [name]="'ProviderName'" [defaultValue]="ProviderName" [placeholder]="'Enter Title'"></app-textbox>
+ -->
+  </div>
+
+  <!--Reason Box-->
+  <div class="ml-12 mr-12 mt-8">
+    <p class="font-medium">Reason for Changing {{("ILA" | labelReplacement)| async}} Provider <span class="text-gray-four font-normal">(Optional)</span>
+    </p>
+    <ckeditor [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+  </div>
+
+  <!--Save Button-->
+  <div class="float-right mr-12 ml-12 mt-12">
+    <app-button color="secondary" [disabled]="!newProviderId || showSpinner" [spinner]="showSpinner"
+      (clicked)="OnChangeProvider()" text="Save Changes" size="sm"></app-button>
+  </div>
+</ng-container>
+<!--Change Provider Ends-->

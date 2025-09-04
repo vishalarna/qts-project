@@ -1,0 +1,96 @@
+<div class="flex justify-content-between sidebar-header-wrap">
+  <h3 class="sidebar-header pt-5">Filter Training Program Review</h3>
+  <app-button (click)="xClick()" ButtonType="icon" icon="close"></app-button>
+</div>
+<form [formGroup]="filterTrainingProgramForm" *ngIf="isPanelOpen" class="filter-form-wrapper">
+  <div class="flex flex-row px-12">
+    <div class="flex flex-col float-left mb-6 w-100">
+      <app-label [for]="'position'" text="{{('Position' | labelReplacement)| async}}" class="mt-6 float-left label label-style"></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+        <mat-select formControlName="position" placeholder="Select {{(Position' | labelReplacement)| async}}"
+          (selectionChange)="onPositionChange($event)">
+          <mat-option *ngFor="let i of position" [value]="i.id">{{i.positionTitle}}</mat-option>
+        </mat-select>
+        <button *ngIf="filterTrainingProgramForm.get('position').value" matSuffix mat-icon-button type="button"
+          aria-label="Clear" (click)="clearPositionSelection(); $event.stopPropagation(); ">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+  <div class="flex flex-row align-items-center px-12 gap-3">
+    <div class="flex flex-col float-left mb-6 w-50">
+      <app-label [for]="'programType'" [text]="'Program Type'" class="float-left label label-style"></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full program-type-select">
+        <mat-select formControlName="programType"
+          placeholder="Select Program Type" (selectionChange)="onProgramTypeChange($event)">
+          <mat-option *ngFor="let i of trainingProgramTypes" [value]="i.id">{{i.trainingProgramTypeTitle.split(' ')[0]}}
+          </mat-option>
+        </mat-select>
+        <button *ngIf="filterTrainingProgramForm.get('programType').value" matSuffix mat-icon-button type="button"
+          aria-label="Clear" (click)="clearProgramTypeSelection(); $event.stopPropagation(); ">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+    <div class="flex flex-col float-left mb-6 w-50">
+      <app-label [for]="'reviewTimePeriod'" [text]="' Review Time Period '"
+        class="float-left label label-style"></app-label>
+      <mat-form-field class="custom-date-range-field program-type-select">
+        <mat-date-range-input [rangePicker]="picker">
+          <input matStartDate matInput formControlName="reviewStartDate" #dateRangeStart>
+          <input matEndDate matInput formControlName="reviewEndDate" #dateRangeEnd (dateChange)="dateRangeChange()">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+        <button
+          *ngIf="filterTrainingProgramForm.get('reviewStartDate').value || filterTrainingProgramForm.get('reviewEndDate').value"
+          matSuffix mat-icon-button type="button" aria-label="Clear"
+          (click)="clearDateRange(); $event.stopPropagation(); ">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="flex flex-row align-items-center px-12 gap-3">
+    <div class="flex flex-col float-left mb-6 w-50">
+      <app-label [for]="'reviewStatus'" [text]="'Review Status'" class="float-left label label-style"></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+        <mat-select formControlName="reviewStatus" placeholder="Select Review Status"
+          (selectionChange)="onPublishChange($event)">
+          <mat-option value="published">Published
+          </mat-option>
+          <mat-option value="draft">Draft
+          </mat-option>
+        </mat-select>
+        <button *ngIf="filterTrainingProgramForm.get('reviewStatus').value" matSuffix mat-icon-button type="button"
+          aria-label="Clear" (click)="clearReviewStatus(); $event.stopPropagation(); ">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+    <div class="flex flex-col float-left mb-6 w-50">
+      <app-label [for]="'activeStatus'" [text]="'Active/Inactive status'"
+        class="float-left label label-style"></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+        <mat-select formControlName="activeStatus"
+          placeholder="Select Active/Inactive Status" (selectionChange)="onActiveStatusChange($event)">
+          <mat-option value="active">Active
+          </mat-option>
+          <mat-option value="inactive">Inactive</mat-option>
+        </mat-select>
+        <button *ngIf="filterTrainingProgramForm.get('activeStatus').value" matSuffix mat-icon-button type="button"
+          aria-label="Clear" (click)="clearActiveStatus(); $event.stopPropagation(); ">
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+  </div>
+
+  <div class="flex flex-start px-14 btn-wrapar">
+    <app-button text="Apply Filters" size="sm" (clicked)="applyFiltersClick()">
+    </app-button>
+
+  </div>
+</form>

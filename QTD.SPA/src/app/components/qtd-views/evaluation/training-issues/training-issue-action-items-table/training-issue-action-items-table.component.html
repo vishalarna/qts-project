@@ -1,0 +1,168 @@
+    <div class="btn-container">
+        <div class="btns-info">
+            <app-label text = "Action Steps" class="font-weight-bold text-xl"></app-label>
+        </div>
+        <div class="flex flex-row space-x-4 justify-end action-item-btns">
+            <ng-container *ngIf = "mode=='view'">   
+                <div class="dropdown">
+                    <app-button color="secondary" text="Filter" size="sm" icon="filter_alt" iconPosition="left" (click) = "openFlyInPanel(filterActionItem)"></app-button>
+                </div>
+            </ng-container> 
+            <ng-container *ngIf = "mode=='edit'">
+                <app-button text="Add New" icon="add" iconPosition="left" size="sm" (click) = "openFlyInPanel(addActionItems)"></app-button>
+            </ng-container>
+        </div>
+    </div>
+
+    <div class="training-issue-actionItem-table-list">
+      <mat-table [dataSource]="actionItemDataSource"  cdkDropList [cdkDropListData]="actionItemDataSource" (cdkDropListDropped)="dropTable($event)" [cdkDropListDisabled]="mode === 'view'" [multiTemplateDataRows]="true" matSort>
+          <ng-container matColumnDef="drag">
+              <mat-header-cell *matHeaderCellDef></mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                  <app-icon cdkDragHandle class="pt-3 mr-2" [icon] = "mode=='edit' ? 'drag_indicator':''" [ngClass]="{'disabled': mode == 'view'}">
+                  </app-icon>
+              </mat-cell>
+          </ng-container>
+        <ng-container matColumnDef="actionStep">
+              <mat-header-cell *matHeaderCellDef >
+                <div class="text-gray-400 text-sm font-weight-normal">Action Step</div>
+              </mat-header-cell>
+              <mat-cell *matCellDef="let row">
+                  <ng-container *ngIf="mode == 'edit'; else viewMode">
+                      <app-textbox [defaultValue] = "row.actionItemName" (input) = "actionItemNameChange($event,row)"></app-textbox>
+                  </ng-container>
+                  <ng-template #viewMode>
+                      {{ row.actionItemName }}
+                  </ng-template>
+              </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="assignedTo">
+          <mat-header-cell *matHeaderCellDef >
+            <div class="text-gray-400 text-sm font-weight-normal">Assigned To</div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+              <ng-container *ngIf="mode == 'edit'; else viewMode">
+                  <app-textbox [defaultValue] = "row.assigneeName" (input) = "assigneeNameChange($event,row)"></app-textbox>
+              </ng-container>
+              <ng-template #viewMode>
+                  {{ row.assigneeName }}
+              </ng-template>
+           </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="priority">
+          <mat-header-cell *matHeaderCellDef >
+            <div class="text-gray-400 text-sm font-weight-normal">Priority</div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> 
+              <ng-container *ngIf="mode == 'edit'; else viewMode">
+                  <mat-select [value] = "row.priorityId" (selectionChange) = "onPrioritySelect($event,row)">
+                      <mat-option *ngFor = "let actionItemPriority of actionItemPriorities" [value] = "actionItemPriority.id">{{actionItemPriority.priority}}</mat-option>
+                  </mat-select>
+              </ng-container>
+              <ng-template #viewMode>
+                  {{ getPriorityLabel(row.priorityId) }}
+              </ng-template>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="dateAssigned">
+          <mat-header-cell *matHeaderCellDef >
+            <div class="text-gray-400 text-sm font-weight-normal">Date Assigned</div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+              <ng-container *ngIf="mode == 'edit'; else viewMode">
+                  <app-date [defaultValue] = "row.dateAssigned ? formatDateToYyyyMmDd(row.dateAssigned) : null" (input) = "onAssignedDateChange($event,row)"></app-date>
+              </ng-container>
+              <ng-template #viewMode>
+                  {{ (row.dateAssigned | dateFormat) | async}}
+              </ng-template>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="dueDate">
+          <mat-header-cell *matHeaderCellDef >
+            <div class="text-gray-400 text-sm font-weight-normal">Due Date</div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+              <ng-container *ngIf="mode == 'edit'; else viewMode">
+                  <app-date [defaultValue] = "row.dueDate ? formatDateToYyyyMmDd(row.dueDate) : null" (input) = "onDueDateChange($event,row)"></app-date>
+              </ng-container>
+              <ng-template #viewMode>
+                  {{ (row.dueDate | dateFormat) | async}}
+              </ng-template>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="dateCompleted">
+          <mat-header-cell *matHeaderCellDef >
+            <div class="text-gray-400 text-sm font-weight-normal">Date Completed</div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+              <ng-container *ngIf="mode == 'edit'; else viewMode">
+                  <app-date [defaultValue] = "row.dateCompleted ? formatDateToYyyyMmDd(row.dateCompleted) : null" (input) = "onCompletedDateChange($event,row)"></app-date>
+              </ng-container>
+              <ng-template #viewMode>
+                  {{ (row.dateCompleted | dateFormat) | async}}
+              </ng-template>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="status">
+          <mat-header-cell *matHeaderCellDef >
+            <div class="text-gray-400 text-sm font-weight-normal">Status</div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row"> 
+              <ng-container *ngIf="mode == 'edit'; else viewMode">
+                  <mat-select [value] = "row.statusId" (selectionChange) = "onStatusSelect($event,row)">
+                      <mat-option *ngFor="let actionItemStatus of actionItemStatuses" [value]="actionItemStatus.id">
+                          {{actionItemStatus.status}}
+                      </mat-option>
+                  </mat-select>
+              </ng-container>
+              <ng-template #viewMode>
+                  <span [ngClass]="{'customcolorgreen': row.statusId == 'EP', 'customcolorpink': row.statusId == 'xY','customcolorblue': row.statusId == '3q'}">{{ getStatusLabel(row.statusId) }}</span>
+              </ng-template>
+          </mat-cell>
+        </ng-container>
+        <ng-container matColumnDef="notes">
+          <mat-header-cell *matHeaderCellDef >
+            <div class="text-gray-400 text-sm font-weight-normal">Notes</div>
+          </mat-header-cell>
+          <mat-cell *matCellDef="let row">
+              <ng-container *ngIf="mode == 'edit'; else viewMode">
+                  <app-textbox [defaultValue] = "row.notes" (input) = "actionItemNoteChange($event,row)"></app-textbox>
+              </ng-container>
+              <ng-template #viewMode>
+                  {{ row.notes }}
+              </ng-template>
+          </mat-cell>
+        </ng-container>
+
+        <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef >
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+                <ng-container *ngIf="mode == 'edit'; else viewMode">
+                    <button mat-icon-button (click)="deleteActionItem(row?.id)">
+                        <app-icon icon="delete"></app-icon>
+                      </button>
+                </ng-container>
+                <ng-template #viewMode>
+                    <span></span>
+                </ng-template>
+            </mat-cell>
+          </ng-container>
+
+        <mat-header-row *matHeaderRowDef="tableColumns"></mat-header-row>
+        <mat-row *matRowDef="let row; columns: tableColumns" cdkDrag
+        [cdkDragData]="row" [cdkDragDisabled]="mode === 'view'"></mat-row>
+        <tr class="mat-row flex text-center " *matNoDataRow>
+          <td class="mat-cell w-full m-2 no-data-cell" >No Data Found</td>
+      </tr>
+      </mat-table>
+      <mat-paginator #metaPaginator="matPaginator" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons aria-label="Select page of periodic elements"></mat-paginator>
+    </div>
+
+<ng-template #addActionItems>
+    <app-flypanel-add-training-issue-action-item (actionItemDetails) = "getActionItemDetails($event)"></app-flypanel-add-training-issue-action-item>
+</ng-template>
+    
+<ng-template #filterActionItem>
+    <app-flypanel-filter-training-issue-action-items [actionItemFilterValue] = "filterValues" (actionItemFilterChange)="setFilters($event)"></app-flypanel-filter-training-issue-action-items>
+</ng-template>

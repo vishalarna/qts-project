@@ -1,0 +1,78 @@
+<mat-toolbar class="app-toolbar-sticky flex align-items-center training-issues-action-item-header">
+    <div class="flex items-center">
+        <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" class="training-back-button"
+            (click)="goBack()"></app-button>
+        <ng-container *ngIf = "mode=='view'">
+            <div class="ml-4">
+                <h1>Back to Training Issue</h1>
+            </div>
+        </ng-container>
+        <ng-container *ngIf = "mode=='edit'">
+            <div class="ml-4">
+                <h1>Edit {{trainingIssueDetail?.issueTitle}}</h1>
+            </div>
+        </ng-container>
+    </div>
+    <div class="flex flex-row items-center">
+        <app-button *ngIf ="mode=='view'"  type="button" text="Edit" size="sm" (click) = "changeActionItemMode()"
+            customClasses="training-edit-button header-button"> </app-button>
+        <app-button *ngIf ="mode=='edit'"  type="button" text="Save" size="sm" (click) = "saveActionItem()"
+            customClasses="training-save-button header-button"> </app-button>
+    </div>
+</mat-toolbar>
+
+<div class="training-issue-action-item-spinner" *ngIf = "isActionItemLoading">
+    <app-spinner></app-spinner>
+</div>
+
+<ng-container *ngIf = "!isActionItemLoading">
+    <div class="action-item-container">
+        <div class="step-controls-section">
+            <div class="training-issue-info">
+                <div class="step-control-container d-inline-block w-full">
+                    <app-label class="step-control-label font-weight-bold" 
+                        text="Issue ID"></app-label>
+                    <div class="step-control">
+                        <span class="text-gray-400">{{trainingIssueDetail?.issueCode}}</span>
+                    </div>
+                </div>
+                <div class="step-control-container d-inline-block ml-4 w-full">
+                    <app-label class="step-control-label font-weight-bold" 
+                        text="Issue Title"></app-label>
+                    <div class="step-control">
+                        <span class="text-gray-400">{{trainingIssueDetail?.issueTitle}}</span>
+                    </div>
+                </div>
+            </div>
+            <div class="training-issue-info">
+                <div class="step-control-container d-inline-block w-full">
+                    <app-label class="step-control-label font-weight-bold" 
+                        text="Issue Status"></app-label>
+                    <div class="step-control">
+                        <span class="text-gray-400">{{trainingIssueDetail?.status}}</span>
+                    </div>
+                </div>
+                <div class="step-control-container d-inline-block ml-4 w-full">
+                    <app-label class="step-control-label font-weight-bold" 
+                        text="Severity Level"></app-label>
+                    <div class="step-control">
+                        <span class="text-gray-400">{{trainingIssueDetail?.severityLevel}}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class = "action-item-table-container">
+        <div class="table-info-data">
+            <app-training-issue-action-items-table [mode] = "mode" [trainingIssueDetail] = "trainingIssueDetail" #actionItemTable></app-training-issue-action-items-table>
+        </div>
+    </div>
+</ng-container>
+
+
+<ng-template #closeTrainingIssueStatusDialog>
+    <app-qtd-dialogue header='Change Status to "Closed"' description="All Action Steps are completed. Would you like to change the status of the Training Issue to Closed?"
+         [isQuestion]="false" [confirmText]="'Yes'" (canceled)="dialog.closeAll();closeAndSaveTrainingIssueStatus(false)"
+        (confirmed)="closeAndSaveTrainingIssueStatus(true)">
+    </app-qtd-dialogue>
+</ng-template>

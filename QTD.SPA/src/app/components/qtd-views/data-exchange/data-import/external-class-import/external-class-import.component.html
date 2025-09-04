@@ -1,0 +1,79 @@
+<mat-toolbar class="h-28 app-toolbar-sticky w-full">
+    <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBack(classImport)">
+    </app-button>
+    <div class="flex flex-row items-center space-x-4 w-full justify-between">
+        <h1>External Data Import</h1>
+        <div class="justify-between">
+            <app-button type="button" text="Continue" *ngIf="currentIndex <  (stepper?._steps?.length - 1)"
+                (clicked)="goNext()">
+            </app-button>
+            <app-button type="button" text="Exit" *ngIf="currentIndex === (stepper?._steps?.length - 1 )" (clicked)="exitImport(exitClassImport)">
+            </app-button>
+        </div>
+    </div>
+</mat-toolbar>
+
+<mat-stepper labelPosition="bottom" [linear]="true"  #stepper (selectionChange)="onStepSelectionChange($event)">
+    <ng-template matStepperIcon="edit">
+        <app-icon icon="done"></app-icon>
+    </ng-template>
+    <mat-step [editable]="isNavFromEMPAllowed() && isNavFromClassAllowed()" [completed]="isNavFromILAAllowed()" *ngIf="isILAImport == 'true'">
+        <ng-template matStepLabel>Upload {{("ILA" | labelReplacement) | async}}s</ng-template>
+        <ng-template matStepContent>
+            <div>
+
+                <app-import-csv-wizard #importWizardILA [type]="'ILA Data'" [template]="ilaTemplate"
+                    [uploadColumns]="uploadILAColumns"
+                    (OnAttachFile)="getILAUploadedFile($event)"
+                    [validationResult]="ilaValidationResult"
+                    (OnConfirmUpload)="OnConfirmILAUpload($event)"
+                    [confirmResult]="ilaConfirmResult"
+                    (OnBackToUpload) = "isILAValidate = false; isILAConfirm=false;"
+                    ></app-import-csv-wizard>
+            </div>
+        </ng-template>
+    </mat-step>
+    <mat-step [editable]="isNavFromILAAllowed() && isNavFromClassAllowed()" [completed]="isNavFromEMPAllowed()"  *ngIf="isEmployeeImport == 'true'">
+        <ng-template matStepLabel>Upload {{("Employee" | labelReplacement) | async}}s</ng-template>
+        <ng-template matStepContent>
+            <div>
+                <app-import-csv-wizard #importWizardEmployee  [type]="'Employee Data'" [template]="employeeTemplate"
+                    [uploadColumns]="uploadEmployeeColumns"
+                    (OnAttachFile)="getEmployeeUploadedFile($event)"
+                    [validationResult]="employeeValidationResult"
+                    (OnConfirmUpload)="OnConfirmEmployeeUpload($event)"
+                    (OnBackToUpload) = "isEmployeeValidate = false; isEmployeeConfirm=false;"
+                    [confirmResult]="employeeConfirmResult"></app-import-csv-wizard>
+            </div>
+        </ng-template>
+    </mat-step>
+    <mat-step [editable]="isNavFromEMPAllowed() && isNavFromILAAllowed()" [completed]="isNavFromClassAllowed()"  *ngIf="isClassImport == 'true'">
+        <ng-template matStepLabel>Upload Classes</ng-template>
+        <ng-template matStepContent>
+            <div>
+                <app-import-csv-wizard #importWizardClass [type]="'Class Data'" [template]="classTemplate"
+                    [uploadColumns]="uploadClassColumns"
+                    (OnAttachFile)="getClassUploadedFile($event)"
+                    [validationResult]="classValidationResult"
+                    (OnConfirmUpload)="OnConfirmClassUpload($event)"
+                    (OnBackToUpload) = "isClassValidate = false; isClassConfirm=false;"
+                    [confirmResult]="classConfirmResult"
+                    ></app-import-csv-wizard>
+            </div>
+        </ng-template>
+    </mat-step>
+</mat-stepper>
+
+<ng-template #classImport>
+    <app-qtd-dialogue [header]="'Confirmation'"
+        [description]="'Leaving will not import any unconfirmed records from the current step. Are you sure you want to continue?'"
+        [cancelText]="'No'" [isQuestion]="false"  [confirmText]="'Yes'" (canceled)="dialog.closeAll()" (confirmed)="closeClassImport()">
+    </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #exitClassImport>
+    <app-qtd-dialogue [header]="'Confirmation'"
+        [description]="'Leaving the current step will lose progress on the validated file and not import any records unless they are confirmed first. Are you sure you want to continue?'"
+        [cancelText]="'No'" [isQuestion]="false" [confirmText]="'Yes'" (canceled)="dialog.closeAll()" (confirmed)="nextOrExitImport()">
+    </app-qtd-dialogue>
+</ng-template>

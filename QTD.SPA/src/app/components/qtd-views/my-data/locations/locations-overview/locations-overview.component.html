@@ -1,0 +1,115 @@
+<div class="flex flex-row flex-wrap ml-4 mt-3">
+    <p class="font-bold text-lg">{{("Location" | labelReplacement)| async}}s Overview</p>
+</div>
+<div class="px-10 pb-12 flex flex-row">
+    <app-data-loader *ngIf="isLoading"></app-data-loader>
+    <ng-container *ngIf="!isLoading && locationVM">
+        <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4">
+
+            <div class="mb-4">Categories</div>
+            <div class="flex flex-row ">
+                <div class="flex flex-col ">
+                    <span (click)="locationVM.locCategoryActive > 0 && openFlyInPanelList(list,'Catactive')" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':locationVM.locCategoryActive>0,'text-lg text-black':locationVM.locCategoryActive==0}">
+                        {{locationVM.locCategoryActive | number : '2.'}}</span>
+                    <p>Active</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span (click)="locationVM.locCategoryInactive > 0 && openFlyInPanelList(list,'Catinactive')" [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':locationVM.locCategoryInactive>0,'text-lg text-black':locationVM.locCategoryInactive==0}">
+                        {{locationVM.locCategoryInactive | number : '2.'}}</span>
+                    <p>Inactive</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4">
+
+            <div class="mb-4">{{("Location" | labelReplacement)| async}}s</div>
+            <div class="flex flex-row">
+                <div class="flex flex-col">
+                    <span (click)="locationVM.locationActive > 0 && openFlyInPanelList(list,'Locactive')" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':locationVM.locationActive>0,'text-lg text-black':locationVM.locationActive==0}">
+                        {{locationVM.locationActive | number : '2.'}}</span>
+                    <p>Active</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span (click)="locationVM.locationInactive > 0 && openFlyInPanelList(list,'Locinactive')" [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':locationVM.locationInactive>0,'text-lg text-black':locationVM.locationInactive==0}">
+                        {{locationVM.locationInactive | number : '2.'}}</span>
+                    <p>Inactive</p>
+                </div>
+            </div>
+
+
+        </div>
+        <!-- <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm mb-4 w-fit" style="width:50vw ;">
+
+            <div class="mb-4">Total Number of Instructor Workbook Admins</div>
+              <div class="flex flex-row">
+                <div class="flex flex-col">
+                    <span style="color:green" class="text-lg"><b>{{instructorVM.totalWorkbookAdmins}}</b></span>
+                    <p>Active</p>
+                </div>
+            </div>
+        </div> -->
+
+
+
+    </ng-container>
+
+</div>
+<div class="flex flex-row flex-wrap ml-4 mr-4 justify-between">
+    <p class="font-bold text-lg">Latest Activity</p>
+    <app-button variant="text" text="View all history" (click)="openFlyInPanel(historyModal)"></app-button>
+</div>
+
+          <div class="px-12 pb-12 mt-5" *ngIf="dataSource">
+            <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8">
+
+                <mat-table [dataSource]="dataSource" matSort *ngIf="dataSource">
+
+                    <ng-container matColumnDef="Locnum">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Location" | labelReplacement)| async}}s Number </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.Locnum}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="LocName">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Name </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.LocName}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="desc">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Description of change </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <div class="flex flex-col">
+                                <span>{{row.desc}}</span>
+                                <!-- <span class="mt-2">{{row.modifyDate | date:'medium' }}</span> -->
+                            </div>
+                        </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="modifyDate">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Modified By </mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <div class="flex flex-col">
+                                <span>{{row.modifyBy}}</span>
+                                <span class="mt-2">{{row.modifyDate | date:'medium' }}</span>
+                            </div>
+                        </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                    <!-- Row shown when there is no matching data.-->
+                    <tr class="mat-row flex text-center " *matNoDataRow>
+                        <td class="mat-cell w-full m-2">No data matching the filter</td>
+                    </tr>
+
+                </mat-table>
+            </div>
+        </div>
+
+        <ng-template #historyModal>
+            <app-fly-panel-view-location-history (closed)="flyPanelService.close()"></app-fly-panel-view-location-history>
+        </ng-template>
+
+        <ng-template #list>
+            <app-fly-panel-locations-list [moduleName]="moduleName"></app-fly-panel-locations-list>
+        </ng-template>

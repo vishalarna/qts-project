@@ -1,0 +1,182 @@
+<mat-toolbar
+  class="app-toolbar-sticky flex align-items-center scenario-wizard-header"
+>
+  <div class="flex items-center">
+    <app-button
+      type="button"
+      ButtonType="icon"
+      icon="keyboard_arrow_left"
+      class="review-back-button"
+      (clicked)="exitWizard(exitScenario)"
+    ></app-button>
+    <div class="scenario-wizard-heading ml-4">
+      <h3 *ngIf="mode == 'create'"><span>Add New Scenario</span></h3>
+      <h3 *ngIf="mode == 'edit'"><span>Edit Scenario</span></h3>
+      <h3 *ngIf="mode == 'view'"><span>View Scenario</span></h3>
+    </div>
+  </div>
+
+  <div class="flex flex-row items-center">
+    <app-button
+      *ngIf="currentIndex != 6"
+      [disabled]="currentIndex == 0 && !isStep1FormValid"
+      type="button"
+      text="Continue"
+      size="sm"
+      customClasses="wizard-continue-button header-button disabled-pointer"
+      (click)="continueClick()"
+    >
+    </app-button>
+    <app-button
+      *ngIf="currentIndex == 6 && mode != 'view'"
+      type="button"
+      text="Publish"
+      size="sm"
+      color="primary"
+      (clicked)="publishWizard(publishSimulatorScenario)"
+    >
+    </app-button>
+    <app-button
+      class="ml-2"
+      *ngIf="currentIndex == 6 && mode != 'view'"
+      type="button"
+      text="Collaborate"
+      size="sm"
+      color="secondary"
+      (clicked)="openCollaborator(collaboratorSimulatorScenario)"
+    >
+    </app-button>
+    <app-button
+      *ngIf="currentIndex == 6 && mode == 'view'"
+      type="button"
+      text="Close"
+      size="sm"
+      customClasses="wizard-continue-button header-button disabled-pointer"
+      (click)="closeWizard()"
+    >
+    </app-button>
+  </div>
+</mat-toolbar>
+<div *ngIf="isWizardLoading" class="overview-spinner">
+  <app-spinner></app-spinner>
+</div>
+
+<div *ngIf="!isWizardLoading" class="scenario-wizard-container">
+  <mat-stepper
+    [linear]="true"
+    labelPosition="bottom"
+    #stepper
+    (selectionChange)="onSelectionChange($event)"
+    class="scenario-wizard-stepper"
+  >
+    <ng-template matStepperIcon="edit">
+      <app-icon icon="done"></app-icon>
+    </ng-template>
+    <mat-step [completed]="isStep1FormValid">
+      <ng-template matStepLabel>Scenario Details</ng-template>
+      <ng-template matStepContent>
+        <app-sim-scenarios-wizard-details
+          #simScenariosDetails
+          [inputSimulatorScenario_VM]="simulatorScenario_VM"
+          [difficultyList]="difficultyList"
+          [mode]="mode"
+        ></app-sim-scenarios-wizard-details>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Linkages</ng-template>
+      <ng-template matStepContent>
+        <app-sim-scenarios-wizard-linkages
+          #simScenariosLinkages
+          [inputSimulatorScenario_VM]="simulatorScenario_VM"
+          [inputSimScenariosId]="simScenariosId"
+          [mode]="mode"
+        ></app-sim-scenarios-wizard-linkages>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Performance Criteria</ng-template>
+      <ng-template matStepContent>
+        <app-sim-scenarios-wizard-criteria
+          #simScenariosCriteria
+          [inputSimulatorScenario_VM]="simulatorScenario_VM"
+          [inputSimScenariosId]="simScenariosId"
+          [mode]="mode"
+        ></app-sim-scenarios-wizard-criteria>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Specifications</ng-template>
+      <ng-template matStepContent>
+        <app-sim-scenarios-wizard-specifications
+          #simScenariosSpecifications
+          [inputSimulatorScenario_VM]="simulatorScenario_VM"
+          [inputSimScenariosId]="simScenariosId"
+          [mode]="mode"
+        ></app-sim-scenarios-wizard-specifications>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel>Events and Scripts</ng-template>
+      <ng-template matStepContent>
+        <app-sim-scenarios-wizard-events-and-scripts
+          #simScenariosEventsAndScripts
+          [inputSimulatorScenario_VM]="simulatorScenario_VM"
+          [inputSimScenariosId]="simScenariosId"
+          [mode]="mode"
+        ></app-sim-scenarios-wizard-events-and-scripts>
+      </ng-template>
+    </mat-step>
+    <mat-step optional>
+      <ng-template matStepLabel
+        >{{ "Instructor" | labelReplacement | async }} Prep</ng-template
+      >
+      <ng-template matStepContent>
+        <app-sim-scenarios-wizard-instructor
+          #simScenariosInstructor
+          [inputSimulatorScenario_VM]="simulatorScenario_VM"
+          [inputSimScenariosId]="simScenariosId"
+          [mode]="mode"
+        ></app-sim-scenarios-wizard-instructor>
+      </ng-template>
+    </mat-step>
+    <mat-step>
+      <ng-template matStepLabel
+        >{{ "ILA" | labelReplacement | async }} Assignment</ng-template
+      >
+      <ng-template matStepContent>
+        <app-sim-scenarios-wizard-ila
+          #simScenariosILA
+          [inputSimulatorScenario_VM]="simulatorScenario_VM"
+          [inputSimScenariosId]="simScenariosId"
+          [mode]="mode"
+        ></app-sim-scenarios-wizard-ila>
+      </ng-template>
+    </mat-step>
+  </mat-stepper>
+</div>
+
+<ng-template #exitScenario>
+  <app-qtd-dialogue
+    [header]="'Confirmation'"
+    [description]="'Leaving will save the Simulator Scenario.'"
+    [cancelText]="'No'"
+    [isQuestion]="true"
+    [confirmText]="'Yes'"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="backOrExitWizardAsync()"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #publishSimulatorScenario>
+  <app-publish-simulator-scenario-modal
+    (publishScenarioValues)="handlePublishScenarios($event)"
+  ></app-publish-simulator-scenario-modal>
+</ng-template>
+
+<ng-template #collaboratorSimulatorScenario>
+  <app-colloborator-simulator-scenario-modal
+    [inputSimulatorScenario_VM]="simulatorScenario_VM"
+  ></app-colloborator-simulator-scenario-modal>
+</ng-template>

@@ -1,0 +1,86 @@
+<!--Heading starts-->
+<div class="flex flex-col" [ngClass]="{'px-12 py-12':linkPos}">
+  <ng-container *ngIf="linkPos">
+      <div class="flex flex-row justify-between">
+          <h2>Link {{("Position" | labelReplacement)| async}}s to SQs</h2>
+          <app-button ButtonType="icon" icon="close" (clicked)="closed.emit('fp-sq-pos-link-closed')"></app-button>
+
+      </div>
+      <div class="flex flex-row items-center border-b-0.8 border-gray-one">
+          <div class="flex flex-grow">
+              <app-icon icon="search"></app-icon>
+              <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+                  (input)="filterData($event)">
+          </div>
+
+      </div>
+
+      <!--Heading ends-->
+
+      <div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+
+          <div class="cursor-pointer">
+              <span> Showing:
+                  <label mat-button class="mb-0">
+                      <p *ngIf="showActive" class="font-bold">
+                          Active
+                      </p>
+                    <!--   <p *ngIf="!showActive" class="font-bold">
+                          Inactive
+                      </p> -->
+
+                  </label>
+                <!--   <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon> -->
+              </span>
+
+             <!--  <mat-menu #menu="matMenu">
+                  <label mat-menu-item *ngIf="!showActive" (click)="filterStatus(true)">
+                      Active</label>
+
+                  <label mat-menu-item *ngIf="showActive" (click)="filterStatus(false)">
+                      Inactive</label>
+              </mat-menu> -->
+          </div>
+          <app-button variant="text" icon="add" iconPosition="left" text="Add new {{('Position' | labelReplacement)| async}}" (clicked)="linkPos=false">
+          </app-button>
+
+      </div>
+
+      <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="linkedIds.length > 0">
+          <div class="flex flex-row w-full justify-between mb-3">
+              <p class="text-xs text-gray-four pt-2">{{linkedIds.length}} {{("Position" | labelReplacement)| async}}s selected</p>
+              <app-button (clicked)="linkPositions()" [spinner]="isLoading" class="mb-2" type="button" color="secondary" size="sm"
+                   text="Link to SQ">
+              </app-button>
+          </div>
+
+      </div>
+      <!-- *ngIf="active_tasks" -->
+
+      <app-spinner *ngIf="positions === undefined"></app-spinner>
+      <ng-container *ngIf="positions && positions.length < 1">
+          <div>No Data Found</div>
+      </ng-container>
+      <ng-container *ngIf="positions && positions.length > 0">
+          <div class="flex flex-col ">
+              <div class="flex flex-row mb-3" *ngFor="let p of filteredList">
+                  <mat-checkbox [checked]="linkedIds.includes(p.id)" *ngIf="!alreadyLinkedIds.includes(p.id)"
+                      (change)="positionChecked($event.checked, p.id)">
+                      {{p.positionTitle}}
+                  </mat-checkbox>
+                  <ng-container *ngIf="alreadyLinkedIds.includes(p.id)">
+                      <app-icon class="mr-1" style="color: rgb(92, 155, 49);" icon="link"></app-icon>
+                      <p>{{p.positionTitle}}</p>
+                  </ng-container>
+              </div>
+
+          </div>
+      </ng-container>
+  </ng-container>
+
+  <!-- Here goes the add position flypanel once it is ready -->
+  <ng-container *ngIf="!linkPos">
+      <app-fly-panel-add-position (closed)="linkPos=true;getPositions()">
+      </app-fly-panel-add-position>
+  </ng-container>
+</div>

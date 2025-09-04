@@ -1,0 +1,745 @@
+<app-header  breadcrumbs="Provider and {{('ILA' | labelReplacement)| async}}"></app-header>
+
+<ng-template #bulkEditPanel>
+  <app-fly-panel-bulk-edit [selectedCheckboxes]="selectedCheckboxesBulk"
+    [selectedCheckboxesMetaILA]="selectedCheckboxesMetaILA"></app-fly-panel-bulk-edit>
+</ng-template>
+
+<ng-template #metaILA>
+  <app-fly-panel-meta-ila
+    (flyPanelCloseCheck)="flyPanelCloseCheck = $event;selectedCheckboxes =[];selection_topic.clear();selection_provider.clear();getMetaILAID()"
+    [selectedCheckboxes]="selectedCheckboxes" [deliveryMethods]="deliveryMethods"
+    [mode]="metaILAPanelMode" [selectedMetaILAID]="selectedMetaILAID"></app-fly-panel-meta-ila>
+</ng-template>
+
+<!--Meta Table Template-->
+<ng-template #metaTable>
+  <mat-table #metaSort="matSort" [dataSource]="metaTableDataSource" matSort>
+    <ng-container matColumnDef="index">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> <mat-checkbox></mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <mat-checkbox></mat-checkbox>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="name">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{("ILA" | labelReplacement)| async}} Title/Description </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.name}}
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="ilaCount">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Linked {{("ILA" | labelReplacement)| async}}s </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.ilaCount}} </mat-cell>
+    </ng-container>
+
+
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="d-inline-block">
+          <p class="py-2 px-4 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+            [ngClass]="{'customcolorgreen':row.status==='active','bg-gray-100':row.status!=='active'}">
+            {{row.status | uppercase}}
+          </p>
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="flex flex-row items-center text-gray-four btn-group">
+          <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" [matMenuTriggerFor]="menu">
+          </app-button>
+          <mat-menu #menu="matMenu">
+            <label mat-menu-item (click)="openFlyPanelMetaILA(metaILA,'edit',row.id)">Edit</label>
+            <label mat-menu-item (click)="openFlyPanelMetaILA(metaILA,'copy',row.id)">Copy</label>
+            <label mat-menu-item (click)="OnDelete(deleteMetaILa, 'Meta', row)" [disabled]="!row.isDeleteAllowed">Delete</label>
+            <span [matTooltip]=" 'The Make Inactive option is not available due to linked data.'" [matTooltipDisabled]="row.status==='inactive' || !row.isReleasedToEmployees">
+              <label mat-menu-item (click)="onMakeMetaInactive(activeInactive,row)" [disabled]="row.status==='active' && row.isReleasedToEmployees">
+                Make {{row.status === "active" ?"Inactive":"Active"}}
+              </label>
+            </span>
+          </mat-menu>
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedColumnsMeta"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumnsMeta;"></mat-row>
+  </mat-table>
+  <mat-paginator #metaPaginator="matPaginator" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons  aria-label="Select page of periodic elements">
+  </mat-paginator>
+</ng-template>
+
+<!--Topic Table Template-->
+<ng-template #topicTable>
+  <mat-table #topicSort="matSort" [dataSource]="topicTableDataSource" matSort [multiTemplateDataRows]="true">
+    <ng-container matColumnDef="index">
+      <mat-header-cell *matHeaderCellDef>
+        <mat-checkbox></mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <mat-checkbox></mat-checkbox>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="topic">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        Topic </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <app-button variant="text" icon="arrow_drop_down"
+          (clicked)="(expandedData = expandedData === row ?null:row);getTopicLinkedILAs(row.id);$event.stopPropagation();">
+        </app-button>
+        {{row.topic}}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="count">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> No. of {{("ILA" | labelReplacement)| async}}s </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.count}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="priority">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Priority </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.priority}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="d-inline-block">
+          <p class="py-2 px-4 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+            [ngClass]="{'customcolorgreen':row.status==='ACTIVE','bg-gray-100':row.status!=='ACTIVE'}">
+            {{row.status | uppercase}}
+          </p>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef>
+        <div>
+          <button class="float-right ml-3 pl-1 pr-1 pt-1 rounded"
+            [ngStyle]="{'border' : toggle ? '2px solid rgba(92, 155, 49, 1)' : '2px solid lightgray'}"
+            (click)="toggle=true" style="color:rgb(92, 155, 49);outline: 2px rgb(92, 155, 49);">
+            <mat-icon>grid_on</mat-icon>
+          </button>
+          <button style="color:rgb(92, 155, 49);outline: 2px rgb(92, 155, 49)"
+            [ngStyle]="{'border' : !toggle ? '2px solid rgba(92, 155, 49, 1)' : '2px solid lightgray'}"
+            class="float-right pl-1 pr-1 pt-1 rounded" (click)="toggle=false">
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="flex flex-row items-center text-gray-four btn-group">
+          <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" [matMenuTriggerFor]="menu">
+          </app-button>
+          <mat-menu #menu="matMenu">
+            <label mat-menu-item (click)="openFlyPanelTopicEdit(topicFlyPanel, row.id,'Edit')">Edit</label>
+            <label mat-menu-item (click)="openFlyPanelTopicEdit(topicFlyPanel,row.id,'Copy')">Copy</label>
+            <label mat-menu-item (click)="OnDelete(deleteTopic,'Topic',row)">Delete</label>
+            <label mat-menu-item (click)="onMakeTopicInactive(activeInactive,row)">Make {{row.status === "ACTIVE" ?
+              "Inactive":"Active"}}</label>
+          </mat-menu>
+        </div>
+      </mat-cell>
+    </ng-container>
+
+
+    <!--Expanded Details-->
+    <ng-container matColumnDef="expandedDetail">
+      <mat-cell *matCellDef="let row" [attr.colspan]="displayedExpandedColumns">
+        <div style="width: 100%;" class="example-element-detail"
+          [@detailExpand]="row === expandedData ? 'expanded' : 'collapsed'">
+
+          <!--Grid view in expanded Details-->
+          <div *ngIf="expandedData && toggle">
+            <ng-container *ngTemplateOutlet="expandedGrid"></ng-container>
+          </div>
+
+          <!--List View in expanded details-->
+          <div class="mt-4" *ngIf="toggle===false" [attr.colspan]="displayedExpandedColumns">
+            <ng-container class="mt-4" [attr.colspan]="displayedExpandedColumns"
+              *ngTemplateOutlet="!toggle ? expandedTable : null"></ng-container>
+          </div>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <!--Expanded Details End here-->
+
+    <mat-header-row *matHeaderRowDef="displayedColumnsTopic"></mat-header-row>
+    <mat-row class="example-element-row" [class.example-expanded-row]="expandedData === row"
+      *matRowDef="let row; columns: displayedColumnsTopic"></mat-row>
+
+    <!--Expanded Details row-->
+    <mat-row [ngStyle]="{'display' : expandedData===row ? 'block' : 'none'} "
+      *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></mat-row>
+
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center " *matNoDataRow>
+      <td class="mat-cell w-full m-2">No data matching the filter</td>
+    </tr>
+  </mat-table>
+
+  <mat-paginator #topicPaginator="matPaginator" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+    aria-label="Select page of periodic elements">
+  </mat-paginator>
+</ng-template>
+
+
+<!--Providers Table Template-->
+<ng-template #providerTable>
+  <mat-table class="table-auto w-full" #providerSort="matSort" [dataSource]="dataSource" matSort
+    [multiTemplateDataRows]="true">
+    <ng-container matColumnDef="index">
+      <mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+          [indeterminate]="selection.hasValue() && !isAllSelected()">
+        </mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selection.toggle(row) : null"
+          [checked]="selection.isSelected(row)">
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="provider">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>
+        Provider Title </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <app-button variant="text" icon="arrow_drop_down"
+          (clicked)="(expandedData = expandedData === row ?null:row);getProviderLinkedILAs(row.id);$event.stopPropagation();">
+        </app-button>
+        {{row.provider}}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="ilaCount">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> # {{("ILA" | labelReplacement)| async}}s </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.ilaCount}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="priority">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Priority </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{(row.priority ? 'yes' :'no') | titlecase}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="status">
+      <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="d-inline-block">
+          <p class="py-2 px-4 rounded flex flex-row text-center text-xs text-green-700 font-medium"
+            [ngClass]="{'customcolorgreen':row.status==='active','bg-gray-100':row.status!=='active'}">
+            {{row.status | uppercase}}
+          </p>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="id">
+      <mat-header-cell *matHeaderCellDef>
+        <!--Grid And List view buttons-->
+        <div>
+          <button class="float-right ml-3 pl-1 pr-1 pt-1 rounded"
+            [ngStyle]="{'border' : toggle ? '2px solid rgba(92, 155, 49, 1)' : '2px solid lightgray'}"
+            (click)="toggle=true" style="color:rgb(92, 155, 49);outline: 2px rgb(92, 155, 49);">
+            <mat-icon>grid_on</mat-icon>
+          </button>
+          <button style="color:rgb(92, 155, 49);outline: 2px rgb(92, 155, 49)"
+            [ngStyle]="{'border' : !toggle ? '2px solid rgba(92, 155, 49, 1)' : '2px solid lightgray'}"
+            class="float-right pl-1 pr-1 pt-1 rounded" (click)="toggle=false">
+            <mat-icon>view_list</mat-icon>
+          </button>
+        </div>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <div class="flex flex-row items-center text-gray-four btn-group">
+          <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" [matMenuTriggerFor]="menu">
+          </app-button>
+          <mat-menu #menu="matMenu">
+            <label mat-menu-item (click)="openFlyPanelProviderEdit(addNewProvider,row,'Edit')">Edit</label>
+            <label mat-menu-item (click)="openFlyPanelProviderEdit(addNewProvider,row.id,'Copy')">Copy</label>
+            <label mat-menu-item (click)="OnDelete(deleteTopic,'Provider',row)">Delete</label>
+            <label mat-menu-item (click)="onMakeProviderInactive(activeInactive,row)">Make {{row.status === "active" ?
+              "Inactive":"Active"}}</label>
+          </mat-menu>
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <!--Expanded Details-->
+    <ng-container matColumnDef="expandedDetail">
+      <mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns">
+        <div style="width: 100%;" class="example-element-detail"
+          [@detailExpand]="row === expandedData ? 'expanded' : 'collapsed'">
+
+          <!--Grid view in expanded Details-->
+          <div *ngIf="expandedData && toggle">
+            <ng-container *ngTemplateOutlet="expandedGrid"></ng-container>
+          </div>
+
+          <!--List View in expanded details-->
+          <div class="mt-4" *ngIf="toggle===false" [attr.colspan]="displayedExpandedColumns">
+            <ng-container class="mt-4" [attr.colspan]="displayedExpandedColumns"
+              *ngTemplateOutlet="!toggle ? expandedTable : null"></ng-container>
+          </div>
+        </div>
+      </mat-cell>
+    </ng-container>
+    <!--Expanded Details End here-->
+
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row class="example-element-row" [class.example-expanded-row]="expandedData === row"
+      *matRowDef="let row; columns: displayedColumns"></mat-row>
+
+    <!--Expanded Details row-->
+    <mat-row [ngStyle]="{'display' : expandedData===row ? 'block' : 'none'} "
+      *matRowDef="let row; columns: ['expandedDetail']" class="example-detail-row"></mat-row>
+
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center " *matNoDataRow>
+      <td class="mat-cell w-full m-2">No data matching the filter</td>
+    </tr>
+  </mat-table>
+
+  <mat-paginator #providerPaginator="matPaginator" [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+    aria-label="Select page of periodic elements">
+  </mat-paginator>
+
+</ng-template>
+
+
+<!--Template for the expanded Grid View-->
+<ng-template #expandedGrid>
+  <app-data-loader *ngIf="!expandedTableDataSource"></app-data-loader>
+  <p *ngIf="expandedTableDataSource && expandedTableDataSource.data.length == 0">No {{("ILA" | labelReplacement)| async}}s are linked</p>
+  <ng-container *ngIf="expandedTableDataSource && expandedTableDataSource.data.length > 0">
+    <div class="container">
+      <div class="row">
+        <div class="col-md-6 flex flex-nowrap" *ngFor="let ila of (expandedTableDataSource | filter:filterValue).data">
+
+          <mat-checkbox class="float-left mt-16 mr-3" (change)="$event ? selection_provider.toggle(ila) : null"
+            [checked]="selection_provider.isSelected(ila)">
+          </mat-checkbox>
+          <div class="flex mt-2 mb-2 border-2 p-2" style="width:29rem; align-items: center;">
+            <div class="flex flex-col w-full ml-2">
+              <div class="flex justify-between">
+                <div>
+                  <span class="pt-2 h-auto text-xs">
+                    <app-icon icon="access_time"></app-icon>
+                    {{ila.creditHours===undefined? "No":ila.creditHours}} CEHs
+                  </span>
+                </div>
+                <div class="flex">
+                  <span class="ml-auto p-2 rounded float-right h-auto"
+                    [ngClass]="{'yellowBg':ila.status==='Draft','bg-gray-100':ila.status!=='active'}">{{ila.status}}</span>
+                  <span class="ml-1 p-2 rounded float-right h-auto"
+                    [ngClass]="{'customcolorgreen':ila.active===true,'bg-gray-100':ila.status!==true}">{{ila.active===true?'Active':'Inactive'}}</span>
+                  <app-button ButtonType="icon" class="text-gray-four float-right" icon="more_horiz"
+                    [matMenuTriggerFor]="menu">
+
+                  </app-button>
+                  <mat-menu #menu="matMenu">
+
+                    <label mat-menu-item (click)="OnEditILA(ila)">Edit</label>
+                    <label mat-menu-item (click)="OnClickCopy(ila)">Copy</label>
+                    <button mat-menu-item (click)="OnDelete(deleteTopic,'ILA',ila)" [disabled]="ila?.disableDelete">Delete</button>
+                    <label mat-menu-item (click)="onMakeILAInactive(activeInactive,ila)">Make {{ila.active ?
+                      "Inactive":"Active"}}</label>
+                    <label mat-menu-item
+                      (click)="openFlyInPanelChangeProvider(addNewProvider, ila.providerId,ila.id)">Change
+                      Provider</label>
+                    <label mat-menu-item (click)="openFlyInPanelChangeTopic(topicFlyPanel, ila.topicIds,ila.id)">Change
+                      Topic</label>
+                    <label mat-menu-item
+                      (click)="ilaIdForVersion = ila.id;openFlyInPanelVersionHistory(versionHistory)">View Version
+                      History</label>
+                  </mat-menu>
+                </div>
+              </div>
+              <span class="text-lg"><b>{{ila.title}}</b></span>
+              <span class="text-sm text-gray-four overflow-wrap">{{ ila.nickName + '-' + ila.num + ' ' +
+                ila.deliveryMethode}}</span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  </ng-container>
+
+</ng-template>
+
+
+<!--template for expanded row table-->
+<ng-template #expandedTable>
+  <app-data-loader *ngIf="!expandedTableDataSource"></app-data-loader>
+  <mat-table *ngIf="expandedTableDataSource"
+    [dataSource]="expandedTableDataSource | sort:[sortCol,sortOrder]">
+    <ng-container matColumnDef="index">
+      <mat-header-cell *matHeaderCellDef>
+        <mat-checkbox class="p-3 mt-2" (change)="$event ? masterToggleProviderList() : null"
+          [checked]="selection_provider.hasValue() && isAllSelectedProviderList()"
+          [indeterminate]="selection_provider.hasValue() && !isAllSelectedProviderList()"></mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <mat-checkbox class="p-3 mt-2" (click)="$event.stopPropagation()"
+          (change)="$event ? selection_provider.toggle(row) : null" [checked]="isILASelected(row)">
+        </mat-checkbox>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="num">
+      <mat-header-cell (click)="sortInnerColumn('num')" *matHeaderCellDef>
+        {{("ILA" | labelReplacement)| async}} NO
+        <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'num'" icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'num'" icon="keyboard_arrow_up"></app-icon>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.num}}
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="ilaTitle">
+      <mat-header-cell (click)="sortInnerColumn('title')" *matHeaderCellDef>
+        {{("ILA" | labelReplacement)| async}} Title <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'title'" icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'title'" icon="keyboard_arrow_up"></app-icon>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.title}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="NickName">
+      <mat-header-cell (click)="sortInnerColumn('nickName')" *matHeaderCellDef>
+        Nickname <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'nickName'" icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'nickName'" icon="keyboard_arrow_up"></app-icon>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.nickName}} </mat-cell>
+    </ng-container>
+
+    <ng-container matColumnDef="ProviderName">
+      <mat-header-cell (click)="sortInnerColumn('providerName')" *matHeaderCellDef>
+        Provider <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'providerName'"
+          icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'providerName'" icon="keyboard_arrow_up"></app-icon>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.providerName}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="IsMeta">
+      <mat-header-cell (click)="sortInnerColumn('isMeta')" *matHeaderCellDef>
+        IsMeta <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'isMeta'" icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'isMeta'" icon="keyboard_arrow_up"></app-icon>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.isMeta}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="creditHours">
+      <mat-header-cell (click)="sortInnerColumn('creditHours')" *matHeaderCellDef>
+        Credit Hours <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'creditHours'" icon="keyboard_arrow_down">
+        </app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'creditHours' " icon="keyboard_arrow_up"></app-icon>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.creditHours===undefined?"N/A":row.creditHours}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="deliveryMethode">
+      <mat-header-cell (click)="sortInnerColumn('deliveryMethode')" *matHeaderCellDef>
+        Delivery Methods<app-icon *ngIf="sortOrder === 'asc' && sortCol === 'deliveryMethode'"
+          icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'deliveryMethode'" icon="keyboard_arrow_up"></app-icon>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        {{row.deliveryMethode}} </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="Status">
+      <mat-header-cell (click)="sortInnerColumn('status')" *matHeaderCellDef>
+        Status <app-icon *ngIf="sortOrder === 'asc' && sortCol === 'status'" icon="keyboard_arrow_down"></app-icon>
+        <app-icon *ngIf="sortOrder === 'desc' && sortCol === 'status'" icon="keyboard_arrow_up"></app-icon>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row" class="flex flex-row justify-between">
+        <div class="w-28 items-center">
+          <span class="py-2 px-4 rounded-sm  text-xs font-medium"
+            [ngClass]="{'customcolorgreenOnlyText':row.active === true,'customcolorRedOnlyText':row.active === false}">
+            {{row.active === true ? "Active":"Inactive"}}
+          </span>
+          <p class="py-2 px-4 rounded-sm  text-xs text-green-700 font-medium"
+            [ngClass]="{'blueBg':(row.status==='Published'),'bg-gray-100':row.status === 'Inactive','yellowBg':row.status==='Draft'}">
+            {{row.status}}</p>
+        </div>
+
+        <div>
+          <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" [matMenuTriggerFor]="menu">
+          </app-button>
+          <mat-menu #menu="matMenu">
+            <label mat-menu-item (click)="OnEditILA(row)">Edit</label>
+            <label mat-menu-item (click)="OnClickCopy(row)">Copy</label>
+            <button mat-menu-item (click)="OnDelete(deleteTopic, 'ILA', row)" [disabled]="row?.disableDelete">Delete</button>
+            <label mat-menu-item (click)="onMakeILAInactive(activeInactive,row)">Make {{row.active ?
+              "Inactive":"Active"}}</label>
+            <label mat-menu-item *ngIf="viewSelected==='provider'"
+              (click)="openFlyInPanelChangeProvider(addNewProvider, row.providerId, row.id)">Change
+              Provider</label>
+            <label mat-menu-item *ngIf="viewSelected==='topic'"
+              (click)="openFlyInPanelChangeTopic(topicFlyPanel, row.topicIds,row.id)">Change
+              Topic</label>
+            <label mat-menu-item (click)="ilaIdForVersion = row.id;openFlyInPanelVersionHistory(versionHistory)">View
+              Version History</label>
+              <label mat-menu-item *ngIf="row.isNerc" (click)="downloadAsCSV(row.id)">Download {{("ILA" | labelReplacement)| async}} CSV</label>
+          </mat-menu>
+        </div>
+      </mat-cell>
+    </ng-container>
+
+    <mat-header-row *matHeaderRowDef="displayedExpandedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedExpandedColumns"></mat-row>
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row flex text-center " *matNoDataRow>
+      <td class="mat-cell w-full m-2">No {{("ILA" | labelReplacement)| async}}s linked</td>
+    </tr>
+
+  </mat-table>
+  <div class="flex justify-center pt-4" *ngIf = showMoreIlaButton>
+    <app-button text = "Load More" type = "button" size = "sm" color = "secondary" (clicked) = "getMoreIlas()"></app-button>
+    </div>
+</ng-template>
+
+
+<!-- main-page starts -->
+
+<app-data-loader *ngIf="!dataSource"></app-data-loader>
+<ng-container *ngIf="ILAStats">
+  <!--Top containers on main page-->
+  <div class="px-10 pb-12 flex flex-row">
+    <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm">
+      <span>Active Providers</span>
+      <p (click)="openFlyInPanelStatistics(statistics,'Providers')"
+        [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':ILAStats.providers>0,'text-xl text-black':ILAStats.providers==0}">
+        {{ILAStats.providers | number : '2.'}}</p>
+    </div>
+    <div (click)="openFlyInPanelStatistics(statistics,'Topics')"
+      class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm">
+      <span>Active Topics</span>
+      <p
+        [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':ILAStats.topics>0,'text-xl text-black':ILAStats.topics==0}">
+        {{ILAStats.topics | number : '2.'}}</p>
+    </div>
+    <div (click)="openFlyInPanelStatistics(statistics,'Active')"
+      class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm">
+      <span>Active {{("ILA" | labelReplacement)| async}}s</span>
+      <p
+        [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':ILAStats.activeILAs>0,'text-xl text-black':ILAStats.activeILAs==0}">
+        {{ILAStats.activeILAs | number : '2.'}}</p>
+    </div>
+    <button (click)="openFlyInPanelStatistics(statistics,'Draft/Dev')"
+      class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm">
+      <span>{{("ILA" | labelReplacement)| async}}s in Draft/Dev Mode</span>
+      <p
+        [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':ILAStats.draftILAs>0,'text-xl text-black':ILAStats.draftILAs==0}">
+        {{ILAStats.draftILAs | number : '2.'}}</p>
+    </button>
+    <button (click)="openFlyInPanelStatistics(statistics,'Published')"
+      class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm">
+      <span>Published {{("ILA" | labelReplacement)| async}}s</span>
+      <p
+        [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':ILAStats.publishedILAs>0,'text-xl text-black':ILAStats.publishedILAs==0}">
+        {{ILAStats.publishedILAs | number : '2.'}}</p>
+    </button>
+    <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm">
+      <span>{{("ILA" | labelReplacement)| async}}s not linked to Topic</span>
+      <p (click)="openFlyInPanelStatistics(statistics,'Unlinked')"
+        [ngClass]="{'text-2xl text-qtd font-bold cursor-pointer':ILAStats.unlinkedTopicILAs>0,'text-xl text-black':ILAStats.unlinkedTopicILAs==0}">
+        {{ILAStats.unlinkedTopicILAs | number : '2.'}}</p>
+    </div>
+  </div>
+
+  <div class="flex" style="justify-content:space-between;">
+    <div>
+      <app-button
+      [disabled]="!(this.selection_provider.selected.length > 1 || selection_topic.selected.length > 0 || selection_topic_second.selected.length > 0)"
+        class="float-left self-center ml-5 pt-2" variant="text" (clicked)="openFlyPanelMetaILA(metaILA,'create')"
+        text="Link {{('ILA' | labelReplacement)| async}}s to Create Meta {{('ILA' | labelReplacement)| async}}" icon="link" iconPosition="left"></app-button>
+      <div class="flex flex-row pt-2">
+        <app-button class="float-left self-center ml-5" style="outline: none !important;" variant="text"
+          routerLink="/my-data/bulkedit/ILAs" icon="edit" iconPosition="left"></app-button>
+        <button style="outline:none;" class="self-center pl-2 font-bold bulk_button"
+          routerLink="/my-data/bulkedit/ILAs">Bulk
+          Edit</button>
+      </div>
+    </div>
+
+    <div class="flex flex-row justify-end space-x-4 text-sm px-12 mb-3">
+      <app-button color="secondary" text="Filter" size="sm" leftIcon="filter_alt" rightIcon="expand_more"
+        [matMenuTriggerFor]="filterMenu">
+      </app-button>
+      <!--by default the filter is for provider-->
+      <mat-menu #filterMenu="matMenu">
+        <label (click)="openFlyPanel(providerFilterFlypanel);"
+          mat-menu-item>Providers</label>
+        <label [matMenuTriggerFor]="proiority" mat-menu-item>Priority</label>
+        <label [matMenuTriggerFor]="status" mat-menu-item>Status</label>
+        <label [matMenuTriggerFor]="hasEmpty" mat-menu-item>{{includeEmpty | titlecase}} Unlinked Providers</label>
+        <label [matMenuTriggerFor]="ilaFilter" mat-menu-item>Showing {{ilaActive}} {{("ILA" | labelReplacement)| async}}'s</label>
+      </mat-menu>
+      <mat-menu #ilaFilter="matMenu">
+        <label [ngClass]="{'active_menu':ilaActive === 'active'}"
+        (click)="applyILAFilter('active')"
+          mat-menu-item class="label_style">
+          Active
+        </label>
+        <label [ngClass]="{'active_menu':ilaActive === 'inactive'}"
+        (click)="applyILAFilter('inactive')"
+          mat-menu-item class="label_style">
+          Inactive
+        </label>
+      </mat-menu>
+      <mat-menu #status="matMenu">
+        <label [ngClass]="{'active_menu':statusFilter === 'active'}"
+        (click)="applyStatusFilter('active')"
+          mat-menu-item class="label_style">
+          Active
+        </label>
+        <label [ngClass]="{'active_menu':statusFilter === 'inactive'}"
+        (click)="applyStatusFilter('inactive')"
+          mat-menu-item class="label_style">
+          Inactive
+        </label>
+      </mat-menu>
+      <mat-menu #proiority="matMenu">
+        <label (click)="setPriorityFilter('yes')" [ngClass]="{'active_menu': priorityFilter === 'yes'}" mat-menu-item class="label_style">
+          Yes
+        </label>
+        <label (click)="setPriorityFilter('no')" [ngClass]="{'active_menu': priorityFilter === 'no'}" mat-menu-item class="label_style">
+          No
+        </label>
+      </mat-menu>
+      <mat-menu #hasEmpty="matMenu">
+        <label (click)="applyEmptyFilter('include')"
+          [ngClass]="{'active_menu':includeEmpty === 'include'}" mat-menu-item>Include Unlinked</label>
+        <label (click)="applyEmptyFilter('exclude')"
+          [ngClass]="{'active_menu':includeEmpty === 'exclude'}" mat-menu-item>Exclude Unlinked</label>
+      </mat-menu>
+
+      <app-button text="Add New" size="sm" leftIcon="add" rightIcon="expand_more" [matMenuTriggerFor]="addMenu">
+      </app-button>
+      <mat-menu #addMenu="matMenu">
+        <label mat-menu-item (click)="openFlyInPanelProvider(addNewProvider)">Provider</label>
+        <label mat-menu-item (click)="openFlyPanel(topicFlyPanel)">Topic</label>
+        <label mat-menu-item routerLink="/dnd/ila/create">{{("ILA" | labelReplacement)| async}}</label>
+      </mat-menu>
+    </div>
+  </div>
+
+  <div class="flex flex-col justify-between ml-12 px-2 py-2 bg-white-one w-1/5 pt-2" *ngIf="filterName">
+    <span class="font-bold mb-4">Filter(s) Applied</span>
+    <div *ngIf="providerName" class="flex flex-row">
+      <span *ngFor="let filter of providerName">{{filter}}</span>
+    </div>
+
+    <div class="flex flex-col">
+      <span *ngFor="let filter of filterName1">{{filter}}</span>
+    </div>
+
+  </div>
+  <app-button variant="text" class="mt-2 ml-12" *ngIf="filterName" (clicked)="clearFilterFunction()" text="Clear Filter"
+    icon="clear" iconPosition="right"></app-button>
+
+
+
+  <div class="flex flex-col px-12 pb-12 " style="width: 100%;">
+    <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8">
+      <!-- search and buttons starts -->
+      <div
+        class="flex flex-row items-center justify-between bg-white-one rounded-t-md py-3 px-6 space-x-2 border-b-0.8 border-gray-one ">
+        <div class="flex flex-row" style="width:40%">
+
+          <input (keyup)="delayedFilterDataSource()" [(ngModel)]="ilaTitleSearch" class="text-sm flex-grow focus:outline-none"
+            placeholder="Enter Title or Number to search" type="text">
+          <app-button variant="text" class="mt-2 ml-12" (clicked)="clearFilter()" text="Clear Search" icon="clear"
+            iconPosition="right"></app-button>
+
+        </div>
+        <div class="flex flex-col">
+          <!--Meta, Provider and Topic table view switch buttons-->
+          <div class="flex flex-row float-right bg-white-one text-sm">
+            <button (click)="ToggleILAGroupBy('provider')" class="m-1 rounded p-2"
+              style="outline: none;color: rgba(122, 128, 126, 1);font-weight:medium;border: 1px solid rgba(122, 128, 126, 0.2);"
+              [ngStyle]="viewSelected==='provider' ? {'background-color': 'rgba(92, 155, 49,0.1)', 'color': 'rgba(92, 155, 49, 1)','border': '1px solid rgba(92, 155, 49, 1)'} : {'background-color': 'white','color': 'rgba(122, 128, 126, 1)','border': '1px solid rgba(122, 128, 126, 0.2)'}">Provider
+              View</button>
+
+            <button (click)="ToggleILAGroupBy('meta')" class="m-1 rounded p-2"
+              style="outline: none;color: rgba(122, 128, 126, 1);font-weight:medium;border: 1px solid rgba(122, 128, 126, 0.2);"
+              [ngStyle]="viewSelected==='meta' ? {'background-color': 'rgba(92, 155, 49,0.1)', 'color': 'rgba(92, 155, 49, 1)','border': '1px solid rgba(92, 155, 49, 1)'} : {'background-color': 'white','color': 'rgba(122, 128, 126, 1)','border': '1px solid rgba(122, 128, 126, 0.2)'}">Meta
+              {{("ILA" | labelReplacement)| async}}s</button>
+
+            <button (click)="ToggleILAGroupBy('topic')" class="m-1 rounded p-2"
+              style="outline: none;color: rgba(122, 128, 126, 1);font-weight:medium;border: 1px solid rgba(122, 128, 126, 0.2);"
+              [ngStyle]="viewSelected==='topic' ? {'background-color': 'rgba(92, 155, 49,0.1)', 'color': 'rgba(92, 155, 49, 1)','border': '1px solid rgba(92, 155, 49, 1)'} : {'background-color': 'white','color': 'rgba(122, 128, 126, 1)','border': '1px solid rgba(122, 128, 126, 0.2)'}">Topic
+              View</button>
+          </div>
+
+
+        </div>
+      </div>
+
+      <!-- search and button ends -->
+      <!-- table starts -->
+      <app-data-loader *ngIf="isLoading"></app-data-loader>
+      <div *ngIf="!isLoading" class="flex-row bg-white-one rounded-b-md m-2 ">
+        <ng-container *ngTemplateOutlet="viewSelected === 'provider' ?  providerTable : null"></ng-container>
+        <ng-container *ngTemplateOutlet="viewSelected==='meta' ? metaTable : null"></ng-container>
+        <ng-container *ngTemplateOutlet="viewSelected==='topic' ? topicTable : null"></ng-container>
+      </div>
+      <!-- table ends -->
+    </div>
+  </div>
+  <!-- main-page ends -->
+</ng-container>
+<ng-template #addNewProvider>
+  <app-fly-panel-provider [providerRow]="providerRow"
+    (closed)="flyPanelSrvc.close();ToggleILAGroupBy('provider');getILAStats()" [provider_copy_mode]="provider_copy_mode"
+    [provider_edit_mode]="provider_edit_mode" [provider_change_mode]="provider_change_mode"
+    [oldProvider]="changeProviderId" [ilaIdForChange]="ILAIdforChange">
+  </app-fly-panel-provider>
+</ng-template>
+
+<ng-template #topicFlyPanel>
+  <app-fly-panel-topic [topic_copy_mode]="topic_copy_mode" [change_topic]="change_topic" [edit_topic]="edit_topic"
+    [oldTopic]="changeTopicId" [linkedTopicIds]="linkedTopicIds"  [ilaIdForChange]="ILAIdforChange"
+    (closed)="flyPanelSrvc.close();ToggleILAGroupBy('topic');getILAStats()"></app-fly-panel-topic>
+</ng-template>
+
+<ng-template #providerFilterFlypanel>
+  <app-ila-filter-flypanel [providerList]="originalProviders" (providerName)="providerNameFunction($event)"  [providerAraray]="providerName"
+    (applyFilter)="ApplyProviderFilter($event)" [providerIdList]="providerFilterIds" (providerIdDetail)="getProviderIdList($event)" (closed)="flyPanelSrvc.close()">
+
+  </app-ila-filter-flypanel>
+</ng-template>
+
+<ng-template #deleteTopic>
+  <app-qtd-dialogue [header]="header" [description]="description" [cancelText]="cancelText" [confirmText]="confirmText"
+    (confirmed)="deleteILA()">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #activeInactive>
+  <app-qtd-dialogue [header]="header" [description]="description" [cancelText]="cancelText" [confirmText]="confirmText"
+    (confirmed)="changeILAStatus()">
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #versionHistory>
+  <app-fly-panel-version-history [ilaId]="ilaIdForVersion">
+  </app-fly-panel-version-history>
+</ng-template>
+
+<ng-template #statistics>
+  <app-fly-panel-statistics [activeCheck]="activeCheck" [moduleName]="moduleName" [providerCheck]="providerCheck"
+    [draft_dev_check]="draft_dev_check" [published_check]="published_check" [unlinkedTopicCheck]="unlinked_topic_check">
+  </app-fly-panel-statistics>
+</ng-template>
+
+<ng-template #deleteMetaILa>
+  <app-qtd-dialogue [header]="header" [description]="description" [cancelText]="cancelText" [confirmText]="confirmText"
+    (confirmed)="deleteILA()">
+  </app-qtd-dialogue>
+</ng-template>

@@ -1,0 +1,404 @@
+<app-data-loader *ngIf="!detailsInfo"></app-data-loader>
+<div *ngIf="detailsInfo" class="flex flex-col w-full">
+  <!-- Header Section -->
+  <mat-toolbar class="h-28 app-toolbar-sticky">
+
+    <mat-icon class="backButton" (click)="openBackDialogue(exitDialogue)">
+      keyboard_arrow_left
+    </mat-icon>
+    <h1 class="flex-auto font-medium text-xl ml-3" id="title" translate>Evaluation</h1>
+    <div class="flex flex-row items-center space-x-4">
+
+      <app-button color="blueBorder" [disabled]="showSpinner || nextSpinner" size="sm"
+        type="button" text="Print Records" (clicked)="printData()">
+      </app-button>
+
+      <app-button color="blue" *ngIf="!preview" [disabled]="showSpinner || nextSpinner" size="sm" [spinner]="showSpinner"
+        type="button" text="Submit" (clicked)="openSubmitDialogue(submitDialogue)">
+      </app-button>
+
+      <app-button color="blue" *ngIf="preview" [disabled]="showSpinner || nextSpinner" size="sm" [spinner]="showSpinner"
+        type="button" text="Done" (clicked)="openSubmitDialogue(submitDialogue)">
+      </app-button>
+
+    </div>
+  </mat-toolbar>
+
+  <!-- Middle Section -->
+  <section class="flex flex-col w-full mt-20" style="align-items: center;justify-content: center;">
+    <div class="flex flex-col" style="width:60%;">
+      <!-- Title Section -->
+      <section>
+        <span class="font-bold text-3xl">Evaluation - {{detailsInfo.evaluationTitle}}</span>
+      </section>
+
+      <!-- ILA Details -->
+      <section class="mt-5 mb-4">
+        <mat-accordion>
+          <mat-expansion-panel #panel [expanded]="false" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title [ngClass]="panel.expanded ? 'border-b-2':''" class="text-lg font-bold flex flex-row justify-between w-full pb-3">
+                <div class="text-gray-400 font-bold">{{("ILA" | labelReplacement)| async}} Details</div>
+                <mat-icon>{{panel.expanded ? 'keyboard_arrow_down':'keyboard_arrow_up'}}</mat-icon>
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div class="mt-4 mb-4" style="display:grid;row-gap: 2rem;">
+              <div style="grid-row: 1;grid-column: 1;">
+                <div class="flex flex-col">
+                  <span class="font-bold">
+                    {{detailsInfo.providerName}}
+                  </span>
+                  <span class="text-gray-400">
+                    Provider Name
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 1;grid-column: 2;">
+                <div class="flex flex-col">
+                  <span class="font-bold">
+                    {{detailsInfo.ilaNumber}}
+                  </span>
+                  <span class="text-gray-400">
+                    {{("ILA" | labelReplacement)| async}} NO.
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 2;grid-column: 1;">
+                <div class="flex flex-col">
+                  <span class="font-bold">
+                    {{detailsInfo.ilaTitleOnly}}
+                  </span>
+                  <span class="text-gray-400">
+                    {{("ILA" | labelReplacement)| async}} Title
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 2;grid-column: 2;">
+                <div class="flex flex-col">
+                  <span class="font-bold">
+                    {{detailsInfo.instructorName}}
+                  </span>
+                  <span class="text-gray-400">
+                    {{("Instructor" | labelReplacement)| async}}
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 3;grid-column: 1;">
+                <div class="flex flex-col">
+                  <span class="font-bold">
+                    {{detailsInfo.locationName}}
+                  </span>
+                  <span class="text-gray-400">
+                    {{("Location" | labelReplacement)| async}}s
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 3;grid-column: 2;">
+                <div class="flex flex-col">
+                  <span class="font-bold">
+                    {{currDate | date:'MMM d, yyyy'}}
+                  </span>
+                  <span class="text-gray-400">
+                    Start Date
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 4;grid-column: 1;">
+                <div class="flex flex-col">
+                  <span class="font-bold">
+                    {{detailsInfo.dueDate | date:'MMM d, yyyy'}}
+                  </span>
+                  <span class="text-gray-400">
+                    Completion Date
+                  </span>
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </section>
+
+      <app-data-loader *ngIf="!showForm"></app-data-loader>
+      <div *ngIf="questions.length < 1" class="flex w-full my-4" style="justify-content:center;align-items:center;">
+        <span>No Questions Linked To Evaluation</span>
+      </div>
+      <!-- Rating Scale Section -->
+      <section *ngIf="showForm && questions.length > 0" class="flex flex-col bg-white mat-elevation-z3 p-4 rounded-sm">
+        <span class="text-gray-400 font-bold border-b-2 pb-2">Rating Scale</span>
+        <span class="text-gray-400 mt-4">Please follow the rating scale given below to complete the evaluation questions.</span>
+        <span class="text-gray-400 mt-4" [innerHTML]="eval.instructions"></span>
+        <div class="flex flex-row mt-5" style="justify-content: center;">
+          <div class="flex flex-row" style="align-items:flex-end;">
+            <div class="flex flex-col scaleStyle description-no-box"  *ngFor="let scale of scaleData,index as i">
+              <div class="boxStyle description-height" >{{scale.description}}</div>
+              <div class="boxStyle">{{scale.ratings}}</div>
+            </div>
+          </div>
+        </div>
+        <span class="text-color mt-2">No of Questions :<i> {{questions.length}} </i></span>
+      </section>
+
+      <!-- Question Section -->
+      <form *ngIf="!preview && showForm && questions.length > 0" [formGroup]="ratingForm">
+        <div [@animSlider]="page" *ngFor="let item of data,index as i">
+            <div  *ngIf="i === page" class="flex flex-col w-full bg-white mat-elevation-z3 mt-4 p-4 rounded-sm">
+              <div class="flex flex-row pb-4 border-b-2 w-full">
+                <span class="text-gray-400 mr-3" style="white-space: nowrap;">Questions {{item.number}}:</span>
+                <div [innerHTML]="item.question"></div>
+              </div>
+              <mat-radio-group [selected]="ratingForm.get('rating' + item.number)?.value" [formControlName]="'rating' + item.number" class="mt-5">
+                <mat-radio-button class="mr-5" [value]="scale" *ngFor="let scale of sortRatings(item.rating)">
+                  {{scale.value === 0 ? 'N/A':scale.value}} ({{scale.description}})
+                </mat-radio-button>
+              </mat-radio-group>
+              <span></span>
+              <div *ngIf="eval.isIncludeCommentSections" class="flex flex-col mt-4">
+                <span class="mb-3">Comments</span>
+                <app-textarea
+                [value]="ratingForm.get('note' + item.number)?.value ?? ''"
+                [formControlName]="'note' + item.number"
+                class="innerBox">
+              </app-textarea>
+              </div>
+            </div>
+        </div>
+      </form>
+
+      <!-- Buttons Section -->
+      <section *ngIf="!preview && showForm && questions.length > 0" class="flex flex-row justify-between my-5">
+        <app-button  *ngIf="page > 0" color="secondary" [disabled]="page === 0" text="Back" (clicked)="decreaseNumber()" size="sm"></app-button>
+        <app-button color="secondary" *ngIf="page === 0" text="Exit" (click)="openBackDialogue(exitDialogue)" size="sm"></app-button>
+
+        <div class="flex flex-row" *ngIf="page !== data.length - 1">
+          <app-button (clicked)="increaseNumber()" color="blueBorder" [disabled]="page === data.length - 1" text="Skip" size="sm"></app-button>
+          <app-button
+          [spinner]="nextSpinner"
+          [disabled]="nextSpinner || (ratingForm.get('rating' + data[page].number)?.hasError('required') ?? false) || showSpinner"
+          class="ml-3" text="Next" (clicked)="saveQuestion()" size="sm"></app-button>
+        </div>
+        <app-button color="blue" (clicked)="saveQuestion();preview = true;" *ngIf="page === data.length - 1" size="sm" text="Review Evaluation"></app-button>
+      </section>
+
+      <div *ngIf="preview && showForm && questions.length > 0" class="bg-white mat-elevation-z3 mt-4">
+        <form  [formGroup]="ratingForm">
+          <div  *ngFor="let item of data,index as i">
+              <div class="flex flex-col w-full  mt-4 p-4 rounded-sm">
+                <div class="flex flex-row pb-4 border-b-2 w-full">
+                  <span class="text-gray-400 mr-3" style="white-space: nowrap;">Question {{item.number}}:</span>
+                  <div [innerHTML]="item.question"></div>
+                </div>
+                <mat-radio-group [selected]="ratingForm.get('rating' + item.number)?.value" [formControlName]="'rating' + item.number" class="mt-5">
+                  <mat-radio-button [disabled]="true" class="mr-5" [value]="scale" *ngFor="let scale of item.rating,index as i">
+                    {{scale.value === 0 ? 'N/A':scale.value}}
+                  </mat-radio-button>
+                </mat-radio-group>
+                <div *ngIf="eval.isIncludeCommentSections" class="flex flex-col mt-4">
+                  <span class="mb-3">Comments</span>
+                  <app-textarea
+                  [isDisabled]="true"
+                  [value]="ratingForm.get('note' + item.number)?.value ?? ''"
+                  [formControlName]="'note' + item.number"
+                  class="innerBox"
+                  >
+                </app-textarea>
+                </div>
+              </div>
+          </div>
+        </form>
+      </div>
+
+      <section *ngIf="preview && showForm && questions.length > 0" class="flex flex-row justify-between my-5">
+        <app-button color="blueBorder" text="Back" (clicked)="preview = false;" size="sm"></app-button>
+      </section>
+    </div>
+  </section>
+</div>
+
+<ng-template #submitDialogue>
+  <app-qtd-dialogue
+    [header]="'Submit Evaluation'"
+    [description]="submitDescription"
+    [cancelText]="'Cancel'"
+    [confirmText]="'Ok'"
+    (confirmed)="submitEvaluation()"
+    (canceled)="dialog.closeAll()"
+    [detailsInfo]="detailsInfo"
+    ></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #exitDialogue>
+  <app-qtd-dialogue
+    [header]="'Exit Evaluation'"
+    [description]="exitDescription"
+    [cancelText]="'No'"
+    [confirmText]="'Yes'"
+    (confirmed)="exitEval()"
+    (canceled)="dialog.closeAll()"
+    ></app-qtd-dialogue>
+</ng-template>
+
+<!-- Print Section -->
+<div #toPrint style="display:none;">
+  <!-- Middle Section -->
+  <section style="width:100%;align-items: center;justify-content: center;display:flex;flex-flow: column;margin-top: 5rem;">
+    <div style="width:60%;display:flex;flex-flow: column;">
+      <!-- Title Section -->
+      <section>
+        <span style="font-weight:700;font-size: 1.875rem;line-height: 2.25rem;">Evaluation - {{detailsInfo.evaluationTitle}}</span>
+      </section>
+
+      <!-- ILA Details -->
+      <section style="margin-top:1.25rem;margin-bottom: 1rem;">
+        <mat-accordion>
+          <mat-expansion-panel #panel [expanded]="true" hideToggle>
+            <mat-expansion-panel-header>
+              <mat-panel-title style="border-bottom-width:2px;" [ngClass]="panel.expanded ? 'border-b-2':''" class="text-lg font-bold flex flex-row justify-between w-full pb-3">
+                <div  style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));font-weight: 700;">{{("ILA" | labelReplacement)| async}} Details</div>
+                <!-- <mat-icon>{{panel.expanded ? 'keyboard_arrow_down':'keyboard_arrow_up'}}</mat-icon> -->
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+            <div style="display:grid;row-gap: 2rem;margin-top: 1rem;margin-bottom:1rem;">
+              <div style="grid-row: 1;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                  <span style="font-weight: 700;">
+                    {{detailsInfo.providerName}}
+                  </span>
+                  <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                    Provider Name
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 1;grid-column: 2;">
+                <div style="display:flex;flex-flow:column;">
+                  <span style="font-weight: 700;">
+                    {{detailsInfo.ilaNumber}}
+                  </span>
+                  <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                    {{("ILA" | labelReplacement)| async}} NO.
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 2;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                  <span style="font-weight: 700;">
+                    {{detailsInfo.ilaTitleOnly}}
+                  </span>
+                  <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                    {{("ILA" | labelReplacement)| async}} Title
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 2;grid-column: 2;">
+                <div style="display:flex;flex-flow:column;">
+                  <span style="font-weight: 700;">
+                    {{detailsInfo.instructorName}}
+                  </span>
+                  <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                    {{("Instructor" | labelReplacement)| async}}
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 3;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                  <span style="font-weight: 700;">
+                    {{detailsInfo.locationName}}
+                  </span>
+                  <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                    {{("Location" | labelReplacement)| async}}s
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 3;grid-column: 2;">
+                <div style="display:flex;flex-flow:column;">
+                  <span style="font-weight: 700;">
+                    {{currDate | date:'MMM d, yyyy'}}
+                  </span>
+                  <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                    Start Date
+                  </span>
+                </div>
+              </div>
+              <div style="grid-row: 4;grid-column: 1;">
+                <div style="display:flex;flex-flow:column;">
+                  <span style="font-weight: 700;">
+                    {{detailsInfo.dueDate | date:'MMM d, yyyy'}}
+                  </span>
+                  <span style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">
+                    Completion Date
+                  </span>
+                </div>
+              </div>
+            </div>
+          </mat-expansion-panel>
+        </mat-accordion>
+      </section>
+
+      <div *ngIf="questions.length < 1" style="display:flex;width:100%;justify-content:center;align-items:center;">
+        <span>No Questions Linked To Evaluation</span>
+      </div>
+
+      <!-- Rating Scale Section -->
+      <section *ngIf="showForm && questions.length > 0" style="display:flex;flex-flow:column;--tw-bg-opacity: 1;background-color: rgba(255, 255, 255, var(--tw-bg-opacity));padding:1rem;border-radius: 0.125rem;">
+        <span
+        style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));font-weight: 700;border-bottom-width: 2px;border-bottom-width: 2px;;">Rating Scale</span>
+        <div
+          style="--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));display: flex;margin-top: 1.25rem;justify-content: center;">
+          <div style="align-items:baseline;display:flex;">
+            <span
+              style="margin-right: 0.75rem;--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));"
+              >{{lowestDesc}}</span>
+            <div style="display:flex;">
+              <div style="padding-left: 2rem;
+              padding-right: 2rem;
+              padding-top: 0.5rem;
+              padding-bottom: 0.5rem;
+              border: 1px solid lightgray;
+              color:black"
+               *ngFor="let scale of scaleData,index as i">{{i + 1}}</div>
+            </div>
+            <span style="margin-left: 0.75rem;--tw-text-opacity: 1;color: rgba(156, 163, 175, var(--tw-text-opacity));">{{highestDesc}}</span>
+          </div>
+        </div>
+      </section>
+
+      <div *ngIf="showForm && questions.length > 0" style="--tw-bg-opacity: 1;
+      background-color: rgba(255, 255, 255, var(--tw-bg-opacity));margin-top: 1rem;">
+        <form  [formGroup]="ratingForm">
+          <div  *ngFor="let item of data,index as i">
+              <div style="margin-top:1rem;padding:1rem;width:100%;border-radius: 0.125rem;display:flex;flex-flow:column;">
+                <div style="border-radius: 0.125rem;border-bottom-width: 2px;display:flex;padding-bottom: 1rem;align-items: center;">
+                  <span style="white-space: nowrap;--tw-text-opacity: 1;
+                  color: rgba(156, 163, 175, var(--tw-text-opacity));margin-right: 0.75rem;">Question {{item.number}}:</span>
+                  <div [innerHTML]="item.question"></div>
+                </div>
+                <div role="radiogroup" style="margin-top: 1.25rem;display:flex;">
+                  <!-- <mat-radio-button style="margin-right:1.25rem" [value]="scale" *ngFor="let scale of item.rating,index as i">
+                    {{scale.value === null ? 'N/A':scale.value}}
+                  </mat-radio-button> -->
+                  <div style="display:flex;align-items:center" *ngFor="let scale of item.rating,index as i">
+                    <div [ngClass]="scale === ratingForm.get('rating' + item.number)?.value ? 'outerCheck':''" style="border-radius: 50%;border:solid black 1px;width:0.5rem;height:0.5rem;padding:0.2rem;display:flex">
+                      <input style="border-radius: 50%;border:none;display:flex;width: 100%;" [ngClass]="scale === ratingForm.get('rating' + item.number)?.value ? 'checked':''" [checked]="scale === ratingForm.get('rating' + item.number)?.value" role="radio">
+                    </div>
+                    <label style="margin-left:1rem;margin-right: 1rem;">{{scale.value === null ? 'N/A':scale.value}}</label>
+                  </div>
+                </div>
+                <div *ngIf="eval.isIncludeCommentSections" style="margin-top:1rem;display:flex;flex-flow:column;">
+                  <span style="margin-bottom: 0.75rem;">Comments</span>
+                  <textarea
+                  [formControlName]="'note' + item.number"
+                  style="height:5rem;
+                  width:75%;
+                  outline: none;
+                  padding-top:1rem;
+                  padding-left: 1rem;"
+                  [textContent]="ratingForm.get('note' + item.number)?.value ?? ''"
+                  >
+                </textarea>
+                </div>
+              </div>
+          </div>
+        </form>
+      </div>
+    </div>
+  </section>
+</div>

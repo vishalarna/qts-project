@@ -1,0 +1,22 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore.Metadata.Builders;
+using QTD2.Domain.Entities.Core;
+
+namespace QTD2.Data.Mapping.Core
+{
+    public class Version_Task_SuggestionMap : Common.CommonMap<Version_Task_Suggestion>
+    {
+        public override void Configure(EntityTypeBuilder<Version_Task_Suggestion> builder)
+        {
+            base.Configure(builder);
+            builder.Property(o => o.Description);
+            builder.Property(o => o.Number).IsRequired();
+            builder.HasOne(o => o.Version_Task).WithMany(k => k.Version_Task_Suggestions).HasForeignKey(x => x.Version_TaskId).IsRequired();
+            builder.HasOne(o => o.Task_Suggestion).WithMany(k => k.Version_Task_Suggestions).HasForeignKey(x => x.Task_SuggestionId).IsRequired();
+        }
+    }
+}

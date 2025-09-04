@@ -1,0 +1,23 @@
+:host ::ng-deep .task-list-data .mat-header-cell:nth-child(1),
+:host ::ng-deep .task-list-data .mat-cell:nth-child(1) {
+  max-width: 80px;
+}
+
+:host ::ng-deep .task-list-data .mat-header-cell:nth-child(2),
+:host ::ng-deep .task-list-data .mat-cell:nth-child(2) {
+  max-width: 100px;
+}
+.task-list-data{
+  padding-bottom: 2rem;
+  .linked-row{
+    color: rgb(92, 155, 49)
+  }
+}
+
+:host ::ng-deep .task-list-data .no-data-row td{
+  max-width: unset !important;
+  padding: auto;
+}
+.search-wrap{
+  margin: 0 3rem;
+}

@@ -1,0 +1,37 @@
+<div>
+  <div class="flex flex-row justify-between items-center px-3 mt-4">
+    <p *ngIf="shSet === undefined" class="text-xl font-bold text-gray-900">Add New {{("Safety Hazard" | labelReplacement)| async}}s Set</p>
+    <p *ngIf="shSet !== undefined" class="text-xl font-bold text-gray-900">Edit {{("Safety Hazard" | labelReplacement)| async}}s Set</p>
+    <app-button (clicked)="flyPanelService.close()" ButtonType='icon' icon="close">
+    </app-button>
+  </div>
+  <form class="w-11/12 ml-4 mt-4 flex flex-col" [formGroup]="setForm">
+    <div class="mt-3">
+      <app-label [for]="'Abatement'" text="Abatement"></app-label>
+      <ckeditor #ckeditor style="min-height: 300px;" [editor]="Editor" formControlName="Abatement"
+        placeholder="Please enter Abatement">
+      </ckeditor>
+    </div>
+    <div class="mt-3">
+      <app-label [for]="'Control'" text="Control"></app-label>
+      <ckeditor #ckeditor [editor]="Editor" formControlName="Control" placeholder="Please enter Controls">
+      </ckeditor>
+    </div>
+    <div class="flex flex-row justify-between">
+      <mat-checkbox *ngIf="shSet === undefined" class="self-start pt-12" formControlName="addAnother">Add Another Hazard Set</mat-checkbox>
+      <div class="self-end pt-12">
+        <app-button [spinner]="showSpinner" *ngIf="shSet === undefined"
+          [disabled]="setForm.get('Abatement')?.value.length < 1 && setForm.get('Control')?.value.length < 1 || showSpinner"
+          (clicked)="saveSet()" text="Save" size="sm">
+        </app-button>
+      </div>
+    </div>
+
+    <div class="flex flex-row-reverse">
+      <app-button [spinner]="showSpinner" *ngIf="shSet !== undefined"
+      [disabled]=" showSpinner"
+      (clicked)="updateData()" text="Update" size="sm">
+    </app-button>
+    </div>
+  </form>
+</div>

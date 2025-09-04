@@ -1,0 +1,46 @@
+<div class="container">
+  <div class="flex flex-row justify-between items-center mt-6">
+    <p class="text-lg font-bold text-gray-900 mt-3">Review and Publish</p>
+  </div>
+  <div class="flex border-0.5 bg-white-one rounded shadow-sm px-2 mt-3 flex-col p-3">
+    <div class="border-b">
+      <p class="text-lg font-bold text-gray-900">Dates</p>
+    </div>
+    <div class=" flex flex-row">
+      <div class="pt-2">
+        <p class="text-md font-bold text-gray-900">Release Date</p>
+        <p class="text-gray-three">{{inputDifSurveyVM?.startDate | dateFormat | async}}</p>
+      </div>
+      <div class="pt-2 ml-5">
+        <p class="text-md font-bold text-gray-900">Due Date</p>
+        <p class="text-gray-three">{{inputDifSurveyVM?.dueDate | dateFormat | async}}</p>
+      </div>
+    </div>
+  </div>
+  <div class="flex border-0.5 bg-white-one rounded shadow-sm px-2 mt-3 flex-col p-3">
+    <div class="border-b">
+      <p class="text-lg font-bold text-gray-900">{{("Instruction" | labelReplacement)| async}}s</p>
+    </div>
+    <div class="pt-2">
+      <p class="text-gray-four" [innerHTML]="inputDifSurveyVM.instructions">
+      </p>
+    </div>
+  </div>
+  <div class="flex border-0.5 bg-white-one rounded shadow-sm px-2 mt-3 flex-col p-3">
+    <div class="border-b">
+      <p class="text-lg font-bold text-gray-900">{{("Employee" | labelReplacement)| async}}s Enrolled</p>
+    </div>
+    <div class="pt-2">
+      <p class="text-gray-four" style="margin-bottom: 0;">{{inputDifSurveyVM.employees.length}} {{("Employee" | labelReplacement)| async}}s Enrolled</p>
+    </div>
+  </div>
+  <div class="mt-3 flex flex-row">
+    <mat-checkbox [disabled]="!isLicenseValid" (change)="releasedToEMPChange($event)" [checked]="isReleaseToEMp" class="text-gray-600 text-md font-bold">Release to EMP</mat-checkbox>
+  </div>
+  <span style="color: red" *ngIf="!isLicenseValid">
+    This feature is for Delux users only. Please contact your account administrator for access.
+  </span>
+  <div class="mt-3 flex flex-row">
+    <mat-checkbox [disabled]="true" [checked]="isNotificationEnabled" class="text-gray-600 text-md font-bold">DIF Survey Email Notifications enabled</mat-checkbox>
+  </div>
+</div>

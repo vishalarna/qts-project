@@ -1,0 +1,148 @@
+<div class="step-container">
+  <div class="mat-step-section with-bottom-border">
+    <div class="step-header-section">
+      <h2 class="step-main-header">Supporting Document</h2>
+      <p class="step-header-caption">
+        Upload the documents that you need as evidence for the select training
+        program review.
+      </p>
+    </div>
+    <div class="step-control review-document-table">
+      <app-document-table inputDocumentType="Training Program Reviews" inputLinkedDataType="TrainingProgramReviews" [inputLinkedDataId]="inputTPRViewModel?.id" ></app-document-table>
+    </div>
+  </div>
+  <div class="mat-step-section with-bottom-border">
+    <div class="step-header-section">
+      <h2 class="step-main-header">Training Issues</h2>
+      <p class="step-header-caption">
+        Choose training issues from the issues linked to the training program or
+        {{("ILA" | labelReplacement)| async}}
+      </p>
+    </div>
+    <div class="review-document-table">
+      <div class="flex items-center justify-content-end">
+        <div class="link-training-issue-button" (click)="openFlyInPanel(linkTrainingIssues)">
+          <img src="./assets/icons/icon-link-item.svg" alt="icon_link_svg" style="margin-right: 10px" />
+          <span style="cursor: pointer">Link Training Issues</span>
+        </div>
+      </div>
+  <div class="flex flex-row justify-around w-100 px-12" *ngIf="selection.selected.length > 0">
+    <div class=" flex flex-col flex-wrap bg-gray-one mb-3 mt-3 px-3 py-3 rounded w-100">
+      <div class="flex flex-row w-full justify-between align-items-center">
+        <p class="text-xs text-gray-four pt-2">
+          {{ selection.selected.length + " Training Issue(s) Selected to Unlink from Training Program Review" }}
+        </p>
+        <app-button (clicked)="removeTrainingIssueDialog(deleteDialog)" class="mb-2" type="button" color="secondary" size="sm" text="Unlink Training Issue(s)">
+        </app-button>
+      </div>
+    </div>
+  </div>
+      <div class="step-control link-training-issues-list">
+        <mat-table [dataSource]="linkTrainingIssuesData">
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-checkbox
+                (change)="$event ? masterToggle() : null"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()"
+                class="mr-3"
+              ></mat-checkbox>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row" class="table-person">
+              <mat-checkbox
+                (click)="$event.stopPropagation()"
+                (change)="$event ? selection.toggle(row) : null"
+                [checked]="selection.isSelected(row)"
+              ></mat-checkbox>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="issueCode">
+            <mat-header-cell *matHeaderCellDef >#</mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span>{{ row.issueCode }}</span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="issueTitle">
+            <mat-header-cell *matHeaderCellDef> Issue Title
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span>{{ row.issueTitle }} </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="description">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Description
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span>{{ row.description ?? 'N/A' }} </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="createdDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Created Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span>{{ row.createdDate | dateFormat | async }} </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="dueDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Due Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span>{{ row.dueDate | dateFormat | async  }} </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="severityLevel">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Severity Level
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span>{{ row.severityLevel }} </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="status">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Status
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <span>{{ row.status }} </span>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="action">
+            <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <div class="flex flex-row items-center text-gray-four btn-group">
+                <button mat-icon-button [matMenuTriggerFor]="menu">
+                  <app-icon icon="more_vert"></app-icon>
+                </button>
+                <mat-menu #menu="matMenu">
+                  <label mat-menu-item translate (click) = "removeTrainingIssueDialog(deleteDialog,row)">● Unlink</label>
+                </mat-menu>
+              </div>
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="linkTrainingIssueColumns"></mat-header-row>
+          <mat-row
+            *matRowDef="let row; columns: linkTrainingIssueColumns"
+            [class.inActiveItem]="!row.active"
+          ></mat-row>
+          <tr class="mat-row flex text-center" *matNoDataRow>
+            <td class="mat-cell w-full m-2" style="max-width: unset;border: none;">No data to display</td>
+          </tr>
+        </mat-table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<ng-template #linkTrainingIssues>
+  <app-fly-panel-link-training-issues [dataElementTypeId] = "inputTPRViewModel?.trainingProgramId" dataElementType = "TrainingProgram" [alreadyLinkedIds]="linkedTrainingIssueIds" (closed)="closeLinkTrainingissueFlyIn()"></app-fly-panel-link-training-issues>
+</ng-template>
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue [header]="'Unlink Training Issue'" [description]="description" [confirmText]="'Yes'" [cancelText]="'No'"
+      (canceled)="dialog.closeAll()" [showEffectiveDateAndReason]="false"
+      (confirmed)="unlinkTrainingIssue()"></app-qtd-dialogue>
+</ng-template>
+

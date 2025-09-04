@@ -1,0 +1,387 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+    .table-wrapper-list ul {
+        padding: 0 0 0 20px;
+        list-style: none;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse; width:98%;margin:auto;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.ILAs.Count() > 0)
+    {
+        <tr>
+            <td style="border:none;padding-top:0;" class="strip-container">
+                @{int j = 1;}
+                @foreach (var iLA in Model.ILAs)
+                {
+
+                    @if (iLA.ILA_TaskObjective_Links.Count() > 0 || iLA.ILA_EnablingObjective_Links.Count() > 0 || iLA.ILACustomObjective_Links.Count() > 0)
+                    {
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        <div id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                            <table>
+                                <tr>
+                                    <td style="border: none !important; font-size:24px; padding-top:22px;padding-bottom:0px" colspan="12">
+                                        <div style="display:flex">
+                                            <span style="flex:1 1 70%">
+                                                <b style="display: block; padding-bottom: 15px;">@iLA.Number - @iLA.Name</b>
+                                                <b style="display:block">Provider ID:   @iLA.Provider.Name</b>
+                                            </span>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <!--Task Block Start-->
+                                @if (iLA.ILA_TaskObjective_Links.Count() > 0)
+                                {
+                                    <tr>
+                                        <td style="border: none !important; font-size:24px; padding-top:13px;padding-bottom:0px;" colspan="12">
+                                            <b style="text-decoration: underline">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</b>
+                                        </td>
+                                    </tr>
+                                    @{
+                                        var tasks = iLA.ILA_TaskObjective_Links.Select(s => s.Task);
+                                        var dutyAreas = tasks.Select(r => r.SubdutyArea.DutyArea).Distinct().OrderBy(s => s.Letter).ThenBy(s => s.Number);
+                                    }
+                                    <tr>
+                                        <td style="padding-top:0;padding-bottom:0;border:none;">
+                                            <table>
+                                                @foreach (var dutyArea in dutyAreas)
+                                                {
+                                                    <tr>
+                                                        <td style="padding-top: 0.5rem; padding-bottom: 0; border: none; font-size: 20px"><b>@dutyArea.Letter@dutyArea.Number - @dutyArea.Title</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding-top:0;padding-bottom:0;border:none;">
+                                                            <table style="margin-left:1rem;font-size:18px;margin-bottom:0.8rem">
+                                                                @{
+                                                                    var subdutyAreas = tasks.Where(sda => sda.SubdutyArea.DutyAreaId == dutyArea.Id).Select(sda => sda.SubdutyArea).Distinct().OrderBy(s => s.SubNumber);
+                                                                }
+                                                                @foreach (var subdutyArea in subdutyAreas)
+                                                                {
+                                                                    <tr>
+                                                                        <td style="padding-left:3rem;padding-top:0;padding-bottom:0;border:none;"><b>@subdutyArea.DutyArea.Letter@subdutyArea.DutyArea.Number.@subdutyArea.SubNumber - @subdutyArea.Title</b></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="padding-left:3rem;padding-top:0;padding-bottom:0;border:none;">
+                                                                            <table>
+                                                                                @{
+                                                                                    var tasksList = tasks.Where(sda => sda.SubdutyAreaId == subdutyArea.Id).Distinct().OrderBy(s => s.Number);
+                                                                                }
+                                                                                @foreach (var task in tasksList.Where(r => tasks.Select(s => s.Id).Contains(r.Id)))
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td style="padding-left:3rem;padding-top:0;padding-bottom:0;border:none;">@task.SubdutyArea.DutyArea.Letter@task.SubdutyArea.DutyArea.Number.@task.SubdutyArea.SubNumber.@task.Number &nbsp; &nbsp; @task.Description</td>
+                                                                                    </tr>
+                                                                                }
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                                <!--Task Block End-->
+                                <!--EO Block Start-->
+                                @if (iLA.ILA_EnablingObjective_Links.Count() > 0)
+                                {
+                                    <tr>
+                                        <td style="border: none !important; font-size:24px; padding-top:13px;padding-bottom:0px;" colspan="12">
+                                            <b style="text-decoration: underline">@("Enabling Objective".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</b>
+                                        </td>
+                                    </tr>
+                                    @{
+                                        var eos = iLA.ILA_EnablingObjective_Links.Select(s => s.EnablingObjective);
+                                        var categories = eos.Select(t => t.EnablingObjective_Category).Distinct().OrderBy(s => s.Number);
+                                    }
+                                    <tr>
+                                        <td style="padding-top:0;padding-bottom:0;border:none;">
+                                            <table>
+                                                @foreach (var category in categories)
+                                                {
+                                                    <tr>
+                                                        <td style="padding-top:0.5rem;padding-bottom:0;border:none;font-size:20px"><b>@category.Number - @category.Title</b></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="padding-top:0;padding-bottom:0;border:none;">
+                                                            <table style="margin-left: 1rem; font-size: 18px">
+                                                                @{
+                                                                    var subcategories = eos.Where(eo => eo.EnablingObjective_SubCategory.CategoryId == category.Id).Select(subc => subc.EnablingObjective_SubCategory).Distinct().OrderBy(s => s.Number);
+                                                                }
+                                                                @foreach (var subcategory in subcategories)
+                                                                {
+                                                                    <tr>
+                                                                        <td style="padding-left:3rem;padding-top:0;padding-bottom:0;border:none;"><b>@category.Number.@subcategory.Number - @subcategory.Title</b></td>
+                                                                    </tr>
+                                                                    <tr>
+                                                                        <td style="padding-left:3rem;padding-top:0;padding-bottom:0;border:none;">
+                                                                            <table>
+                                                                                @{
+                                                                                    var topics = eos.Where(eo => eo?.EnablingObjective_Topic?.SubCategoryId == subcategory.Id).Select(topic => topic?.EnablingObjective_Topic)?.Distinct()?.OrderBy(s => s.Number);
+                                                                                }
+                                                                                @foreach (var topic in topics)
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td style="padding-left:3rem;padding-top:0;padding-bottom:0;border:none;"><b>@category.Number.@subcategory.Number.@topic.Number - @topic.Title</b></td>
+                                                                                    </tr>
+                                                                                    <tr>
+                                                                                        <td style="padding-left:3rem;padding-top:0;padding-bottom:0;border:none;">
+                                                                                            <table>
+                                                                                                @{
+                                                                                                    topic.EnablingObjectives = topic.EnablingObjectives.OrderBy(t => t.FullNumber, new AlphaNumericSortHelper()).ToList();
+                                                                                                }
+                                                                                                @foreach (var eo in topic.EnablingObjectives.Where(r => eos.Select(s => s.Id).Contains(r.Id)))
+                                                                                                {
+                                                                                                    <tr>
+                                                                                                        <td style="padding-left:3rem;padding-top:0;padding-bottom:0;border:none;">@eo.FullNumber &nbsp; &nbsp; @eo.Description</td>
+                                                                                                    </tr>
+                                                                                                }
+                                                                                            </table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                }
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                                <!--EO Block End-->
+                                <!--Custom EO Block Start-->
+                                @if (iLA.ILACustomObjective_Links.Count() > 0)
+                                {
+                                    <tr>
+                                        <td style="border: none !important; font-size: 24px; padding-top: 13px; padding-bottom: 0px;" colspan="12">
+                                            <b style="text-decoration: underline">Custom Objectives</b>
+                                        </td>
+                                    </tr>
+                                    @{
+                                        var customEos = iLA.ILACustomObjective_Links.Select(s => s.CustomEnablingObjective);
+                                        var customEosWithoutCategory = customEos.Where(s => s.EnablingObjective_Category == null && s.EnablingObjective_SubCategory == null && s.EnablingObjective_Topic == null);
+                                        var categories = customEos.Where(s => s.EnablingObjective_Category != null).Select(t => t.EnablingObjective_Category).Distinct().OrderBy(s => s.Number);
+                                        var subcategories = customEos.Where(s => s.EnablingObjective_SubCategory != null).Select(t => t.EnablingObjective_SubCategory).Distinct().OrderBy(s => s.Number);
+                                        var topics = customEos.Where(s => s.EnablingObjective_Topic != null).Select(t => t.EnablingObjective_Topic).Distinct().OrderBy(s => s.Number);
+                                    }
+
+                                    @if (customEosWithoutCategory.Any())
+                                    {
+                                        <tr>
+                                            <td>
+                                                <table style="margin-left: 1rem; margin-bottom: 0.8rem; font-size: 20px;">
+                                                    @foreach (var customEoWithoutCategory in customEosWithoutCategory)
+                                                    {
+                                                        <tr>
+                                                            <td style="padding-left: 3rem; padding-top: 0; padding-bottom: 0; border: none; font-size: 18px;">
+                                                                @customEoWithoutCategory?.CustomEONumber &nbsp; &nbsp; @customEoWithoutCategory?.Description
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                    <tr>
+                                        <td style="padding-top: 0; padding-bottom: 0; border: none;">
+                                            <table>
+                                                @foreach (var category in categories)
+                                                {
+                                                    <tr>
+                                                        <td style="padding-top: 0.5rem; padding-bottom: 0; border: none; font-size: 20px;">
+                                                            <b>@category.Number - @category.Title</b>
+                                                        </td>
+                                                    </tr>
+
+                                                    @{
+                                                        var customEoWithoutSubcat = customEos.Where(x => x.EO_CatId == category.Id && x.EO_SubCatId == null);
+                                                    }
+
+                                                    <tr>
+                                                        <td style="padding-top: 0; padding-bottom: 0; border: none;">
+                                                            <table style="margin-left: 1rem; margin-bottom: 0.8rem; font-size: 20px;">
+                                                                @foreach (var ceo in customEoWithoutSubcat)
+                                                                {
+                                                                    <tr>
+                                                                        <td style="padding-left: 3rem; padding-top: 0; padding-bottom: 0; border: none; font-size: 18px;">
+                                                                            @category?.Number.0.0.@ceo?.CustomEONumber &nbsp; &nbsp; @ceo?.Description
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td style="padding-top: 0; padding-bottom: 0; border: none;">
+                                                            <table style="margin-left: 1rem; font-size: 18px; margin-bottom: 0.8rem;">
+                                                                @foreach (var subcategory in subcategories.Where(x => x.CategoryId == category.Id))
+                                                                {
+                                                                    <tr>
+                                                                        <td style="padding-left: 3rem; padding-top: 0; padding-bottom: 0; border: none;">
+                                                                            <b>@category?.Number.@subcategory?.Number - @subcategory?.Title</b>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    @{
+                                                                        var customEoWithoutTopic = customEos.Where(x => x.EO_CatId == category.Id && x.EO_SubCatId == subcategory.Id && x.EO_TopicId == null);
+                                                                    }
+
+                                                                    <tr>
+                                                                        <td style="padding-left: 3rem; padding-top: 0; padding-bottom: 0; border: none;">
+                                                                            <table style="margin-left: 1rem; font-size: 18px; margin-bottom: 0.8rem;">
+                                                                                @foreach (var ceo in customEoWithoutTopic)
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td style="padding-left: 3rem; padding-top: 0; padding-bottom: 0; border: none;">
+                                                                                            @category?.Number.@subcategory.Number.0.@ceo?.CustomEONumber &nbsp; &nbsp; @ceo?.Description
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                }
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+
+                                                                    <tr>
+                                                                        <td style="padding-left: 3rem; padding-top: 0; padding-bottom: 0; border: none;">
+                                                                            <table style="margin-left: 1rem; font-size: 18px; margin-bottom: 0.8rem;">
+                                                                                @foreach (var topic in topics.Where(x => x.SubCategoryId == subcategory.Id))
+                                                                                {
+                                                                                    <tr>
+                                                                                        <td style="padding-left: 3rem; padding-top: 0; padding-bottom: 0; border: none;">
+                                                                                            <b>@category?.Number.@subcategory?.Number.@topic?.Number - @topic?.Title</b>
+                                                                                        </td>
+                                                                                    </tr>
+
+                                                                                    @{
+                                                                                        topic.CustomEnablingObjectives = topic.CustomEnablingObjectives.OrderBy(y => y.CustomEONumber).ToList();
+                                                                                    }
+
+                                                                                    <tr>
+                                                                                        <td style="padding-left: 3rem; padding-top: 0; padding-bottom: 0; border: none;">
+                                                                                            <table style="margin-left: 1rem; font-size: 18px; margin-bottom: 0.8rem;">
+                                                                                                @foreach (var ceo in topic.CustomEnablingObjectives.Where(r => customEos.Select(s => s.Id).Contains(r.Id)))
+                                                                                                {
+                                                                                                    <tr>
+                                                                                                        <td style="padding-left: 3rem; padding-top: 0; padding-bottom: 0; border: none;">
+                                                                                                            @category?.Number.@subcategory?.Number.@topic?.Number.@ceo?.CustomEONumber &nbsp; &nbsp; @ceo?.Description
+                                                                                                        </td>
+                                                                                                    </tr>
+                                                                                                }
+                                                                                            </table>
+                                                                                        </td>
+                                                                                    </tr>
+                                                                                }
+                                                                            </table>
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                                <!--Custom EO Block End-->
+                            </table>
+                        </div>
+                        @if (!iLA.Equals(Model.ILAs.Where(y => y.ILA_TaskObjective_Links.Count() > 0 || y.ILA_EnablingObjective_Links.Count() > 0 || y.ILACustomObjective_Links.Count() > 0).Last()))
+                        {
+                            <div style="page-break-after:always"></div>
+                            <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        }
+                        @{j++;
+                        }
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.ILAs.Where(y => y.ILA_TaskObjective_Links.Count() > 0 || y.ILA_EnablingObjective_Links.Count() > 0 || y.ILACustomObjective_Links.Count() > 0).Count(); i++)
+    {
+        <a href=@("#page" + i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

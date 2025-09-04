@@ -1,0 +1,487 @@
+<ng-container *ngIf="AddOjtTime">
+
+    <!-- header starts here -->
+    <div class="items-center justify-center relative mt-8">
+        <button class="flex float-right self-start px-12 absolute right-0" (click)="flyPanelSrvc.close()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                </path>
+            </svg>
+        </button>
+        <div class="flex flex-col items-center justify-center">
+            <div class="rounded-full w-32 h-32 overflow-hidden my-4">
+                <img class="object-cover object-center w-32 h-32" src="./assets/img/avatar2.jpg" alt="avatar">
+            </div>
+            <div class="flex flex-col text-center">
+                <h5 class="text-2xl">Lauren Broox</h5>
+                <span class="text-sm text-gray-three">lauren.broox@qts.com</span>
+            </div>
+        </div>
+    </div>
+    <!-- header ends here -->
+
+    <!-- search starts here -->
+    <div class="flex flex-col pt-12 px-12">
+        <h6 class="text-sm text-gray-three pb-2">{{("Task" | labelReplacement)| async}}: 1.3.2</h6>
+        <p class="text-sm">Continuously monitor all pertinent conditions on POWERCO and neighboring test
+            systems, identify actual or potential problems, and determine need for corrective action.</p>
+    </div>
+    <!-- search starts ends -->
+
+    <!-- List section starts here -->
+    <div class="">
+
+        <!-- Main content starts here -->
+        <div class="">
+            <!-- sub-header starts here -->
+            <div class="flex flex-row pt-12 items-center border-b px-12 text-caption font-medium space-x-12">
+                <button class="text-gray-four font-medium pb-2 focus:outline-none" (click)="activeTab='timeEntry'"
+                    [ngClass]="{'text-green-one border-green-one border-b-2': activeTab == 'timeEntry'}">TIME
+                    ENTRY</button>
+                <button class="text-gray-four font-medium pb-2 focus:outline-none" (click)="activeTab='history'"
+                    [ngClass]="{'text-green-one border-green-one border-b-2': activeTab == 'history'}">ACTIVITY
+                    HISTORY</button>
+            </div>
+            <!-- sub-header ends here -->
+
+
+
+            <!-- list starts here -->
+            <div class="text-sm" *ngIf="activeTab=='timeEntry'">
+                <div class="py-6 px-12">
+                    <div class="flex flex-col">
+                        <!-- Calender header starts here -->
+                        <div class="flex justify-between mb-8 w-154.5">
+                            <div class="flex items-center">
+                                <!-- Next/Prev button -->
+                                <div class="flex-flex-col mr-6">
+                                    <button class="focus:outline-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-6 w-6 stroke-current text-gray-four" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M15 19l-7-7 7-7" />
+                                        </svg>
+                                    </button>
+                                    <button class="focus:outline-none">
+                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                            class="h-6 w-6 stroke-current text-gray-four" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                                <!-- Next/Prev button -->
+                                <!-- Month Title -->
+                                <h5 class="text-2xl">July 2021</h5>
+                                <!-- Month Title ends here -->
+                            </div>
+                            <div class="flex items-center justify-between w-max">
+                                <div class="flex items-center mr-6">
+                                    <button
+                                        class="focus:outline-none bg-white-three text-gray-four rounded py-1.5 px-2.5 mr-2">
+                                        Week 24
+                                    </button>
+                                    <p class="text-xs text-gray-four">Not Submitted (0h)</p>
+                                </div>
+                                <!-- Drop down button starts here -->
+                                <div class="flex flex-row items-center" ngbDropdown>
+                                    <p class="text-sm mr-2">Week</p>
+                                    <button class="focus:outline-none" ngbDropdownToggle>
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+                                            viewBox="0 0 24 24" stroke="currentColor">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M19 9l-7 7-7-7" />
+                                        </svg>
+                                    </button>
+                                    <div class="dropdown-menu" ngbDropdownMenu>
+                                        <button ngbDropdownItem>Day</button>
+                                        <button ngbDropdownItem>Week</button>
+                                        <button ngbDropdownItem>Month</button>
+                                    </div>
+                                </div>
+                                <!-- Drop down button ends here -->
+                            </div>
+                        </div>
+                        <!-- Calender header ends here -->
+
+                        <!-- Calender days starts  here -->
+                        <div class="flex mb-8">
+                            <div class="flex flex-col items-center mr-3">
+                                <div class="flex flex-col items-center mb-2">
+                                    <p class="text-gray-four text-xs">SUN</p>
+                                    <h6 class="text-2xl font-medium">12</h6>
+                                </div>
+                                <input type="number" placeholder="00:00"
+                                    class="py-3 pl-5 w-19.5 h-11 border-0.8 border-gray-one rounded focus:outline-none">
+                            </div>
+                            <div class="flex flex-col items-center mr-3">
+                                <div class="flex flex-col items-center mb-2">
+                                    <p class="text-gray-four text-xs">MON</p>
+                                    <h6 class="text-2xl font-medium">13</h6>
+                                </div>
+                                <input type="number" placeholder="00:00"
+                                    class="py-3 pl-5 w-19.5 h-11 border-0.8 border-gray-one rounded focus:outline-none">
+                            </div>
+                            <div class="flex flex-col items-center mr-3">
+                                <div class="flex flex-col items-center mb-2">
+                                    <p class="text-gray-four text-xs">TUE</p>
+                                    <h6 class="text-2xl font-medium">14</h6>
+                                </div>
+                                <input type="number" placeholder="00:00"
+                                    class="py-3 pl-5 w-19.5 h-11 border-0.8 border-gray-one rounded focus:outline-none">
+                            </div>
+                            <div class="flex flex-col items-center mr-3">
+                                <div class="flex flex-col items-center mb-2">
+                                    <p class="text-gray-four text-xs">WED</p>
+                                    <h6 class="text-2xl font-medium">15</h6>
+                                </div>
+                                <input type="number" placeholder="00:00"
+                                    class="py-3 pl-5 w-19.5 h-11 border-0.8 border-gray-one rounded focus:outline-none">
+                            </div>
+                            <div class="flex flex-col items-center mr-3">
+                                <div class="flex flex-col items-center mb-2">
+                                    <p class="text-gray-four text-xs">THU</p>
+                                    <h6 class="text-2xl font-medium">16</h6>
+                                </div>
+                                <input type="number" placeholder="00:00"
+                                    class="py-3 pl-5 w-19.5 h-11 border-0.8 border-gray-one rounded focus:outline-none">
+                            </div>
+                            <div class="flex flex-col items-center mr-3">
+                                <div class="flex flex-col items-center mb-2">
+                                    <p class="text-gray-four text-xs">FRI</p>
+                                    <h6 class="text-2xl font-medium">17</h6>
+                                </div>
+                                <input type="number" placeholder="00:00"
+                                    class="py-3 pl-5 w-19.5 h-11 border-0.8 border-gray-one rounded focus:outline-none">
+                            </div>
+                            <div class="flex flex-col items-center mr-3">
+                                <div class="flex flex-col items-center mb-2">
+                                    <p class="text-gray-four text-xs">SAT</p>
+                                    <h6 class="text-2xl font-medium">18</h6>
+                                </div>
+                                <input type="number" placeholder="00:00"
+                                    class="py-3 pl-5 w-19.5 h-11 border-0.8 border-gray-one rounded focus:outline-none">
+                            </div>
+                        </div>
+                        <!-- Calender days end  here -->
+
+                        <!-- Time starts here -->
+                        <div class="flex mb-3">
+                            <div class="flex flex-col mr-6">
+                                <label class="flex flex-col mb-2" for="total time">
+                                    <h6 class="text-sm">Total Time</h6>
+                                </label>
+                                <input type="number" placeholder="0h"
+                                    class="py-3 px-5 w-47.5 h-11 border-0.8 border-gray-one rounded focus:outline-none">
+                            </div>
+                            <div class="flex flex-col mr-6">
+                                <label class="flex flex-col mb-2" for="remaining time">
+                                    <h6 class="text-sm">Remaining Time</h6>
+                                </label>
+                                <input type="number" placeholder="0h"
+                                    class="py-3 px-5 w-47.5 h-11 border-0.8 border-gray-one rounded focus:outline-none">
+                            </div>
+                            <div class="flex flex-col">
+                                <label class="flex flex-col mb-2" for="required time">
+                                    <h6 class="text-sm">Required Time</h6>
+                                </label>
+                                <input type="number" placeholder="0h"
+                                    class="py-3 px-5 w-47.5 h-11 border-0.8 border-gray-one rounded focus:outline-none">
+                            </div>
+                        </div>
+                        <!-- Time ends here -->
+                        <!-- Method starts here -->
+                        <div class="flex mt-3">
+                            <div class="flex flex-col">
+                                <h6 class="text-sm mb-2">Method</h6>
+                                <select type="number" placeholder="0h"
+                                    class="py-3 px-5 w-154.5 h-11 border-0.8 border-gray-one rounded focus:outline-none text-gray-four">
+                                    <option>Select option</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Method ends here -->
+
+                        <!-- Elevator starts here -->
+                        <div class="flex mt-3">
+                            <div class="flex flex-col">
+                                <h6 class="text-sm mb-2">Elevators</h6>
+                                <div
+                                    class="flex py-2 px-5 w-154.5 h-11 border-0.8 border-gray-one rounded focus:outline-none text-gray-four">
+                                    <div class="flex items-center mr-3 border border-gray-five py-3 px-2 rounded-full">
+                                        <p class="truncate text-xs">Lauren Broox</p>
+                                        <button class="focus:outline-none">
+                                            <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center mr-3 border border-gray-five py-3 px-2 rounded-full">
+                                        <p class="truncate text-xs">Lauren Broox</p>
+                                        <button class="focus:outline-none">
+                                            <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                    <div class="flex items-center mr-3 border border-gray-five py-3 px-2 rounded-full">
+                                        <p class="truncate text-xs">Lauren Broox</p>
+                                        <button class="focus:outline-none">
+                                            <svg class="w-3.5 h-3.5 ml-2" fill="none" stroke="currentColor"
+                                                viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                    d="M6 18L18 6M6 6l12 12"></path>
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Elevator starts here -->
+                        <!-- Text area starts here -->
+                        <div class="flex my-6">
+                            <div
+                                class="flex flex-col py-4 px-4 w-154.5 border-0.8 border-gray-one rounded focus:outline-none">
+                                <div class="mb-6">
+                                    <input type="text" placeholder="Enter your note here"
+                                        class="focus:outline-none bg-white-one w-154.5">
+                                </div>
+                                <div class="flex justify-between w-full mt-6">
+                                    <div class="flex">
+                                        <div class="flex flex-row border-r-0.8 border-gray-one pr-4 py-1">
+                                            <button class="mr-4 focus:outline-none">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M4.83074 8.6063H9.28354C10.3491 8.6063 11.1614 9.39794 11.1614 10.3713C11.1614 11.3442 10.3493 12.1379 9.28354 12.1379H4.83074V8.6063ZM4.83074 3.86461H8.57243C9.63803 3.86461 10.4503 4.65821 10.4503 5.63136C10.4503 6.60452 9.63821 7.39616 8.57243 7.39616H4.83074V3.86461ZM3.62061 2.65625V13.3459H9.28354C10.9687 13.3459 12.3703 12.0246 12.3703 10.3711C12.3703 9.23118 11.7036 8.24896 10.7363 7.74869C11.3047 7.21092 11.6603 6.46265 11.6592 5.63136C11.6592 3.97749 10.2574 2.65625 8.57243 2.65625H3.62061Z"
+                                                        fill="#000D09" />
+                                                </svg>
+                                            </button>
+                                            <button class="mr-4 focus:outline-none">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M5.74986 2.66602V3.87615H8.01474L6.76088 12.1234H4.32764V13.3327H10.2405V12.1234H7.98416L9.23767 3.87615H11.6636V2.66602H5.74986Z"
+                                                        fill="#000D09" />
+                                                </svg>
+                                            </button>
+                                            <button class="focus:outline-none">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M7.7244 2.67665C7.13347 2.68856 6.55231 2.80874 6.03355 3.04412C5.34289 3.35896 4.74289 3.90989 4.53258 4.68767C4.34858 5.3682 4.38022 5.99416 4.63018 6.50225C4.81631 6.88216 5.10413 7.17105 5.43195 7.39594H3.71533V8.60589H8.95515C9.59587 8.79878 10.1256 9.02936 10.3959 9.29123C10.6865 9.57176 10.8097 9.83398 10.617 10.546C10.0257 12.7284 5.60813 12.9053 5.29133 9.76145L4.0876 9.88305C4.52031 14.1711 10.8254 14.4045 11.7847 10.8619C12.0273 9.96554 11.8503 9.15878 11.4051 8.60607H12.2762V7.39612H9.1372C8.0956 7.10172 7.00049 6.885 6.34467 6.53692C6.01684 6.36198 5.81791 6.17763 5.71515 5.9682C5.6124 5.76003 5.56867 5.48483 5.69951 5.00358C5.79747 4.64252 6.078 4.35363 6.5356 4.14527C6.99284 3.9378 7.60458 3.84429 8.19391 3.90438C8.78289 3.96358 9.33844 4.17407 9.71782 4.49692C10.0967 4.82029 10.3283 5.22829 10.3283 5.86474H11.5363C11.5363 4.90154 11.1169 4.09976 10.5024 3.57585C9.88742 3.05265 9.1052 2.78029 8.31622 2.70083C8.11889 2.68127 7.92173 2.67292 7.7244 2.67665Z"
+                                                        fill="#000D09" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="flex flex-row px-4 py-1">
+                                            <button class="focus:outline-none">
+                                                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
+                                                    xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M5.27415 6.38672L2.05566 9.60503L6.39184 13.9403L9.61033 10.7227L8.75575 9.86726L6.39184 12.2292L3.76784 9.60503L6.12997 7.24112L5.27415 6.38672Z"
+                                                        fill="#000D09" />
+                                                    <path
+                                                        d="M9.59926 2.06055L6.38184 5.27796L7.23659 6.13361L9.59926 3.77059L12.2245 6.39654L9.86255 8.75938L10.7178 9.61414L13.9353 6.39654L9.59926 2.06055Z"
+                                                        fill="#000D09" />
+                                                    <path
+                                                        d="M9.17325 5.9668L5.88525 9.25498L6.74001 10.1106L10.0289 6.82262L9.17325 5.9668Z"
+                                                        fill="#000D09" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="flex">
+                                        <div class="flex flex-row py-1">
+                                            <button class="mr-4 focus:outline-none">
+                                                <svg class="stroke-current text-gray-five" width="16" height="16"
+                                                    viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                    <path
+                                                        d="M12.6667 2H3.33333C2.59695 2 2 2.59695 2 3.33333V12.6667C2 13.403 2.59695 14 3.33333 14H12.6667C13.403 14 14 13.403 14 12.6667V3.33333C14 2.59695 13.403 2 12.6667 2Z"
+                                                        stroke="#000D09" stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                    <path
+                                                        d="M5.6665 6.66602C6.21879 6.66602 6.6665 6.2183 6.6665 5.66602C6.6665 5.11373 6.21879 4.66602 5.6665 4.66602C5.11422 4.66602 4.6665 5.11373 4.6665 5.66602C4.6665 6.2183 5.11422 6.66602 5.6665 6.66602Z"
+                                                        stroke="#000D09" stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                    <path d="M14.0002 9.99935L10.6668 6.66602L3.3335 13.9993"
+                                                        stroke="#000D09" stroke-width="1.5" stroke-linecap="round"
+                                                        stroke-linejoin="round" />
+                                                </svg>
+                                            </button>
+                                            <button class="mr-4 focus:outline-none">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4 stroke-current text-gray-six" fill="none"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                                                </svg>
+                                            </button>
+                                            <button class="mr-4 focus:outline-none">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="h-4 w-4 stroke-current text-gray-six" fill="none"
+                                                    viewBox="0 0 24 24">
+                                                    <path stroke-linecap="round" stroke-linejoin="round"
+                                                        stroke-width="2"
+                                                        d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Text area ends here -->
+                        <!-- Buttons -->
+                        <div class="flex w-154.5">
+                            <div class="flex text-sm w-full justify-end py-6">
+                                <button (click)="AddOjtTime=false"
+                                    class="text-sm font-medium focus:outline-none text-green-600 items-center border-1 border-green-600 rounded px-6 py-3">
+                                    Save and Close
+                                </button>
+                                <button (click)="AddOjtTime=false"
+                                    class="text-sm font-medium focus:outline-none text-white-one items-center bg-green-600 rounded px-6 py-3 ml-6">
+                                    Submit for Approval
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- list ends here -->
+
+
+            <!-- Table cell starts here -->
+            <div class="table w-full text-left" *ngIf="activeTab=='history'">
+                <div class="table-row-group">
+                    <!-- Table cell starts here -->
+                    <div class="table-row border-b hover:bg-gray-50">
+                        <div class="table-cell align-middle text-sm border-gray-one border-b px-5 py-6">
+                            <div class="flex items-center">
+                                <div class="rounded-full w-8 h-8 overflow-hidden mr-4">
+                                    <img class="object-cover object-center w-8 h-8" src="./assets/img//avatar.jpg"
+                                        alt="avatar">
+                                </div>
+                                <div class="flex flex-col">
+                                    <p class="inline-block pr-9 text-sm">Cody Fisher</p>
+                                    <p class="inline-block align-middle text-gray-three text-xs">Super Admin
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-cell align-middle border-gray-one border-b px-5 py-6">
+                            <div class="flex flex-col">
+                                <p class="inline-block pr-9 text-sm">Reported 30 min of Simulation</p>
+                                <div class="flex text-gray-three text-xs ">
+                                    <p class="inline-block align-middle truncate mr-1">What is an area of...
+                                    </p>
+                                    <a href="#" class="underline">View note</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-cell align-middle border-gray-one border-b px-5 py-6">
+                            <div class="flex">
+                                <p class="inline-block text-sm text-gray-four">6 hours ago</p>
+                                <button class="items-center justify-center text-gray-four focus:outline-none ml-4">
+                                    <svg class="w-6 h-6 stroke-current text-gray-four" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-row border-b hover:bg-gray-50">
+                        <div class="table-cell align-middle text-sm border-gray-one border-b px-5 py-6">
+                            <div class="flex items-center">
+                                <div class="rounded-full w-8 h-8 overflow-hidden mr-4">
+                                    <img class="object-cover object-center w-8 h-8" src="./assets/img/avatar.jpg"
+                                        alt="avatar">
+                                </div>
+                                <div class="flex flex-col">
+                                    <p class="inline-block pr-9 text-sm">Lauren Broox</p>
+                                    <p class="inline-block align-middle text-gray-three text-xs">{{("Employee" | labelReplacement)| async}}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-cell align-middle border-gray-one border-b px-5 py-6">
+                            <div class="flex flex-col">
+                                <p class="inline-block pr-9 text-sm">Reported 15 min of Simulation</p>
+                                <div class="flex text-gray-three text-xs ">
+                                    <p class="inline-block align-middle truncate mr-1">What is an area of...
+                                    </p>
+                                    <a href="#" class="underline">View note</a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-cell align-middle border-gray-one border-b px-5 py-6">
+                            <div class="flex">
+                                <p class="inline-block text-sm text-gray-four">6 hours ago</p>
+                                <button class="items-center justify-center text-gray-four focus:outline-none ml-4">
+                                    <svg class="w-6 h-6 stroke-current text-gray-four" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="table-row border-b hover:bg-gray-50">
+                        <div class="table-cell align-middle text-sm border-gray-one border-b px-5 py-6">
+                            <div class="flex items-center">
+                                <div class="rounded-full w-8 h-8 overflow-hidden mr-4">
+                                    <img class="object-cover object-center w-8 h-8" src="./assets/img/avatar.jpg"
+                                        alt="avatar">
+                                </div>
+                                <div class="flex flex-col">
+                                    <p class="inline-block pr-9 text-sm">Lauren Broox</p>
+                                    <p class="inline-block align-middle text-gray-three text-xs">{{("Employee" | labelReplacement)| async}}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="table-cell align-middle border-gray-one border-b px-5 py-6">
+                            <div class="flex flex-col">
+                                <p class="inline-block pr-9 text-sm">Reported 1 hour of Simulation</p>
+                                <p class="inline-block align-middle text-gray-three text-xs">No note</p>
+                            </div>
+                        </div>
+                        <div class="table-cell align-middle border-gray-one border-b px-5 py-6">
+                            <div class="flex">
+                                <p class="inline-block text-sm text-gray-four">6 hours ago</p>
+                                <button class="items-center justify-center text-gray-four focus:outline-none ml-4">
+                                    <svg class="w-6 h-6 stroke-current text-gray-four" fill="none" stroke="currentColor"
+                                        viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                            d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                        </path>
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Table cell starts here -->
+                </div>
+            </div>
+            <!-- Table cell starts here -->
+
+        </div>
+        <!-- Main content ends here -->
+    </div>
+    <!-- List section ends here -->
+
+</ng-container>

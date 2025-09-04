@@ -1,0 +1,200 @@
+<div class="flex flex-col">
+  <ng-container *ngIf="addTask">
+    <div class="flex flex-row justify-between items-center px-3 mt-2">
+      <div class="flex flex-row" *ngIf="oldTask === undefined">
+        <!-- <app-button [disabled]="showSpinner" (clicked)="closed.emit('fp-add-task-closed')" ButtonType='icon'
+          icon="keyboard_arrow_left">
+        </app-button> -->
+        <p class="text-xl font-bold py-2" style="color: #000000;">Add New {{("Task" | labelReplacement)| async}}</p>
+      </div>
+
+      <!--  <p *ngIf="oldTask === undefined" class="text-xl font-bold text-gray-900">Add New Task</p> -->
+      <p *ngIf="oldTask !== undefined && !isCopy" class="text-xl font-bold text-gray-900">Edit {{("Task" | labelReplacement)| async}}</p>
+      <p *ngIf="isCopy" class="text-xl font-bold text-gray-900">Copy {{("Task" | labelReplacement)| async}}</p>
+      <app-button [disabled]="showSpinner" (clicked)="closed.emit('fp-add-task-closed')" ButtonType='icon' icon="close">
+      </app-button>
+    </div>
+
+    <mat-stepper labelPosition="bottom" [linear]="true" #stepper (selectionChange)="selectedChanged($event)"
+      [orientation]="(stepperOrientation | async)!">
+      <!-- Change edit icon -->
+      <ng-template matStepperIcon="edit">
+        <app-icon icon="done"></app-icon>
+      </ng-template>
+      <mat-step label="Duty & Sub Duty Areas" [stepControl]="step1Form" [completed]="step1Form.valid">
+        <form class="flex flex-col" [formGroup]="step1Form">
+          <div class="flex-col mt-3">
+            <div class="flex flex-row justify-between mr-1">
+              <app-label style="color: rgba(122, 128, 126, 1);" [for]="'dutyAreaId'" [text]="'Duty Area'"></app-label>
+              <app-button variant="text" (clicked)="openDutyAreaPanel()" text="Add new Duty Area" icon="add"
+                iconPosition="left">
+              </app-button>
+            </div>
+            <mat-select formControlName="dutyAreaId" placeholder="Select Duty Area"
+              (selectionChange)="getSubDutyAreas($event.value);step1Form.get('subdutyAreaId')?.reset();"
+              class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+              <mat-option *ngFor="let d of dutyAreas" [value]="d.id" [hidden]="!d.active" >
+                {{d.letter}} {{d.number}} - {{d.title}}
+              </mat-option>
+            </mat-select>
+            <app-input-error *ngIf="step1Form.get('dutyAreaId')?.invalid" text="Duty Area is Required">
+            </app-input-error>
+          </div>
+          <div class="mt-3">
+            <div class="flex flex-row justify-between mr-1">
+              <app-label style="color: rgba(122, 128, 126, 1);" [for]="'subdutyAreaId'" [text]="'Sub Duty Area'">
+              </app-label>
+              <app-button variant="text" text="Add new Sub Duty Area" icon="add" iconPosition="left"
+                (clicked)="openSubDutyAreaPanel()">
+              </app-button>
+            </div>
+            <mat-select (selectionChange)="setTaskNumber($event.value)"
+              formControlName="subdutyAreaId" placeholder="Select Sub Duty Area"
+              class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+              <mat-option *ngFor="let sda of subDutyAreas" [value]="sda.id" [hidden]="!sda.active">
+                {{sda.subNumber}} - {{sda.title}}
+              </mat-option>
+            </mat-select>
+            <app-input-error *ngIf="step1Form.get('subdutyAreaId')?.invalid" text="Sub Duty Area is Required">
+            </app-input-error>
+          </div>
+          <div class="self-end pt-12">
+            <app-button color="secondary" [disabled]="step1Form.invalid" text="Continue" size="sm"
+              (clicked)="stepper.next()"></app-button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step label="{{('Task' | labelReplacement)| async}} Information" [stepControl]="step2Form">
+        <form class="flex flex-col" [formGroup]="step2Form">
+          <div class="mt-3">
+            <app-label style="color: rgba(122, 128, 126, 1);" [for]="'visibleNumber'" text="{{('Task' | labelReplacement)| async}} Symbol and Number">
+            </app-label>
+            <div class="flex flex-row">
+              <app-textbox class="mr-3" #visibleNumber [disabled]="true"
+                [defaultValue]="taskNumber.letter + ' ' + taskNumber.daNumber + '.' + taskNumber.sdaNumber">
+              </app-textbox>
+              <div class="flex flex-col">
+                <app-textbox type="number" formControlName="taskNumber"></app-textbox>
+                <app-input-error *ngIf="step2Form.get('taskNumber')?.invalid" text="{{('Task' | labelReplacement)| async}} Number Is Required">
+                </app-input-error>
+              </div>
+
+            </div>
+
+          </div>
+          <div class="mt-3">
+            <app-label style="color: rgba(122, 128, 126, 1);" class="label required" [for]="'taskDesc'"
+              text="{{('Task' | labelReplacement)| async}} Statement "></app-label>
+            <!-- <app-textarea formControlName="taskDesc" placeholder="Please enter Task Statement here"> -->
+            <!--   <app-label [for]="'taskDesc'" text="Task Statement"></app-label> -->
+            <app-textarea formControlName="taskDesc" [value]="step2Form.get('taskDesc')?.value || '' "
+              placeholder="Please enter {{('Task' | labelReplacement)| async}} Statement here">
+            </app-textarea>
+            <app-input-error *ngIf="step2Form.get('taskDesc')?.invalid || step2Form.get('taskDesc')?.hasError('whitespaceOnly')" text="{{('Task' | labelReplacement)| async}} Statement Is Required Or Contains Whitespaces">
+            </app-input-error>
+          </div>
+          <div class="mt-3">
+            <div class="flex flex-row justify-between">
+              <app-label style="color: rgba(122, 128, 126, 1);" [for]="'positionsControl'" text="Link to  {{('Position' | labelReplacement)| async}}">
+              </app-label>
+              <app-button variant="text" iconPosition="left" icon="add" text="Add New  {{('Position' | labelReplacement)| async}}" (clicked)="addTask=false;addPosition=true;"></app-button>
+            </div>
+
+            <mat-select [formControl]="positionsControl" multiple placeholder="Select  {{('Position' | labelReplacement)| async}}"
+              [compareWith]="compareObjects"
+              class="appearance-none rounded border w-full px-4 py-2.5 mt-2" required>
+              <mat-select-trigger>
+                <mat-chip-list>
+                  <mat-chip *ngFor="let i of positionsControl.value" [removable]="true" (removed)="removePosition(i)"
+                    [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                    selected>
+                    {{ i.positionTitle }}
+                    <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                    </app-icon>
+                  </mat-chip>
+                </mat-chip-list>
+              </mat-select-trigger>
+
+              <mat-option *ngFor="let i of positions" [value]="i" #matOption (click)="OnClick(matOption.selected)">
+                {{i.positionTitle}}
+              </mat-option>
+            </mat-select>
+          </div>
+          <!--  <mat-checkbox class="mt-3" style="color: rgba(122, 128, 126, 1);"> Is Meta Task</mat-checkbox>
+          <mat-checkbox class="mt-2" style="color: rgba(122, 128, 126, 1);"> Is Reliability Related</mat-checkbox> -->
+          <mat-checkbox *ngIf="isMetaCheck" [disabled]="oldTask!=undefined"
+            style="color: rgba(122, 128, 126, 1);" formControlName="isMeta" class="mt-3"> Is
+            Meta {{("Task" | labelReplacement)| async}}</mat-checkbox>
+          <mat-checkbox (change)="step2Form.get('isReliability')?.setValue($event.checked);"
+            style="color: rgba(122, 128, 126, 1);" formControlName="isReliability" class="mt-2"> Is
+            Reliability Related</mat-checkbox>
+          <div class="self-end pt-12">
+            <app-button color="secondary" [disabled]="step2Form.invalid" text="Continue" size="sm"
+              (clicked)="stepper.next()"></app-button>
+          </div>
+        </form>
+      </mat-step>
+      <mat-step label="Revision and Date" [stepControl]="step3Form">
+        <form class="flex flex-col" [formGroup]="step3Form">
+          <div class="mt-3">
+            <app-label style="color: rgba(122, 128, 126, 1);" [for]="'effectiveDate'" text="Effective Date"></app-label>
+            <app-date  formControlName="effectiveDate"></app-date>
+           <!--  <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+            </app-input-error> -->
+          </div>
+          <div class="mt-3">
+            <app-label style="color: rgba(122, 128, 126, 1);" [for]="'reason'" text="Reason/Note" class="label required"></app-label>
+            <app-textarea [value]="step3Form.get('reason')?.value ?? '' " formControlName="reason" placeholder="Please enter Reasons for Revision here">
+            </app-textarea>
+            <app-input-error *ngIf="step3Form.get('reason')?.invalid || step3Form.get('reason')?.hasError('whitespaceOnly')" text="Reason for Revision Is Required Or Contains WhiteSpaces">
+            </app-input-error>
+          </div>
+          <div class="flex flex-row pt-12 justify-between">
+            <div>
+              <mat-checkbox formControlName="addNew" *ngIf="oldTask === undefined">Add another {{("Task" | labelReplacement)| async}}</mat-checkbox>
+            </div>
+
+            <div>
+              <!-- <app-button [disabled]="(step2Form.invalid && step3Form.invalid) || dateError" (clicked)="saveTask();"
+             text="Save" size="sm"></app-button> -->
+           <app-button [spinner]="showSpinner" *ngIf="oldTask === undefined"
+             [disabled]="step2Form.invalid || step3Form.invalid || showSpinner" (clicked)="saveTask()"
+             text="Save" size="sm">
+           </app-button>
+           </div>
+
+          </div>
+
+          <div class="flex flex-row-reverse">
+            <app-button [spinner]="showSpinner" *ngIf="oldTask !== undefined && !isCopy"
+            [disabled]="step2Form.invalid || step3Form.invalid || showSpinner" (clicked)="editTask()" text="Update"
+            size="sm">
+            </app-button>
+            <app-button [spinner]="showSpinner" *ngIf="oldTask !== undefined && !checkChange"
+            [disabled]="step2Form.invalid || step3Form.invalid || showSpinner" (clicked)="editTask()" text="Update"
+            size="sm">
+            </app-button>
+            <app-button [spinner]="showSpinner" *ngIf="isCopy"
+              [disabled]="step2Form.invalid || step3Form.invalid ||  showSpinner" (clicked)="copyTask()"
+              text="Copy" size="sm">
+            </app-button>
+          </div>
+
+        </form>
+
+      </mat-step>
+
+    </mat-stepper>
+  </ng-container>
+
+  <app-flypanel-add-dutyarea (refresh)="refreshDutyArea()" *ngIf="addDutyArea" (closed)="closeDutyAreaPanel()">
+  </app-flypanel-add-dutyarea>
+  <app-flypanel-add-subdutyarea (refresh)="refreshSubDutyArea()" *ngIf="addSubdutyArea" (closed)="closeDutyAreaPanel()">
+  </app-flypanel-add-subdutyarea>
+</div>
+
+<ng-container #addposition *ngIf="addPosition">
+  <app-fly-panel-add-position
+    (closed)="closePositionPanel();getPositions()"
+  ></app-fly-panel-add-position>
+</ng-container>

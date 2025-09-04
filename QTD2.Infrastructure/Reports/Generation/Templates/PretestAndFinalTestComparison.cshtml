@@ -1,0 +1,567 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Entities.Core
+@using System.Text.RegularExpressions;
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th, tr.open-border-table-row td {
+        padding: 5px;
+        border: 1px solid black;
+    }
+
+    .green {
+        background-color: lightgreen;
+    }
+
+    .red {
+        background-color: #f85a5a;
+    }
+
+    .expired-row {
+        color: grey;
+        font-style: italic;
+    }
+
+    .completion-detail {
+        color: #567DFF;
+        font-weight: 700;
+    }
+
+    .chart-container {
+        display: -webkit-box;
+        display: flex;
+        -webkit-box-pack:justify;
+        justify-content:center;
+    }
+
+    .chart {
+        display: -webkit-box;
+        display: flex;
+        -webkit-box-pack: end;
+        align-items: flex-end; 
+        width: 366px;
+        height: 300px;
+        border-left: 2px solid #000;
+        border-bottom: 2px solid #000;
+        position: relative;
+        margin-left:40px;
+    }
+
+    .bar-group {
+        display: -webkit-box;
+        display: flex;
+        -webkit-box-pack: justify;
+        justify-content: space-between;
+        margin: 0 20px;
+        height: 100%;
+        -webkit-box-align:end;
+        align-items: flex-end;
+        margin-top:auto;
+    }
+
+    .bar {
+        display: -webkit-box;
+        width: 40px;
+        margin: 0 5px;
+        display: flex;
+        -webkit-box-pack:justify;
+        justify-content: center;
+        -webkit-box-align: end;
+        align-items: flex-end;
+        position: relative;
+    }
+
+        .bar span {
+            position: absolute;
+            bottom: 100%; 
+            font-size: 12px;
+            transform: translateY(-5px); 
+        }
+
+        .bar.passed {
+            background-color: #007bff; 
+        }
+
+        .bar.failed {
+            background-color: #ff6f00; 
+        }
+
+        .bar.not-completed {
+            background-color: #28a745;
+        }
+
+    .legend {
+        display: -webkit-box;
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .legend-item {
+        display: -webkit-box;
+        display: flex;
+        align-items: center;
+        margin-right: 20px;
+    }
+
+    .legend-color {
+        width: 20px;
+        height: 20px;
+        margin-right: 5px;
+    }
+
+    .y-axis-labels {
+        display:block;
+        position: absolute;
+        left: -40px; 
+        bottom: 0; 
+        height: 100%;
+        margin-left:10px;
+    }
+
+    .y-axis-label {
+        display:block;
+        font-size: 12px;
+        height:28px;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="padding-bottom: 0px; border-bottom: 2px solid #020378; margin: 0 0 10px 0;">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 4px solid #020378; margin: 0 0 3px 0;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378; width: 50%;"><b>@Model.Title </b></div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.ClassDetails.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{
+                    int j = 1;
+                }
+
+                @foreach (var classDetail in Model.ClassDetails)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <span style="font-weight:700;">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title :</span>
+                                        <span style="font-size:0.8rem;margin-left:5px">@classDetail?.ILATitle</span>
+                                    </td>
+                                </tr>
+                            }
+
+                            @if (Model.DisplayColumns.Where(r => r == "ILA Number").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <span style="font-weight:700;">@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Number :</span>
+                                        <span style="font-size:0.8rem;margin-left:5px"> @classDetail?.ILANumber</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Class Start and End Date").Count() > 0 || Model.DisplayColumns.Where(r => r == "Class Start and End Time").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <span style="font-weight:700;">Class Start date:</span>
+                                        <span style="font-size:0.8rem;margin-left:5px">
+                                            @(classDetail?.ClassStartDate.Date == DateTime.MinValue.Date ? "" : (Model.DisplayColumns.Contains("Class Start and End Date") ? classDetail?.ClassStartDate.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat) : ""))
+                                            @(classDetail?.ClassStartDate.Date == DateTime.MinValue.Date ? "" : (Model.DisplayColumns.Contains("Class Start and End Time") ? classDetail?.ClassStartDate.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToLongTimeString() : ""))
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Class Start and End Date").Count() > 0 || Model.DisplayColumns.Where(r => r == "Class Start and End Time").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="18" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <span style="font-weight:700;">Class End date:</span>
+                                        <span style="font-size:0.8rem;margin-left:5px">
+                                            @(classDetail?.ClassEndDate.Date == DateTime.MinValue.Date ? "" : (Model.DisplayColumns.Contains("Class Start and End Date") ? classDetail?.ClassEndDate.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat) : ""))
+                                            @(classDetail?.ClassEndDate.Date == DateTime.MinValue.Date ? "" : (Model.DisplayColumns.Contains("Class Start and End Time") ? classDetail?.ClassEndDate.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToLongTimeString() : ""))
+                                        </span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "# of Employees enrolled").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <span style="font-weight:700;">No. of Employees Enrolled:</span>
+                                        <span style="font-size:0.8rem;margin-left:5px;">@classDetail.NumberOfEmployeesEnrolled</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Pretest Cut Score").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <span style="font-weight:700;">Pretest Cut Score:</span>
+                                        <span style="font-size:0.8rem;margin-left:5px;">@classDetail.PretestCutScore</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Final Test Cut Score").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 20px ">
+                                        <span style="font-weight:700;">Final Test Cut Score:</span>
+                                        <span style="font-size:0.8rem;margin-left:5px;">@classDetail.FinalTestCutScore</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Pretest & Final Test Completion Graph").Count() > 0)
+                            {
+                                @{
+                                    // Final Test Calculations
+                                    int finalTestCutScore = int.TryParse(classDetail.FinalTestCutScore, out var cutScore) ? cutScore : 0;
+
+                                    var finalNotCompleted = classDetail.EmployeeDetails.Count(x => x.FinalTestCompletionStatus != 3);
+                                    var finalTestNotCompletedPercentage = classDetail.NumberOfEmployeesEnrolled > 0 ? Math.Round((double)finalNotCompleted / classDetail.NumberOfEmployeesEnrolled * 100,2) : 0;
+
+                                    var finalTestPassed = classDetail.EmployeeDetails.Count(x => x.FinalTestCompletionStatus == 3 && x.FinalTestScore >= finalTestCutScore);
+                                    var finalTestPassedPercentage = classDetail.NumberOfEmployeesEnrolled > 0 ? Math.Round((double)finalTestPassed / classDetail.NumberOfEmployeesEnrolled * 100,2) : 0;
+
+                                    var finalTestFailed = classDetail.EmployeeDetails.Count(x => x.FinalTestCompletionStatus == 3 && x.FinalTestScore < finalTestCutScore);
+                                    var finalTestFailedPercentage = classDetail.NumberOfEmployeesEnrolled > 0 ? Math.Round((double)finalTestFailed / classDetail.NumberOfEmployeesEnrolled * 100,2) : 0;
+
+                                    // Pretest Calculations
+
+                                    var pretestNotCompleted = classDetail.EmployeeDetails.Count(x => x.PretestCompletionStatus != 3);
+                                    var pretestNotCompletedPercentage = classDetail.NumberOfEmployeesEnrolled > 0 ? Math.Round((double)pretestNotCompleted / classDetail.NumberOfEmployeesEnrolled * 100,2) : 0;
+
+                                    var pretestPassed = classDetail.EmployeeDetails.Count(x => x.PretestCompletionStatus == 3 && x.PretestScore >= (int)classDetail.PretestCutScore);
+                                    var pretestPassedPercentage = classDetail.NumberOfEmployeesEnrolled > 0 ? Math.Round((double)pretestPassed / classDetail.NumberOfEmployeesEnrolled * 100,2) : 0;
+
+                                    var pretestFailed = classDetail.EmployeeDetails.Count(x => x.PretestCompletionStatus == 3 && x.PretestScore < (int)classDetail.PretestCutScore);
+                                    var pretestFailedPercentage = classDetail.NumberOfEmployeesEnrolled > 0 ? Math.Round((double)pretestFailed / classDetail.NumberOfEmployeesEnrolled * 100,2) : 0;
+                                }
+
+                                <tr>
+                                    <td style="border: none !important;" colspan="12">
+                                        <div class="chart-container">
+                                            <div class="chart">
+                                                <div class="y-axis-labels">
+                                                    @{
+                                                        for (var i = 100; i >= 0; i -= 10)
+                                                        {
+                                                            <span class="y-axis-label">@i</span>
+                                                        }
+                                                    }
+                                                </div>
+                                                <div class="bar-group">
+                                                    <!-- Pretest Bars -->
+                                                    <div class="bar passed" style="height: @(pretestPassedPercentage)%;">
+                                                        <span>@(pretestPassedPercentage)%</span>
+                                                    </div>
+                                                    <div class="bar failed" style="height: @(pretestFailedPercentage)%;">
+                                                        <span>@(pretestFailedPercentage)%</span>
+                                                    </div>
+                                                    <div class="bar not-completed" style="height: @(pretestNotCompletedPercentage)%;">
+                                                        <span>@(pretestNotCompletedPercentage)%</span>
+                                                    </div>
+                                                </div>
+                                                <div class="bar-group">
+                                                    <!-- Test Bars -->
+                                                    <div class="bar passed" style="height: @(finalTestPassedPercentage)%;">
+                                                        <span>@(finalTestPassedPercentage)%</span>
+                                                    </div>
+                                                    <div class="bar failed" style="height: @(finalTestFailedPercentage)%;">
+                                                        <span>@(finalTestFailedPercentage)%</span>
+                                                    </div>
+                                                    <div class="bar not-completed" style="height: @(finalTestNotCompletedPercentage)%;">
+                                                        <span>@(finalTestNotCompletedPercentage)%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="chart-container">
+                                            <div class="legend" style="width:366px;margin-left:40px;">
+                                                <div style="width:50%;margin:0px 20px;padding-left:20px">Pretest</div>
+                                                <div style="width:50%;margin:0px 20px;padding-left:20px">Final Test</div>
+                                            </div>
+                                        </div>
+                                            <!-- Legend -->
+                                            <div class="chart-container">
+                                            <div class="legend">
+                                                <div class="legend-item">
+                                                    <div class="legend-color" style="background-color: #007bff;"></div>
+                                                    <span>Passed</span>
+                                                </div>
+                                                <div class="legend-item">
+                                                    <div class="legend-color" style="background-color: #ff6f00;"></div>
+                                                    <span>Failed</span>
+                                                </div>
+                                                <div class="legend-item">
+                                                    <div class="legend-color" style="background-color: #28a745;"></div>
+                                                    <span>Not Completed</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td colspan="12" style="border: none !important; font-size: 1rem; padding-top: 20px; padding-bottom: 5px ">
+                                    <span style="font-weight:700;border-bottom:1px solid black">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Details</span>
+                                </td>
+                            </tr>
+                            @if (Model.DisplayColumns.Where(r => r == "Class Pretest Average").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <span style="font-weight:700;">Class Pretest Average:</span>
+                                        <span style="font-size:0.8rem;margin-left:5px;">@classDetail.ClassPretestAverage</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Class Final Test Average").Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <span style="font-weight:700;">Class Final Test Average:</span>
+                                        <span style="font-size:0.8rem;margin-left:5px;">@classDetail.ClassFinalTestAverage</span>
+                                    </td>
+                                </tr>
+                            }
+                            <tr>
+                                <td style="border:none;padding-top:10px;">
+                                    <table style="width:100%;border-collapse:collapse;table-layout:fixed">
+                                        <tr class="open-border-table-row">
+                                            @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid;width:25%" align="left">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name</th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Certificate Number").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid;width:15%" align="left">Certificate Number</th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid;width:15%" align="left">Organization</th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid;width:15%" align="left">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))</th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Pretest Score").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid;width:15%" align="left">Pretest Score</th>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Final Test Score").Count() > 0)
+                                            {
+                                                <th style="border: 1px solid;width:15%" align="left">Final Test Score</th>
+                                            }
+                                        </tr>
+                                        @foreach (var emp in classDetail.EmployeeDetails.OrderBy(x => x.EmployeeLastName))
+                                        {
+                                            <tr class="open-border-table-row @(!emp.Active ? "expired-row":"")">
+                                                @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                                {
+                                                    <td style="vertical-align: top;width:25%">@emp.EmployeeLastName @emp.EmployeeFirstName</td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Certificate Number").Count() > 0)
+                                                {
+                                                    <td style="vertical-align: top;width:25%">@emp.CertificateNumber</td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                                                {
+                                                    <td style="vertical-align: top;width:25%">@emp.Organization</td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                                {
+                                                    <td style="vertical-align: top;width:25%">@emp.Position</td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Pretest Score").Count() > 0)
+                                                {
+                                                    string pretestContent;
+                                                    string pretestClass;
+                                                    if (emp.PretestCompletionStatus != 3)
+                                                    {
+                                                        pretestContent = "Not Completed";
+                                                        pretestClass = "expired-row";
+                                                    }
+                                                    else if (!emp.PretestScore.HasValue)
+                                                    {
+                                                        pretestContent = "N/A";
+                                                        pretestClass = "expired-row";
+                                                    }
+                                                    else
+                                                    {
+                                                        bool pass = classDetail?.PretestCutScore.HasValue == true &&
+                                                        emp.PretestScore.Value > classDetail.PretestCutScore.Value;
+                                                        pretestContent = emp.PretestScore.ToString();
+                                                        pretestClass = pass ? "green" : "red";
+                                                    }
+                                                    <td style="vertical-align: top;width:25%" class="@pretestClass">@pretestContent</td>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Final Test Score").Count() > 0)
+                                                {
+                                                    string finalTestContent;
+                                                    string finalTestClass;
+                                                    if (emp.FinalTestCompletionStatus != 3)
+                                                    {
+                                                        finalTestContent = "Not Completed";
+                                                        finalTestClass = "expired-row";
+                                                    }
+                                                    else if (!emp.FinalTestScore.HasValue)
+                                                    {
+                                                        finalTestContent = "N/A";
+                                                        finalTestClass = "expired-row";
+                                                    }
+                                                    else
+                                                    {
+                                                        bool pass = int.TryParse(classDetail.FinalTestCutScore, out int cutScore) &&
+                                                        emp.FinalTestScore.Value > cutScore;
+                                                        finalTestContent = emp.FinalTestScore.ToString();
+                                                        finalTestClass = pass ? "green" : "red";
+                                                    }
+                                                    <td style="vertical-align: top;width:25%" class="@finalTestClass">@finalTestContent</td>
+                                                }
+                                            </tr>
+                                        }
+                                    </table>
+                                </td>
+                            </tr>
+                            @if (Model.IncludeTestItemDetails == true)
+                            {
+                                <tr>
+                                    <td colspan="12" style="border: none !important; font-size: 1rem; padding-top: 5px; padding-bottom: 5px ">
+                                        <span style="font-weight:700;border-bottom:1px solid black">Test Item Statistics</span>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border:none;font-style:italic;padding:8px 8px">*Test Items Statistics are based on Completed Pretests & Tests <span style="font-weight:700;">only</span></td>
+                                </tr>
+                                <tr>
+                                    <td style="border:none;padding-top:10px;">
+                                        <table style="width:100%;border-collapse:collapse;table-layout:fixed">
+                                            <tr class="open-border-table-row">
+                                                <th style="border: 1px solid;width:15%" align="left">Item #</th>
+                                                <th style="border: 1px solid;width:45%" align="left">Item Description</th>
+                                                <th style="border: 1px solid;width:20%" align="left">% Correct Pretest</th>
+                                                <th style="border: 1px solid;width:20%" align="left">% Correct Final Test</th>
+                                            </tr>
+                                            @foreach (var testDetail in classDetail.TestItemDetails)
+                                            {
+                                                <tr class="open-border-table-row">
+                                                    @{
+
+                                                        var questionDescription = "";
+                                                        if (testDetail.TestItemTypeId == 2)
+                                                        {
+                                                            questionDescription = Regex.Replace(testDetail.ItemDescription, @"<u>(.*?)<\/u>", "_______");
+                                                        }
+                                                        else
+                                                        {
+                                                            questionDescription = testDetail.ItemDescription;
+                                                        }
+                                                    }
+                                                    <td style="padding: 5px; vertical-align: top;width:15%">@testDetail.ItemNumber</td>
+                                                    <td style="padding: 5px;vertical-align: top;width:45%">@(new RawString(questionDescription))</td>
+                                                    @if (classDetail.PretestCutScore == null || testDetail.PercentCorrectPretest == null)
+                                                    {
+                                                        <td style="padding: 5px;vertical-align: top;width:20%" class="expired-row">N/A</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="padding: 5px;vertical-align: top;width:20%">@testDetail.PercentCorrectPretest%</td>
+                                                    }
+
+                                                    @if (classDetail.FinalTestCutScore == null || testDetail.PercentCorrectFinalTest == null)
+                                                    {
+                                                        <td style="padding: 5px;vertical-align: top;width:20%" class="expired-row">N/A</td>
+                                                    }
+                                                    else
+                                                    {
+                                                        <td style="padding: 5px;vertical-align: top;width:20%">@testDetail.PercentCorrectFinalTest%</td>
+                                                    }
+                                                </tr>
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            <tr></tr>
+                        </table>
+                    </div>
+                    @if (!classDetail.Equals(Model.ClassDetails.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.ClassDetails.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

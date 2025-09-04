@@ -1,0 +1,354 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .fix-image * {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .fix-image img {
+        width: 400px !important;
+        height: auto !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+    }
+
+    .fix-image ul, .fix-image ol {
+        margin: 0 !important;
+        padding: 0 0 0 20px !important;
+        list-style-position: inside !important;
+    }
+
+    .fix-image li {
+        margin: 0 !important;
+        padding: 0 !important;
+        font-size: 1rem;
+    }
+
+    .fix-image p {
+        margin: 0 !important;
+        padding: 0 !important;
+        line-height: 1.5 !important;
+    }
+
+    .fix-image strong {
+        font-weight: bold !important;
+    }
+
+    .fix-image u {
+        text-decoration: underline !important;
+    }
+
+    .padding-class{
+        page-break-inside: avoid !important;
+    }
+
+    .padding-class td {
+        padding:7px;
+        page-break-inside:avoid !important;
+    }
+
+    .expired-row{
+        color:gray;
+        font-style:italic;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+</style>
+
+
+<table id="content-table" class="table">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @{
+        var orderedDutyArea = Model.Tasks.OrderBy(task => task.SubdutyArea.DutyArea.Letter).ThenBy(task => task.SubdutyArea.DutyArea.Number).ThenBy(task => task.SubdutyArea.SubNumber).ThenBy(task => task.Number).GroupBy(x => x.SubdutyArea.DutyArea).Select(group => new
+        {
+            DutyArea = group.Key,
+            DutyAreaList = group.ToList()
+        }).ToList();
+    }
+    @if (orderedDutyArea.Count() > 0)
+    {
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+                @{
+                    int j = 1;
+                }
+                @foreach (var orderDA in orderedDutyArea)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            @{
+                                var dutyArea = orderDA.DutyAreaList.First().SubdutyArea?.DutyArea;
+                            }
+                            @if (dutyArea != null)
+                            {
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px;vertical-align:top" colspan="1">
+                                        <div style="font-weight:700">@dutyArea.Letter@dutyArea?.Number </div>
+                                    </td>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px;" colspan="11">
+                                        <div style="font-weight:700">@dutyArea?.Title</div>
+                                    </td>
+                                </tr>
+                            }
+                            @{
+                                var orderSubDutyArea = orderDA.DutyAreaList.GroupBy(x => x.SubdutyArea).Select(group => new
+                                {
+                                    SubDutyArea = group.Key,
+                                    SubDutyAreaList = group.ToList()
+                                }).ToList();
+                            }
+                            @foreach (var orderSDA in orderSubDutyArea)
+                            {
+                                @{
+                                    var subDutyArea = orderSDA.SubDutyAreaList.First().SubdutyArea;
+                                }
+                                @if (dutyArea != null && subDutyArea != null)
+                                {
+                                    <tr class="padding-class">
+                                        <td style="border: none !important; font-size: 1rem; padding: 10px;vertical-align:top;padding-left:15px" colspan="1">
+                                            <div style="font-weight:700">@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber</div>
+                                        </td>
+                                        <td style="border: none !important; font-size: 1rem; padding: 10px;padding-left:15px" colspan="11">
+                                            <div style="font-weight:700">@subDutyArea?.Title</div>
+                                        </td>
+                                    </tr>
+                                }
+                                @foreach (var orderTask in orderSDA.SubDutyAreaList)
+                                {
+                                    <tr class="padding-class @(!orderTask.Active ? "expired-row" :"")">
+                                        <td style="border: none !important; font-size: 1rem; padding: 10px;padding-right:20px!important;vertical-align:top;padding-left:25px" colspan="1">
+                                            <span style="font-weight:700">@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber.@orderTask.Number</span>
+                                        </td>
+                                        <td style="border: none !important; font-size: 1rem; padding: 10px;padding-left:50px!important;" colspan="11">
+                                            <span style="font-weight:700">@orderTask.Description</span>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td style="border: none !important; font-size: 1rem; padding: 10px;width:15%;padding-right:10px;vertical-align:top;padding-left:40px;"></td>
+                                        <td style="border: none !important;padding:0;width:85%;padding-left:40px;" colspan="12">
+                                            <table style="width:100%;table-layout:fixed;">
+                                                @if (Model.DisplayColumns.Contains("Task Details"))
+                                                {
+                                                    <tr>
+                                                        <td style="border: none !important; text-align: left;width:30%;padding-left:11px">
+                                                            <div style="font-weight:700">Conditions : </div>
+                                                        </td>
+                                                        <td style="border: none !important;width:70%">
+                                                            <div style="display:inline-block;" class="fix-image">@(new RawString(orderTask.Conditions))</div>
+                                                        </td>
+                                                    </tr>
+
+                                                    <tr>
+                                                        <td style="border: none !important; text-align: left;width:30%;padding-left:11px">
+                                                            <div style="font-weight:700">References :</div>
+                                                        </td>
+                                                        <td style="border: none !important; text-align: left;width:70%">
+                                                            <div class="fix-image">@(new RawString(orderTask.References))</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border: none !important; text-align: left;width:30%;padding-left:11px">
+                                                            <div style="font-weight:700">Criteria :</div>
+                                                        </td>
+                                                        <td style="border: none !important; text-align: left;width:70%">
+                                                            <div class="fix-image">@(new RawString(orderTask.Criteria))</div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td style="border: none !important; text-align: left;width:30%;padding-left:11px">
+                                                            <div style="font-weight:700">R-R* : </div>
+                                                        </td>
+                                                        <td style="border: none !important;width:70%">
+                                                            <div style="display:inline-block;">@(orderTask.IsReliability ? "Yes" : "No")</div>
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    @if (Model.DisplayColumns.Contains("Task Steps & Sub-Steps") && orderTask?.Task_Steps != null && orderTask?.Task_Steps.Count() > 0)
+                                    {
+                                        <tr>
+                                            <td style="border: none !important; font-size: 1rem; padding: 10px 10px 0px 40px;width:10%;vertical-align:top;margin:0;white-space:nowrap"></td>
+                                            <td style="border: none !important;width:90%;padding:0px 0px 0px 40px" colspan="12">
+                                                <table style="width:100%;table-layout:fixed;">
+                                                    @foreach (var tS in orderTask.Task_Steps.OrderBy(x => x.Number))
+                                                    {
+                                                        <tr>
+                                                            <td style="border: none !important;width:15%"><div style="font-weight:700">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Step:</div></td>
+                                                            <td style="border: none !important;width:15%"><div>@tS.Task.FullNumber.@tS.Number</div></td>
+                                                            <td class="fix-image" style="border: none !important;width:70%">
+                                                                @(new RawString(tS.Description))
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Tools") && orderTask.Task_Tools != null && orderTask.Task_Tools.Count() > 0)
+                                    {
+                                        <tr class="padding-class">
+                                            <td style="border: none !important; text-align: left;" colspan="1"></td>
+                                            <td style="border: none !important;padding-bottom:5px;padding-top:5px;padding-left:50px"><div style="font-weight:700">@("Tool".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</div></td>
+                                            <td style="border: none !important; text-align: left;"></td>
+                                            <td style="border: none !important;padding:5px 7px">@orderTask.Task_Tools?.First()?.Tool?.Name</td>
+                                        </tr>
+                                        @foreach (var t in orderTask.Task_Tools.Skip(1))
+                                        {
+                                            <tr class="padding-class">
+                                                <td style="border: none !important; text-align: left;" colspan="1"></td>
+                                                <td style="border: none !important;padding-bottom:5px;padding-top:5px;padding-left:50px"></td>
+                                                <td style="border: none !important; text-align: left;"></td>
+                                                <td style="border: none !important;padding:5px 7px">@t.Tool?.Name</td>
+                                            </tr>
+                                        }
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Enabling Objectives") && orderTask?.Task_EnablingObjective_Links != null && orderTask?.Task_EnablingObjective_Links.Count() > 0)
+                                    {
+                                        @foreach (var eo in orderTask.Task_EnablingObjective_Links.OrderBy(e => e.EnablingObjective.FullNumber, new AlphaNumericSortHelper()))
+                                        {
+                                            <tr class="padding-class">
+                                                <td style="border: none !important; text-align: left;" colspan="1"></td>
+                                                <td style="border: none !important;padding-left:50px;min-width:225px;"><div style="font-weight:700">@("Enabling Objective".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</div></td>
+                                                <td style="border: none !important;min-width:150px;"><div>@eo.EnablingObjective?.FullNumber</div></td>
+                                                <td style="border: none !important;">@eo.EnablingObjective?.Description</td>
+                                            </tr>
+                                        }
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Safety Hazards") && orderTask?.SafetyHazard_Task_Links != null && orderTask?.SafetyHazard_Task_Links.Count() > 0)
+                                    {
+                                        @foreach (var sH in orderTask.SafetyHazard_Task_Links.OrderBy(e => e.SaftyHazard.Number))
+                                        {
+                                            <tr class="padding-class">
+                                                <td style="border: none !important; text-align: left;" colspan="1"></td>
+                                                <td style="border: none !important;padding-left:50px;min-width:225px;"><div style="font-weight:700">@("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</div></td>
+                                                <td style="border: none !important;min-width:150px;"><div>@sH.SaftyHazard?.Number</div></td>
+                                                <td style="border: none !important;">@sH.SaftyHazard?.Title</td>
+                                            </tr>
+                                        }
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Procedures") && orderTask?.Procedure_Task_Links != null && orderTask?.Procedure_Task_Links.Count() > 0)
+                                    {
+                                        @foreach (var procedure in orderTask.Procedure_Task_Links.OrderBy(e => e.Procedure.Number))
+                                        {
+                                            <tr class="padding-class">
+                                                <td style="border: none !important; text-align: left;" colspan="1"></td>
+                                                <td style="border: none !important;padding-left:50px;min-width:225px;"><div style="font-weight:700">@("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</div></td>
+                                                <td style="border: none !important;min-width:150px"><div>@procedure.Procedure.Number</div></td>
+                                                <td style="border: none !important;">@procedure.Procedure?.Title</td>
+                                            </tr>
+                                        }
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Regulatory Requirements") && orderTask?.RR_Task_Links != null && orderTask?.RR_Task_Links.Count() > 0)
+                                    {
+                                        @foreach (var rr in orderTask.RR_Task_Links.OrderBy(e => e.RegulatoryRequirement.Number))
+                                        {
+                                            <tr class="padding-class">
+                                                <td style="border: none !important; text-align: left;" colspan="1"></td>
+                                                <td style="border: none !important;padding-left:50px;min-width:225px;"><div style="font-weight:700">@("Regulatory Requirement".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</div></td>
+                                                <td style="border: none !important;min-width:150px;"><div>@rr.RegulatoryRequirement.Number</div></td>
+                                                <td style="border: none !important;">@rr.RegulatoryRequirement?.Title</td>
+                                            </tr>
+                                        }
+                                    }
+                                    <tr></tr>
+                                }
+                            }
+                        </table>
+                    </div>
+                    @if (j != orderedDutyArea.Count())
+                    {
+                        <div style="display:block; clear:both; page-break-after:always;"></div>
+                        <div class="@(j!=1?"strip-dark":"")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= orderedDutyArea.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

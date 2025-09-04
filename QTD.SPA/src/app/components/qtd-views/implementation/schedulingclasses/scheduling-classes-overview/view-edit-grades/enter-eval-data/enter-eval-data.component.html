@@ -1,0 +1,226 @@
+<app-data-loader *ngIf="loading"></app-data-loader>
+<div *ngIf="!loading">
+    <!-- Individual View -->
+  <div *ngIf="type === 'individual'">
+    <!-- Header -->
+    <section class="flex flex-row bg-white py-4 px-3" style="align-items: center">
+      <div
+        (click)="goBack()"
+        class="flex rounded-full cursor-pointer"
+        style="background-color: #5c9b311c"
+      >
+        <mat-icon style="color: #5c9b31" class="m-2"
+          >keyboard_arrow_left</mat-icon
+        >
+      </div>
+      <span class="font-bold text-lg ml-3">{{ eval.title }}</span>
+    </section>
+
+    <!-- Enclosing section -->
+    <div class="flex flex-col w-full pt-5" style="justify-content: center;align-items: center;">
+      <!-- Main Middle Section to limit width -->
+      <section class="flex flex-col " style="width: 50%">
+        <!-- Student Evaluation Information -->
+        <section class="flex flex-row bg-white mat-elevation-z3 rounded p-4">
+          <div class="flex flex-col mr-2">
+            <div class="flex flex-row">
+              <span class="font-bold text-gray-400">Start</span>
+            </div>
+            <div class="flex flex-row">
+              <span class="font-bold text-gray-400">End</span>
+            </div>
+          </div>
+          <div class="flex flex-col mr-5">
+            <div class="flex flex-row">
+              <span class="text-gray-400">{{class.startDateTime | date:'MM-dd-yy h:mma'}}</span>
+            </div>
+            <div class="flex flex-row">
+              <span class="text-gray-400">{{class.endDateTime | date:'MM-dd-yy h:mma'}}</span>
+            </div>
+          </div>
+          <div class="flex flex-col mr-5" style="width:35%;">
+            <span class="text-gray-400">{{class.locationAddress === null || class.locationAddress === '' ? 'N/A':class.locationAddress}}</span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex flex-row">
+              <span class="text-gray-400 font-bold">{{("Instructor" | labelReplacement)| async}}:</span>
+            </div>
+            <div class="flex flex-row">
+              <span class="font-bold linkText">{{class.instructorName}}</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Data number information -->
+        <section class="flex flex-row mt-5 justify-between">
+          <span class="text-gray-400">Enter the Evaluation Data below</span>
+          <span class="font-bold">{{selectedData}} of {{data.length}} Completed</span>
+        </section>
+
+        <!-- Student Evaluation Questions -->
+        <form [formGroup]="evalForm">
+        <section *ngFor="let que of data.slice(pgNumber*maxQuestions - maxQuestions,pgNumber*maxQuestions),index as i" class="flex flex-col my-3 bg-white border rounded p-3">
+          <div class="flex flex-row border-b-2 pb-3 pt-2">
+            <span class="text-gray-400 mr-3">Question {{que.number}}:</span>
+            <div [innerHTML]="que.question"></div>
+          </div>
+          <div class="flex flex-row " style="align-items:baseline;">
+            <span class="text-gray-500 mr-3">{{lowestDesc}}</span>
+          <div *ngFor="let rating of que.rating" class="flex flex-row mt-4" style="align-items:baseline;">
+            <div (click)="que.selected=rating.value;checkSelection();" [ngClass]="que.selected === rating.value ? 'selected':'notSelected'" class="px-3 py-2 rounded-full flex mr-3 cursor-pointer" style="justify-content: center;">
+              {{rating.value === null ? "N/A":rating.value}}
+            </div>
+            <!-- <div (click)="que.selected=2;checkSelection();" [ngClass]="que.selected === 2 ? 'selected':'notSelected'" class="px-3 py-2 rounded-full flex mr-3 cursor-pointer" style="justify-content: center;">
+              2
+            </div>
+            <div (click)="que.selected=3;checkSelection();" [ngClass]="que.selected === 3 ? 'selected':'notSelected'" class="px-3 py-2 rounded-full flex mr-3 cursor-pointer" style="justify-content: center;">
+              3
+            </div>
+            <div (click)="que.selected=4;checkSelection();" [ngClass]="que.selected === 4 ? 'selected':'notSelected'" class="px-3 py-2 rounded-full flex mr-3 cursor-pointer" style="justify-content: center;">
+              4
+            </div>
+            <div (click)="que.selected=5;checkSelection();" [ngClass]="que.selected === 5 ? 'selected':'notSelected'" class="px-3 py-2 rounded-full flex mr-3 cursor-pointer" style="justify-content: center;">
+              5
+            </div>
+            <div (click)="que.selected=null;checkSelection();" [ngClass]="que.selected === null ? 'selected':'notSelected'" class="p-2 rounded-full flex cursor-pointer" style="justify-content: center;">
+              N/A
+            </div> -->
+          </div>
+          <span class="text-gray-500 ml-3">{{highestDesc}}</span>
+          </div>
+
+          <div class="flex flex-col mt-4">
+            <span class="mb-3">Notes</span>
+            <textarea [formControlName]="'notes' + que.number" style="height:5rem;width:75%;" class="border rounded m-2 p-2"></textarea>
+          </div>
+        </section>
+      </form>
+
+        <!-- Additional Comments -->
+        <section class="flex flex-col bg-white border p-3 rounded">
+          <span class="mb-3">Additional Comments</span>
+          <textarea [(ngModel)]="comments" style="height:9rem;" class="w-full border p-3 rounded"></textarea>
+        </section>
+
+
+        <!-- Button Section -->
+        <section class="flex flex-row mt-5 justify-between w-full mb-5">
+          <app-button [disabled]="pgNumber < 2" (clicked)="pgNumber > 1 ? pgNumber = pgNumber-1:''" ButtonType="button" color="secondary" size="sm" text="Back"></app-button>
+          <app-button (clicked)="pgNumber = pgNumber+1" *ngIf="pgNumber*maxQuestions < data.length" ButtonType="button" size="sm" text="Next"></app-button>
+          <div *ngIf="pgNumber*maxQuestions >= data.length" class="flex flex-col">
+            <app-button (clicked)="saveData()" [disabled]="selectedData !== data.length" ButtonType="button" size="sm" text="Save"></app-button>
+            <app-input-error *ngIf="selectedData < data.length" text="Please Fill out all the questions"></app-input-error>
+          </div>
+        </section>
+      </section>
+    </div>
+  </div>
+
+  <!-- Aggregate View -->
+  <div *ngIf="type === 'aggregate'">
+    <!-- Header -->
+    <section class="flex flex-row bg-white py-4 px-3" style="align-items: center">
+      <div
+        (click)="goBack()"
+        class="flex rounded-full cursor-pointer"
+        style="background-color: #5c9b311c"
+      >
+        <mat-icon style="color: #5c9b31" class="m-2"
+          >keyboard_arrow_left</mat-icon
+        >
+      </div>
+      <span class="font-bold text-lg ml-3">{{ evalTitle }}</span>
+    </section>
+
+    <!-- Enclosing section -->
+    <div class="flex flex-col w-full pt-5" style="justify-content: center;align-items: center;">
+      <!-- Main Middle Section to limit width -->
+      <section class="flex flex-col " style="width: 50%">
+        <!-- Student Evaluation Information -->
+        <section class="flex flex-row bg-white mat-elevation-z3 rounded p-4">
+          <div class="flex flex-col mr-2">
+            <div class="flex flex-row">
+              <span class="font-bold text-gray-400">Start</span>
+            </div>
+            <div class="flex flex-row">
+              <span class="font-bold text-gray-400">End</span>
+            </div>
+          </div>
+          <div class="flex flex-col mr-5">
+            <div class="flex flex-row">
+              <span class="text-gray-400">{{class.startDateTime | date:'MM-dd-yy h:mma'}}</span>
+            </div>
+            <div class="flex flex-row">
+              <span class="text-gray-400">{{class.endDateTime | date:'MM-dd-yy h:mma'}}</span>
+            </div>
+          </div>
+          <div class="flex flex-col mr-5" style="width:35%;">
+            <span class="text-gray-400">{{class.locationAddress === null || class.locationAddress === '' ? 'N/A':class.locationAddress}}</span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex flex-row">
+              <span class="text-gray-400 font-bold">{{("Instructor" | labelReplacement)| async}}:</span>
+            </div>
+            <div class="flex flex-row">
+              <span class="font-bold linkText">{{class.instructorName}}</span>
+            </div>
+          </div>
+        </section>
+
+        <!-- Data number information -->
+        <section class="flex flex-row mt-5 justify-between">
+          <span class="text-gray-400">Enter the Evaluation Data below</span>
+          <span class="font-bold">{{checkCompleted()}} of {{data.length}} Completed</span>
+        </section>
+
+        <!-- Student Evaluation Questions -->
+        <form [formGroup]="evalForm">
+          <section *ngFor="let que of data.slice(pgNumber*maxQuestions - maxQuestions,pgNumber*maxQuestions),index as i" class="flex flex-col my-3 bg-white border rounded p-4">
+            <div class="flex flex-row border-b-2 pb-3 pt-2">
+              <span class="text-gray-400 mr-3">Question {{que.number}}:</span>
+              <div [innerHTML]="que.question"></div>
+            </div>
+            <div class="flex flex-col mt-4" style="width:75%;">
+              <div class="flex flex-row">
+                <div class="flex flex-col mr-3">
+                  <span class="font-bold mb-2">High</span>
+                  <app-textbox [formControlName]="'high' + que.number" style="width:100%"></app-textbox>
+                  <app-input-error *ngIf="evalForm.get('high' + que.number)?.invalid" text="Only Decimal allowed"></app-input-error>
+                </div>
+                <div class="flex flex-col mr-3">
+                  <span class="font-bold mb-2">Average</span>
+                  <app-textbox [formControlName]="'average' + que.number" style="width:100%;"></app-textbox>
+                  <app-input-error *ngIf="evalForm.get('average' + que.number)?.invalid" text="Only Decimal allowed"></app-input-error>
+                </div>
+                <div class="flex flex-col">
+                  <span class="font-bold mb-2">Low</span>
+                  <app-textbox [formControlName]="'low' + que.number" style="width:100%"></app-textbox>
+                  <app-input-error *ngIf="evalForm.get('low' + que.number)?.invalid" text="Only Decimal allowed"></app-input-error>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col mt-4 mb-3">
+              <span class="mb-3">Notes</span>
+              <textarea [formControlName]="'notes' + que.number" style="height:5rem;width:75%;" class="border rounded p-2"></textarea>
+            </div>
+          </section>
+        </form>
+
+        <!-- Additional Comments -->
+        <section class="flex flex-col bg-white border p-3 rounded">
+          <span class="mb-3">Additional Comments</span>
+          <textarea [(ngModel)]="comments" style="height:9rem;" class="w-full border p-3 rounded"></textarea>
+        </section>
+
+
+        <!-- Button Section -->
+        <section class="flex flex-row mt-5 justify-between w-full mb-5">
+          <app-button [disabled]="pgNumber < 2" (clicked)="pgNumber > 1 ? pgNumber = pgNumber-1:''" ButtonType="button" color="secondary" size="sm" text="Back"></app-button>
+          <app-button (clicked)="pgNumber = pgNumber+1" *ngIf="pgNumber*maxQuestions < data.length" ButtonType="button" size="sm" text="Next"></app-button>
+          <app-button (clicked)="saveData()" *ngIf="pgNumber*maxQuestions >= data.length" [disabled]="evalForm.invalid" ButtonType="button" size="sm" text="Save"></app-button>
+        </section>
+      </section>
+    </div>
+  </div>
+</div>

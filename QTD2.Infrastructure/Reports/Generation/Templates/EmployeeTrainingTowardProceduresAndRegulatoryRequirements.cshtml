@@ -1,0 +1,404 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width:20%">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width:20%"></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378;width:60%">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="text-align:right; width:20%"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+
+    @if (Model.Employees.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{
+                    int j = 1;
+                }
+
+                @foreach (var employee in Model.Employees)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table class="table" style="width:100% ;border-collapse:collapse;">
+                            <tr>
+                                <td colspan="12" style="border:none;">
+                                    <table class="table" style="width:100% ;border-collapse:collapse;">
+                                        <tr>
+                                            @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                                            {
+                                                <td colspan="12" style="border:none" ;>
+                                                    <span><b style="font-size: 20px;">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</b> </span>
+                                                    <span>@employee.Person?.FirstName @employee.Person?.LastName</span>
+                                                </td>
+                                            }
+                                        </tr>
+
+                                        <tr>
+                                            @if (Model.DisplayColumns.Where(r => r == "Employee Number").Count() > 0)
+                                            {
+                                                <td colspan="12" style="border:none" ;>
+                                                    <span><b style="font-size: 20px;">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #:</b> </span>
+                                                    <span> @employee.EmployeeNumber </span>
+                                                </td>
+                                            }
+                                        </tr>
+
+                                        <tr>
+                                            @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                                            {
+                                                <td colspan="12" style="border:none;" ;>
+                                                    <span><b style="font-size: 20px;">@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b> </span>
+                                                    @{
+                                                        var employeePositions = employee.EmployeePositions.Where(x => x.Active).Select(x => x.Position.PositionTitle).Distinct().ToList();
+                                                        <span>@String.Join(", ", employeePositions)</span>
+                                                    }
+                                                </td>
+                                            }
+                                        </tr>
+
+                                        <tr>
+                                            @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                                            {
+                                                <td colspan="12" style="border:none;" ;>
+                                                    <span><b style="font-size: 20px;">Organizations:</b> </span>
+                                                    @{
+                                                        var employeeOrganizations = employee.EmployeeOrganizations.Where(x => x.Active).Select(x => x.Organization.Name).Distinct().ToList();
+                                                        <span>@String.Join(", ", employeeOrganizations)</span>
+                                                    }
+                                                </td>
+                                            }
+                                        </tr>
+                                        <tr>
+
+                                            <td colspan="12" style="border:none" ;>
+                                                <span><b style="font-size: 20px;">Date Range:</b> </span>
+                                                <span> @Model.DateRange[0].ToShortDateString() - @Model.DateRange[1].ToShortDateString()</span>
+                                            </td>
+
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            @if (Model.Procedures.Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style="border:none" ;>
+                                        <b style="font-size: 20px;color:#5EA5D7;text-decoration: underline; ">@("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</b>
+                                    </td>
+                                </tr>
+                                @foreach (var procedure in Model.Procedures)
+                                {
+
+                                    <tr>
+                                        <td colspan="12" style="border:none" ;>
+                                            @if ((Model.DisplayColumns.Contains("Procedure/Regulatory requirement #") || Model.DisplayColumns.Contains("Procedure/Regulatory Requirement Title")))
+                                            {
+                                                <b>
+                                                    @if (Model.DisplayColumns.Contains("Procedure/Regulatory requirement #"))
+                                                    {
+                                                        @procedure.Number
+                                                    }
+                                                    @if (Model.DisplayColumns.Contains("Procedure/Regulatory requirement #") &&
+                                                   Model.DisplayColumns.Contains("Procedure/Regulatory Requirement Title"))
+                                                    {
+                                                        @(" - ")
+                                                    }
+                                                    @if (Model.DisplayColumns.Contains("Procedure/Regulatory Requirement Title"))
+                                                    {
+                                                        @procedure.Title
+                                                    }
+                                                </b>
+                                            }
+                                            <table style="width:100%; border-collapse:collapse;">
+                                                <tr style=" border-bottom: 2px solid #000; border-top: 2px solid #000;border-right: 1px solid #000;  padding-top:1rem;">
+                                                    @if (Model.DisplayColumns.Where(r => r == "ILA #").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000; border-left: 1px solid #000;  border-top: 2px solid #000; text-align: center;  vertical-align: bottom; "> @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #</th>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; border-top: 2px solid #000;  text-align: center; vertical-align: bottom; ">
+                                                            @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title
+                                                        </th>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Completion Date").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000;  border-left: 1px solid #000;border-right: 1px solid #000;  border-top: 2px solid #000;  text-align: center; vertical-align: bottom; ">Completion Date</th>
+                                                    }
+
+                                                    @if (Model.DisplayColumns.Where(r => r == "Score").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; border-top: 2px solid #000;  text-align: center; vertical-align: bottom;">Score</th>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Grade").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom;">Grade</th>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Grade notes").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000;border-top: 2px solid #000; text-align: center; vertical-align: bottom;">Grade notes</th>
+                                                    }
+
+                                                </tr>
+
+                                                @if (employee.ClassSchedule_Employee.Any(cse => procedure.ILA_Procedure_Links.Any(link => link.ILAId == cse.ClassSchedule.ILAID)))
+                                                {
+
+                                                    @foreach (var classScheduleEmployee in employee.ClassSchedule_Employee.Where(cse => procedure.ILA_Procedure_Links.Any(link => link.ILAId == cse.ClassSchedule.ILAID)))
+                                                    {
+                                                        <tr style="border-bottom: 2px solid #000" ;>
+                                                            @if (Model.DisplayColumns.Where(r => r == "ILA #").Count() > 0)
+                                                            {
+                                                                <td style=" border-bottom: 2px solid #000 !important; border-left: 1px solid #000;border-right: 1px solid #000;border-left: 1px solid #000; text-align: center;">@classScheduleEmployee.ClassSchedule.ILA?.Number</td>
+                                                            }
+
+                                                            @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                                            {
+                                                                <td style=" border-bottom: 2px solid #000 !important; border-left: 1px solid #000;border-right: 1px solid #000; text-align: center;">
+                                                                    @classScheduleEmployee.ClassSchedule.ILA.Name
+                                                                </td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Completion Date").Count() > 0)
+                                                            {
+                                                                <td style=" border-bottom: 2px solid #000 !important; border-left: 1px solid #000;border-right: 1px solid #000; text-align: center;">
+                                                                    @classScheduleEmployee?.CompletionDate?.ToShortDateString()
+                                                                </td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Score").Count() > 0)
+                                                            {
+                                                                <td style=" border-bottom: 2px solid #000 !important; border-left: 1px solid #000;border-right: 1px solid #000; text-align: center;"> @classScheduleEmployee.FinalScore</td>
+
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Grade").Count() > 0)
+                                                            {
+                                                                <td style=" border-bottom: 2px solid #000 !important; border-left: 1px solid #000;border-right: 1px solid #000; text-align: center;"> @classScheduleEmployee.FinalGrade</td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Grade notes").Count() > 0)
+                                                            {
+                                                                <td style="border-right: 2px solid #000;border-bottom: 2px solid #000 !important;text-align: center;">@classScheduleEmployee.GradeNotes</td>
+                                                            }
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="12" style="border:none; text-align:center;font-style: italic;">
+                                                            <i>No completion records for this @("Procedure".ReplaceLabel(Model.ClientSettings_LabelReplacements))</i>
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                            @if (Model.RegulatoryRequirements.Count() > 0)
+                            {
+                                <tr>
+                                    <td colspan="12" style="border:none" ;>
+                                        <b style="font-size: 20px;color:#5EA5D7;text-decoration: underline; "> @("Regulatory Requirement".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</b>
+                                    </td>
+                                </tr>
+                                @foreach (var regulatoryRequirement in Model.RegulatoryRequirements)
+                                {
+                                    <tr>
+                                        <td colspan="12" style="border:none" ;>
+                                            @if (Model.DisplayColumns.Contains("Procedure/Regulatory requirement #") || Model.DisplayColumns.Contains("Procedure/Regulatory Requirement Title"))
+                                            {
+                                                <b>
+                                                    @if (Model.DisplayColumns.Contains("Procedure/Regulatory requirement #"))
+                                                    {
+                                                        @regulatoryRequirement.Number
+                                                    }
+                                                    @if (Model.DisplayColumns.Contains("Procedure/Regulatory requirement #") &&
+                                                   Model.DisplayColumns.Contains("Procedure/Regulatory Requirement Title"))
+                                                    {
+                                                        @(" - ")
+                                                    }
+                                                    @if (Model.DisplayColumns.Contains("Procedure/Regulatory Requirement Title"))
+                                                    {
+                                                        @regulatoryRequirement.Title
+                                                    }
+                                                </b>
+                                            }
+
+                                            <table style="width:100%; border-collapse: collapse;">
+                                                <tr style=" border-bottom: 2px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; padding-top:1rem;">
+                                                    @if (Model.DisplayColumns.Where(r => r == "ILA #").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000; border-left: 1px solid #000;border-right: 1px solid #000;border-top: 2px solid #000; text-align: center;  vertical-align: bottom; "> @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #</th>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000; border-left: 1px solid #000; border-right: 1px solid #000;border-top: 2px solid #000; text-align: center; vertical-align: bottom; ">
+                                                            @("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title
+                                                        </th>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Completion Date").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000;  border-left: 1px solid #000;border-right: 1px solid #000; border-top: 2px solid #000;  text-align: center; vertical-align: bottom; ">Completion Date</th>
+                                                    }
+
+                                                    @if (Model.DisplayColumns.Where(r => r == "Score").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; border-top: 2px solid #000;  text-align: center; vertical-align: bottom;">Score</th>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Grade").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; border-top: 2px solid #000;  text-align: center; vertical-align: bottom;">Grade</th>
+                                                    }
+                                                    @if (Model.DisplayColumns.Where(r => r == "Grade notes").Count() > 0)
+                                                    {
+                                                        <th style="border-bottom: 2px solid #000; border-left: 1px solid #000; border-right: 1px solid #000; border-top: 2px solid #000;  text-align: center; vertical-align: bottom;">Grade notes</th>
+                                                    }
+
+                                                </tr>
+                                                @if (employee.ClassSchedule_Employee.Any(cse => regulatoryRequirement.ILA_RegRequirement_Links.Any(link => link.ILAId == cse.ClassSchedule.ILAID)))
+                                                {
+                                                    @foreach (var classScheduleEmployee in employee.ClassSchedule_Employee.Where(cse => regulatoryRequirement.ILA_RegRequirement_Links.Any(link => link.ILAId == cse.ClassSchedule.ILAID)))
+                                                    {
+                                                        <tr style="border-bottom: 2px solid #000" ;>
+                                                            @if (Model.DisplayColumns.Where(r => r == "ILA #").Count() > 0)
+                                                            {
+                                                                <td style=" border-bottom: 2px solid #000 !important;  border-left: 1px solid #000; border-right: 1px solid #000;border-left: 1px solid #000; text-align: center;">@classScheduleEmployee.ClassSchedule.ILA?.Number</td>
+                                                            }
+
+                                                            @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                                            {
+                                                                <td style=" border-bottom: 2px solid #000 !important; border-left: 1px solid #000; border-right: 1px solid #000; text-align: center;">
+                                                                    @classScheduleEmployee.ClassSchedule.ILA.Name
+                                                                </td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Completion Date").Count() > 0)
+                                                            {
+                                                                <td style=" border-bottom: 2px solid #000 !important;  border-left: 1px solid #000; border-right: 1px solid #000; text-align: center;">
+                                                                    @classScheduleEmployee?.CompletionDate?.ToShortDateString()
+                                                                </td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Score").Count() > 0)
+                                                            {
+                                                                <td style=" border-bottom: 2px solid #000 !important;border-right: 1px solid #000; text-align: center;"> @classScheduleEmployee.FinalScore</td>
+
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Grade").Count() > 0)
+                                                            {
+                                                                <td style=" border-bottom: 2px solid #000 !important;  border-left: 1px solid #000; border-right: 1px solid #000; text-align: center;"> @classScheduleEmployee.FinalGrade</td>
+                                                            }
+                                                            @if (Model.DisplayColumns.Where(r => r == "Grade notes").Count() > 0)
+                                                            {
+                                                                <td style="border-right: 1px solid #000;border-bottom: 2px solid #000 !important; border-left: 1px solid #000;text-align: center;">@classScheduleEmployee.GradeNotes</td>
+                                                            }
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                        <td colspan="12" style="border:none; text-align:center;font-style: italic;">
+                                                            <i>No completion records for this @("Regulatory Requirement".ReplaceLabel(Model.ClientSettings_LabelReplacements))</i>
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+
+                        </table>
+                    </div>
+
+                    @if (!employee.Equals(Model.Employees.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j%2==0?"strip-dark":"")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Employees.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

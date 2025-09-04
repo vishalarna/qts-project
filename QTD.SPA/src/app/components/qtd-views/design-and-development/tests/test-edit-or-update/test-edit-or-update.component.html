@@ -1,0 +1,301 @@
+<div class="w-full">
+  <div class="flex flex-col w-full">
+    <section>
+      <mat-toolbar class="h-28 app-toolbar-sticky">
+        <mat-icon class="backIcon" (click)="goBack()">
+          keyboard_arrow_left
+        </mat-icon>
+        <h1 *ngIf="newMode === 'copy'" class="flex-auto font-medium text-xl" id="title" translate>
+          Copy Test</h1>
+        <h1 *ngIf="newMode === 'edit'" class="flex-auto font-medium text-xl" id="title" translate>
+          Edit Test</h1>
+        <app-button class="mr-2" (clicked)="updateTest(true)" *ngIf="newMode === 'edit'"
+          [disabled]="showSpinner || testForm.invalid" type="button" text="Publish & Update" color="secondary" size="sm">
+        </app-button>
+        <app-button (clicked)="updateTest(false)" *ngIf="newMode === 'edit'"
+          [disabled]="showSpinner || testForm.invalid" type="button" text="Update" color="secondary" size="sm">
+        </app-button>
+        <div ngbDropdown>
+          <app-button ngbDropdownToggle *ngIf="newMode === 'copy'" [spinner]="showSpinner" id="copyBtn" icon="keyboard_arrow_down"
+            [disabled]="showSpinner || testForm.invalid" type="button" text="Copy" color="secondary" size="sm">
+          </app-button>
+          <div ngbDropdownMenu aria-labelledby="copyBtn">
+            <button  ngbDropdownItem (click)="copyTest(false)">Copy</button>
+            <button ngbDropdownItem (click)="copyAndPublishTest()">Copy & Publish</button>
+          </div>
+        </div>
+      </mat-toolbar>
+    </section>
+    <!-- Main Section -->
+    <section class="w-full mt-20">
+      <form [formGroup]="testForm" class="flex flex-col w-full" style="align-items:center;">
+
+        <!-- Test Information -->
+        <section class="flex flex-row border-b border-gray-300 pb-5" style="width:70%;">
+          <div class="flex flex-col mr-5" style="width:40%;">
+            <span class="text-base font-bold">Test Information</span>
+            <span class="text-gray-400 text-xs">Edit title/ {{("Instruction" | labelReplacement)| async}}s or time limit</span>
+          </div>
+          <div class="flex flex-col p-4 bg-white border-0.5 rounded mat-elevation-z2 h-auto" style="width:90%;">
+            <label class="mb-3">Title</label>
+            <app-textbox [placeholder]="'Title'" formControlName="title" class="mb-3"
+              [ngClass]="testForm.get('title')?.hasError('required') ? 'mb-2':'mb-4'"></app-textbox>
+            <app-input-error class="mb-3" *ngIf="testForm.get('title')?.hasError('required')"
+              text="Title Is required"></app-input-error>
+            <label class="mb-3">{{("Instruction" | labelReplacement)| async}}s  (Optional)</label>
+            <app-textarea [value]="testForm.get('instruction')?.value ?? ''" formControlName="instruction" class="mb-3"
+              [placeholder]="(('Instruction' | labelReplacement)| async)"
+              [customClasses]="'text-base border w-full h-auto py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+            </app-textarea>
+            <label class="mb-3">Time Limit (Optional)</label>
+            <div class="flex flex-row w-full">
+              <app-textbox [placeholder]="'Time Limit Hour'" (keypress)="inputChange($event)" formControlName="timeHour"
+                class="w-full"></app-textbox>
+              <app-textbox [placeholder]="'Time Limit Minutes'" (keypress)="inputChange($event)"
+                formControlName="timeMin" class="w-full"></app-textbox>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Test Type -->
+        <section class="flex flex-row mt-3 pb-5 border-b border-gray-300" style="width:70%;">
+          <div class="flex flex-col mr-5" style="width:40%;">
+            <span class="text-base font-bold">Test Type</span>
+            <span class="text-gray-400 text-xs">Edit test type</span>
+          </div>
+          <div class="flex flex-col p-4 bg-white border-0.5 rounded mat-elevation-z2 h-auto" style="width:90%;">
+            <mat-radio-group class="typeGroup" formControlName="type"
+              [ngClass]="testForm.get('type')?.hasError('required') ? 'mb-2':'mb-4'">
+              <div *ngFor="let type of testTypes">
+                <mat-radio-button [value]="type.id">{{type.description}}</mat-radio-button>
+              </div>
+
+            </mat-radio-group>
+            <app-input-error class="mb-4" *ngIf="testForm.get('type')?.hasError('required')"
+              text="Test Type is Required"></app-input-error>
+            <div *ngIf="!testForm.get('type')?.hasError('required')" class="flex flex-col">
+              <label class="mb-3">Provider</label>
+              <mat-form-field appearance="outline" class="text-sm dropdown w-full mb-1">
+                <mat-select (selectionChange)="selectProvider($event.value)" formControlName="provider"
+                  [placeholder]="'Select Provider'">
+                  <mat-option *ngFor="let i of providers" [value]="i.id">
+                    {{i.name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <app-input-error class="mb-3" *ngIf="testForm.get('provider')?.hasError('required')"
+                text="Provider is Required"></app-input-error>
+
+              <label class="mb-3">{{("ILA" | labelReplacement)| async}}</label>
+              <mat-form-field appearance="outline" class="text-sm dropdown w-full mb-1">
+                <mat-select [disabled]="!testForm.get('provider')?.value" formControlName="ila"
+                  placeholder="Select {{('ILA' | labelReplacement)| async}}">
+                  <mat-option *ngFor="let i of ILAs" [value]="i.id">
+                    {{i.name}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+              <app-input-error *ngIf="testForm.get('ila')?.hasError('required') && testForm.get('provider')?.value"
+                text="{{('ILA' | labelReplacement)| async}} is Required"></app-input-error>
+            </div>
+          </div>
+        </section>
+
+        <!-- Add new Test Button -->
+        <section class="w-full flex mt-5" style="justify-content:flex-end;width:70%;">
+          <div class="flex flex-row">
+            <app-button (clicked)="itemMode = 'add';openAddFlyPanel(editTestItem)" class="arrowButton" color="secondary"
+              ButtonType="button" variant="text" icon="add" iconPosition="left"
+              text="Add New Test Question"></app-button>
+          </div>
+        </section>
+
+        <!--Import Question Options Start-->
+
+        <div class="border-0.5 rounded h-auto w-17/24 bg-white-one px-8 " (click)="SelectEOByQuestion()">
+          <div class="row justify-between">
+              <div class="w-full mt-3 mb-2">
+                  <app-label [for]="'byEO'" [text]="'Select Questions by EO '" class="font-medium">
+                  </app-label>
+                  <app-icon icon="arrow_forward_ios" class="float-right" ></app-icon>
+              </div>
+
+          </div>
+      </div>
+
+      <div class="border-0.5 rounded  h-auto w-17/24 bg-white-one px-8 mt-2" (click)="SelectUnlinkedQuestion()">
+          <div class="row justify-between">
+              <div class="w-full mt-3 mb-2" >
+                  <app-label [for]="'unlinkQuestions'" [text]="'Select Unlinked Questions '"
+                       class="font-medium">
+                  </app-label>
+                  <app-icon icon="arrow_forward_ios" class="float-right" ></app-icon>
+              </div>
+
+          </div>
+      </div>
+
+        <div class="border-0.5 rounded  h-auto w-17/24 bg-white-one px-8 mt-2" (click)="openFlyInPanel(SelectByIndividualEO)">
+          <div class="row justify-between">
+              <div class="w-full mt-3 mb-2">
+                  <app-label [for]="'randomlyIndEO'" [text]="'Randomly select by Individual EO'" class="font-medium">
+                  </app-label>
+                  <app-icon icon="arrow_forward_ios" class="float-right"></app-icon>
+              </div>
+
+          </div>
+      </div>
+
+      <div class="border-0.5 rounded  h-auto w-17/24 bg-white-one px-8 mt-2" (click)="openFlyInPanel(SelectAllEO)">
+          <div class="row justify-between">
+              <div class="w-full mt-3 mb-2">
+                  <app-label [for]="'randomlyAllEO'" [text]="'Randomly select by all EOs'" class="font-medium">
+                  </app-label>
+                  <app-icon icon="arrow_forward_ios" class="float-right"></app-icon>
+              </div>
+
+          </div>
+      </div>
+      <section *ngIf="(isReordered || seqTestFormGroup.get('checkRandomTest').value == true) && newMode !== 'copy'" class="flex flex-row w-full mt-4 w-17/24" style="justify-content: end;">
+        <div>
+          <app-button [spinner]="reorderLoader" [disabled]="reorderLoader" (clicked)="updateSequence()" color="secondary" text="Save Order" size="sm"></app-button>
+        </div>
+      </section>
+
+      <!--Import Question Options End-->
+
+        <section class="mb-5 mt-4" *ngIf="testItems && testItems.length < 1">
+          <div>No Test Questions Found</div>
+        </section>
+        <!-- Test Questions -->
+        <form [formGroup]="seqTestFormGroup" class="flex flex-row mt-3" style="width:70%;">
+          <div class="flex flex-col" *ngIf = "newMode !== 'copy'">
+            <div class="p-2">
+              <mat-checkbox formControlName="checkRandomTest">Randomize the test Question Sequence</mat-checkbox>
+            </div>
+            <div class="p-2">
+              <mat-checkbox formControlName="checkRandomDistractor">Randomize the test Question Distractor Sequence</mat-checkbox>
+            </div>
+          </div>
+        </form>
+        <section cdkDropList (cdkDropListDropped)="drop($event)" *ngIf="testItems && testItems.length > 0" class="flex flex-row mt-5 pb-5" style="width:70%;">
+          <div class="flex flex-col mr-5" style="width:40%;">
+            <span class="text-base font-bold">Test Questions</span>
+            <span class="text-gray-400 text-xs">Choose edit or delete against test questions to make changes</span>
+          </div>
+          <div class="flex flex-col p-4 m-4" style="width:90%;">
+            <app-data-loader *ngIf="questionLoader"></app-data-loader>
+            <div class="bg-white mat-elevation-z2 p-3 mb-3 rounded-sm" cdkDrag  *ngFor="let testItem of testItems,index as i">
+
+              <div style="border-bottom:0.8px solid #E1E5E4;" class="pb-2 flex flex-row justify-between mt-2 mb-4">
+                <div class="flex flex-row">
+                  <app-icon cdkDragHandle class="mr-1" icon="drag_indicator"
+                        style="color: darkgrey!important;cursor:move">
+                    </app-icon>
+                  <span style="color:#7A807E;" class="mr-4 font-medium question-label">Question {{i+1}}:</span>
+                  <div [ngClass]="testItem.description.trim().toLowerCase().includes('<p>') ? '':'mb-3'"
+                    class="font-normal question-text"
+                    [innerHTML]="testItem.testItemType.description.trim().toLowerCase() === 'fill in the blank' ? processFIB(testItem.description,testItem.testItemFillBlanks):testItem.description">
+                  </div>
+                </div>
+                <div class="flex flex-row">
+                  <mat-icon (click)="itemMode = 'edit';openFlyPanel(editTestItem,testItem);"
+                    class="material-icons-outlined mr-2" style="color:#7A807E;">edit_outline</mat-icon>
+                  <mat-icon (click)="openDialog(deleteDialog,testItem)" class="material-icons-outlined"
+                    style="color:#7A807E;">delete</mat-icon>
+                </div>
+              </div>
+
+              <!-- For Fill In Blank -->
+              <div class="mb-4" *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'fill in the blank'">
+                <div class="flex flex-col" *ngFor="let fib of testItem.testItemFillBlanks">
+                  <div class="flex flex-row mb-2">
+                    <div class="mr-3">{{fib.correctIndex}} )</div>
+                    <div>{{fib.correct}}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- For MCQ -->
+              <div *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'multiple choice questions'"
+                class="mb-4">
+                <mat-radio-group [value]="getMCQCorrect(testItem.testItemMCQs)">
+                  <div *ngFor="let mcq of testItem.testItemMCQs">
+                    <mat-radio-button [disabled]="true" class="mb-2" [value]="mcq.id">
+                      <div [innerHTML]="mcq.choiceDescription" class="ml-3 font-normal canHavePara wrap-text"></div>
+                    </mat-radio-button>
+                  </div>
+                </mat-radio-group>
+              </div>
+
+              <!-- Multiple Correct -->
+              <div *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'multiple correct answers'"
+                class="mb-4">
+                <div *ngFor="let mca of testItem.testItemMCQs">
+                  <mat-checkbox [disabled]="true" [checked]="mca.isCorrect">
+                    <div [innerHTML]="mca.choiceDescription" class="canHavePara wrap-text"></div>
+                  </mat-checkbox>
+                </div>
+              </div>
+
+              <!-- For True False -->
+              <div class="mb-4" *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'true / false'">
+                <mat-radio-group [value]="getTFCorrect(testItem.testItemTrueFalses)">
+                  <div *ngFor="let tf of testItem.testItemTrueFalses">
+                    <mat-radio-button [disabled]="true" class="mb-2" [value]="tf.id">
+                      <span class="ml-3 font-normal">{{tf.choices}}</span>
+                    </mat-radio-button>
+                  </div>
+                </mat-radio-group>
+              </div>
+
+              <!-- For Match The Column -->
+              <div style="display: grid;row-gap: 0.6rem;" class="mb-4"
+                *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'match the column'">
+                <div *ngFor="let mtc of testItem.testItemMatches">
+                  <div style="display:grid;grid-template-columns: repeat(3, 1fr);row-gap:1rem;">
+                    <div class="mr-2 wrap-text">{{mtc.choiceDescription}}</div>
+                    <div class="mr-2 wrap-text">{{mtc.matchDescription}}</div>
+                    <div>{{mtc.correctValue}}</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Short Answers -->
+              <div class="mb-4" *ngIf="testItem.testItemType.description.trim().toLowerCase() === 'short answers'">
+                <div *ngFor="let sa of testItem.testItemShortAnswers,index as i">
+                  <div class="flex flex-row mb-3">
+                    <div class="mr-3">{{i + 1}}</div>
+                    <div [innerHTML]="sa.responses" class="canHavePara wrap-text"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </form>
+    </section>
+  </div>
+</div>
+
+<ng-template #editTestItem>
+  <app-flypanel-add-test-item [mode]="this.itemMode" [previousQuestion]="selectedTestItem"
+    (closed)="flyPanelSrvc.close()"></app-flypanel-add-test-item>
+</ng-template>
+
+<ng-template #deleteDialog>
+  <app-qtd-dialogue [showEffectiveDateAndReason]="true" [header]="header" [description]="description"
+    [cancelText]="'No'" [confirmText]="'Yes'" (canceled)="dialog.closeAll()"
+    (confirmed)="deleteTestItem($event)"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #SelectAllEO>
+  <app-flypanel-randomly-select-all-eos [testId]="testId" (closed)="flyPanelSrvc.close();readyTestQuestionData()"></app-flypanel-randomly-select-all-eos>
+</ng-template>
+
+<ng-template #SelectByIndividualEO>
+  <app-flypanel-randomly-select-by-individual-eo [testId]="testId" (closed)="flyPanelSrvc.close();readyTestQuestionData()"></app-flypanel-randomly-select-by-individual-eo>
+</ng-template>
+
+

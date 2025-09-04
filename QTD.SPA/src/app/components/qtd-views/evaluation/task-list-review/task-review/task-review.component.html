@@ -1,0 +1,366 @@
+<mat-toolbar
+  class="app-toolbar-sticky flex align-items-center task-review-header"
+>
+  <div class="flex items-center">
+    <app-button
+      type="button"
+      ButtonType="icon"
+      icon="keyboard_arrow_left"
+      class="header-back-button"
+      (click)="goBack()"
+    ></app-button>
+    <div class="edit-task-review-heading ml-4">
+      <h3>{{ "Task" | labelReplacement | async }} Review</h3>
+    </div>
+  </div>
+  <div class="flex flex-col w-full">
+  <div class="flex flex-row justify-end w-100">
+    <app-button
+      color="secondary"
+      variant="contained"
+      class="save-and-close"
+      text="Save and Close"
+      size="sm"
+      (clicked)="saveAndClose()"
+      [disabled]="showTrainingIssueForm && (!trainingIssueForm || trainingIssueForm.invalid)"
+    >
+    </app-button>
+
+    <app-button text="Save and Next" size="sm" *ngIf ="taskReviewDetail?.nextTaskReviewId" (clicked)="saveAndNext()" [disabled]="showTrainingIssueForm && (!trainingIssueForm || trainingIssueForm.invalid)">
+    </app-button>
+  </div>
+  <app-label *ngIf ="taskReviewDetail?.nextTaskReviewId" text = "Next Task: [{{nextTaskFullNumber}}]" class="font-weight-bold text-sm flex justify-end add-item mt-1"></app-label>
+</div>
+</mat-toolbar>
+
+<div class="task-review-spinner" *ngIf = "isTaskReviewLoading">
+  <app-spinner></app-spinner>
+</div>
+<ng-container *ngIf = "!isTaskReviewLoading">
+  <div class="ml-4 mr-4" [formGroup] = "taskReviewForm">
+    <div class="flex flex-col mt-2">
+      <div class="flex flex-row justify-between p-3">
+        <div class="flex flex-row mt-2 d-flex">
+          <div class="iconSize">
+            <app-icon icon="history"></app-icon>
+          </div>
+          <div class="flex flex-col space-y-0 ml-2">
+            <div class="flex flex-row space-x-2 space-y-0">
+              <p class="font-bold text-sm mb-0">{{lastModified?.name}}</p>
+              <span class="font-light text-gray-400 text-sm">Modified {{lastModified?.dt_stamp | date:
+                "medium"}}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <app-button class = "task-report" ButtonType="text" (clicked) = "downloadTaskHistoryByTasksReport()" text = "Download {{('Task' | labelReplacement)| async}} History by {{('Task' | labelReplacement)| async}} Report "></app-button>
+    </div>
+    <div class="task-container">
+      <div class="task-container-first">
+          <div class="bg-white shadow-sm p-4 flex flex-col">
+            <div class="ml-2 pb-4">
+              <h2>DutyArea</h2>
+              <ol class="ml-4">
+                <li>
+                  <div>{{taskDetails?.subdutyArea?.dutyArea?.title}}</div>
+                </li>
+              </ol>
+            </div>
+            <div class="ml-2 pb-4">
+              <h2>Sub Duty Area</h2>
+              <ol class="ml-4">
+                <li>
+                  <div>{{taskDetails?.subdutyArea?.title}}</div>
+                </li>
+              </ol>
+            </div>
+            <div *ngIf="taskAllDetails?.taskPositionWithCount.length > 0" class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>{{ "Position" | labelReplacement | async }}s</h2>
+              </div>
+              <ol class="ml-4">
+                <li *ngFor="let pos of taskAllDetails?.taskPositionWithCount">
+                   <div *ngIf="pos?.position?.active" class="flex flex-row justify-between w-full">
+                    <p>{{ pos?.position?.positionDescription }}</p>
+                   </div>
+                </li>
+              </ol>
+            </div>
+            <div class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>{{"Task" | labelReplacement | async }} Statement</h2>
+              </div>
+              <ol class="ml-4">
+                <li>
+                  <div>{{taskDetails?.fullNumber}} - {{taskDetails?.description}}</div>
+                </li>
+              </ol>
+            </div>
+            <div class="ml-2 pb-4">
+               <h2>R-R {{"Task" | labelReplacement | async }} checkbox</h2>
+               <div class="ml-4"><mat-checkbox [checked]="taskDetails?.isReliability" class="example-margin" [disabled]="true" ></mat-checkbox></div> 
+            </div>
+            <div *ngIf="taskAllDetails?.task_Suggestions.length > 0" class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>{{"Task" | labelReplacement | async }}  Specific Suggestions</h2>
+              </div>
+               <ol class="ml-4">
+                <li *ngFor="let task_Suggestion of taskAllDetails?.task_Suggestions">
+                   <div class="flex flex-row justify-between w-full">
+                    <p class="ml-4" [innerHTML]="task_Suggestion?.description"></p> 
+                   </div>
+                </li>
+              </ol>
+            </div>
+            <div *ngIf="taskDetails?.conditions" class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>Conditions</h2>
+              </div>
+              <p class="ml-4" [innerHTML]="taskDetails?.conditions"></p>
+            </div>
+            <div *ngIf="taskDetails?.criteria"  class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>Criteria</h2>
+              </div>
+              <p class="ml-4" [innerHTML]="taskDetails?.criteria"></p>
+            </div>
+            <div *ngIf="taskAllDetails?.tools.length > 0" class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>{{ "Tool" | labelReplacement | async }}s</h2>
+              </div>
+              <ol class="ml-4">
+                <li *ngFor = "let item of taskAllDetails?.tools">
+                  <div class="flex flex-row justify-between w-full">
+                    <p>{{item?.name}}</p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+            <div *ngIf="taskDetails?.references" class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>References</h2>
+              </div>
+              <p class="ml-4" [innerHTML]="taskDetails?.references"></p>
+            </div>
+            <div *ngIf="taskAllDetails?.proceduresWithLinkCounts.length > 0"class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>{{ "Procedure" | labelReplacement | async }}s</h2>
+              </div>
+              <ol class="ml-4">
+                <li *ngFor="let proc of taskAllDetails.proceduresWithLinkCounts">
+                  <div class="flex flex-row justify-between w-full">
+                    <p>{{proc?.number}} - {{proc?.description}}</p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+           
+            <div *ngIf="taskAllDetails?.safetyHazardWithLinkCounts.length > 0" class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>{{ "Safety Hazard" | labelReplacement | async }}s</h2>
+              </div>
+              <ol class="ml-4">
+                <li *ngFor="let sh of taskAllDetails?.safetyHazardWithLinkCounts">
+                  <div class="flex flex-row justify-between w-full">
+                    <p>{{sh?.number}} - {{sh?.title}}</p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+            <div *ngIf="taskAllDetails?.regulatoryRequirementWithLinkCounts.length > 0" class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>
+                  {{ "Regulatory Requirement" | labelReplacement | async }}s
+                </h2>
+              </div>
+              <ol class="ml-4">
+                <li *ngFor="let rr of taskAllDetails?.regulatoryRequirementWithLinkCounts">
+                  <div class="flex flex-row justify-between w-full">
+                    <p>{{rr?.number}} - {{rr?.description}}</p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+             <div *ngIf="taskAllDetails?.enablingObjectiveWithCountOptions.length > 0" class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>{{ "Enabling Objective" | labelReplacement | async }}</h2>
+              </div>
+              <ol class="ml-4">
+                <li *ngFor="let eo of taskAllDetails?.enablingObjectiveWithCountOptions">
+                  <div class="flex flex-row justify-between w-full">
+                    <p>{{eo?.number}} - {{eo?.description}}</p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+            <div *ngIf="taskAllDetails?.ilaWithCountOptions.length > 0" class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>{{ "ILA" | labelReplacement | async }}s</h2>
+              </div>
+              <ol class="ml-4">
+                <li *ngFor="let ila of taskAllDetails?.ilaWithCountOptions">
+                  <div class="flex flex-row justify-between w-full">
+                    <p>{{ila?.number}} - {{ila?.description}}</p>
+                  </div>
+                </li>
+              </ol>
+            </div>
+            
+            <div *ngIf="taskAllDetails?.task_Steps.length > 0" class="ml-2 pb-4">
+              <div class="flex flex-row justify-between">
+                <h2>Steps</h2>
+
+              </div>
+              <ol class="ml-4">
+                <li *ngFor="let step of taskAllDetails?.task_Steps; let i = index">
+                  <div class="flex flex-row justify-between w-full step-row">
+                   <div class="step-number">Step {{ i + 1 }} -</div>
+                   <div class="step-content" [innerHTML]="step.description"></div>
+                  </div>
+                </li>
+              </ol>
+            </div>
+          </div>
+      </div>
+      <div class="task-container-second">
+        <div class="ml-3 p-2 mb-5 mr-3 bg-white shadow-sm">
+          <h3 class="font-weight-bold text-xl mb-3">
+            {{ "Task" | labelReplacement | async }} Review Documentation
+          </h3>
+          <div>
+            <div class="flex flex-col p-2 m-3">
+              <app-label text = "Review Date" class="font-weight-bold text-sm"></app-label>
+              <app-date formControlName = "reviewDate"></app-date>
+            </div>
+            <div class="flex flex-col p-2 m-3">
+              <app-label text = "Reviewed by" class="font-weight-bold"></app-label>
+
+                <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                  <mat-select formControlName="reviewedBy" multiple #selectControl="matSelect" >
+                    <mat-select-trigger>
+                      <mat-chip-list>
+                        <mat-chip *ngFor="let i of taskReviewForm.get('reviewedBy')?.value" [removable]="true"
+                                  (removed)="removeReviewer(i)"
+                                  [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                                  selected>
+                                  {{i.name}}
+                          <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                          </app-icon>
+                        </mat-chip>
+                      </mat-chip-list>
+                    </mat-select-trigger>
+                    <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="searchReviewerTxt" (keyup)="reviewerSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)">
+                    <mat-option *ngFor="let i of reviewers" (click)="onReviewedByClick(i?.id)" [value]="i">
+                      {{i.name}}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+
+            </div>
+          </div>
+        </div>
+        <div class="bg-white shadow-sm p-2 m-3">
+          <h3 class="font-weight-bold text-xl mb-3">Findings</h3>
+          <div class="italic-text mb-3">A history entry with the Review Date and selected finding will be saved to Task History upon Publishing this Review. For Tasks flagged as requiring requalification or Make Inactive, the applicable updates will also be made upon publishing.</div>
+          <div class="m-3">
+            <mat-radio-group class="flex flex-col" formControlName = "finding" (change) = "onFindingChange($event.value)">
+              <mat-radio-button class="font-weight-normal text-sm" *ngFor = "let val of findings" [value] = "val?.id"
+                >{{val.finding | dynamicLabelReplacement| async }}</mat-radio-button>
+            </mat-radio-group>
+            <div class="mt-3">
+              <app-label class="font-weight-bold text-sm" text = "Requalification Due Date"></app-label>
+              <app-date formControlName = "requalificationDueDate" [disabled] = "this.taskReviewForm.get('finding')?.value !=findingRequalId"></app-date>
+            </div>
+            <div [formGroup] = "trainingIssueForm" class="pt-4">
+              <div *ngIf= "showTrainingIssueForm">
+              <app-label class="font-weight-bold text-sm" text = "Training Issue Form"></app-label>
+              <div>
+                <app-label class="font-weight-bold text-sm label required" text = "Issue ID"></app-label>
+                <app-textbox type="text" formControlName="issueId" [placeholder]="'Enter Issue ID'"></app-textbox>
+              </div>
+              <div class="pt-2">
+                <app-label class="font-weight-bold text-sm label required" text = "Issue Title"></app-label>
+                <app-textbox type="text" formControlName="title" [placeholder]="'Enter Issue Title'"></app-textbox>
+              </div>
+              <div class="pt-2 d-flex w-100 justify-between">
+                <div class="w-50 pr-2">
+                  <app-label class="font-weight-bold text-sm label required" text = "Created Date"></app-label>
+                  <app-date formControlName = "createdDate" ></app-date>
+                </div>
+                <div class="w-50 pl-2">
+                  <app-label class="font-weight-bold text-sm label required" text = "Due Date"></app-label>
+                  <app-date formControlName = "dueDate" ></app-date>
+                </div>
+              </div>
+              <div class="pt-2 d-flex w-100 justify-between">
+                <div class="w-50 pr-2">
+                  <app-label class="font-weight-bold text-sm label required" text = "Status"></app-label>
+                  <mat-select formControlName="status" placeholder="Select Status" class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                      <mat-option *ngFor="let status of trainingIssueStatusList" [value]="status.id">
+                          {{status.status}}
+                      </mat-option>
+                  </mat-select>
+                </div>
+                <div class="w-50 pl-2">
+                  <app-label class="font-weight-bold text-sm label required" text = "Severity"></app-label>
+                  <mat-select formControlName="severity" placeholder="Select Severity" class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                      <mat-option *ngFor="let severity of trainingIssueSeverityList" [value]="severity.id">
+                          {{severity.severity}}
+                      </mat-option>
+                  </mat-select>
+                </div>
+              </div>
+            </div>
+          </div>
+          </div>
+        </div>
+        <div class="bg-white shadow-sm p-2 m-3">
+          <h3 class="font-weight-bold text-xl mb-3">Notes</h3>
+          <div class="mt-2">
+            <app-textarea formControlName = "notes" [value] = "taskReviewDetail?.notes"></app-textarea>
+          </div>
+        </div>
+        <div class="bg-white shadow-sm p-2 m-3">
+          <div>
+            <h3 class="font-weight-bold text-xl mb-3">
+              Action Items for {{ "Task" | labelReplacement | async }}
+            </h3>
+          </div>
+          <div class="m-3 flex justify-end">
+            <button class="text-sm add-item action-add-btn" [disabled]="taskReviewForm.get('finding')?.value === noChangeId" [matMenuTriggerFor]="actionItemMenu" (click) = "getActionItemTypes()"> 
+              <app-icon icon="add"></app-icon>Add New
+            </button>
+            <mat-menu class="action-item-type" #actionItemMenu="matMenu">
+              <button mat-menu-item *ngFor = "let type of this.actionItemsTypes"  [disabled]="type === 'PrepareForTaskRequalification' || type === 'MakeTaskInactive'" (click) = "this.selectedActionItemType = type;openActionItemFlyIn(actionItemFlyIn);selectedActionItemId = null">{{addSpacesBetweenCapitalLetters(type) | dynamicLabelReplacement| async }}</button>
+            </mat-menu>
+          </div>
+          <div class="m-2">
+            <ul>
+              <li *ngFor = "let item of taskReviewDetail?.taskReviewActionItems" class="flex justify-between p-2">
+                <span class="hyperlink" (click) = "selectedActionItemId = item?.id;openActionItemFlyIn(actionItemFlyIn);this.selectedActionItemType = item?.type">{{addSpacesBetweenCapitalLetters(item?.type) | dynamicLabelReplacement| async }}</span>
+                <button *ngIf="item?.type !== 'PrepareForTaskRequalification' && item?.type !== 'MakeTaskInactive'" mat-icon-button (click)="deleteActionItem(item?.id)">
+                  <app-icon icon="delete"></app-icon>
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</ng-container>
+
+<ng-template #closeTaskReviewDialog>
+  <app-qtd-dialogue
+    [header]="header"
+    [description]="description"
+    [cancelText]="'No'"
+    [confirmText]="'Yes'"
+    (confirmed)="closeTaskReview()"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #actionItemFlyIn>
+    <app-flypanel-action-item [actionItem] = "selectedActionItemType" [taskId] = "taskId" [task_ReviewId] = "inputTaskReviewId" (actionItem_Data) = "getActionItemData($event)" [selected_ActionItemId] = "selectedActionItemId" ></app-flypanel-action-item>
+  </ng-template>

@@ -1,0 +1,74 @@
+<form class="step-container" [formGroup]="createDifSurveyForm">
+  <div class="mat-step-section with-bottom-border">
+    <div class="step-header-section">
+      <h2 class="step-main-header">Survey Overview</h2>
+      <p class="step-header-caption">Enter all relevant details</p>
+    </div>
+    <div class="step-controls-section">
+      <div class="step-control-container label required">
+        <label class="step-control-label">Survey Title</label>
+        <div class="step-control">
+         <app-textbox formControlName = "surveyTitle" (input)="titleChange()"></app-textbox>
+        </div>
+      </div>
+      <div class="step-control-container label required">
+        <label class="step-control-label">{{("Position" | labelReplacement)| async}}</label>
+        <div class="step-control">
+          <mat-select (selectionChange)="positionClick($event)"
+            formControlName="position"
+            placeholder="Select {{('Position' | labelReplacement)| async}}"
+            class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+          >
+            <mat-option *ngFor = "let position of positions" [value]="position.id">{{position.positionTitle}}</mat-option>
+          </mat-select>
+        </div> 
+      </div>
+      <div
+        class="step-control-container label required d-inline-block"
+        style="width: 40%"
+      >
+        <label class="step-control-label">Start Date</label>
+        <div class="step-control">
+          <app-date
+            (input)="startDateClick()"
+            matInput
+            formControlName="startDate"
+            class="form_field text-xs"
+            [maxDate]="createDifSurveyForm.get('dueDate')?.value"
+          ></app-date>
+        </div>
+      </div>
+      <div
+        class="step-control-container d-inline-block ml-4 label required"
+        style="width: 40%"
+      >
+        <label class="step-control-label">Due Date</label>
+        <div class="step-control">
+          <app-date
+            (input)="dueDateClick()"
+            matInput
+            formControlName="dueDate"
+            class="form_field text-xs"
+            [minDate]="createDifSurveyForm.get('startDate')?.value"
+          ></app-date>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="mat-step-section">
+    <div class="step-header-section">
+      <h2 class="step-main-header">Survey {{("Instruction" | labelReplacement)| async}}s</h2>
+      <p class="step-header-caption">
+        Enter surve explanation or {{("Instruction" | labelReplacement)| async}}s, if any
+      </p>
+    </div>
+    <div class="step-controls-section">
+      <ckeditor
+        [editor]="Editor"
+        name="instructions"
+        formControlName="instructions"
+        (change)="instructionChange()"
+      ></ckeditor>
+    </div>
+  </div>
+</form>

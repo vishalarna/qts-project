@@ -1,0 +1,65 @@
+<app-spinner *ngIf="DataSource === undefined"></app-spinner>
+<div *ngIf="DataSource !== undefined && showGroups" class="p-4">
+  <div class="flex flex-row justify-between items-center px-3 mt-4">
+    <p class="text-xl font-bold text-gray-900">Edit Training Groups</p>
+    <app-button (clicked)="closed.emit('fp-edit-training-groups')" ButtonType='icon' icon="close">
+    </app-button>
+  </div>
+  <div class="flex flex-row justify-between items-center px-3 mt-4">
+    <p class="text-sm text-gray-500">{{this.DataSource.data.length}} Linked to selected Training Groups</p>
+    <app-button (clicked)="showGroups = false; linkGroups = true;" variant="text" iconPosition="left" icon="link"
+      text="Link Training Groups">
+    </app-button>
+
+  </div>
+  <div>
+    <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="unlinkIds.length > 0">
+      <div class="flex flex-row w-full justify-between mb-3">
+        <p class="text-xs text-gray-four pt-2">{{unlinkIds.length}} Training Groups selected</p>
+        <app-button (clicked)="openUnlinkDialog(UnlinkDialog)" [disabled]="spinner" [spinner]="spinner" class="mb-2"
+          type="button" color="secondary" size="sm" text="Unlink Training Groups">
+        </app-button>
+      </div>
+    </div>
+    <mat-table [dataSource]="DataSource" class="table-bordered ">
+      <ng-container matColumnDef="id">
+        <mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()"
+            [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selectrow(row) : null"
+            [checked]="selection.isSelected(row)">
+          </mat-checkbox>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="name">
+        <mat-header-cell *matHeaderCellDef> Name
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{row.groupName}} </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row flex text-center " *matNoDataRow>
+        <td class="mat-cell w-full m-2">No data to display</td>
+      </tr>
+
+    </mat-table>
+  </div>
+</div>
+
+<ng-container *ngIf="linkGroups">
+  <app-fly-panel-task-training-group-link [taskId]="taskId" [alreadyLinked]="alreadyLinked"
+  (closed)="showGroups=true;linkGroups=false;" (refresh)="showGroups=true;linkGroups=false;readyLinkData();refreshStats()">
+  </app-fly-panel-task-training-group-link>
+</ng-container>
+
+<ng-template #UnlinkDialog>
+  <app-qtd-dialogue header="Unlink Training Groups" [description]="unlinkDescription" cancelText="No"
+  confirmText="Yes" [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()"
+  (confirmed)="getData($event)"></app-qtd-dialogue>
+</ng-template>

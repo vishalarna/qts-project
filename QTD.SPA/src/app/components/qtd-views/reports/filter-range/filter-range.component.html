@@ -1,0 +1,47 @@
+<div class="p-4">
+  <app-icon (click)="closed.emit()" icon="close" class="text-gray-500 cursor-pointer float-right"></app-icon>
+  <div class="container mt-3 p-0">
+
+    <!-- <form class="d-block" [formGroup]="filterRangeList"> -->
+      <h2 class="navbar-heading m-0 pb-0">Date Range</h2>
+    <div  class ="d-flex align-items-center pt-4" *ngIf="getPropertyTypeName(reportSkeletonFilter.propertyType) === 'date'">
+      <div class="d-block date-block-wrapper position-relative">
+        <label class="w-100">Start Date</label>
+        <input type="date" class="text-sm border h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2
+        focus:ring-green-900 focus:ring-opacity-50 rounded" (blur)="OnDateInput(1,firstValue)" [max]="secondValue"  [(ngModel)]="firstValue"/>
+        <div *ngIf="startDateError !== ''" class="date-error-msg">
+          {{startDateError}}
+        </div>
+      </div>
+      <div class="dash-span">-</div>
+      <div class="d-block date-block-wrapper position-relative">
+        <label class="w-100">End Date</label>
+        <input type="date" [disabled]="firstValue===''" class="text-sm border h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2
+        focus:ring-green-900 focus:ring-opacity-50 rounded" (blur)="OnDateInput(2,secondValue)" [min]="firstValue"   [(ngModel)]="secondValue"/>
+        <div *ngIf="endDateError !== ''"  class="date-error-msg">
+          {{endDateError}}
+        </div>
+      </div>
+    </div>
+    <div *ngIf="getPropertyTypeName(reportSkeletonFilter.propertyType) === 'int'">
+      <div class="d-block">
+        <h2 class="navbar-heading m-0"></h2>
+        <div class="d-block pb-4">
+          <label class="report-comp-section-label">Range From</label>
+          <input type="number" class="form-control"  value="this.reportsData[0]" />
+        </div>
+        <div class="d-block pb-4">
+          <label class="report-comp-section-label">Range To</label>
+          <input type="number" class="form-control"  value="this.reportsData[1]" />
+        </div>
+      </div>
+    </div>
+    <div *ngIf="getPropertyTypeName(reportSkeletonFilter.propertyType) === 'int' && getPropertyTypeName(reportSkeletonFilter.propertyType) === 'date'">
+      <p>Type Is Unsupported</p>
+    </div>
+    <!-- </form> -->
+    <div class="save-btn-div">
+      <app-button type="button" text="Save" size="sm" [disabled] = "(firstValue && !secondValue)||(!firstValue && secondValue)" customClasses="save-filter-button" (clicked)="filterSave()" > </app-button>
+    </div>
+  </div>
+</div>

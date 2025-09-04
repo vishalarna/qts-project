@@ -1,0 +1,104 @@
+<app-data-loader *ngIf="loader"></app-data-loader>
+<ng-container *ngIf="!loader">
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+        <p *ngIf="mode == 'add'" class="text-xl font-bold text-gray-900">Add New Event</p>
+        <p *ngIf="mode == 'edit'" class="text-xl font-bold text-gray-900">Edit Event</p>
+        <app-button (click)="flyPanelService.close()" ButtonType='icon' icon="close"></app-button>
+    </div>
+    <div class="flex flex-col pb-0">
+        <form [formGroup]="addEventForm">
+            <section class="bg-white section p-5">
+                <div>
+                    <app-label [for]="'scenariotitle'" text="Event Title" class="float-left label required"></app-label>
+                    <app-textbox type="text" formControlName="eventTitle" placeholder="Enter Event Title">
+                    </app-textbox>
+                </div>
+
+                <div class="mt-4">
+                    <app-label [for]="'scenarioDescription'" text="Event Description"></app-label>
+                    <app-textarea type="text" formControlName="eventDescription" placeholder="Enter Event Description"
+                        [value]="addEventForm.get('eventDescription')?.value">
+                    </app-textarea>
+                </div>
+
+                <div class="mt-4">
+                    <app-label [for]="'initiator'" text="Initiator" class="float-left label required"></app-label>
+                    <mat-select placeholder="Select Initiator" #selectControl="matSelect"
+                        class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white"
+                        formControlName="initiator">
+                        <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="searchInitiatorTxt" (keyup)="initiatorSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)">
+                        <mat-option *ngFor="let p of filteredPositions" [value]="p.id">{{p.positionTitle}} </mat-option>
+                    </mat-select>
+                </div>
+
+                <div class="mt-4">
+                    <app-label [for]="'linkCriteria'" text="Link Criteria" class="float-left"></app-label>
+                    <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                        <mat-select [formControl]="taskCriteriaControl" multiple placeholder="Select Task Criteria" #selectCriteria>
+                            <mat-select-trigger>
+                                <mat-chip-list>
+                                    <mat-chip *ngFor="let i of taskCriteriaControl.value" [removable]="true"
+                                        (removed)="removeCriteria(i)"
+                                        [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                                        selected>
+                                        {{ i.completeTaskNumber }}
+                                        <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                                        </app-icon>
+                                    </mat-chip>
+                                </mat-chip-list>
+                            </mat-select-trigger>
+                            <mat-option *ngFor="let i of taskCriteriaList" #matTopicOption
+                                [value]="i">
+                                {{i.completeTaskNumber}}
+                            </mat-option>
+                        </mat-select>
+                    </mat-form-field>
+
+                </div>
+
+                <div class="mt-4">
+                    <div>
+                        <app-label [for]="'setTime'" text="Set Time">Set Time</app-label>
+                        <app-label *ngIf="isTwelveHourFormat" class="ml-2 text-success hover-label" customClasses="cursor-pointer" [for]="'timeFormat'"
+                            text="Switch to 24Hr Format" (click)="changeTimeFormat()" ></app-label>
+                        <app-label *ngIf="!isTwelveHourFormat" class="ml-2 text-success hover-label"  customClasses="cursor-pointer" [for]="'timeFormat'"
+                            text="Switch to 12Hr Format" (click)="changeTimeFormat()" ></app-label>
+                    </div>
+
+                    <div class="d-flex flex-row">
+                        <div class="d-flex">
+                            <app-textbox type="number" placeholder="Hrs" formControlName="eventHours" (keypress)="validateNumberInput($event)" (input)="ValidateHrs($event, 2)" ></app-textbox>
+
+                            <app-textbox class="ml-2" type="number" placeholder="Mins" (input) = "ValidateMins($event, 2)"
+                                formControlName="eventMins"  (keypress)="validateNumberInput($event)"></app-textbox>
+                        </div>
+
+                        <div *ngIf="isTwelveHourFormat" class="mt-2 ml-4 button-group-container">
+                            <app-button type="button" size="sm" text="AM" color="grey" [ngClass]="{'selected': dayPeriod === 'AM'}"
+                                (click)="getdayPeriod('AM')">
+                            </app-button>
+                            <app-button type="button" size="sm"  text="PM"
+                                (click)="getdayPeriod('PM')" color="grey" [ngClass]="{'selected': dayPeriod === 'PM'}">
+                            </app-button>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-between" *ngIf="mode == 'add'">
+                    <div class="mt-4">
+                        <mat-checkbox formControlName="isAnotherEvent"> Add another Event</mat-checkbox>
+                    </div>
+                    <div class="mt-4">
+                        <app-button type="button" size="sm" color="primary" text="Save" [disabled] = "addEventForm.invalid" (click)="addEventAsync()">
+                        </app-button>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-end" *ngIf="mode == 'edit'">
+                    <div class="mt-4">
+                        <app-button type="button" size="sm" color="primary" text="Update" [disabled] = "addEventForm.invalid" (click)="updateEventAync()">
+                        </app-button>
+                    </div>
+                </div>
+            </section>
+        </form>
+    </div>
+</ng-container>

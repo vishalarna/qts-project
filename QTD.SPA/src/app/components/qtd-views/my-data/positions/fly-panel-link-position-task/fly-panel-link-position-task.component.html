@@ -1,0 +1,114 @@
+<!--Heading starts-->
+<div class="flex flex-col px-12 py-12">
+    <ng-container *ngIf="linkTasks">
+        <div class="flex flex-row justify-between">
+            <h2>Link {{("Task" | labelReplacement)| async}}s to {{("Position" | labelReplacement)| async}}s</h2>
+            <app-button ButtonType="icon" icon="close" (clicked)="closed.emit('fp-sh-task-link-closed')"></app-button>
+
+        </div>
+        <div class="flex flex-row items-center border-b-0.8 border-gray-one">
+            <div class="flex flex-grow">
+                <app-icon icon="search"></app-icon>
+                <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+                    (input)="filterData(true)" [(ngModel)]="filterTaskString">
+
+                <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+
+            </div>
+
+        </div>
+
+        <!--Heading ends-->
+
+        <div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+
+            <div class="cursor-pointer">
+                <span> Showing:
+                    <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+                        <p *ngIf="showActive" class="font-bold">
+                            Active
+                        </p>
+                        <p *ngIf="!showActive" class="font-bold">
+                            Inactive
+                        </p>
+
+                    </label>
+                    <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+                </span>
+
+                <mat-menu #menu="matMenu">
+                    <!-- <label mat-menu-item *ngIf="!showActive" (click)="toggleFilter(true)"> -->
+                    <label mat-menu-item *ngIf="!showActive">
+                        Active</label>
+
+                    <!-- <label mat-menu-item *ngIf="showActive" (click)="toggleFilter(false)">
+                        Inactive</label> -->
+                </mat-menu>
+            </div>
+            <app-button variant="text" icon="add" iconPosition="left" text="Add new {{('Task' | labelReplacement)| async}}"
+                (clicked)="linkTasks=false;addTask=true"></app-button>
+
+        </div>
+
+        <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="linkedIds.length > 0">
+            <div class="flex flex-row w-full justify-between mb-3">
+                <p class="text-xs text-gray-four pt-2">{{linkedIds.length}} {{("Task" | labelReplacement)| async}}s selected</p>
+                <app-button [spinner]="showLinkTaskLoader" class="mb-2" type="button" color="secondary" size="sm"
+                    text="Link to {{('Position' | labelReplacement)| async}}" (clicked)="linkTasksToPosition()">
+                </app-button>
+            </div>
+            <hr>
+            <p class="text-xs text-gray-four mt-3">Selecting a Duty Area or Sub-Duty Areas will select all {{("Task" | labelReplacement)| async}}s linked
+                to
+                the given category</p>
+        </div>
+        <!-- *ngIf="active_tasks" -->
+
+        <app-spinner *ngIf="isTaskLoading"></app-spinner>
+        <ng-container *ngIf="noDataCheck">
+            <div>
+                No Data Found
+            </div>
+        </ng-container>
+        <ng-container *ngIf="isTaskAvailable">
+            <div class="flex flex-col ">
+                <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="qtd-tree">
+                    <!-- This is the tree node template for leaf nodes -->
+                    <!-- There is inline padding applied to this node using styles.
+                            This padding value depends on the mat-icon-button width. -->
+                    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding [style.display]="showOnlySelected && !node.selected || hideLeafNode(node) ? 'none' : 'block'">
+                      <ng-container *ngIf="node.checkbox">
+                        <mat-checkbox (change)="onTaskChange($event,node)" [checked]="node.selected">
+                           {{node.description}}</mat-checkbox>
+                      </ng-container>
+                      <ng-container *ngIf="!node.checkbox">
+                        <app-icon style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;<span
+                          style="color: rgb(92, 155, 49);"> <span class="ml-2 pb-2">§</span>{{node.description}}</span>
+                      </ng-container>
+                    </mat-tree-node>
+
+                    <!-- This is the tree node template for expandable nodes -->
+                    <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild" [style.display]="showOnlySelected && !(node.selected || node.indeterminate) || hideParentNode(node) ? 'none' : 'block'">
+                      <div class="mat-tree-node">
+                        <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.description">
+                          <app-icon [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'">
+                          </app-icon>
+                        </button>
+
+                        <mat-checkbox [checked]="node.selected" [indeterminate]="node.indeterminate && !node.selected"
+                          (change)="itemToggle($event.checked,node)">{{node.description}}</mat-checkbox>
+                      </div>
+
+                      <div *ngIf="treeControl.isExpanded(node)" role="group">
+                        <ng-container matTreeNodeOutlet></ng-container>
+                      </div>
+                    </mat-nested-tree-node>
+                </mat-tree>
+
+            </div>
+        </ng-container>
+    </ng-container>
+
+
+    <app-flypanel-add-task *ngIf="addTask" (refresh)="refreshTasksTree()" (closed)="addTask=false;linkTasks=true;refreshTasksTree();"></app-flypanel-add-task>
+</div>

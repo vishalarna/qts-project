@@ -1,0 +1,97 @@
+<div class="flex flex-row justify-between border-b items-center header-spacing">
+    <h1 class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+      Filter {{("Employee" | labelReplacement)| async}} Task Qualification
+    </h1>
+    <button class="focus:outline-none" (click)="closeFlyPanel()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" ></path>
+      </svg>
+    </button>
+</div>
+
+<div *ngIf="loader" class="overview-spinner">
+  <app-spinner></app-spinner>
+</div>
+
+<div *ngIf="!loader">
+  <form [formGroup]="filterEmpTaskQualForm" class="container-spacing">
+    
+    <div class="mb-3 position-drpdwn">
+      <app-label [for]="'TasksLinkedTo'" text="Task Linked to" class="font-weight-bold" ></app-label>
+      <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+        <mat-select formControlName="TasksLinkedTo" placeholder="Select Qualification Status">
+          <mat-option value="Current Position">Current Position</mat-option>
+          <mat-option value="All Positions">All Positions</mat-option>
+        </mat-select>
+        <button *ngIf="filterEmpTaskQualForm.get('TasksLinkedTo').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('TasksLinkedTo'); $event.stopPropagation()" >
+          <mat-icon>close</mat-icon>
+        </button>
+      </mat-form-field>
+    </div>
+
+    <div class="flex gap-20">
+      <div class="mb-3 input-box w-full">
+        <app-label [for]="'ReliabilityRelated'" text="Reliability Related" class="font-weight-bold"></app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select formControlName="ReliabilityRelated" placeholder="Select Type">
+            <mat-option value="R-R">R-R</mat-option>
+            <mat-option value="Non R-R">Non R-R</mat-option>
+            <mat-option value="All">All</mat-option>
+          </mat-select>
+          <button *ngIf="filterEmpTaskQualForm.get('ReliabilityRelated').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('ReliabilityRelated'); $event.stopPropagation()" >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+
+      <div class="mb-3 input-box w-full">
+        <app-label [for]="'Status'" text="Active/Inactive Status" class="font-weight-bold" ></app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select formControlName="Status" placeholder="Select Status" >
+            <mat-option value="Active">Active</mat-option>
+            <mat-option value="Inactive">Inactive</mat-option>
+            <mat-option value="All">All</mat-option>
+          </mat-select>
+          <button *ngIf="filterEmpTaskQualForm.get('Status').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('Status'); $event.stopPropagation()" >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+  </div>
+
+  <div class="flex gap-20">
+      <div class="mb-3 input-box w-full">
+        <app-label [for]="'CriteriaMet'" text="Criteria Met" class="font-weight-bold"></app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select formControlName="CriteriaMet" placeholder="Select Type">
+            <mat-option value="Yes">Yes</mat-option>
+            <mat-option value="No">No</mat-option>
+            <mat-option value="All">All</mat-option>
+          </mat-select>
+          <button *ngIf="filterEmpTaskQualForm.get('CriteriaMet').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('CriteriaMet'); $event.stopPropagation()" >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    
+      <div class="mb-3 input-box w-full">
+        <app-label [for]="'QualificationStatus'" text="Qualification Status" class="font-weight-bold" ></app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select formControlName="QualificationStatus" placeholder="Select Qualification Status">
+            <mat-option value="Pending">Pending</mat-option>
+            <mat-option value="On Time">On Time</mat-option>
+            <mat-option value="Trainee Initial Qualification">Trainee Initial Qualification</mat-option>
+            <mat-option value="Delayed">Delayed</mat-option>
+          </mat-select>
+          <button *ngIf="filterEmpTaskQualForm.get('QualificationStatus').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('QualificationStatus'); $event.stopPropagation()" >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+  </div>
+
+  <div class="flex justify-end">
+    <app-button variant="outlined" (clicked)="applyFiltersClick()" position="right" size="sm" text="Apply Filters" color="primary" class="font-weight-normal" ></app-button>
+  </div>
+  </form>
+</div>

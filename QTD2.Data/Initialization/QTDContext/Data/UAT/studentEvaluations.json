@@ -1,0 +1,30 @@
+[
+  {
+    "Id": 1,
+    "RatingScaleId": 1,
+    "Title": "Demo1",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 2,
+    "RatingScaleId": 2,
+    "Title": "Demo2",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 3,
+    "RatingScaleId": 3,
+    "Title": "Demo3",
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 4,
+    "RatingScaleId": 4,
+    "Title": "Demo4",
+    "Deleted": false,
+    "Active": true
+  }
+]

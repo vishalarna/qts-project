@@ -1,0 +1,9 @@
+<div class="container">
+    <div class="row flex-col">
+            <div *ngFor="let item of modelItems">
+                <div class="col">
+                    <button type="button" class="btn btn-success"  (click)="getModelItemProperties(item)" [disabled]="mode === 'read' ? true : null">{{item.name}}</button>
+                </div>
+            </div>
+    </div>
+</div>

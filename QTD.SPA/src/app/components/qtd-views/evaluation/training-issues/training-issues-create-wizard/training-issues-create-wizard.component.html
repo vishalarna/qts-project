@@ -1,0 +1,76 @@
+<mat-toolbar class="app-toolbar-sticky flex align-items-center training-issues-header">
+    <div class="flex items-center">
+        <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" class="training-back-button"
+            (click)="goBack()"></app-button>
+        <div class="ml-4">
+            <h1 *ngIf="mode == 'create'"><span class="title">Create New :</span> Training Issue</h1>
+            <h1 *ngIf="mode == 'edit'"><span class="title">Edit Training Issue :</span> {{trainingIssue_Vm?.issueTitle}}
+            </h1>
+        </div>
+    </div>
+    <div class="flex flex-row items-center">
+        <app-button customClasses="training-cancel-button header-button mr-2" variant="text" text="Cancel" (click)="goBack()"></app-button>
+        <app-button *ngIf="currentIndex != 3" type="button" text="Continue" size="sm"
+            [disabled]="currentIndex == 0 && !isStep1FormValid"
+            customClasses="training-continue-button header-button disabled-pointer" (click)="onContinueClick()">
+        </app-button>
+        <app-button *ngIf="currentIndex == 3" type="button" text="Publish" size="sm"
+            customClasses="training-continue-button header-button disabled-pointer" (click) = "onPublish()"> </app-button>
+    </div>
+</mat-toolbar>
+
+<div class="training-review-container">
+    <mat-stepper [linear]="true" labelPosition="bottom" class="training-review-stepper" #stepper
+        (selectionChange)="onSelectionChange($event)">
+        <ng-template matStepperIcon="edit">
+            <app-icon icon="done"></app-icon>
+        </ng-template>
+        <mat-step [completed]="isStep1FormValid">
+            <ng-template matStepLabel>Details</ng-template>
+            <ng-template matStepContent>
+                <app-training-issues-details #trainingIssuesDeatils
+                    [inputTrainingIssue_Vm]="trainingIssue_Vm"></app-training-issues-details>
+            </ng-template>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Drivers & Training Components</ng-template>
+            <ng-template matStepContent>
+                <app-training-issues-drivers-and-training #trainingIssuesDriversAndTraining
+                    [inputTrainingIssue_Vm]="trainingIssue_Vm"></app-training-issues-drivers-and-training>
+            </ng-template>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Action Items</ng-template>
+            <ng-template matStepContent>
+                <app-training-issues-action-items #trainingIssuesActionItems [inputTrainingIssue_Vm]="trainingIssue_Vm"></app-training-issues-action-items>
+            </ng-template>
+        </mat-step>
+        <mat-step>
+            <ng-template matStepLabel>Review and Publish</ng-template>
+            <ng-template matStepContent>
+                <app-training-issues-review-and-publish
+                    #trainingIssuesReviewAndPublish [inputTrainingIssue_Vm]="trainingIssue_Vm"></app-training-issues-review-and-publish>
+            </ng-template>
+        </mat-step>
+    </mat-stepper>
+</div>
+
+<ng-template #exitTrainingIssue>
+    <app-qtd-dialogue [header]="'Confirmation'" [description]="'Leaving will save the Training Issue.'"
+        [cancelText]="'No'" [isQuestion]="true" [confirmText]="'Yes'" (canceled)="dialog.closeAll()"
+        (confirmed)="exitAndSaveTraining()">
+    </app-qtd-dialogue>
+</ng-template>
+
+<ng-template #allStepsCompletedTemplate>
+    <app-qtd-dialogue
+      [header]="'All Action Steps Completed'"
+      [description]="'All Action Steps are completed. Would you like to change the status of the Training Issue to Closed?'"
+      cancelText="No"
+      confirmText="Yes"
+      [isQuestion]="false"
+      (confirmed)="markTrainingIssueClosed()"
+      (canceled) = "cancelPopUp()">
+    </app-qtd-dialogue>
+  </ng-template>
+  

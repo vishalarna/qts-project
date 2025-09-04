@@ -1,0 +1,202 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    .expired-row {
+        color: #6a6262;
+        font-style: italic;
+    }
+
+    .procedure-text {
+        color: #567DFF;
+    }
+</style>
+@{
+    var groupedTasks = Model.Tasks.OrderBy(task => task.SubdutyArea.DutyArea.Letter).ThenBy(task => task.SubdutyArea.DutyArea.Number).ThenBy(task => task.SubdutyArea.SubNumber).ThenBy(task => task.Number).GroupBy(task => task.SubdutyArea.DutyArea);
+}
+<table id="content-table" class="table" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+
+    @if (groupedTasks.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{
+                    int j = 1;
+                }
+
+                @foreach (var group in groupedTasks)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <div>
+                            <table style="width:100%; border:0;border-collapse:collapse;font-size:1rem;margin-bottom:1rem">
+                                <tr>
+                                    @if (Model.DisplayColumns.Where(r => r == "Duty Area").Count() > 0)
+                                    {
+                                        <td style="border: none !important; font-size: 1rem; padding: 10px;font-weight:600;" colspan="12">
+                                            @group.Key?.Letter@group.Key?.Number - @group.Key?.Title
+                                        </td>
+
+                                    }
+                                </tr>
+
+                                @{
+                                    var subDutyAreaGroups = group.OrderBy(task => task.SubdutyArea.SubNumber).GroupBy(task => task.SubdutyArea);
+                                }
+                                @foreach (var subGroup in subDutyAreaGroups)
+                                {
+                                    <tr>
+                                        @if (Model.DisplayColumns.Where(r => r == "Sub-Duty Area").Count() > 0)
+                                        {
+                                            <td style="border: none !important; font-size: 1rem;font-weight:500;padding:12px 0px;padding-left:20px;" colspan="12">
+                                                @subGroup.Key?.DutyArea.Letter @subGroup.Key?.DutyArea.Number.@subGroup.Key?.SubNumber - @subGroup.Key?.Title
+                                            </td>
+                                        }
+                                    </tr>
+                                    @foreach (var task in subGroup)
+                                    {
+                                        <tr>
+                                            <td style="border: none !important; font-size: 1rem;font-weight:400;padding-left:30px;width:15%;vertical-align:top">
+                                                <span style="@(!task.IsReliability ?"padding-left:12px":"0px")">@(task.IsReliability ? "*" : "") @task.SubdutyArea.DutyArea.Letter @task.SubdutyArea.DutyArea.Number.@task.SubdutyArea.SubNumber.@task.Number</span>
+                                            </td>
+                                            <td style="border: none !important; font-size: 1rem;font-weight:400;padding-left:8px;width:85%">
+                                                <span> @task.Description</span>
+                                            </td>
+                                        </tr>
+
+                                        @if ((Model.DisplayColumns.Contains("Procedure Number") || Model.DisplayColumns.Contains("Procedure Title")) && task.Procedure_Task_Links.Count() > 0)
+                                        {
+                                            <tr>
+                                                <td style="border: none !important; font-size: 1rem; padding-top:0px;font-weight:400;padding-left:30px;width:15%"></td>
+                                                <td style="border: none !important; font-size: 1rem;padding-right: 3rem;width:85%" >
+                                                    <table style="width: 100%; border-collapse: collapse;">
+                                                        @foreach (var procedureTask in task.Procedure_Task_Links.Where(x => x.Procedure.Active || Model.IncludeInactive).OrderBy(x => x.Procedure?.Number))
+                                                        {
+                                                            <tr class="@(!@procedureTask.Procedure.Active ? "expired-row" : "procedure-text")">
+                                                                @if (Model.DisplayColumns.Contains("Procedure Number"))
+                                                                {
+                                                                    <td style="padding-left:8px;border: none !important;width: 30%; text-align: left; padding-right: 1rem;">
+                                                                        @procedureTask.Procedure?.Number
+                                                                    </td>
+                                                                }
+                                                                @if (Model.DisplayColumns.Contains("Procedure Title"))
+                                                                {
+                                                                    <td style="border: none !important;width: 70%; text-align: left;">
+                                                                        @procedureTask.Procedure?.Title
+                                                                    </td>
+                                                                }
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        }
+                                        <tr></tr>
+                                    }
+                                }
+                                <tr></tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div class="customized-footer" style="margin:0;padding:0">*R-R is Reliability Related</div>
+                    @if (!group.Equals(groupedTasks.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+
+                    @{
+                        j++;
+                    }
+                }
+
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= groupedTasks.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

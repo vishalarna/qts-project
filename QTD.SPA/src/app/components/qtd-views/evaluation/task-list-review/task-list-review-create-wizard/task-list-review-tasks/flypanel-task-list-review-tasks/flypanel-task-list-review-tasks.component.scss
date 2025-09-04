@@ -1,0 +1,48 @@
+:host ::ng-deep .task-list-data .mat-header-cell:nth-child(1),
+:host ::ng-deep .task-list-data .mat-cell:nth-child(1) {
+  max-width: 80px;
+}
+
+:host ::ng-deep .task-list-data .mat-header-cell:nth-child(2),
+:host ::ng-deep .task-list-data .mat-cell:nth-child(2) {
+  max-width: 100px;
+}
+.task-list-data{
+  padding-bottom: 2rem;
+  .linked-row{
+    color: rgb(92, 155, 49)
+  }
+}
+
+:host ::ng-deep .task-list-data .no-data-row td{
+  max-width: unset !important;
+  padding: auto;
+}
+.search-wrap{
+  margin: 0 3rem;
+}
+
+.qtd-tree-invisible {
+  display: none;
+}
+
+.qtd-tree ul,
+.qtd-tree li {
+  margin-top: 0;
+  margin-bottom: 0;
+  list-style-type: none;
+}
+
+.task-spinner{
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.select-buttons{
+  width: 100%;
+  padding-bottom: 10px;
+  padding-top: 10px;
+  gap: 16px;
+}

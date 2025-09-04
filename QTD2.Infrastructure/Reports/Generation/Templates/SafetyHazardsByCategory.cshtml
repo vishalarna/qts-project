@@ -1,0 +1,311 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using System.Text.RegularExpressions
+<style>
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+        font-size: 16px;
+    }
+
+        .table .sub-title {
+            font-family: inherit;
+        }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 5px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    tr.open-border-table-row td {
+        border-top: 1px solid black;
+    }
+
+    .expired-row {
+        color: lightgray;
+        font-style: italic;
+    }
+
+    .sH-sets p {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .sH-sets img {
+        width: 400px !important;
+        height: auto !important;
+        display: block !important;
+        padding: 0 !important;
+        margin: 0 !important;
+        object-fit: cover;
+        overflow: hidden;
+    }
+
+    .sH-sets ul, .sH-sets ol {
+        margin: 0 !important;
+        padding: 0 0 0 0px !important;
+        list-style-position: inside !important;
+    }
+
+        .sH-sets figure img {
+            width: 400px !important;
+            height: auto !important;
+            display: block !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            object-fit: cover;
+            overflow: hidden;
+        }
+
+    .sH-sets li {
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="border-collapse: collapse; width:100%;margin:auto">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width:18%">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px; width: 150px !important; height: 65px !important; object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width:20%"></div>
+                    }
+                    <div style="width:60%">
+                        <div style="text-align: center; font-size: 20px; color: #020378;padding-bottom: 7px;"><b>@Model.Title </b></div>
+                    </div>
+                    <div style="text-align:right;width:22%;"><span style="font-weight:700;">Printed Date:</span> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @{
+        var groupedSafetyHazards = Model.SafetyHazards.GroupBy(x => x.SaftyHazard_Category).Select(group => new
+        {
+            category = group.Key,
+            safetyHazardList = group.ToList()
+        }).ToList();
+    }
+
+    @if (groupedSafetyHazards.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0;padding-top:20px" class="strip-container">
+                @{
+                    int j = 1;
+                }
+                @foreach (var sHCat in groupedSafetyHazards)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table>
+                            <tr>
+                                <td colspan="12" style="border: 0;">
+                                    <div style="border: none;font-size:16px;padding-left:0;" class="@(sHCat.category.Active ? "" : "expired-row")"><span style="font-weight:700">Category:</span> @sHCat.category.Title</div>
+                                </td>
+                            </tr>
+                            <tr></tr>
+                        </table>
+                        <table style="width: 100%; border-collapse: collapse;table-layout:fixed">
+                            <tr class="open-border-table-row">
+                                @if (Model.DisplayColumns.Where(r => r == "Safety Hazard Number").Count() > 0)
+                                {
+                                    <th style="border: 1px solid;padding: 5px;width:15%" align="left">@("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Safety Hazard Title").Count() > 0)
+                                {
+                                    <th style="border: 1px solid;padding: 5px;width:42%" align="left">@("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Title</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Revision Number").Count() > 0)
+                                {
+                                    <th style="border: 1px solid;padding: 5px;width:13%" align="left">Rev #</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Effective Date").Count() > 0)
+                                {
+                                    <th style="border: 1px solid;padding: 5px;width:13%" align="left">Effective Date</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "PDF linked").Count() > 0)
+                                {
+                                    <th style="border: 1px solid;padding: 5px;width:7%" align="left">PDF linked</th>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Hyperlink Linked").Count() > 0)
+                                {
+                                    <th style="border: 1px solid;padding: 5px;width:10%" align="left">Hyperlink Linked</th>
+                                }
+                            </tr>
+                            @foreach (var sH in sHCat.safetyHazardList)
+                            {
+                                <tr class="open-border-table-row @(sH.Active ? "" :"expired-row")">
+                                    @if (Model.DisplayColumns.Contains("Safety Hazard Number"))
+                                    {
+                                        <td style="padding: 5px; vertical-align: top;width:15%">@sH.Number</td>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Safety Hazard Title"))
+                                    {
+                                        <td style="padding: 5px; vertical-align: top;width:42%">@sH.Title</td>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Revision Number"))
+                                    {
+                                        <td style="padding: 5px; vertical-align: top;width:13%">@sH.RevisionNumber</td>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Effective Date"))
+                                    {
+                                        <td style="padding: 5px; vertical-align: top;width:13%">@(sH.EffectiveDate.Date == DateTime.MinValue.Date ? "" : sH.EffectiveDate.ToString(Model.DefaultDateFormat ?? ""))</td>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("PDF linked"))
+                                    {
+                                        <td style="padding: 5px; vertical-align: top;width:7%">@(sH.FileName != null && sH.FileName.Trim() != "" ? "X" : "")</td>
+                                    }
+                                    @if (Model.DisplayColumns.Contains("Hyperlink Linked"))
+                                    {
+                                        <td style="padding: 5px; vertical-align: top;width:10%">@(sH.HyperLinks != null && sH.HyperLinks.Trim() != "" ? "X" : "")</td>
+                                    }
+                                </tr>
+                                @if (Model.IncludeSafetyHazardDetails == true)
+                                {
+                                    <tr>
+                                        <td style="border: none;width:15%"></td>
+                                        <td style="border: none;color:#567DFF;padding-top:10px;font-size:18px;padding-left:0;padding-bottom:8px;width:85%">@("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Details</td>
+                                    </tr>
+                                    <tr class="@(sH.Active ? "" :"expired-row")">
+                                        <td style="border: none;width:15%"></td>
+                                        <td style="border: none;padding-top:10px;font-size:16px;padding-left:0;padding-bottom:8px;width:85%" colspan="12">
+                                            <table style="width:100%">
+                                                <tr>
+                                                    <td style="border: none !important;padding:5px 0px"><span style="font-weight:700;">@("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Description:</span></td>
+                                                </tr>
+                                                <tr>
+                                                    <td style="border: none !important;padding-bottom:5px;padding-top:5px" class="sH-sets">@(new RawString(sH.Text))</td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr class="@(sH.Active ? "" :"expired-row")">
+                                        <td style="border: none;width:15%"></td>
+                                        <td style="border: none;padding-top:10px;padding-left:0;font-size:16px;padding-bottom:8px;width:85%" colspan="12">
+                                            <table style="width:100%">
+                                                <tr>
+                                                    <td style="border: none !important;padding:5px 0px" colspan="12"><span style="font-weight:700;">@("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Controls:</span></td>
+                                                </tr>
+                                                @foreach (var (sHSetLink, index) in sH.SafetyHazard_Set_Links.Select((link, idx) => (link, idx)))
+                                                {
+                                                    <tr class="excel-not-skip">
+                                                        <td style="border: none !important;padding:5px 0px;padding-left:5px;vertical-align:top;width:2%"><span>@(index + 1).</span></td>
+                                                        <td style="border: none !important;padding:5px 0px;padding-left:5px;width:98%"><span class="sH-sets">@(new RawString(sHSetLink.SafetyHazardSet.SafetyHzControlsText))</span></td>
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr class="@(sH.Active ? "" :"expired-row")">
+                                        <td style="border: none;width:15%"></td>
+                                        <td style="border: none;padding-top:10px;font-size:16px;padding-left:0;padding-bottom:8px;width:85%" colspan="12">
+                                            <table style="width:100%">
+                                                <tr>
+                                                    <td style="border: none !important;padding:5px 0px" colspan="12"><span style="font-weight:700;">@("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Abatements:</span></td>
+                                                </tr>
+                                                @foreach (var (sHSetLink, index) in sH.SafetyHazard_Set_Links.Select((link, idx) => (link, idx)))
+                                                {
+                                                    <tr class="excel-not-skip">
+                                                        <td style="border: none !important;padding:5px 0px;padding-left:5px;vertical-align:top;width:2%"><span>@(index + 1).</span></td>
+                                                        <td style="border: none !important;padding:5px 0px;padding-left:5px;width:98%"><span class="sH-sets">@(new RawString(sHSetLink.SafetyHazardSet.SafetyHzAbatementText))</span></td>
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                    <tr class="@(sH.Active ? "" :"expired-row")">
+                                        <td style="border: none;width:15%"></td>
+                                        <td style="border: none;padding-top:10px;font-size:16px;padding-left:0;padding-bottom:8px;width:85%" colspan="12">
+                                            <table style="width:100%;">
+                                                <tr>
+                                                    <td style="border: none !important;padding:5px 0px"><div style="font-weight:700">PPE</div></td>
+                                                </tr>
+                                                @foreach (var sHTool in sH.SafetyHazard_Tool_Links)
+                                                {
+                                                    <tr>
+                                                        <td style="border: none !important;padding:5px 0px;padding-left:5px"><span style="padding-right:5px">@sHTool?.Tool?.Number.</span><span style="padding-left:5px">@sHTool?.Tool?.Name</span></td>
+                                                    </tr>
+                                                }
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+                                <tr></tr>
+                            }
+                        </table>
+                    </div>
+                    @if (!sHCat.Equals(groupedSafetyHazards.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{
+                        j++;
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= groupedSafetyHazards.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

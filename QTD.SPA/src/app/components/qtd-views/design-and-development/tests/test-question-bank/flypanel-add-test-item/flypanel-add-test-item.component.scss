@@ -1,0 +1,21 @@
+.greenicon {
+  color: #5c9b31;
+}
+
+mat-select {
+  padding: 0.7rem 0.7rem 0.7rem 0.7rem;
+}
+
+.label_style:hover {
+  background-color: #5c9b31;
+  color: white;
+}
+
+.multiline-tooltip{
+  white-space: pre-line;
+}
+
+
+::ng-deep .mat-tooltip {
+  white-space: pre-line;
+}

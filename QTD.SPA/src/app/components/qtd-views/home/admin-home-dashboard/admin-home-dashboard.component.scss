@@ -1,0 +1,24 @@
+.image-container {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.text-overlay {
+  position: absolute;
+  top: 60%;
+  left: 9%;
+  color: white;
+}
+
+:host ::ng-deep .tq-data-list .mat-header-cell:nth-child(3),
+  :host ::ng-deep .tq-data-list .mat-cell:nth-child(3) {
+    padding-left: 2rem;
+  }
+

@@ -1,0 +1,46 @@
+:host ::ng-deep .mat-form-field-appearance-outline.mat-form-field-disabled,
+:host ::ng-deep .mat-form-field-outline {
+  opacity: 0;
+  outline: none;
+}
+
+:host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: white !important;
+}
+
+:host ::ng-deep .mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}
+
+.initial{
+  background-color: #EEF7FF;
+  color: #4D4D4D;
+}
+
+.overdue{
+  background-color: #EEF7FF;
+  color: #FF6F6F;
+}
+
+.common{
+  width: 70%;
+}
+
+:host ::ng-deep .mat-cell{
+  padding: 1rem 1rem 1rem 1rem;
+}
+
+.mat-header-cell{
+  padding-left:1rem;
+  padding-top: 1rem;
+}
+
+.label_style:hover {
+  background-color: #5c9b31;
+  color: white;
+}
+
+:host ::ng-deep .tq-comments p{
+  display: inline;
+  margin:0;
+}

@@ -1,0 +1,128 @@
+<div class="flex flex-col px-12 py-12">
+    <ng-container *ngIf="addEO">
+        <div class="flex flex-row justify-between items-center px-3 mt-2">
+            <p class="text-xl font-bold text-gray-900">Add New SKA's</p>
+            <app-button [disabled]="showSpinner" (clicked)="closed.emit('fp-add-eo-closed')" ButtonType='icon'
+                icon="close">
+            </app-button>
+        </div>
+
+        <mat-stepper [linear]="true" #stepper (selectionChange)="selectedChanged($event)"
+            [orientation]="(stepperOrientation | async)!">
+            <!-- Change edit icon -->
+            <ng-template matStepperIcon="edit">
+                <app-icon icon="done"></app-icon>
+            </ng-template>
+            <mat-step label="Category, Sub Category, Topic" [stepControl]="step1Form" [completed]="step1Form.valid">
+                <form class="flex flex-col" [formGroup]="step1Form">
+                    <div class="flex-col mt-3">
+                        <div class="flex flex-row justify-between">
+                            <app-label [for]="'categoryId'" [text]="'Category'"></app-label>
+                            <app-button variant="text" (clicked)="openCategoryPanel()" text="Add new Category"
+                                icon="add" iconPosition="left">
+                            </app-button>
+                        </div>
+                        <mat-select formControlName="categoryId" placeholder="Select Category"
+                            (selectionChange)="getCategories($event.value)"
+                            class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                            <mat-option *ngFor="let d of categories" [value]="d.id">
+                                {{d.description}}
+                            </mat-option>
+                        </mat-select>
+                        <app-input-error *ngIf="step1Form.get('categoryId')?.invalid" text="Category Is Required">
+                        </app-input-error>
+                    </div>
+
+                    <div class="flex-col mt-3">
+                        <div class="flex flex-row justify-between">
+                            <app-label [for]="'subcategoryId'" [text]="'Sub Category'"></app-label>
+                            <app-button variant="text" (clicked)="openSubCategoryPanel()" text="Add new Sub Category"
+                                icon="add" iconPosition="left">
+                            </app-button>
+                        </div>
+                        <mat-select formControlName="subcategoryId" placeholder="Select Sub Category"
+                            (selectionChange)="getSubCategories($event.value)"
+                            class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                            <mat-option *ngFor="let d of subcategories" [value]="d.id">
+                                {{d.description}}
+                            </mat-option>
+                        </mat-select>
+                        <app-input-error *ngIf="step1Form.get('subcategoryId')?.invalid" text="Sub Category Is Required">
+                        </app-input-error>
+                    </div>
+
+                    <div class="flex-col mt-3">
+                        <div class="flex flex-row justify-between">
+                            <app-label [for]="'topicId'" [text]="'Sub Topic'"></app-label>
+                            <app-button variant="text" (clicked)="openTopicPanel()" text="Add new Topic"
+                                icon="add" iconPosition="left">
+                            </app-button>
+                        </div>
+                        <mat-select formControlName="topicId" placeholder="Select Topic"
+                            (selectionChange)="getTopics($event.value)"
+                            class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                            <mat-option *ngFor="let d of topics" [value]="d.id">
+                                {{d.description}}
+                            </mat-option>
+                        </mat-select>
+                        <app-input-error *ngIf="step1Form.get('topicId')?.invalid" text="Topic Is Required">
+                        </app-input-error>
+                    </div>
+
+                    <div class="self-end pt-12">
+                        <app-button color="secondary" [disabled]="step1Form.invalid" text="Continue" size="sm"
+                            (clicked)="stepper.next()"></app-button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step label="SKA's Info" [stepControl]="step2Form">
+                <form class="flex flex-col" [formGroup]="step2Form">
+                    <div class="mt-3">
+                        <app-label [for]="'EONumber'" text="EO Number"></app-label>
+                        <app-textbox formControlName="EONumber" [disabled]="true" [(ngModel)]="EONumber"></app-textbox>
+                        <app-input-error *ngIf="step2Form.get('EONumber')?.invalid" text="EO Number Is Required">
+                        </app-input-error>
+                    </div>
+                    <div class="mt-3">
+                        <app-label [for]="'EOStatement'" text="EO Statement"></app-label>
+                        <app-textarea formControlName="EOStatement" placeholder="Please enter EO Statement here">
+                        </app-textarea>
+                        <app-input-error *ngIf="step2Form.get('EOStatement')?.invalid" text="EO Statement Is Required">
+                        </app-input-error>
+                    </div>
+                    
+                    <mat-checkbox class="mt-3" formControlName="isMetaEO"> Is Meta EO</mat-checkbox>
+                    <div class="self-end pt-12">
+                        <app-button color="secondary" [disabled]="step2Form.invalid" text="Continue" size="sm"
+                            (clicked)="stepper.next()"></app-button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step label="Revision and Date" [stepControl]="step3Form">
+                <form class="flex flex-col" [formGroup]="step3Form">
+                    <div class="mt-3">
+                        <app-label [for]="'effectiveDate'" text="Effective Date"></app-label>
+                        <app-date formControlName="effectiveDate"></app-date>
+                    </div>
+                    <div class="mt-3">
+                        <app-label [for]="'reason'" text="Reason"></app-label>
+                        <app-textarea formControlName="reason" placeholder="Please enter Reasons for Revision here">
+                        </app-textarea>
+                    </div>
+                    <div class="self-end pt-12">
+                        <app-button [disabled]="step2Form.invalid && step3Form.invalid"
+                            (clicked)="saveEO()" text="Save" size="sm"></app-button>
+                    </div>
+                </form>
+
+            </mat-step>
+
+        </mat-stepper>
+    </ng-container>
+<app-fly-panel-add-ska-category *ngIf="addCategory" (refreshCategories)="populateCatData()" (closed)="closePanel()"></app-fly-panel-add-ska-category>
+
+   <app-fly-panel-add-ska-sub-category *ngIf="addSubCategory" (closed)="closePanel()"></app-fly-panel-add-ska-sub-category>
+
+
+    <app-fly-panel-add-ska-topic *ngIf="addTopic" (refreshTopic)="populateTopicData()" (closed)="closePanel()"></app-fly-panel-add-ska-topic>
+</div>

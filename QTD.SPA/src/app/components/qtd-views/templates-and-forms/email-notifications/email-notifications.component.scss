@@ -1,0 +1,152 @@
+.nav-wrap {
+    width: 100%;
+    background: white;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 17px 24px;
+    flex-wrap: wrap;
+    box-shadow: 0 9px 10px #0000000a;
+}
+
+.back-icon {
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    background: rgba(92, 155, 49, 0.11);
+    box-shadow: 0px 0px 30px rgb(122 128 126 / 10%);
+    border-radius: 100px;
+    text-align: center;
+    line-height: 40px;
+    color: #5C9B31;
+}
+
+.d-flex {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.navbar-heading {
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 160%;
+
+    letter-spacing: 0.15px;
+
+    color: #000D09;
+    padding: 0 0 0 24px;
+}
+
+.btn {
+    font-weight: 500;
+    padding: 11px 24px;
+    font-size: 14px;
+    letter-spacing: 0.1px;
+    line-height: 157%;
+    border-radius: 4px;
+}
+
+.btn-outline-secondary {
+    color: #5C9B31;
+    border-color: #5C9B31;
+}
+
+.btn-success {
+    background-color: #5C9B31;
+    border-color: #5C9B31;
+    margin: 0 0 0 8px;
+}
+
+.schedule-header {
+    position: absolute;
+    width: 852px;
+    height: 39px;
+    left: 488px;
+    top: 130px;
+}
+
+.enabled-button {
+    box-sizing: border-box;
+
+    position: absolute;
+    left: 33.89%;
+    right: 6.67%;
+    top: 11.22%;
+    bottom: 84.46%;
+
+    background: #FFFFFF;
+    border: 0.5px solid #E1E5E4;
+    box-shadow: 0px 0px 30px rgba(122, 128, 126, 0.1);
+    border-radius: 4px;
+}
+
+// .btn-label {
+//     font-family: Roboto;
+//     font-size: 12px;
+//     font-weight: 400;
+//     line-height: 20px;
+//     letter-spacing: 0em;
+//     text-align: left;
+// }
+.ck-editor {
+    height: 260px;
+    margin: 0.875em 0 0;
+    background: #FFFFFF;
+    border: 0.8px solid #E1E5E4;
+    border-radius: 4px;
+    font-family: Roboto;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 20px;
+    letter-spacing: 0.15000000596046448px;
+    text-align: left;
+    width: 100%;
+}
+// .section-header {
+//     font-family: Roboto;
+//     font-size: 14px;
+//     font-weight: 500;
+//     line-height: 20px;
+//     letter-spacing: 0.15000000596046448px;
+//     text-align: left;
+// }
+.edit-area{
+height: 260px;
+width: 750px;
+border-radius: 4px;
+}
+.heighttop {
+    width: 100%;
+    box-shadow: 0px 0px 30px rgb(122 128 126 / 10%);
+    border-radius: 4px;
+    background: #fff;
+    padding: 1.375em 3.31em;
+    margin: 0 0 0.5em;
+}
+.panel-heading{
+    font-size: 1.375em;
+line-height: 143%;
+letter-spacing: 0.15px;
+color: #7A807E;
+border-bottom: 1px solid rgba(122, 128, 126, 0.2);
+padding:0 0 0.5em;
+margin:0em 0 0.81em;
+}
+
+.align-icon{
+    padding: 20px 25px 0 0;
+}
+
+
+.data-panel span {
+    float: right;
+    font-size: 20px;
+}
+.ng-container{
+    max-width:1245px;
+}
+.panel-section{
+    padding: 2.5em 0;
+}

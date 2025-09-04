@@ -1,0 +1,70 @@
+.backIcon {
+  color: #5c9b31;
+  background: #5c9b311a;
+  border-radius: 50%;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+
+.typeGroup {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+}
+
+:host ::ng-deep .mat-radio-button.mat-radio-disabled .mat-radio-label-content {
+  color: black;
+}
+
+:host ::ng-deep .mat-checkbox-disabled .mat-checkbox-label {
+  color: black !important;
+}
+
+:host ::ng-deep .arrowButton button{
+  outline: none;
+}
+
+:host ::ng-deep .canHavePara p{
+  margin:0px !important;
+}
+.signout-arrow-down{
+  font-size: 1.2rem;
+  padding: 0 0 0 2px;
+}
+
+.drp-down-option:hover{
+  background-color: #5c9b31;
+  color: #fff;
+}
+
+.drp-down-option-blue:hover{
+  color:white;
+  background-color: #456FA5;
+}
+
+.question-text {
+  word-break: break-word;
+  white-space: pre-wrap;
+  overflow-wrap: break-word;
+}
+
+.wrap-text {
+  white-space: normal;
+  word-break: break-word;
+  overflow-wrap: break-word;
+}
+
+.question-label {
+  white-space: nowrap;
+  overflow: visible;
+  display: inline-block;
+  max-width: auto;
+  vertical-align: top;
+}
+
+

@@ -1,0 +1,134 @@
+<div class="flex flex-row flex-wrap ml-4 px-8 mt-3">
+  <p class="font-bold text-lg">{{("Safety Hazard" | labelReplacement)| async}}s Overview</p>
+</div>
+<app-spinner *ngIf="stats === undefined"></app-spinner>
+<div *ngIf="stats !== undefined" class="px-10 pb-12 flex flex-row">
+  <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4">
+
+    <div class="mb-4">Categories</div>
+    <div class="flex flex-row ">
+      <div class="flex flex-col ">
+        <span     (click)="stats.catActive>0 && openFlyInPanel(SHNotLinkedTo, 'Catactive')"  [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.catActive>0,'text-lg text-black':stats.catActive==0}">
+          {{stats.catActive | number : '2.'}}</span>
+        <p>Active</p>
+      </div>
+      <span class=" pl-3 pr-3"></span>
+      <div class="flex flex-col">
+        <span  (click)="stats.catInactive>0 && openFlyInPanel(SHNotLinkedTo, 'Catinactive')" [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':stats.catInactive>0,'text-lg text-black':stats.catInactive==0}">
+          {{stats.catInactive | number : '2.'}}</span>
+        <p>Inactive</p>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4">
+
+    <div class="mb-4">{{("Safety Hazard" | labelReplacement)| async}}s</div>
+    <div class="flex flex-row">
+      <div class="flex flex-col">
+        <span  (click)="stats.shActive>0 && openFlyInPanel(SHNotLinkedTo, 'Shactive')" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.shActive>0,'text-lg text-black':stats.shActive==0}">
+          {{stats.shActive | number : '2.'}}
+        </span>
+        <p>Active</p>
+      </div>
+      <span class=" pl-3 pr-3"></span>
+      <div class="flex flex-col">
+        <span (click)="stats.shInactive>0 && openFlyInPanel(SHNotLinkedTo, 'Shinactive')"  [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':stats.shInactive>0,'text-lg text-black':stats.shInactive==0}">
+          {{stats.shInactive | number : '2.'}}</span>
+        <p>Inactive</p>
+      </div>
+    </div>
+
+
+  </div>
+
+  <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm mb-4 w-fit">
+
+    <div class="mb-4">{{("Safety Hazard" | labelReplacement)| async}}s Not Linked to</div>
+    <div class="flex flex-row">
+      <div class="flex flex-col">
+        <span  [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.shNotLinkedToTasks>0,'text-lg text-black':stats.shNotLinkedToTasks==0}"
+          (click)="openFlyInPanel(SHNotLinkedTo, 'Tasks')"> {{stats.shNotLinkedToTasks | number : '2.'}}</span>
+        <p>{{("Task" | labelReplacement)| async}}s</p>
+      </div>
+      <span class=" pl-3 pr-3"></span>
+      <div class="flex flex-col">
+        <span  [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.shNotLinkedToEOs>0,'text-lg text-black':stats.shNotLinkedToEOs==0}"
+          (click)="openFlyInPanel(SHNotLinkedTo,'Enabling Objectives')">{{stats.shNotLinkedToEOs | number : '2.'}}</span>
+        <p>{{("Enabling Objective" | labelReplacement)| async}}</p>
+      </div>
+      <span class=" pl-3 pr-3"></span>
+      <div class="flex flex-col">
+        <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.shNotLinkedToProcs>0,'text-lg text-black':stats.shNotLinkedToProcs==0}"
+          (click)="openFlyInPanel(SHNotLinkedTo,'Procedures')">{{stats.shNotLinkedToProcs | number : '2.'}}</span>
+        <p> {{("Procedure" | labelReplacement)| async}}s</p>
+      </div>
+      <span class=" pl-3 pr-3"></span>
+      <div class="flex flex-col">
+        <span  [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.shNotLinkedToRRs>0,'text-lg text-black':stats.shNotLinkedToRRs==0}"
+          (click)="openFlyInPanel(SHNotLinkedTo,'Regulatory Requirements')">{{stats.shNotLinkedToProcs | number : '2.'}}</span>
+        <p>Regulations</p>
+      </div>
+      <span class=" pl-3 pr-3"></span>
+      <div class="flex flex-col">
+        <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':stats.shNotLinkedToILAs>0,'text-lg text-black':stats.shNotLinkedToILAs==0}"
+          (click)="openFlyInPanel(SHNotLinkedTo, 'ILAs')"> {{stats.shNotLinkedToILAs | number : '2.'}}</span>
+        <p>{{("ILA" | labelReplacement)| async}}s</p>
+      </div>
+      <span class=" pl-3 pr-3"></span>
+    </div>
+
+
+  </div>
+</div>
+<div class="flex flex-row flex-wrap ml-4 px-8 mr-4 justify-between">
+  <p class="font-bold text-lg">Latest Activity</p>
+  <app-button (clicked)="openHistFlypanel(ViewSHHistory)" variant="text" text="View all history"></app-button>
+</div>
+<app-data-loader *ngIf="!dataSource"></app-data-loader>
+<div class="px-12 pb-12 mt-5" *ngIf="dataSource">
+  <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8">
+
+    <mat-table [dataSource]="dataSource" matSort *ngIf="dataSource">
+      <ng-container matColumnDef="title">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Safety Hazard" | labelReplacement)| async}}s </mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.title}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="activityDesc">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Description of Change </mat-header-cell>
+        <mat-cell *matCellDef="let row"> {{row.activityDesc}} </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="createdDate">
+        <mat-header-cell *matHeaderCellDef mat-sort-header> Modified By </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <div class="flex flex-col">
+            <span class="text-qtd">{{row.createdBy}}</span>
+            <span class="mt-2">{{row.createdDate | date:'medium'}}</span>
+          </div>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row flex text-center " *matNoDataRow>
+        <td class="mat-cell w-full m-2">No data matching the filter</td>
+      </tr>
+
+    </mat-table>
+<!--
+    <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons aria-label="Select page of periodic elements">
+    </mat-paginator> -->
+
+
+  </div>
+</div>
+
+<ng-template #SHNotLinkedTo>
+  <app-fly-panel-sh-not-linked [activeInactiveCheck]="activeInactiveCheck" [NotLinkedToName]="NotLinkedToPanelName"></app-fly-panel-sh-not-linked>
+</ng-template>
+
+<ng-template #ViewSHHistory>
+  <app-fly-panel-sh-history></app-fly-panel-sh-history>
+</ng-template>

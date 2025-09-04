@@ -1,0 +1,181 @@
+<div class="flex flex-col" [ngClass]="{ 'px-12 py-12':addILA}">
+    <ng-container *ngIf="addILA">
+        <div class="flex flex-row justify-between items-center px-3 mt-2">
+            <p class="text-xl font-bold text-gray-900">Add New {{("ILA" | labelReplacement)| async}}</p>
+            <app-button (clicked)="closed.emit('fp-add-ila-closed')" ButtonType='icon' icon="close">
+            </app-button>
+        </div>
+
+        <mat-stepper [linear]="true" #stepper (selectionChange)="selectedChanged($event)"
+            [orientation]="(stepperOrientation | async)!">
+            <!-- Change edit icon -->
+            <ng-template matStepperIcon="edit">
+                <app-icon icon="done"></app-icon>
+            </ng-template>
+            <mat-step label="Assign {{('ILA'| labelReplacement)| async}}" [stepControl]="step1Form" [completed]="step1Form.valid">
+                <form class="flex flex-col" [formGroup]="step1Form">
+                    <div class="flex-col mt-3">
+                        <div class="flex flex-row justify-between">
+                            <app-label [for]="'providerId'" [text]="'Provider '" class="label required"></app-label>
+                            <app-button variant="text" (clicked)="openProviderPanel()" text="Add new Provider"
+                                icon="add" iconPosition="left">
+                            </app-button>
+                        </div>
+                        <mat-select formControlName="providerId" placeholder="Select Provider"
+                            class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                            <app-data-loader *ngIf="providerLoader"></app-data-loader>
+                            <mat-option *ngFor="let p of providers" [value]="p.id" >
+                                {{p.name}}
+                            </mat-option>
+                        </mat-select>
+                        <app-input-error *ngIf="step1Form.get('providerId')?.invalid" text="Provider Is Required">
+                        </app-input-error>
+                    </div>
+                    <div class="mt-3">
+                        <div class="flex flex-row justify-between">
+                            <app-label [for]="'topicsControl'" [text]="'Topic'"></app-label>
+                            <app-button variant="text" text="Add new Topic" icon="add" iconPosition="left"
+                                (clicked)="openTopicPanel()">
+                            </app-button>
+                        </div>
+                        <mat-select [formControl]="topicsControl" multiple placeholder="Select Topic" class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                            <mat-select-trigger>
+                              <mat-chip-list>
+                                <mat-chip *ngFor="let i of topicsControl.value" [removable]="true"
+                                          (removed)="removeTopic(i)"
+                                          [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                                          selected>
+                                  {{ i.name }}
+                                  <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                                  </app-icon>
+                                </mat-chip>
+                              </mat-chip-list>
+                            </mat-select-trigger>
+                            <mat-option [hidden]="!i.active" *ngFor="let i of topics" #matTopicOption (click)="OnTopicClick(matTopicOption.selected)" [value]="i">
+                              {{i.name}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                    <div class="self-end pt-12">
+                        <app-button color="secondary" [disabled]="step1Form.invalid" text="Continue" size="sm"
+                            (clicked)="stepper.next()"></app-button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step label="{{('ILA' | labelReplacement)| async}} Information" [stepControl]="step2Form">
+                <form class="flex flex-col" [formGroup]="step2Form">
+                  <!--   <div class="mt-3">
+                        <app-label [for]="'number'" text="ILA Number " class="label required"></app-label>
+                        <app-textbox formControlName="number" [disabled]="true" [(ngModel)]="ILANumber"></app-textbox>
+                        <app-input-error *ngIf="step2Form.get('number')?.invalid" text="Number Is Required">
+                        </app-input-error>
+                    </div> -->
+                    <div class="mt-3">
+                        <app-label [for]="'number'" text="{{('ILA' | labelReplacement)| async}} Number " class="label required"></app-label>
+                        <app-textbox [type]="'text'" formControlName="number"></app-textbox>
+                        <app-input-error *ngIf="step2Form.get('number')?.invalid" text="Number Is Required">
+                        </app-input-error>
+                      </div>
+                    <div class="mt-3">
+                        <app-label [for]="'title'" text="{{('ILA' | labelReplacement)| async}} Title " class="label required"></app-label>
+                        <app-textbox formControlName="title" placeholder="{{('ILA' | labelReplacement)| async}} Title">
+                        </app-textbox>
+                        <app-input-error *ngIf="step2Form.get('title')?.invalid" text="Title Is Required">
+                        </app-input-error>
+                    </div>
+                    <div class="mt-3">
+                        <app-label [for]="'nickname'" text="{{('ILA' | labelReplacement)| async}} Nick Name"></app-label>
+                        <app-textbox formControlName="nickname" placeholder="Nick name">
+                        </app-textbox>
+                    </div>
+                    <div class="mt-3">
+                        <app-label [for]="'positionsControl'" text="{{('Position' | labelReplacement)| async}}"></app-label>
+                        <mat-select [formControl]="positionsControl" multiple placeholder="Select {{('Position' | labelReplacement)| async}}"
+                            class="appearance-none rounded border w-full px-4 py-2.5 mt-2" required>
+                            <mat-select-trigger>
+                                <mat-chip-list>
+                                    <mat-chip *ngFor="let i of positionsControl.value" [removable]="true"
+                                        (removed)="removePosition(i)"
+                                        [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                                        selected>
+                                        {{ i.positionTitle }}
+                                        <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                                        </app-icon>
+                                    </mat-chip>
+                                </mat-chip-list>
+                            </mat-select-trigger>
+
+                            <mat-option *ngFor="let i of positions" [value]="i" #matOption
+                                (click)="OnClick(matOption.selected)">
+                                {{i.positionTitle}}
+                            </mat-option>
+                        </mat-select>
+                    </div>
+                    <div class="mt-3">
+                        <app-label [for]="'deliveryMethodId'" [text]="'Delivery Method '" class="label required"></app-label>
+                        <mat-select formControlName="deliveryMethodId" placeholder="Select Delivery Method"
+                            class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+                            <mat-option *ngFor="let d of deliveryMethods" [value]="d.id">
+                                {{d.name}}
+                            </mat-option>
+                        </mat-select>
+                       <!--  <app-input-error *ngIf="step2Form.get('deliveryMethodId')?.invalid"
+                            text="Delivery Method Is Required">
+                        </app-input-error> -->
+                    </div>
+                    <div class="mt-3">
+                        <app-label for="'ILADescription'" text="{{('ILA' | labelReplacement)| async}} Description"></app-label>
+
+                        <app-textarea formControlName="ILADescription" name="ILADescription"
+                        placeholder="Enter  {{('ILA' | labelReplacement)| async}} Description"
+                        [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+                        </app-textarea>
+                    </div>
+
+                    <div class="flex flex-row-reverse pt-12">
+                      <!--   <div>
+                            <mat-checkbox name="isMetaILA" > Is a META ILA </mat-checkbox>
+                        </div> -->
+                        <app-button color="secondary" [disabled]="step2Form.invalid" text="Continue" size="sm"
+                            (clicked)="stepper.next()"></app-button>
+                    </div>
+                </form>
+            </mat-step>
+            <mat-step label="Revision and Date" [stepControl]="step3Form">
+                <form class="flex flex-col" [formGroup]="step3Form">
+                    <div class="mt-3">
+                        <app-label [for]="'effectiveDate'" text="Effective Date"></app-label>
+                        <app-date  formControlName="effectiveDate"></app-date>
+                    </div>
+                    <div class="mt-3">
+                        <app-label [for]="'reason'" text="Reason" class="label required"></app-label>
+                        <app-textarea formControlName="reason" type="text" placeholder="Please enter Reasons for Revision here" [required]="true">
+                        </app-textarea>
+                        <app-input-error *ngIf="step3Form.get('reason')?.invalid" text="Reason is Required">
+                        </app-input-error>
+                    </div>
+
+
+                    <div class="flex flex-row pt-12 justify-between">
+                        <div>
+                            <mat-checkbox formControlName="addNew">Add another {{("ILA" | labelReplacement)| async}}</mat-checkbox>
+                        </div>
+
+                        <app-button [spinner]="showSpinner" [disabled]="step2Form.invalid || step3Form.invalid || showSpinner"
+                        (clicked)="saveILA()" text="Save" size="sm"></app-button>
+                    </div>
+                </form>
+
+            </mat-step>
+
+        </mat-stepper>
+    </ng-container>
+
+</div>
+
+<app-fly-panel-provider *ngIf="addProvider" [provider_edit_mode]="true" [provider_change_mode]="false"
+    (closed)="addProvider=false;addILA=true; getProviders()">
+</app-fly-panel-provider>
+<app-fly-panel-topic *ngIf="addTopic" [edit_topic]="true" [change_topic]="false"
+    (closed)="addTopic=false;addILA=true;getTopics()">
+</app-fly-panel-topic>

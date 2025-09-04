@@ -1,0 +1,39 @@
+
+  <!-- <mat-card class="card-box" cdkDrag (cdkDragMoved)="dragStarted($event)" [id]="item.id"
+    *ngFor="let item of nodes; let i=index">
+    <ng-container *ngIf="item.nodeType=='simple'">
+      <mat-card-header>
+        <mat-card-title>
+          <app-icon [icon]="item.iconName"> </app-icon>
+          {{item.title}}
+          <app-icon icon="expand_more"> </app-icon>
+        </mat-card-title>
+      </mat-card-header>
+
+      <mat-card-actions>
+        <app-button ButtonType="icon" (click)="createNode(item.id);" icon="add"
+        ngClass="plusbutton"></app-button>
+        <button mat-fab ngClass="plusbutton" (click)="createNode(item.id);">
+          <app-icon icon="add"></app-icon>
+        </button>
+  
+        <button mat-fab ngClass="commitbutton" (click)="connectNode(item.id,$event)">
+          <app-icon icon="commit"> </app-icon>
+        </button>
+      </mat-card-actions>
+    </ng-container>
+    <ng-container *ngIf="item.nodeType=='dropdown'">
+      
+      <mat-form-field appearance="fill"class="w-77">
+        <mat-label>Categories</mat-label>
+        <mat-select >
+          <mat-option *ngFor="let d of category" [value]="d.title" 
+          (onSelectionChange)="createNodeWithTitle(d.title, item.id)">
+            {{d.title}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </ng-container>        
+
+  </mat-card>
+  <div id="sticky-point"></div> -->

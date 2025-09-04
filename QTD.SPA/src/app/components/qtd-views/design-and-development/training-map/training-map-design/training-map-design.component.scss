@@ -1,0 +1,170 @@
+mat-card-title {
+  font-family: Roboto;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 32px;
+  letter-spacing: 0.15px;
+  text-align: left;
+}
+.mb-16 {
+  margin-bottom: 8rem !important;
+}
+.transform-up {
+  transform: translate(-14px, -15px);
+  width: auto;
+}
+.ml-16 {
+  margin-left: 9rem !important;
+}
+
+.translate_span {
+  transform: translate(179px, -32px) !important;
+}
+
+.translate_span {
+  transform: translate(120px, 9px) !important;
+}
+
+.text-xs {
+  font-size: 0.68rem !important;
+}
+
+.transform_section {
+  transform: translate(-8px, 40px);
+}
+
+.w-77 {
+  width: 230px !important;
+}
+
+.expand_more {
+  color: grey;
+  transform: translateY(30%);
+}
+
+.business_center {
+  transform: translateY(20%);
+}
+
+.plusbutton {
+  transform: translate(356px, -90%);
+  background: rgba(39, 143, 108, 1);
+  width: 40px;
+  height: 40px;
+  top: 70px;
+  border-radius: 50%;
+  position: absolute;
+  right: 335px;
+}
+
+.one {
+  position: absolute;
+  top: 10px;
+
+  width: 30px;
+  height: 30px;
+}
+
+.commitbutton {
+  width: 43px;
+  height: 43px;
+  background-color: rgba(225, 225, 225, 1);
+  transform: translate(314px, 22px);
+  border-radius: 50%;
+  position: absolute;
+  top: 85px;
+  right: 292px;
+}
+
+#commit {
+  transform: translateY(-40%);
+  color: rgba(255, 255, 255, 1);
+}
+
+#add {
+  color: rgba(255, 255, 255, 1);
+  transform: translateY(-40%);
+}
+
+#sticky-point {
+  position: absolute;
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+#preview {
+  width: 105px;
+  height: 38px;
+  float: right;
+  border: 1px solid rgba(0, 13, 9, 0.2);
+  box-sizing: border-box;
+  border-radius: 4px;
+
+  font-family: "Roboto";
+  font-weight: 500;
+  font-style: normal;
+  font-size: 14px;
+  letter-spacing: 0.1px;
+
+  color: #278f6c;
+
+  margin-right: 10px;
+  margin-top: 5px;
+  transform: translateX(-20px);
+}
+
+#save {
+  width: 105px;
+  height: 38px;
+  float: right;
+  border: 1px solid rgba(0, 13, 9, 0.2);
+  box-sizing: border-box;
+  border-radius: 4px;
+
+  font-family: "Roboto";
+  font-style: normal;
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.1px;
+
+  color: #278f6c;
+
+  margin-right: 10px;
+  margin-top: 5px;
+  transform: translateX(-20px);
+}
+
+#publish_button {
+  float: right;
+  width: 105px;
+  height: 36px;
+
+  background: #278f6c;
+  border: 1px solid #278f6c;
+  box-sizing: border-box;
+  border-radius: 4px;
+
+  font-family: "Roboto";
+  font-weight: 500;
+  font-size: 14px;
+  letter-spacing: 0.1px;
+  color: #ffffff;
+
+  margin-right: 7px;
+  margin-top: 5px;
+  transform: translateX(-20px);
+}
+
+.sideButtons {
+  position: absolute;
+}
+
+.example-h2 {
+  margin: 10px;
+}
+
+.mat-progress-bar {
+  height: 30px;
+}
+

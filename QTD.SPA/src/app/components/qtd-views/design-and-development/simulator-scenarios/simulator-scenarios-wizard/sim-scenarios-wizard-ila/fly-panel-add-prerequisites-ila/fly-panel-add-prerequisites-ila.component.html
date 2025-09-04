@@ -1,0 +1,80 @@
+<div class="flex flex-col" [ngClass]="{ 'px-12 py-12':linkIlas}">
+    <ng-container>
+        <div class="flex flex-row justify-between">
+            <h2>Link Pre-requisites</h2>
+            <app-button (click)="flyPanelService.close()" ButtonType='icon' icon="close"></app-button>
+
+        </div>
+        <div class="flex flex-row items-center border-b-0.8 border-gray-one mt-3">
+            <div class="flex flex-grow">
+                <app-icon icon="search"></app-icon>
+                <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text" [value]="seacrhILAString"  (input)="searchILA($event)">
+                <app-icon icon="close" class="cursor-pointer" *ngIf="seacrhILAString" (click)="clearFilter()"></app-icon>
+            </div>
+        </div>
+
+        <div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+
+            <div class="cursor-pointer">
+                <span> Showing:
+                    <label mat-button class="mb-0">
+                        <p class="font-bold">
+                            Active
+                        </p>
+                    </label>
+                </span>
+            </div>
+        </div>
+
+        <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="linkedIds?.length > 0">
+            <div class="flex flex-row w-full justify-between mb-3">
+                <p class="text-xs text-gray-four pt-2">
+                    {{ linkedIds.length + ' ' + 'Pre-requisites selected' }}
+                </p>
+                <app-button [spinner]="showLinkPreReqLoader" class="mb-2" type="button" color="secondary" size="sm"
+                    text="Link Pre-requisites"
+                    (click)="linkPreReqsToScenarioAsync()">
+                </app-button>
+            </div>
+        </div>
+
+        <app-spinner *ngIf="isILALoading || dataSource?.data === undefined || dataSource?.data === null"></app-spinner>
+        <span *ngIf="!isILALoading && (dataSource.data !== undefined && dataSource.data.length < 1)">No {{("ILA" |
+            labelReplacement)| async}}s Found</span>
+        <ng-container *ngIf="!isILALoading && (dataSource.data !== undefined && dataSource.data.length > 0)">
+            <div class="flex flex-col ">
+                <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="qtd-tree">
+                    <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                        <ng-container *ngIf="node.checkbox">
+                            <mat-checkbox (change)="onIlaChange($event,node)" [checked]="node.selected">
+                                {{node.description}}</mat-checkbox>
+                        </ng-container>
+                        <ng-container *ngIf="!node.checkbox">
+                            <app-icon style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;<span
+                                style="color: rgb(92, 155, 49);">{{node.description}}</span>
+                        </ng-container>
+                    </mat-tree-node>
+
+                    <!-- This is the tree node template for expandable nodes -->
+                    <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+                        <div class="mat-tree-node">
+                            <button style="outline:none;" mat-icon-button matTreeNodeToggle
+                                [attr.aria-label]="'Toggle ' + node.description">
+                                <app-icon [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'">
+                                </app-icon>
+                            </button>
+
+                            <mat-checkbox [checked]="node.selected"
+                                [indeterminate]="node.indeterminate && !node.selected"
+                                (change)="itemToggle($event.checked,node)">{{node.description}}</mat-checkbox>
+                        </div>
+
+                        <div *ngIf="treeControl.isExpanded(node)" role="group">
+                            <ng-container matTreeNodeOutlet></ng-container>
+                        </div>
+                    </mat-nested-tree-node>
+                </mat-tree>
+            </div>
+        </ng-container>
+    </ng-container>
+</div>

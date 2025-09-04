@@ -1,0 +1,165 @@
+<app-spinner class="loading-spinner" *ngIf = "isLoading"></app-spinner>
+<div class="flex flex-col px-12" *ngIf = "!isLoading">
+    <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8  px-40 py-12">
+        <!-- Sponsor Information -->
+        <div class="mb-4">
+            <h2>Sponsor or Provider Information</h2>
+            <div class="flex flex-row justify-between">
+                <div class="flex flex-col  w-40">
+                    <p class="flex-grow text-gray-400 mt-2"> Provider Name </p>
+                    <h3>{{ilaPreviewDetails?.providerName}}</h3>
+                </div>
+                <div class="flex flex-col  w-30">
+                    <p class="flex-grow text-gray-400 mt-2"> Provider ID </p>
+                    <h3>{{ilaPreviewDetails?.providerNumber}}</h3>
+                </div>
+                <div class="flex flex-col  w-30">
+                    <p class="flex-grow text-gray-400 mt-2"> NERC Contact Person </p>
+                    <h3>{{ilaPreviewDetails?.contactName}}</h3>
+                </div>
+            </div>
+
+            <div class="flex flex-row justify-between">
+                <div class="flex flex-col w-40">
+                    <p class="flex-grow text-gray-400 mt-2"> Phone Number </p>
+                    <h3>{{ilaPreviewDetails?.contactPhone}}</h3>
+                </div>
+                <div class="flex flex-col w-30">
+                    <p class="flex-grow text-gray-400 mt-2"> Training Representative Email Address </p>
+                    <h3>{{ilaPreviewDetails?.repEmail}}</h3>
+                </div>
+                <div class="flex flex-col w-30">
+                    <p class="flex-grow text-gray-400 mt-2">NERC Contact Email Address </p>
+                    <h3>{{ilaPreviewDetails?.contactEmail}}</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- ILA Information -->
+        <div class="mb-4">
+            <h2>{{("ILA" | labelReplacement)| async}} Information</h2>
+            <div class="flex flex-row justify-between">
+                <div class="flex flex-col w-40">
+                    <p class="flex-grow text-gray-400 mt-2"> {{("ILA" | labelReplacement)| async}} Title </p>
+                    <h3>{{ilaPreviewDetails?.ilaName}}</h3>
+                </div>
+                <div class="flex flex-col w-30">
+                    <p class="flex-grow text-gray-400 mt-2"> {{("ILA" | labelReplacement)| async}} Number </p>
+                    <h3>{{ilaPreviewDetails?.ilaNumber}}</h3>
+                </div>
+                <div class="flex flex-col w-30"></div>
+            </div>
+        </div>
+
+        <!-- ILA Information -->
+        <div class="mb-4">
+            <h2>Total Credit Hours & other {{("ILA" | labelReplacement)| async}} Details</h2>
+            <div class="flex flex-row justify-between">
+                <div class="flex flex-col w-40">
+                    <p class="flex-grow text-gray-400 mt-2"> Start Date </p>
+                    <h3>{{ ilaPreviewDetails?.startDate | date:'MMMM d, y' }}</h3>
+                </div>
+                <div class="flex flex-col w-30">
+                    <p class="flex-grow text-gray-400 mt-2"> Operating Topic Hours/CEH </p>
+                    <h3>{{ilaPreviewDetails?.cehHours}}</h3>
+                </div>
+                <div class="flex flex-col w-30">
+                    <p class="flex-grow text-gray-400 mt-2"> Standard Hours</p>
+                    <h3>{{ilaPreviewDetails.standardReqHour == null ? 0 : ilaPreviewDetails.standardReqHour}}</h3>
+                </div>
+            </div>
+            <div class="flex flex-row justify-between">
+                <div class="flex flex-col w-40">
+                    <p class="flex-grow text-gray-400 mt-2"> Simulation Hours </p>
+                    <h3>{{ilaPreviewDetails.simulationReqHour == null ? 0 : ilaPreviewDetails.simulationReqHour}}</h3>
+                </div>
+                <div class="flex flex-col w-30">
+                    <p class="flex-grow text-gray-400 mt-2"> Assessment {{("Tool" | labelReplacement)| async}}s</p>
+                    <h3>Assessment {{("Tool" | labelReplacement)| async}}s</h3>
+
+                </div>
+                <div class="flex flex-col w-30"> </div>
+            </div>
+            <div class="flex flex-col mt-3">
+                <mat-checkbox [checked]="true">If this is a CBT, or self-study type course, the course piloted. Piloting
+                    data attached
+                </mat-checkbox>
+                <mat-checkbox [checked]="true">This course is an Emergency Operations related training topic
+                </mat-checkbox>
+                <mat-checkbox [checked]="true">This activity confirms to the criteria for System Operator Credential
+                    Maintenance as
+                    specificed in the System Operator {{("Certification" | labelReplacement)| async}}s Program Manual</mat-checkbox>
+            </div>
+        </div>
+
+        <!-- ILA Description -->
+        <div class="mb-4">
+            <h2>{{("ILA" | labelReplacement)| async}} Description</h2>
+            <div class="flex flex-row">
+                <p class="flex-grow text-gray-500">{{ilaPreviewDetails?.description}}</p>
+            </div>
+        </div>
+
+        <!-- Learning Objectives -->
+        <div class="mb-4">
+            <h2>Learning Objectives</h2>
+            <div class="flex flex-row">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let link of ilaPreviewDetails?.ilaObjectives">
+                        <tr >
+                            <td>{{ link.number }}</td>
+                            <td>{{ link.description }}</td>
+                          </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Learning Activity Content (Segments) -->
+        <div class="mb-4">
+            <h2>Learning Activity Content (Segments)</h2>
+            <div class="flex flex-row">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Objectives Linked</th>
+                            <th>Duration (min)</th>
+                            <th>Segment Description</th>
+                            <th>Operating Topics</th>
+                            <th>Standards</th>
+                            <th>Simulation</th>
+                            <th>Partial Credit</th>
+                        </tr>
+                    </thead>
+                    <tbody *ngFor="let ila_Segment_Links of ilaPreviewDetails?.segments">
+                        <tr>
+                            <td>
+                                {{ ila_Segment_Links?.SegmentObjectiveCounts}}
+                            </td>
+                            <td>{{ila_Segment_Links.duration}}</td>
+                            <td [innerHTML]="ila_Segment_Links?.content"></td>
+                            <td>{{ila_Segment_Links.isNercOperatingTopics ? "Yes" : "No"}}</td>
+                            <td> {{ila_Segment_Links.isNercStandard  ? "Yes" : "No"}}</td>
+                            <td>{{ila_Segment_Links.isNercSimulation  ? "Yes" : "No"}}</td>
+                            <td>{{ila_Segment_Links.isPartialCredit ? "Yes" : "No"}}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Recognized Operator Training Topics -->
+        <div class="mb-4">
+            <h2>Recognized Operator Training Topics</h2>
+            <div class="flex flex-col" *ngFor="let trainingTopic of trainingTopics">
+                <mat-checkbox [checked]="true">{{trainingTopic}}</mat-checkbox>
+            </div>
+        </div>
+    </div>
+</div>

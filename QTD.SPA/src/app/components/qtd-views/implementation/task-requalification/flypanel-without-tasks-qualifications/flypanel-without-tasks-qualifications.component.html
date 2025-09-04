@@ -1,0 +1,66 @@
+<div class="p-5 flex flex-col" *ngIf="!neededForView">
+  <!-- header section -->
+  <section class="flex flex-row w-full justify-between" style="align-items:center;">
+    <span class="font-bold text-xl">{{("Employee" | labelReplacement)| async}}s without {{("Task" | labelReplacement)| async}} & Skill Qualification Records</span>
+    <app-icon (click)="closed.emit()" icon="close" class="cursor-pointer"></app-icon>
+  </section>
+
+  <section *ngIf="!dataSource" class="mt-5">
+    <app-data-loader></app-data-loader>
+  </section>
+
+  <!-- Information section -->
+  <section *ngIf="dataSource" class="flex flex-col">
+    <span class="font-thin text-sm text-gray-600 mt-3 mb-3">{{dataSource.data.length}} {{("Employee" | labelReplacement)| async}} without {{("Task" | labelReplacement)| async}}
+      & Skill Qualification Records</span>
+  </section>
+
+  <!-- <section class="flex m-5" style="justify-content:center;" *ngIf="dataSource && dataSource.data.length < 1">
+    <div>No Data Found</div>
+  </section> -->
+
+  <!-- table section -->
+  <section *ngIf="dataSource" class="flex flex-col">
+    <table [dataSource]="dataSource" mat-table>
+      <ng-container matColumnDef="emp">
+        <th style="vertical-align: middle" mat-header-cell *matHeaderCellDef>
+          {{("Employee" | labelReplacement)| async}} Name
+        </th>
+        <td class="mt-4" mat-cell *matCellDef="let row">
+          <div class="flex flex-row">
+            <img [src]="row.empImage" onerror="this.src='assets/img/ImageNotFound.jpg'"
+              class="rounded-full mr-2 mt-1" style="width:2rem;height:2rem">
+            <div class="flex flex-col">
+              <span class="font-bold">{{(row.empLastName + ', ' + row.empFirstName)}}</span>
+              <span class="text-xs text-gray-400 font-thin">{{row.empEmail}}</span>
+            </div>
+          </div>
+        </td>
+      </ng-container>
+
+      <ng-container matColumnDef="count">
+        <th style="vertical-align: middle;text-align: end;" mat-header-cell *matHeaderCellDef>
+          Without {{("Task" | labelReplacement)| async}} & Skill Qualification Records
+        </th>
+        <td style="text-align: center;" mat-cell *matCellDef="let row">
+          <!-- (click)="selectedId = row.empId;
+            selectedName = row.empFirstName + ' ' + row.empLastName;neededForView = true;
+            selectedImage = row.empImage === null || row.empImage === '' ? placeHolderImg:row.empImage " -->
+          <span class="ml-5 linkText cursor-pointer">{{row.posCount | number: '2.0'}}</span>
+        </td>
+      </ng-container>
+      <tr style="vertical-align: top;" mat-header-row class="pl-2 pr-2" *matHeaderRowDef="displayedColumns"></tr>
+      <tr mat-row class="pr-2 pl-2" *matRowDef="let row; columns: displayedColumns"></tr>
+      <!-- Row shown when there is no matching data.-->
+      <tr class="mat-row" *matNoDataRow>
+        <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">No {{("Task" | labelReplacement)| async}} & Skill Qualifications Found</td>
+      </tr>
+    </table>
+  </section>
+</div>
+
+
+<ng-container *ngIf="neededForView">
+  <app-flypanel-task-requal-needed [empId]="selectedId" [empName]="selectedName" [empImage]="selectedImage"
+    (closed)="neededForView = false;"></app-flypanel-task-requal-needed>
+</ng-container>

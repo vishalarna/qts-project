@@ -1,0 +1,22 @@
+// ::ng-deep .mat-expansion-indicator
+// {    box-sizing: border-box !important;;
+//     border-width: 0 !important;;
+//     border-style: solid !important;;
+//     border-color: #212529 !important;
+// }
+*,
+:after,
+:before {
+  box-sizing: border-box ;
+  border-width: 0;
+  border-style: solid;
+  border-color: black !important;
+}
+
+::ng-deep .mat-expansion-indicator:after {
+  border-color: black !important;
+}
+
+::ng-deep .mat-chip-list-wrapper {
+  width: 40vw !important;
+}

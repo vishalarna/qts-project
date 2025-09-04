@@ -1,0 +1,281 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Entities.Core
+@using QTD2.Domain.Helpers;
+<style>
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    tr.inactiveTask {
+        color: lightgray;
+    }
+
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+    }
+
+        .table .sub-title {
+            font-family: inherit;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .tq-comments p{
+        display:inline;
+        margin:0;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table" style="width:98%;margin:auto">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+            <div class="repeatedReportHeader" style="padding-bottom: 3px; border-bottom: 2px solid #020378;">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px; width: 150px !important; height: 65px !important; object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div>
+                        @{
+                            var dateRange = Model.DateRange.Any() ? $"{Model.DateRange[0].ToString(Model.DefaultDateFormat)} - {Model.DateRange[1].ToString(Model.DefaultDateFormat)}" : "All Time";
+                        }
+                        <div style="text-align: center; font-size: 20px; color: #020378; padding-bottom: 7px;"><b>@Model.Title</b></div>
+                        <div class="sub-title" style="text-align: center; font-family: sans-serif !important; margin-top: 5px; font-size: 18px; color: #020378; padding-bottom: 7px;"><b>Time Period: @dateRange</b></div>
+                    </div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @if (Model.Employees.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border:none;padding-top:0" class="strip-container">
+                @{
+                    int j = 1;
+                }
+
+                @foreach (var employee in Model.Employees)
+                {
+                    @foreach (var employeePosition in employee.EmployeePositions.Where(r => r.Position != null))
+                    {
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        <div style="padding-top:5px" id="@("page" + j)">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <thead>
+                                    <tr>
+                                        <td colspan="7" style="border: none;color: #800000;padding-top:10px;font-size:19px;padding-left:0;padding-bottom:8px;"><b>@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)): @employee.Person.LastName, @employee.Person.FirstName</b></td>
+
+                                    </tr>
+                                    <tr>
+                                        <td colspan="7" style="border: none; padding-top: 0; color: #000; font-size: 19px; padding-left: 0;padding-bottom:15px"><b>@employeePosition.Position.PositionTitle @(employeePosition.Trainee ? "[Trainee]" : "")</b></td>
+                                    </tr>
+
+                                    <tr style=" border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse">
+                                        @if (Model.DisplayColumns.Where(r => r == "Task Number").Count() > 0)
+                                        {
+                                            <th colspan="1" style=" border: 2px solid #000; border-left: none; border-collapse: collapse; vertical-align: bottom; color: #000; padding: 5px; padding-left: 0;" align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))#</th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Task Description").Count() > 0)
+                                        {
+                                            <th colspan="2" style=" border: 2px solid #000; border-collapse: collapse; vertical-align: bottom; color: #000; padding: 5px;" align="left">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Description</th>
+                                        }
+                                        @if (Model.DisplayColumns.Contains("Evaluator"))
+                                        {
+                                            <th colspan="1" style="border: 2px solid #000; border-collapse: collapse; vertical-align: bottom; color: #000; padding: 5px; " align="left">Evaluator</th>
+                                        }
+                                        @if (Model.DisplayColumns.Contains("Evaluation Method"))
+                                        {
+                                            <th colspan="1" style="border: 2px solid #000; border-collapse: collapse; vertical-align: bottom; text-align: center; color: #000; padding: 5px; " align="left">Evaluation Method</th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Date").Count() > 0)
+                                        {
+                                            <th colspan="1" style="border: 2px solid #000; border-collapse: collapse; vertical-align: bottom; color: #000; padding: 5px;text-align:center;">Date</th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Met Criteria").Count() > 0)
+                                        {
+                                            <th colspan="1" style="border: 2px solid #000; border-collapse: collapse; vertical-align: bottom; text-align: center; color: #000; padding: 5px; " align="left">Met Criteria?</th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Comments").Count() > 0)
+                                        {
+                                            <th colspan="1" style="border: 2px solid #000; border-right: none; border-collapse: collapse; vertical-align: bottom; color: #000; padding: 5px; " align="left">Comments</th>
+                                        }
+                                    </tr>
+                                </thead>
+                                <tbody>
+
+                                    @{
+                                        var taskQualifications = Model.TaskQualifications.Where(tq => tq.EmpId == employee.Id && employeePosition.Position.Position_Tasks.Any(pt => pt.TaskId == tq.TaskId)).OrderBy(tq => tq.Task.SubdutyArea.DutyArea.Letter).ThenBy(tq => tq.Task.SubdutyArea.DutyArea.Number).ThenBy(tq => tq.Task.SubdutyArea.SubNumber).ThenBy(tq => tq.Task.Number).ToList();
+                                    }
+
+                                    @if (taskQualifications.Any())
+                                    {
+                                        @foreach (var taskQualification in taskQualifications)
+                                        {
+                                            <tr class="@(taskQualification.Task.Active ? "" : "inactiveTask")">
+                                                @if (Model.DisplayColumns.Contains("Task Number"))
+                                                {
+                                                    <td colspan="1" style="border: none; border-bottom: 1px solid #000; padding: 5px; padding-left: 0; vertical-align: top;">@(taskQualification.Task.IsReliability ? "*" : "")@taskQualification.Task.SubdutyArea.DutyArea.Letter@taskQualification.Task.SubdutyArea.DutyArea.Number.@taskQualification.Task.SubdutyArea.SubNumber.@taskQualification.Task.Number</td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Task Description"))
+                                                {
+                                                    <td colspan="2" style="border: none; border-bottom: 1px solid #000; vertical-align: top; padding: 5px;">@taskQualification.Task.Description</td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Evaluator"))
+                                                {
+                                                    <td style="border: none; border-bottom: 1px solid #000; padding: 5px; vertical-align: top;">
+                                                        @{
+                                                            var evaluators = taskQualification.TaskQualification_Evaluator_Links
+                                                            .Select(link => $"{link.Evaluator.Person.FirstName} {link.Evaluator.Person.LastName}");
+                                                        }
+                                                        <span>@string.Join(", ", evaluators)</span>
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Evaluation Method"))
+                                                {
+                                                    var topLevelEvaluationMethod = taskQualification?.EvaluationMethod?.Description;
+                                                    var signOffEvaluationMethods = taskQualification?.TaskReQualificationEmp_SignOff.Where(signOff => signOff.IsCompleted == true && taskQualification.TaskQualification_Evaluator_Links
+                                                    .Any(link => link.EvaluatorId == signOff.EvaluatorId)).Select(m => m.EvaluationMethod?.Description).Where(description => !string.IsNullOrEmpty(description))
+                                                    .Distinct();
+
+                                                    var allEvaluationMethods = new HashSet<string>();
+
+                                                    if (!string.IsNullOrEmpty(topLevelEvaluationMethod))
+                                                    {
+                                                        allEvaluationMethods.Add(topLevelEvaluationMethod);
+                                                    }
+
+                                                    if (signOffEvaluationMethods != null)
+                                                    {
+                                                        foreach (var method in signOffEvaluationMethods)
+                                                        {
+                                                            allEvaluationMethods.Add(method);
+                                                        }
+                                                    }
+
+                                                    <td style="border: none; border-bottom: 1px solid #000; padding: 5px; vertical-align: top;">
+                                                        @(new RawString(string.Join(" , ", allEvaluationMethods)))
+                                                    </td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Date"))
+                                                {
+                                                    <td style="border: none; border-bottom: 1px solid #000; padding: 5px; vertical-align: top; text-align: center;">@taskQualification?.TaskQualificationDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat)</td>
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Met Criteria"))
+                                                {
+                                                    <td style="border: none; border-bottom: 1px solid #000; padding: 5px; vertical-align: top;" align="center">@(taskQualification.CriteriaMet ? "Yes" : "No")</td>
+                                                }
+
+                                                @if (Model.DisplayColumns.Contains("Comments"))
+                                                {
+                                                    var ojtPopulate = taskQualification?.ClassSchedule?.ClassSchedule_Employee.Where(m => m.EmployeeId == employee.Id)?.FirstOrDefault()?.PopulateOJTRecord ?? false;
+                                                    var ila = taskQualification?.ClassSchedule?.ILA;
+                                                    var topLevelComments = taskQualification?.Comments;
+                                                    var signOffComments = taskQualification?.TaskReQualificationEmp_SignOff.Where(signOff => signOff.IsCompleted == true && taskQualification.TaskQualification_Evaluator_Links
+                                                    .Any(link => link.EvaluatorId == signOff.EvaluatorId)).Select(m => m.Comments).Where(c => !string.IsNullOrEmpty(c))
+                                                    .ToList() ?? new List<string>();
+
+                                                    var allComments = new List<string>();
+
+                                                    if (!string.IsNullOrEmpty(topLevelComments))
+                                                    {
+                                                        allComments.Add(topLevelComments);
+                                                    }
+
+                                                    allComments.AddRange(signOffComments);
+
+                                                    <td style="border: none; border-bottom: 1px solid #000; padding: 5px; vertical-align: top;">
+                                                        <span class="tq-comments">
+                                                            @if (ojtPopulate)
+                                                            {
+                                                                @(ila != null ? $"{ila.Number} - {ila.Name}" : "")
+                                                            }
+                                                            
+                                                            @(new RawString(string.Join(" , ", allComments)))
+                                                        </span>
+                                                    </td>
+
+                                                }
+                                            </tr>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <tr>
+                                            <td colspan="7" style="text-align: center; padding: 10px; color: gray;">
+                                                No data to display
+                                            </td>
+                                        </tr>
+                                    }
+
+                                    <tr>
+                                        <td colspan="7" style="border:none">
+                                            <div class="table" style="border-collapse: collapse;margin:auto;margin-top:10px;margin-bottom:0">*R-R is Reliability Related</div>
+                                            <div class="table" style="border-collapse: collapse;margin:auto;">Note: Inactive @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))s appear in gray font.</div>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @if (!employeePosition.Equals(Model.Employees.SelectMany(x => x.EmployeePositions.Where(r => r.Position != null)).Last()))
+                        {
+                            <div style="page-break-after:always"></div>
+                            <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        }
+                        @{
+                            j++;
+                        }
+                    }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Employees.SelectMany(x => x.EmployeePositions.Where(r => r.Position != null)).Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

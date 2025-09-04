@@ -1,0 +1,96 @@
+<div class="flex flex-row justify-between border-b items-center header-spacing">
+    <h1 class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+      Filter Training Issues
+    </h1>
+    <button class="focus:outline-none" (click)="closeFlyPanel()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" ></path>
+      </svg>
+    </button>
+</div>
+<div *ngIf="loader" class="overview-spinner">
+  <app-spinner></app-spinner>
+</div>
+<div *ngIf="!loader">
+<form [formGroup]="filterTrainingIssueForm" class="container-spacing">
+    <div class="flex gap-20">
+            <div class="input-box position-relative w-full">
+              <app-label text="Due Date" class="font-weight-bold" ></app-label>
+              <div class="flex position-relative">
+                <app-date formControlName="dueDate" placeholder="Select Date" class="w-100" >
+                </app-date>
+                <button *ngIf="filterTrainingIssueForm.get('dueDate').value" class="close-icon" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('dueDate'); $event.stopPropagation()" >
+                  <mat-icon class="icon">close</mat-icon>
+                </button>
+            </div>
+        </div>
+        <div class="mb-3 input-box w-full">
+          <app-label [for]="'Severity'" text="Severity" class="font-weight-bold" ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select formControlName="severity" placeholder="Select Severity">
+              <mat-option *ngFor="let severity  of trainingIssueSeverities" [value]="severity.severity">{{severity.severity}}</mat-option>
+            </mat-select>
+            <button *ngIf="filterTrainingIssueForm.get('severity').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('severity'); $event.stopPropagation()" >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+      </div>
+      <div class="flex gap-20">
+        <div class="mb-3 input-box w-full">
+          <app-label [for]="'Driver'" text="Driver" class="font-weight-bold"></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select #driverSelect="matSelect" formControlName="driver" placeholder="Select Type" (selectionChange)="selectDriverType($event.value);filterTrainingIssueForm.get('driverSubType')?.setValue(null);">
+              <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" formControlName="searchDriverType" (keyup)="driverTypeSearch()" (blur)="resetSearch()"  (keydown)="handleKeydown($event)" placeholder="Enter Text to Search"/>
+              <mat-option *ngFor="let driverType of trainingIssueDriversTypes" [value]="driverType.type">{{driverType.type}}</mat-option>
+            </mat-select>
+            <button *ngIf="filterTrainingIssueForm.get('driver').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('driver'); $event.stopPropagation()" >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+        </div>
+
+      <div class="mb-3 input-box w-full">
+        <app-label [for]="'Driver Sub Type'" text="Driver Sub Type" class="font-weight-bold" ></app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select #driverSubTypeSelect="matSelect" formControlName="driverSubType" placeholder="Select Driver Sub Type"  [disabled]="filterTrainingIssueForm.get('driver')?.value == null">
+            <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" formControlName="searchDriverSubType" (keyup)="driverSubTypeSearch()" (blur)="resetDriverSubTypeSearch()"  (keydown)="handleDriverSubTypeKeydown($event)"  placeholder="Enter Text to Search"/>
+            <mat-option *ngFor="let type of selectDriverSubType" [value]="type.subType">{{type.subType}}</mat-option>
+          </mat-select>
+          <button *ngIf="filterTrainingIssueForm.get('driverSubType').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('driverSubType'); $event.stopPropagation()" >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+    </div>
+    <div class="flex gap-20">
+      <div class="mb-3 input-box w-full">
+        <app-label [for]="'Status'" text="Status" class="font-weight-bold" ></app-label>
+        <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+          <mat-select formControlName="status" placeholder="Select Status">
+            <mat-option *ngFor="let status of trainingIssueStatuses" [value]="status.status">{{status.status}}</mat-option>
+          </mat-select>
+          <button *ngIf="filterTrainingIssueForm.get('status').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('status'); $event.stopPropagation()" >
+            <mat-icon>close</mat-icon>
+          </button>
+        </mat-form-field>
+      </div>
+      <div class="mb-3 input-box w-full">
+          <app-label [for]="'Active Status'" text="Active Status" class="font-weight-bold" ></app-label>
+          <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+            <mat-select formControlName="activeStatus" placeholder="Select Active Status">
+              <mat-option *ngFor="let status of userStatuses" [value]="status">{{status}}</mat-option>
+            </mat-select>
+            <button *ngIf="filterTrainingIssueForm.get('activeStatus').value" matSuffix mat-icon-button type="button" aria-label="Clear" (click)="clearSelection('activeStatus'); $event.stopPropagation()" >
+              <mat-icon>close</mat-icon>
+            </button>
+          </mat-form-field>
+      </div>
+    </div>
+    <div class="flex justify-end">
+        <app-button variant="outlined" (clicked)="applyFiltersClick()" position="right" size="sm" text="Apply Filters" color="primary" class="font-weight-normal" ></app-button>
+    </div>
+</form>
+</div>
+
+  

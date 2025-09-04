@@ -1,0 +1,87 @@
+.status {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #15372c;
+  }
+
+  .mat-table-header {
+    color: #7a807e;
+  }
+  .keyword-input {
+    align-items: center;
+    padding: 24px;
+    svg {
+      margin-right: 8px;
+    }
+    input {
+      max-width: 300px;
+      width: 100%;
+    }
+  }
+  .flex-end{
+    justify-content: flex-end;
+  }
+  .card-wrap{
+    display: flex;
+    justify-content: space-between;
+    gap:15px;
+  }
+  .sm-container-card{
+    width: 100%;
+    max-width: 280px;
+    box-shadow: 0px 4px 30px 0px #7A807E1A;
+    padding: 10px 30px;
+  }
+  .lg-container-card{
+    width: 100%;
+    box-shadow: 0px 4px 30px 0px #7A807E1A;
+    padding: 10px 30px;
+  }
+
+  .customcolorgreen {
+    background-color: rgba(92, 155, 49, 0.1);
+    color: rgba(92, 155, 49, 1);
+  }
+.customcolorblue
+  {
+    background-color: rgba(238, 247, 255, 1);
+    color: rgba(66, 132, 192, 1);
+  }
+
+  .customcolorpink{
+    background-color: rgba(255, 249, 232, 1);
+    color:rgba(255, 207, 92, 1);
+  }
+  .sub-table-cell {
+    height: unset !important;
+  }
+
+  .close-icon {
+    position: absolute;
+    right: 0;
+    top: 5px;
+    bottom: 0;
+    margin: auto;
+    height: 20px;
+    line-height: 1;
+}
+.icon{
+    font-size: 18px;
+    margin-top: 1rem;
+}
+
+.overview-spinner{
+  height: 200px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-wrap-filter {
+  padding: 10px 0 3px 3.5rem;
+  gap: 5rem;
+}
+
+.filter-clear-button {
+  padding-left: 3.5rem;
+}

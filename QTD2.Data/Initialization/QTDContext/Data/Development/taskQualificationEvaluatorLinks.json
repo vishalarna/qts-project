@@ -1,0 +1,72 @@
+[
+  {
+    "EvaluatorId": 1,
+    "TaskQualificationId": 1,
+    "Number": 1,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "EvaluatorId": 2,
+    "TaskQualificationId": 2,
+    "Number": 2,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "EvaluatorId": 3,
+    "TaskQualificationId": 3,
+    "Number": 3,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "EvaluatorId": 4,
+    "TaskQualificationId": 4,
+    "Number": 4,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "EvaluatorId": 5,
+    "TaskQualificationId": 5,
+    "Number": 5,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "EvaluatorId": 6,
+    "TaskQualificationId": 1,
+    "Number": 6,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "EvaluatorId": 7,
+    "TaskQualificationId": 2,
+    "Number": 7,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "EvaluatorId": 8,
+    "TaskQualificationId": 3,
+    "Number": 8,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "EvaluatorId": 2,
+    "TaskQualificationId": 4,
+    "Number": 9,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "EvaluatorId": 2,
+    "TaskQualificationId": 5,
+    "Number": 10,
+    "Deleted": false,
+    "Active": true
+  }
+]

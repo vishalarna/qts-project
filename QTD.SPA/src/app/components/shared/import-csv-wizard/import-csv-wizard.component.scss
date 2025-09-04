@@ -1,0 +1,53 @@
+.error-message{
+    margin-top: 10px;
+    color: red;
+}
+
+.download-btn{
+    display: flex;
+    justify-content: center;
+}
+
+.filter-list-data{
+    margin-top: 1.125rem;
+    box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.10);
+    border-radius: 4px;
+    border: 0.5px solid #E1E5E4;
+    overflow: hidden;
+  }
+
+  :host ::ng-deep .filter-list-data .mat-cell,:host ::ng-deep .filter-list-data .mat-header-cell {
+    padding: 1rem;
+  }
+
+  :host ::ng-deep .filter-list-data .mat-cell.no-data-cell{
+    flex: 1 1 100%;
+    max-width: unset;
+    border-bottom: none;
+  }
+  
+.filter-search-box{
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #e1e5e4;
+    input{
+      flex: 1 1 70%;
+    }
+  }
+:host ::ng-deep .import-csv-modal-footer{
+  .header-button {
+    font-size: 0.875rem;
+    font-weight: 500;
+    line-height: 143%;
+    letter-spacing: 0.00938rem;
+  }
+  .cancel-button {
+    color: #a1b2ad !important;
+    padding:0.75rem;
+  }
+
+}
+
+.filter-list-data  .row-with-error{
+  background-color: #fee2e2;
+}

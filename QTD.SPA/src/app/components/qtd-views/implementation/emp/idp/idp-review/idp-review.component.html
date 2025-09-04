@@ -1,0 +1,90 @@
+<div class="pt-4 pb-4">
+  <div class="flex flex-row flex-wrap mt-3 justify-between mb-2" style="align-items: baseline;">
+    <div class="flex flex-col">
+      <p class="text-xl font-bold">IDP Review</p>
+    </div>
+
+    <div>
+      <app-button text="Release IDP Review" type="button" size="sm" (click)="openFlyInPanel(releaseIdp)">
+
+      </app-button>
+    </div>
+
+  </div>
+  <div>
+
+    <section class="flex flex-col bg-white border-2 p-3">
+
+      <table [dataSource]="dataSource" matSort mat-table class="w-full">
+        <ng-container matColumnDef="title">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>IDP Review Title</th>
+          <td mat-cell *matCellDef="let row">{{ row.title }}</td>
+        </ng-container>
+        <ng-container matColumnDef="releaseDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Release Date</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.releaseDate === null ? "N/A" : row.releaseDate | date:'yyyy-MM-dd' }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="completeddDate">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Completed Date</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.completedDate === null ? "N/A" : row.completedDate | date:'yyyy-MM-dd'}}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="status">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Status</th>
+          <td mat-cell *matCellDef="let row">
+            <!-- {{ row.status }} -->
+            <p class="rounded-sm text-xs text-green-700 font-medium pt-2 pb-2 mt-2 notStarted"
+              style="width:8rem;text-align: center;" *ngIf="row.idP_ReviewStatus.name === 'Not Started'">
+              <span>Not Started</span>
+            </p>
+
+            <p class="rounded-sm text-xs text-green-700 font-medium pt-2 pb-2 mt-2 inprogress"
+              style="width:8rem;text-align: center;" *ngIf="row.idP_ReviewStatus.name === 'In Progress'">
+              <span>In Progress</span>
+            </p>
+            <p class="rounded-sm text-xs text-green-700 font-medium pt-2 pb-2 mt-2 completed"
+              style="width:8rem;text-align: center;" *ngIf="row.idP_ReviewStatus.name === 'Completed'">
+              <span>Completed</span>
+            </p>
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="response">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Response</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.response }}
+          </td>
+        </ng-container>
+
+        <ng-container matColumnDef="comments">
+          <th mat-header-cell *matHeaderCellDef mat-sort-header>Comments</th>
+          <td mat-cell *matCellDef="let row">
+            {{ row.comments }}
+          </td>
+        </ng-container>
+
+
+        <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+        <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+
+        <!-- Row shown when there is no matching data.-->
+        <tr class="mat-row" *matNoDataRow>
+          <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">No IDP Reviews Found</td>
+        </tr>
+      </table>
+      <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons aria-label="Select page of periodic elements">
+      </mat-paginator>
+    </section>
+  </div>
+</div>
+
+<ng-template #releaseIdp>
+  <app-fly-panel-release-idp [empId]="empId" (refresh)="readyData();flyPanelSrvc.close();">
+
+  </app-fly-panel-release-idp>
+</ng-template>

@@ -1,0 +1,33 @@
+<div class="flex flex-row justify-between border-b items-center header-spacing">
+  <h1 *ngIf="hasPendingActionItems" class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+    Training Issues with Pending Action Items
+  </h1>
+  <h1 *ngIf="!hasPendingActionItems" class="text-xl mb-0 font-medium text-gray-900 font-weight-bold">
+    Training Issues with No Action Items
+  </h1>
+    <button class="focus:outline-none" (click)="closeFlyPanel()">
+      <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" >
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" ></path>
+      </svg>
+    </button>
+</div>
+ <div *ngIf="!trainingIssue_Vm || trainingIssue_Vm.length === 0" class="overview-spinner">
+  <app-spinner></app-spinner>
+</div>
+
+<div *ngIf="trainingIssue_Vm && trainingIssue_Vm.length > 0">
+  <div *ngIf="hasPendingActionItems">
+    <ng-container *ngFor="let pendingActionItem of trainingIssue_Vm; let i = index">
+      <h3>{{ i + 1 }}- {{ pendingActionItem.issueTitle }}</h3>
+      <h4 class="action-items-title">Action Items</h4>
+      <div *ngFor="let actionItem of pendingActionItem.actionItems">
+        <p class="action-item-name">{{ actionItem.actionItemName }}</p>
+      </div>
+    </ng-container>
+  </div>
+  <div *ngIf="!hasPendingActionItems">
+    <ng-container *ngFor="let pendingActionItem of trainingIssue_Vm; let i = index">
+      <p class="medium-font-weight">{{ pendingActionItem.issueTitle }}</p>
+    </ng-container>
+  </div>
+</div>

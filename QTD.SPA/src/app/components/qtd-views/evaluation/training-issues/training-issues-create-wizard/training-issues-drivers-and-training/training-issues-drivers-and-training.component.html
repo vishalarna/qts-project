@@ -1,0 +1,169 @@
+<app-data-loader *ngIf="loader"></app-data-loader>
+<form *ngIf="!loader" class="step-container" [formGroup]="driversForm">
+    <div class="mat-step-section with-bottom-border">
+        <div class="step-header-section">
+            <h2 class="step-main-header mb-0">Drivers</h2>
+            <p class="step-header-caption">Select one of the following drivers</p>
+        </div>
+        <div class="step-controls-section">
+            <ng-container *ngFor="let type of trainingIssueDriverTypeList">
+                <div>
+                    <div class="d-flex">
+                        <ng-container *ngIf="type.type == 'Other'">
+                            <mat-radio-button [disabled]="type.type != 'Other'" name="driverType"
+                                [id]="'driverType' + type.id" [checked]="selectedDriverType === type"
+                                (change)="onChangeDriverType($event.source.checked, type)">
+                                <span class="data-element-category mb-2">{{ type.type}}</span>
+                            </mat-radio-button>
+                        </ng-container>
+                        <ng-container *ngIf="type.type != 'Other'">
+                            <mat-radio-button [disabled]="type.type != 'Other'" name="driverType"
+                                [id]="'driverType' + type.id" [checked]="selectedDriverType === type"
+                                (change)="onChangeDriverType($event.source.checked, type)"></mat-radio-button>
+                            <label [for]="'driverType' + type.id" class="data-element-category mb-2"> {{ type.type
+                                }}</label>
+                        </ng-container>
+                    </div>
+                    <br>
+                    <div *ngIf="type.type == 'Other'">
+                        <app-label class="step-control-label" customClasses="mb-0" [for]="'title'"
+                            [text]="'Comments'"></app-label>
+                        <app-textarea formControlName="driverTypeComments" (input)="onInputComments()"
+                            [value]="driversForm.get('driverTypeComments')?.value"
+                            [isDisabled]="selectedDriverType?.type !='Other'" name="otherDescription"
+                            placeholder="Comments">
+                        </app-textarea>
+                    </div>
+                </div>
+
+                <div class="mb-4 ml-4">
+                    <div *ngFor="let subType of type.subTypes" class="flex items-center">
+
+                        <mat-radio-button name="subType" [id]="'subType' + subType.id"
+                            [checked]="selectedDriverSubType === subType"
+                            (change)="onChangeDriverSubType($event.source.checked, subType, type)">
+                            {{ subType.subType }}
+                        </mat-radio-button>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+
+    <div class="mat-step-section">
+        <div class="step-header-section">
+            <h2 class="step-main-header mb-0">Data Element</h2>
+            <p class="step-header-caption">Select the data element impacted by driver</p>
+        </div>
+        <div class="step-controls-section">
+            <ng-container *ngFor="let category of trainingIssueDataElementCategoryList">
+                <div>
+                    <mat-radio-button [checked]="selectedCategoryType?.name === category.name" [disabled]="true"
+                        name="categoryName"></mat-radio-button>
+                    <label class="data-element-category mb-2"> {{ category.name }}</label>
+                </div>
+
+                <div class="mb-4 ml-4">
+                    <div *ngFor="let element of category.dataElementVMs">
+                        <div class="flex items-center">
+                            <mat-radio-button
+                                [checked]="selectedElementType?.dataElementType === element.dataElementType"
+                                (change)="onChangeElementType($event.source.checked, element, category)"
+                                name="elementDisplayName">
+                                <span class="mb-2">{{ element.dataElementDisplay | dynamicLabelReplacement| async}}</span>
+                            </mat-radio-button>
+                        </div>
+                        <div [ngClass]="{'element-link-details': element.dataElementType == trainingIssueDataElementVM?.dataElementType }"
+                            *ngIf="element.dataElementType == trainingIssueDataElementVM?.dataElementType">
+                            <span (click)="onChangeElementType(true, element, category)">{{trainingIssueDataElementVM?.dataElementDescription}}</span>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </div>
+</form>
+
+<ng-template #linkProcedure>
+    <app-fly-panel-procedure-data-element #procedureDataElement
+        [inputTrainingIssueDataElementVM]="selectedElementType"
+        (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)">
+    </app-fly-panel-procedure-data-element>
+</ng-template>
+
+<ng-template #linkRegularityRequirement>
+    <app-fly-panel-regulatory-requirement-data-element #regularityRequirementDataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+        (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)">
+    </app-fly-panel-regulatory-requirement-data-element>
+</ng-template>
+
+<ng-template #linkSafetyHazard>
+    <app-fly-panel-safety-hazard-data-element #safetyHazardDataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+        (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)">
+    </app-fly-panel-safety-hazard-data-element>
+</ng-template>
+
+<ng-template #linkTool>
+    <app-fly-panel-tool-data-element #toolDataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+        (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)">
+    </app-fly-panel-tool-data-element>
+</ng-template>
+
+<ng-template #linkILA>
+    <app-fly-panel-ila-data-element #ilaDataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+        (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)">
+    </app-fly-panel-ila-data-element>
+</ng-template>
+
+<ng-template #linkMetaILA>
+    <app-fly-panel-meta-ila-data-element #metaILADataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+        (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)">
+    </app-fly-panel-meta-ila-data-element>
+</ng-template>
+
+<ng-template #linkTest>
+    <app-fly-panel-test-data-element #testDataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+        (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)">
+    </app-fly-panel-test-data-element>
+</ng-template>
+
+<ng-template #linkPretest>
+    <app-fly-panel-pretest-data-element #pretestDataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+    (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)"></app-fly-panel-pretest-data-element>
+</ng-template>
+
+<ng-template #linkCbt>
+    <app-fly-panel-cbt-data-element #cbtDataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+    (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)"></app-fly-panel-cbt-data-element>
+</ng-template>
+
+<ng-template #linkTrainingProgram>
+    <app-fly-panel-training-program-data-element #trainingProgramDataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+    (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)"></app-fly-panel-training-program-data-element>
+</ng-template>
+
+<ng-template #linktestItem>
+    <app-fly-panel-testitem-data-element #testItemDataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+    (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)"></app-fly-panel-testitem-data-element>
+</ng-template>
+
+<ng-template #linkTask>
+    <app-fly-panel-task-data-element #taskDataElement [inputTrainingIssueDataElementVM]="selectedElementType"
+        (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)">
+    </app-fly-panel-task-data-element>
+</ng-template>
+
+<ng-template #linkEnablingObjective>
+    <app-fly-panel-enabling-objective-data-element [inputTrainingIssueDataElementVM]="selectedElementType"
+    (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)"></app-fly-panel-enabling-objective-data-element>
+</ng-template>
+
+<ng-template #linkMetaEnablingObjective>
+    <app-fly-panel-meta-enabling-objective-data-element [inputTrainingIssueDataElementVM]="selectedElementType"
+    (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)"></app-fly-panel-meta-enabling-objective-data-element>
+</ng-template>
+
+<ng-template #linkMetaTask>
+    <app-fly-panel-meta-task-data-element [inputTrainingIssueDataElementVM]="selectedElementType"
+    (closed)="flyPanelService.close()" (linkDataElement)="linkElementDetails($event)"></app-fly-panel-meta-task-data-element>
+</ng-template>

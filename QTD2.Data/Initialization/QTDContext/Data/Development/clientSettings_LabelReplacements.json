@@ -1,0 +1,62 @@
+﻿[
+  {
+    "Id": 1,
+    "DefaultLabel": "Employee",
+    "LabelReplacement": "Employee {LabelReplacement}"
+  },
+  {
+    "Id": 2,
+    "DefaultLabel": "Position",
+    "LabelReplacement": "Position {LabelReplacement}"
+  },
+  {
+    "Id": 3,
+    "DefaultLabel": "Task",
+    "LabelReplacement": "Task {LabelReplacement}"
+  },
+  {
+    "Id": 4,
+    "DefaultLabel": "Enabling Objective",
+    "LabelReplacement": "Enabling Objective {LabelReplacement}"
+  },
+  {
+    "Id": 5,
+    "DefaultLabel": "Certifications",
+    "LabelReplacement": "Certifications {LabelReplacement}"
+  },
+  {
+    "Id": 6,
+    "DefaultLabel": "Procedures",
+    "LabelReplacement": "Procedures {LabelReplacement}"
+  },
+  {
+    "Id": 7,
+    "DefaultLabel": "Safety Hazards",
+    "LabelReplacement": "Safety Hazards {LabelReplacement}"
+  },
+  {
+    "Id": 8,
+    "DefaultLabel": "Tools",
+    "LabelReplacement": "Tools {LabelReplacement}"
+  },
+  {
+    "Id": 9,
+    "DefaultLabel": "Regulatory Requirements",
+    "LabelReplacement": "Regulatory Requirements {LabelReplacement}"
+  },
+  {
+    "Id": 10,
+    "DefaultLabel": "Definitions",
+    "LabelReplacement": "Definitions {LabelReplacement}"
+  },
+  {
+    "Id": 11,
+    "DefaultLabel": "Instructions",
+    "LabelReplacement": "Instructions {LabelReplacement}"
+  },
+  {
+    "Id": 12,
+    "DefaultLabel": "Locations",
+    "LabelReplacement": "Locations {LabelReplacement}"
+  }
+]

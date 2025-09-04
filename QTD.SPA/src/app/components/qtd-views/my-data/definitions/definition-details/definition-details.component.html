@@ -1,0 +1,81 @@
+<div class="ml-4 mr-4 ">
+    <div class="flex flex-row flex-wrap mt-3 justify-between">
+      <div class="flex flex-col">
+        <p class="font-bold text-lg">Reliability Related</p>
+        
+        <!-- <p class="text-xs text-gray-four">Issuing Authority: {{issuAuthTitle}}</p>
+        <p class="font-bold text-lg">{{procTitle}}</p> -->
+      </div>
+      <div class="flex flex-row  items-center text-gray-four btn-group">
+        <div class="cursor-pointer bg-gray-200 p-2 rounded">
+          <label mat-button [matMenuTriggerFor]="menu" class="mb-0">
+            <span *ngIf="isActive" class="font-bold">
+              <span style="color:green" class="mr-1">●</span>
+              Active
+            </span>
+            <span *ngIf="!isActive" class="font-bold">
+              <span style="color:red" class="mr-1">●</span>
+              Inactive
+            </span>
+  
+          </label>
+          <app-icon icon="expand_more" [matMenuTriggerFor]="menu"></app-icon>
+          <mat-menu #menu="matMenu">
+            <button mat-menu-item *ngIf="!isActive">
+              <span style="color:green" class="mr-1">●</span>Make
+              Active</button>
+  
+            <label mat-menu-item *ngIf="isActive">
+              <span style="color:red" class="mr-1">●</span> Make
+              Inactive</label>
+          </mat-menu>
+        </div>
+ 
+        <div class="ml-2 cursor-pointer ">
+          <app-icon icon="more_horiz" [matMenuTriggerFor]="options"></app-icon>
+          <mat-menu #options="matMenu">
+            <label (click)="openflyPanel(addNewProcedure,'Edit')" mat-menu-item> Edit</label>
+            <label (click)="openflyPanel(addNewProcedure,'Copy')" mat-menu-item> Copy</label>
+            <label (click)="deleteProcedure(unlinkModal)" mat-menu-item> Delete</label>
+          </mat-menu>
+        </div>
+  
+      </div>
+
+      
+    </div>
+    <div class="flex flex-row flex-wrap bg-white shadow-xs border-0.5 rounded px-2 pt-2 mt-2">
+        <p class="text-xs text-gray-four mr-4 ">{{("Definition" | labelReplacement)| async}}s Number: 1</p>
+        <p class="text-xs text-gray-four mr-4 ">Hyperlink<span class="text-qtd">www.qualitytraingsystems.com/Definitons/QTS/RRT.pdf</span></p>
+        <p class="text-xs text-gray-four mr-4">Effective Date: 06-12-22</p>
+    
+        
+    </div>
+  </div>
+<div class="ml-4 mt-2">
+    <p>
+
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut
+        labore et dolore
+        magna aliqua. Viverra tellus in hac habitasse plates dictumst. Morbi tincidunt augue interdum velit euismod
+        in. Vitae justo eget magna fermentum iaculis eu. Facilisi eras fermentum odio eu feugiat pretium nibh ipsum.
+        Maecenas accumsan lacus vel facilisis volutpat est. Viverra maecenas accumsan lacus vel facilisis. Convallis
+        aenean et horror at risus.
+       </p>
+</div>
+       
+
+  
+  <ng-template #addNewProcedure>
+    <app-fly-panel-add-definition  [mode]= "modalType" [isCopy]="isCopy" (closed)="flyPanelService.close()">
+    </app-fly-panel-add-definition>
+    <!-- <app-fly-panel-add-instructor [oldProcedure]="currentProcedure" [isCopy]="isCopy" (closed)="flyPanelService.close()">
+    </app-fly-panel-add-instructor> -->
+  </ng-template>
+  
+  <ng-template #unlinkModal>
+    <app-qtd-dialogue header="Delete {{('Instructor' | labelReplacement)| async}}" [description]="deleteDescription" cancelText="No"
+      confirmText="Yes" (canceled)="dialog.closeAll()">
+    </app-qtd-dialogue>
+  </ng-template>
+  

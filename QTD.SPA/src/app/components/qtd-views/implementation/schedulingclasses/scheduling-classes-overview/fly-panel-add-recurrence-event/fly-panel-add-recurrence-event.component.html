@@ -1,0 +1,267 @@
+<ng-container>
+  <div class="px-12">
+    <div class="flex flex-row justify-between items-center mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <ng-container> Add Recurrence </ng-container>
+      </p>
+      <app-button
+        (click)="closeflyPanel()"
+        ButtonType="icon"
+        icon="close"
+      ></app-button>
+    </div>
+    <form [formGroup]="recurrenceForm" class="flex flex-col w-full">
+      <div class="flex flex-row">
+        <div class="flex flex-col float-left mb-6" style="width: 50vw">
+          <app-label
+            [for]="'recurrenceType'"
+            [text]="'Recurrence Pattern '"
+            class="mt-6 float-left label"
+          ></app-label>
+          <mat-select
+            [disableOptionCentering]="true"
+            #select
+            formControlName="recurrenceType"
+            class="
+              appearance-none
+              rounded
+              border
+              w-full
+              px-4
+              py-2.5
+              align-item-end
+              bg-white
+            "
+          >
+            <mat-option
+              [value]="recurrenceType.id"
+              *ngFor="let recurrenceType of recurrenceTypes"
+            >
+              {{ recurrenceType.name }}
+            </mat-option>
+          </mat-select>
+        </div>
+      </div>
+
+      <div class="flex flex-row">
+        <div class="flex flex-col float-left mb-6" style="width: 50vw">
+          <app-label
+            [for]="'endDate'"
+            [text]="'End Date'"
+            class="mt-6 float-left label"
+          ></app-label>
+          <app-date
+            [placeholder]="'end Date'"
+            formControlName="endDate"
+            [minDate]="dateInformation.startDate"
+          ></app-date>
+        </div>
+      </div>
+
+      <!-- Daily Recurrence View -->
+      <div *ngIf="recurrenceForm.get('recurrenceType')?.value === 1">
+        <div class="flex flex-row">
+          <div class="flex flex-col float-left mb-6" style="width: 50vw">
+            <app-label
+              [for]="'dailyDayType'"
+              [text]="'Day Type'"
+              class="mt-6 float-left label"
+            ></app-label>
+            <mat-select
+              [disableOptionCentering]="true"
+              formControlName="dailyDayType"
+              class="
+                appearance-none
+                rounded
+                border
+                w-full
+                px-4
+                py-2.5
+                align-item-end
+                bg-white
+              "
+            >
+              <mat-option
+                [value]="dailyDayType.id"
+                *ngFor="let dailyDayType of dailyDayTypes"
+              >
+                {{ dailyDayType.name }}
+              </mat-option>
+            </mat-select>
+          </div>
+        </div>
+      </div>
+      <!-- Weekly Recurrence View -->
+      <div *ngIf="recurrenceForm.get('recurrenceType')?.value === 2">
+        <div class="flex flex-row mt-4">
+          <span style="margin-right: 4rem">Days</span>
+          <div class="flex flex-col">
+            <div
+              *ngFor="let dayOfWeek of daysOfWeek; let i = index"
+              formArrayName="weeklyDays"
+            >
+              <mat-checkbox [formControlName]="i">
+                {{ dayOfWeek.name }}
+              </mat-checkbox>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex flex-row align-item-center mt-4">
+          <span style="margin-right: 2rem">Recurs Every</span>
+          <input
+            class="flex flex-col form-control"
+            style="width: 5rem;"
+            type="number"
+            formControlName="weeklyRecursEvery"
+            min="1"
+            (change)="onNumericInputChange($event, recurrenceForm.get('weeklyRecursEvery'))"
+          />
+          <span class="pl-3"
+            >Week{{
+              recurrenceForm.get("weeklyRecursEvery")?.value > 1 ? "s" : ""
+            }}</span
+          >
+        </div>
+      </div>
+      <!-- Monthly Recurrence View -->
+      <span *ngIf="recurrenceForm.get('recurrenceType')?.value === 3" style="margin-right: 1.5rem; margin-top: 0.7rem"
+      >Recurs</span
+    >
+      <div
+        *ngIf="recurrenceForm.get('recurrenceType')?.value === 3"
+        class="flex flex-row mt-4 pl-3"
+        style="flex-wrap: wrap"
+      >
+       
+        <div class="flex flex-col">
+          <mat-radio-group
+            class="flex flex-col"
+            formControlName="monthlyRecursEveryOption"
+          >
+          <div class="d-flex align-item-top gap-3 pb-2">
+           <span class="sub-heading">Every</span>
+           <div class="d-flex flex-col">
+            <mat-radio-button [value]="1">
+             
+              <div formArrayName="monthlyRecursEveryDayOfWeekOrdinals">
+                <div
+                  *ngFor="
+                    let control of getMonthlyRecursEveryDayOfWeekOrdinalsControls();
+                    let i = index
+                  "
+                >
+                  <div
+                    class="flex flex-row"
+                    style="
+                      align-items: center;
+                      margin-left: 0.5rem;
+                      flex-wrap: wrap;
+                    "
+                    [formGroupName]="i"
+                  >
+                    <div class="flex flex-row border rounded-sm">
+                      <mat-select
+                        [disableOptionCentering]="true"
+                        style="width: 8rem"
+                        formControlName="ordinal"
+                        class="
+                          appearance-none
+                          px-4
+                          py-2.5
+                          align-item-end
+                          bg-white
+                        "
+                      >
+                        <mat-option
+                          [value]="ordinalType.id"
+                          *ngFor="let ordinalType of monthlyOrdinalTypes"
+                        >
+                          {{ ordinalType.name }}
+                        </mat-option>
+                      </mat-select>
+                      <div class="border my-2"></div>
+                      <mat-select
+                        [disableOptionCentering]="true"
+                        style="width: 9rem"
+                        formControlName="dayOfWeek"
+                        class="
+                          appearance-none
+                          px-4
+                          py-2.5
+                          align-item-end
+                          bg-white
+                        "
+                      >
+                        <mat-option
+                          [value]="dayOfWeek.id"
+                          *ngFor="let dayOfWeek of daysOfWeek"
+                        >
+                          {{ dayOfWeek.name }}
+                        </mat-option>
+                      </mat-select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </mat-radio-button>
+          
+            <mat-radio-button [value]="2">
+              <div
+                formArrayName="monthlyRecursEveryDayNumbers"
+              >
+                <div
+                  *ngFor="
+                    let control of getMonthlyRecursEveryDayNumbersControls();
+                    let i = index
+                  "
+                  class="flex flex-row align-item-center"
+                >
+                  <input
+                    class="flex flex-col form-control"
+                    style="margin: 0 0 0 0.6rem"
+                    type="number"
+                    [formControlName]="i"
+                    min="1"
+                    max="31"
+                    (change)="onNumericInputChange($event, control)"
+                  />
+                  <span class="pl-3">
+                    {{ getDaySuffix(control?.value) }} of the Month</span>
+                </div>
+              </div>
+            </mat-radio-button>
+          </div>
+          </div>
+          </mat-radio-group>
+          <div class="d-flex align-item-center gap-3 mt-2">
+            <span>Every</span>
+            <input
+              class="flex flex-col form-control"
+              style="width: 5rem;"
+              type="number"
+              formControlName="monthlyRecursEvery"
+              min="1"
+              (change)="onNumericInputChange($event, recurrenceForm.get('monthlyRecursEvery'))"
+            />
+            <span
+              >Month{{
+                recurrenceForm.get("monthlyRecursEvery")?.value > 1 ? "s" : ""
+              }}</span
+            >
+          </div>
+        </div>
+      </div>
+      <div class="flex flex-row w-full mt-4" style="justify-content: flex-end">
+        <app-button
+          ButtonType="button"
+          size="sm"
+          text="Save"
+          (click)="saveInfo()"
+          [disabled]="isSaveButtonDisabled()"
+          customClasses="disabled-pointer"
+        ></app-button>
+      </div>
+    </form>
+  </div>
+</ng-container>

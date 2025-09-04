@@ -1,0 +1,570 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="CertBodyIdRequired" xml:space="preserve">
+    <value>CertifyingBody Id is Required</value>
+  </data>
+  <data name="CertBodyNameRequired" xml:space="preserve">
+    <value>Certifyingbody name is required</value>
+  </data>
+  <data name="CertNameRequired" xml:space="preserve">
+    <value>Certification Name is Required</value>
+  </data>
+  <data name="ClientUserPersonIdRequired" xml:space="preserve">
+    <value>Person Id is required for Client User</value>
+  </data>
+  <data name="DutyAreaDescRequired" xml:space="preserve">
+    <value>Duty Area description is required</value>
+  </data>
+  <data name="DutyAreaNumRequired" xml:space="preserve">
+    <value>Duty Area number is required</value>
+  </data>
+  <data name="EmpCertCertificationIdRequired" xml:space="preserve">
+    <value>Certification Id is required for Employee Certification</value>
+  </data>
+  <data name="EmpCertCertificationNumRequired" xml:space="preserve">
+    <value>Certification Number is required for Employee Certification</value>
+  </data>
+  <data name="EmpCertEmployeeIdRequired" xml:space="preserve">
+    <value>Employee Id is required for Employee Certification</value>
+  </data>
+  <data name="EmpCertIssueDateRequired" xml:space="preserve">
+    <value>Certification Issue Date is required for Employee Certification</value>
+  </data>
+  <data name="EmployeePersonIdRequired" xml:space="preserve">
+    <value>Person Id is requied for Employee</value>
+  </data>
+  <data name="Employee_EmployeeNumberRequired" xml:space="preserve">
+    <value>Employee Number is Required</value>
+  </data>
+  <data name="Employee_TaskEmployeeIdRequired" xml:space="preserve">
+    <value>Employee Id is required for Employee Task</value>
+  </data>
+  <data name="Employee_TaskMajorVersionRequired" xml:space="preserve">
+    <value>Major Version is required for Employee Task</value>
+  </data>
+  <data name="Employee_TaskMinorVersionRequired" xml:space="preserve">
+    <value>Minor Version is required for Employee Task</value>
+  </data>
+  <data name="Employee_Task_TaskIdRequired" xml:space="preserve">
+    <value>Task Id is required for Employee Task</value>
+  </data>
+  <data name="EmpOrgEmployeeIdRequired" xml:space="preserve">
+    <value>Employee Id is required for Employee Organization</value>
+  </data>
+  <data name="EmpOrgOrganizationIdRequired" xml:space="preserve">
+    <value>Organization Id is required for Employee Organization</value>
+  </data>
+  <data name="EmpPosEmployeeIdRequired" xml:space="preserve">
+    <value>Employee Id is required for Employee Position</value>
+  </data>
+  <data name="EmpPosPositionIdRequired" xml:space="preserve">
+    <value>Position Id is required for Employee Position</value>
+  </data>
+  <data name="EmpPosStartDateRequired" xml:space="preserve">
+    <value>Position Start Date is required for Employee Position</value>
+  </data>
+  <data name="EmpPosTraineeValRequired" xml:space="preserve">
+    <value>Position Trainee value is required for Employee Position</value>
+  </data>
+  <data name="EODescRequired" xml:space="preserve">
+    <value>Enabling Objective description is required</value>
+  </data>
+  <data name="EONumRequired" xml:space="preserve">
+    <value>Enabling Objective number is required</value>
+  </data>
+  <data name="EOTopicIdRequired" xml:space="preserve">
+    <value>Topic Id is required for Enabling Objective</value>
+  </data>
+  <data name="EO_Cat_DescriptionRequired" xml:space="preserve">
+    <value>Enabling Objective Category Description is required</value>
+  </data>
+  <data name="EO_Cat_NumberRequired" xml:space="preserve">
+    <value>Enabling Objective Category Number is required</value>
+  </data>
+  <data name="EO_Proc_LinkEnablingObjectiveIdRequired" xml:space="preserve">
+    <value>Enabling Objective Id is required</value>
+  </data>
+  <data name="EO_Proc_LinkProcedureIdRequired" xml:space="preserve">
+    <value>Procedure Id is required</value>
+  </data>
+  <data name="EO_SH_LinkEnablingObjectiveIdRequired" xml:space="preserve">
+    <value>Enabling Objective Id is required</value>
+  </data>
+  <data name="EO_SH_LinkSaftyHazardIdRequired" xml:space="preserve">
+    <value>Safety Hazard Id is required</value>
+  </data>
+  <data name="EO_SubCat_CategoryIdRequired" xml:space="preserve">
+    <value>Subcategory Id is required for Enabling Objective</value>
+  </data>
+  <data name="EO_SubCat_DescriptionRequired" xml:space="preserve">
+    <value>Subcategory description is required for Enabling Objective</value>
+  </data>
+  <data name="EO_SubCat_NumberRequired" xml:space="preserve">
+    <value>Subcategory number is required for Enabling Objective</value>
+  </data>
+  <data name="EO_TopicDescRequired" xml:space="preserve">
+    <value>Enabling Objective Topic description is required</value>
+  </data>
+  <data name="EO_TopicNumberRequired" xml:space="preserve">
+    <value>Enabling Objective Topic number is required</value>
+  </data>
+  <data name="EO_TopicSubCatIdRequired" xml:space="preserve">
+    <value>Subcategory Id is required for Enabling Objective Topic</value>
+  </data>
+  <data name="OrganizationNameRequired" xml:space="preserve">
+    <value>Organization name is required</value>
+  </data>
+  <data name="PersonFirstNameRequired" xml:space="preserve">
+    <value>Person First name is requried</value>
+  </data>
+  <data name="PersonLastNameRequired" xml:space="preserve">
+    <value>Person Last name is required</value>
+  </data>
+  <data name="PersonUserNameRequired" xml:space="preserve">
+    <value>Person username is required</value>
+  </data>
+  <data name="PositionNameRequired" xml:space="preserve">
+    <value>Position name is required</value>
+  </data>
+  <data name="ProcIAIdRequired" xml:space="preserve">
+    <value>Procedure issuing authority Id is required</value>
+  </data>
+  <data name="ProcNumberRequired" xml:space="preserve">
+    <value>Procedure number is required</value>
+  </data>
+  <data name="ProcSeriesRequired" xml:space="preserve">
+    <value>Procedure series is required</value>
+  </data>
+  <data name="ProcTitleRequired" xml:space="preserve">
+    <value>Procedure title is required</value>
+  </data>
+  <data name="Proc_EO_LinkEnablingObjectiveIdRequired" xml:space="preserve">
+    <value>Enabling Objective Id is required</value>
+  </data>
+  <data name="Proc_EO_LinkProcedureIdRequired" xml:space="preserve">
+    <value>Procedure Id is required</value>
+  </data>
+  <data name="Proc_IADescriptionRequired" xml:space="preserve">
+    <value>Procedure issuing authority description is required</value>
+  </data>
+  <data name="Proc_SH_LinkProcedureIdRequired" xml:space="preserve">
+    <value>Procedure Id is required</value>
+  </data>
+  <data name="Proc_SH_LinkSaftyHazardIdRequired" xml:space="preserve">
+    <value>Safety Hazard Id is required</value>
+  </data>
+  <data name="CS_Roster_DescriptionRequired" xml:space="preserve">
+    <value>Error description is required. </value>
+  </data>
+  <data name="RS_DescriptionRequired" xml:space="preserve">
+    <value>Rating Scale Validation Error description is required. </value>
+  </data>
+  <data name="SaftyHazardDescriptionRequired" xml:space="preserve">
+    <value>Safety Hazard description is required</value>
+  </data>
+  <data name="SaftyHazardNumberRequired" xml:space="preserve">
+    <value>Safety Hazard number is required</value>
+  </data>
+  <data name="SaftyHazardTitleRequired" xml:space="preserve">
+    <value>Safety Hazard title is required</value>
+  </data>
+  <data name="SaftyHazard_AbatementDescriptionRequired" xml:space="preserve">
+    <value>Safety hazard abatement Id is required</value>
+  </data>
+  <data name="SaftyHazard_AbatementNumberRequired" xml:space="preserve">
+    <value>Safety hazard abatement number is required</value>
+  </data>
+  <data name="SaftyHazard_AbatementSaftyHazardIdRequired" xml:space="preserve">
+    <value>Safety hazard is required for Safety hazard abatement </value>
+  </data>
+  <data name="SaftyHazard_ControlDescriptionRequired" xml:space="preserve">
+    <value>Safety Hazard Control description is required</value>
+  </data>
+  <data name="SaftyHazard_ControlNumberRequired" xml:space="preserve">
+    <value>Safety Hazard Control number is required</value>
+  </data>
+  <data name="SaftyHazard_ControlSaftyHazardIdRequired" xml:space="preserve">
+    <value>Safety Hazard Id is required for Safety Hazard Control</value>
+  </data>
+  <data name="SH_CategoryDescriptionRequired" xml:space="preserve">
+    <value>Safety Hazard Category description is required</value>
+  </data>
+  <data name="SH_SaftHazardCategoryIdRequired" xml:space="preserve">
+    <value>Safety Hazard Category Id is required for Safety Hazard</value>
+  </data>
+  <data name="SubDutyAreaDescRequired" xml:space="preserve">
+    <value>Subduty Area description is required</value>
+  </data>
+  <data name="SubDutyAreaDutyAreaIdRequired" xml:space="preserve">
+    <value>Dutyarea Id is required for Subduty Area </value>
+  </data>
+  <data name="SubDutyAreaNumRequired" xml:space="preserve">
+    <value>Subduty Area number is required</value>
+  </data>
+  <data name="TaskDescRequired" xml:space="preserve">
+    <value>Task Description is required</value>
+  </data>
+  <data name="TaskNumRequired" xml:space="preserve">
+    <value>Task number is required</value>
+  </data>
+  <data name="TaskSubdutyAreaIdRequired" xml:space="preserve">
+    <value>Subduty area Id is required for Task</value>
+  </data>
+  <data name="Task_EO_LinkEnablingObjectiveIdRequired" xml:space="preserve">
+    <value>Enabling Objective Id is required for Task Enabling Objective Link</value>
+  </data>
+  <data name="Task_EO_LinkTaskIdRequired" xml:space="preserve">
+    <value>Task Id is required for Task Enabling Objective Link</value>
+  </data>
+  <data name="Task_Position_PositionIdRequired" xml:space="preserve">
+    <value>Poisiton Id is required for Task Position Link</value>
+  </data>
+  <data name="Task_Position_TaskIdRequired" xml:space="preserve">
+    <value>Task Id is required for Task Position Link</value>
+  </data>
+  <data name="Task_Proc_LinkProcedureIdRequired" xml:space="preserve">
+    <value>Procedure Id is required for Task Procedure link</value>
+  </data>
+  <data name="Task_Proc_LinkTaskIdRequired" xml:space="preserve">
+    <value>Task Id is required for Task Procedure link</value>
+  </data>
+  <data name="Task_Question_AnswerRequired" xml:space="preserve">
+    <value>Task Answer is required</value>
+  </data>
+  <data name="Task_Question_QuestionRequried" xml:space="preserve">
+    <value>Task Question is required</value>
+  </data>
+  <data name="Task_Question_TaskIdRequired" xml:space="preserve">
+    <value>Task Id is required for Task Question</value>
+  </data>
+  <data name="Task_SH_LinkSaftyHazardIdRequired" xml:space="preserve">
+    <value>Safety Hazard Id is required for Task Safety Hazard link</value>
+  </data>
+  <data name="Task_SH_LinkTaskIdRequired" xml:space="preserve">
+    <value>Task Id is required for Task Safety Hazard link</value>
+  </data>
+  <data name="Task_StepDescriptionRequired" xml:space="preserve">
+    <value>Task step description is required</value>
+  </data>
+  <data name="Task_StepNumberRequired" xml:space="preserve">
+    <value>Task step number is required</value>
+  </data>
+  <data name="Task_StepTaskIdRequired" xml:space="preserve">
+    <value>Task Id is required for Task Step</value>
+  </data>
+  <data name="Task_ToolTaskIdRequired" xml:space="preserve">
+    <value>Task Id is required for Task Tool</value>
+  </data>
+  <data name="Task_ToolToolIdRequired" xml:space="preserve">
+    <value>Tool Id is required Task Tool link</value>
+  </data>
+  <data name="Timesheet_DateRequired" xml:space="preserve">
+    <value>Timesheet date is required</value>
+  </data>
+  <data name="Timesheet_EmployeeTaskIdRequired" xml:space="preserve">
+    <value>Employee Task Id is required for Timesheet</value>
+  </data>
+  <data name="Timesheet_MethodIdRequired" xml:space="preserve">
+    <value>Method Id is required for Timesheet</value>
+  </data>
+  <data name="Timesheet_NoteRequired" xml:space="preserve">
+    <value>Timesheet note is required</value>
+  </data>
+  <data name="ToolDescriptionRequired" xml:space="preserve">
+    <value>Tool description is required</value>
+  </data>
+  <data name="ToolGroupDescriptionRequired" xml:space="preserve">
+    <value>Tool group description is required</value>
+  </data>
+  <data name="ToolGroup_ToolToolGroupIdRequired" xml:space="preserve">
+    <value>Tool group Id is required</value>
+  </data>
+  <data name="ToolGroup_ToolToolIdRequired" xml:space="preserve">
+    <value>Tool id is required</value>
+  </data>
+  <data name="TrainingProgramPositionIdRequried" xml:space="preserve">
+    <value>Position id is required for Training Program </value>
+  </data>
+  <data name="TrainingProgramVersionRequired" xml:space="preserve">
+    <value>Traning Program version is required</value>
+  </data>
+  <data name="VEOPL_Version_EnablingObjectiveIdRequired" xml:space="preserve">
+    <value>Version Enabling Objective Id is required for Version Enabling Objective Procedure Link</value>
+  </data>
+  <data name="VEOPL_Version_ProcedureIdRequired" xml:space="preserve">
+    <value>Version Procedure Id is required for Version Enabling Objective Procedure Link</value>
+  </data>
+  <data name="VEOSHL_Version_EnablingObjectiveIdRequired" xml:space="preserve">
+    <value>Version Enabling Objective Id is required for Version Enabling Objective Safety Hazard Link</value>
+  </data>
+  <data name="VEOSHL_Version_SaftyHazardIdRequired" xml:space="preserve">
+    <value>Version Safety Hazard Id is required for Version Enabling Objective Safety Hazard Link</value>
+  </data>
+  <data name="VEOTL_VersionEnablingObjectiveIdRequired" xml:space="preserve">
+    <value>Version Enabling Objective Id is required for Version Enabling Objective Tool Link</value>
+  </data>
+  <data name="VersionTaskIdRequired" xml:space="preserve">
+    <value>Version Task Id is required</value>
+  </data>
+  <data name="VersionTask_MajorVersionRequired" xml:space="preserve">
+    <value>Version Task major version is required</value>
+  </data>
+  <data name="VersionTask_MinorVersionRequired" xml:space="preserve">
+    <value>Version Task minor version is required</value>
+  </data>
+  <data name="Version_EO_DescriptionRequired" xml:space="preserve">
+    <value>Version Enabling Objective description is required</value>
+  </data>
+  <data name="Version_EO_EnablingObjectiveIdRequired" xml:space="preserve">
+    <value>Enabling Objective Id is required for Version Enabling Objective</value>
+  </data>
+  <data name="Version_EO_EnablingObjectiveNumberRequired" xml:space="preserve">
+    <value>Version Enabling Objective number is required</value>
+  </data>
+  <data name="Version_EO_MajorVersionRequired" xml:space="preserve">
+    <value>Version Enabling Objective major version is required</value>
+  </data>
+  <data name="Version_EO_MinorVersionRequired" xml:space="preserve">
+    <value>Version Enabling Objective minor version is required</value>
+  </data>
+  <data name="VPEOL_Version_EnablingObjectiveIdRequired" xml:space="preserve">
+    <value>Version Enabling Objective Id is required for Version Procedure  Enabling Objective Link</value>
+  </data>
+  <data name="VPEOL_Version_ProcedureIdRequired" xml:space="preserve">
+    <value>Version Procedure Id is required for Version Procedure Enabling Objective Link</value>
+  </data>
+  <data name="VPSHL_Version_ProcedureIdRequired" xml:space="preserve">
+    <value>Version Procedure Id is required for Version Procedure Safety Hazard Link</value>
+  </data>
+  <data name="VPSHL_Version_SaftyHazardIdRequired" xml:space="preserve">
+    <value>Version Safety Hazard Id is required for Version Procedure Safety Hazard Link</value>
+  </data>
+  <data name="VPTL_VersionProcedureIdRequired" xml:space="preserve">
+    <value>Version Procedure Id is required for Version Procedure Tool Link</value>
+  </data>
+  <data name="VPTL_VersionToolIdRequired" xml:space="preserve">
+    <value>Version Tool Id is required for Version Procedure Tool Link</value>
+  </data>
+  <data name="VP_MajorVersionRequired" xml:space="preserve">
+    <value>Version Procedure major version is required</value>
+  </data>
+  <data name="VP_MinorVersionRequired" xml:space="preserve">
+    <value>Version Procedure minor version is required</value>
+  </data>
+  <data name="VP_ProcedureNumberRequired" xml:space="preserve">
+    <value>Version Procedure number is required</value>
+  </data>
+  <data name="VP_TitleRequired" xml:space="preserve">
+    <value>Version Procedure title is required</value>
+  </data>
+  <data name="VSHA_DescriptionRequired" xml:space="preserve">
+    <value>Version Safety Hazard Abatement description is required</value>
+  </data>
+  <data name="VSHA_NumberRequired" xml:space="preserve">
+    <value>Version Safety Hazard Abatement number is required</value>
+  </data>
+  <data name="VSHA_VersionSaftyHazardIdRequired" xml:space="preserve">
+    <value>Version Safety Hazard Id is required for Version Procedure Safety Hazard Abatement</value>
+  </data>
+  <data name="VSHC_DescriptionRequired" xml:space="preserve">
+    <value>Version Safety Hazard Control description is required</value>
+  </data>
+  <data name="VSHC_NumberRequired" xml:space="preserve">
+    <value>Version Safety Hazard Control number is required</value>
+  </data>
+  <data name="VSHC_VersionSaftyHazardIdRequired" xml:space="preserve">
+    <value>Version Safety Hazard Id is required for Version Procedure Safety Hazard Control</value>
+  </data>
+  <data name="VSH_DescriptionRequired" xml:space="preserve">
+    <value>Version Safety Hazard description is required</value>
+  </data>
+  <data name="VSH_MajorVersionRequired" xml:space="preserve">
+    <value>Version Safety Hazard major version is required</value>
+  </data>
+  <data name="VSH_MinorVersionRequired" xml:space="preserve">
+    <value>Version Safety Hazard minor version is required</value>
+  </data>
+  <data name="VSH_SaftyHazardIdRequired" xml:space="preserve">
+    <value>Safety Hazard Id is required for Version Safety Hazard</value>
+  </data>
+  <data name="VSH_TitleRequired" xml:space="preserve">
+    <value>Version Safety Hazard title is required</value>
+  </data>
+  <data name="VTEOL_Version_EnablingObjectiveIdRequired" xml:space="preserve">
+    <value>Version Enabling Objective Id is required for Version Task Enabling Objective link</value>
+  </data>
+  <data name="VTEOL_Version_TaskIdRequired" xml:space="preserve">
+    <value>Version Task Id is required for Version Task Enabling Objective link</value>
+  </data>
+  <data name="VTPL_VersionProcedureIdRequired" xml:space="preserve">
+    <value>Version Procedure Id is required for Version Task Procedure link</value>
+  </data>
+  <data name="VTPL_VersionTaskIdRequired" xml:space="preserve">
+    <value>Version Task Id is required for Version Task Procedure link</value>
+  </data>
+  <data name="VTQ_AnswerRequired" xml:space="preserve">
+    <value>Answer is required for Version Task Question</value>
+  </data>
+  <data name="VTQ_QuestionRequired" xml:space="preserve">
+    <value>Question is required for Version Task Question</value>
+  </data>
+  <data name="VTQ_TaskQuestionIdRequired" xml:space="preserve">
+    <value>Task Question Id is required for Version Task Question</value>
+  </data>
+  <data name="VTQ_VersionTaskIdRequired" xml:space="preserve">
+    <value>Version Task Id is required for Version Task Question</value>
+  </data>
+  <data name="VTSHL_Version_SaftyHazardIdRequired" xml:space="preserve">
+    <value>Safety Hazard Id is required for Version Task Safety Hazard link</value>
+  </data>
+  <data name="VTSHL_Version_TaskIdRequired" xml:space="preserve">
+    <value>Task Id is required for Version Task Safety Hazard link</value>
+  </data>
+  <data name="VTS_DescriptionRequired" xml:space="preserve">
+    <value>Version Task step description is required</value>
+  </data>
+  <data name="VTS_NumberRequired" xml:space="preserve">
+    <value>Version Task step number is required</value>
+  </data>
+  <data name="VTS_TaskStepIdRequired" xml:space="preserve">
+    <value>Task step Id is required for Version Task step</value>
+  </data>
+  <data name="VTS_VersionTaskIdRequired" xml:space="preserve">
+    <value>Version Task Id is required for Version Task step</value>
+  </data>
+  <data name="VTTL_VersionTaskIdRequired" xml:space="preserve">
+    <value>Version Task Id is required for Version Task Tool Link</value>
+  </data>
+  <data name="VTTL_VersionToolIdRequired" xml:space="preserve">
+    <value>Version Tool Id is required for Version Task Tool Link</value>
+  </data>
+  <data name="VT_DescriptionRequired" xml:space="preserve">
+    <value>Version Tool description is required</value>
+  </data>
+  <data name="VT_MajorVersionRequired" xml:space="preserve">
+    <value>Version Tool majore version is required</value>
+  </data>
+  <data name="VT_MinorVersionRequired" xml:space="preserve">
+    <value>Version Tool minor version is required</value>
+  </data>
+  <data name="VT_ToolIdRequired" xml:space="preserve">
+    <value>Tool id is required for Version Tool</value>
+  </data>
+</root>

@@ -1,0 +1,72 @@
+[
+  {
+    "ILAId": 1,
+    "EnablingObjectiveId": 1,
+    "ILAObjectiveOrder": 1,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 2,
+    "EnablingObjectiveId": 2,
+    "ILAObjectiveOrder": 1,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 3,
+    "EnablingObjectiveId": 3,
+    "ILAObjectiveOrder": 1,
+    "Deleted": false,
+    "Active": false
+  },
+  {
+    "ILAId": 4,
+    "EnablingObjectiveId": 4,
+    "ILAObjectiveOrder": 1,
+    "Deleted": true,
+    "Active": true
+  },
+  {
+    "ILAId": 5,
+    "EnablingObjectiveId": 5,
+    "ILAObjectiveOrder": 1,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "ILAId": 5,
+    "EnablingObjectiveId": 3,
+    "ILAObjectiveOrder": 2,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 4,
+    "EnablingObjectiveId": 2,
+    "ILAObjectiveOrder": 2,
+    "Deleted": true,
+    "Active": true
+  },
+  {
+    "ILAId": 3,
+    "EnablingObjectiveId": 4,
+    "ILAObjectiveOrder": 2,
+    "Deleted": false,
+    "Active": false
+  },
+  {
+    "ILAId": 2,
+    "EnablingObjectiveId": 1,
+    "ILAObjectiveOrder": 2,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "ILAId": 1,
+    "EnablingObjectiveId": 5,
+    "ILAObjectiveOrder": 2,
+    "Deleted": true,
+    "Active": false
+  }
+  ]

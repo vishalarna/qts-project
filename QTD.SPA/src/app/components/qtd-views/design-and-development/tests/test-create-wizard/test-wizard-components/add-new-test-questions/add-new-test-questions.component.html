@@ -1,0 +1,78 @@
+<div class="flex flex-col px-12 py-12">
+    <ng-container>
+        <div class="flex flex-row justify-between">
+            <p class="font-bold text-lg m-0 p-0">
+                Add New Test Questions
+            </p>
+
+            <app-button variant="text" class="pt-4" text=" Add New Questions" icon="add" iconPosition="left"
+                      (clicked)="mode='add';openFlyInPanel(questionContainer)">
+                    </app-button>
+        </div>
+
+        <app-spinner *ngIf="showSpinner" class="items-center"></app-spinner>
+        <div class="mt-2" *ngIf="!showSpinner">
+            <mat-table class="w-full" matSort [dataSource]="dataSource" (matSortChange)="sortData($event)">
+                <ng-container matColumnDef="number">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        ID
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        {{row.number}}
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="question" >
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>
+                        Question Stem
+                    </mat-header-cell>
+                    <mat-cell *matCellDef="let row" style="width: 50%; word-break: break-word; overflow-wrap: break-word;" class="pt-3">
+                        <p [innerHTML]="row.question"></p>
+                    </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="type">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Type </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.type}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="taxonomyLevel">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Taxonomy Level </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.taxonomyLevel}} </mat-cell>
+                </ng-container>
+
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header>  </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <app-button  ButtonType="button" variant="text" [icon]="'visibility'" iconPosition="left" text="Preview"
+                            (clicked)="openFlyInPanel(previewTestQuestion)"
+                            (clicked)="selectedRow = row;openPreviewFlyInPanel(previewTestQuestion, row)"></app-button>
+
+                        <app-button class="ml-2" (clicked)="mode='edit';openEditFlyPanel(questionContainer,row)" variant="text" icon="edit" iconPosition="left" text="Edit">
+
+                        </app-button>
+                    </mat-cell>
+                </ng-container>
+
+
+                <mat-row *matHeaderRowDef="displayColumns"></mat-row>
+                    <mat-row *matRowDef="let row; columns : displayColumns"></mat-row>
+                    <tr class="mat-row flex text-center " *matNoDataRow>
+                        <td class="mat-cell w-full m-2">No Data Found</td>
+                    </tr>
+            </mat-table>
+
+            <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+                aria-label="Select page of periodic elements">
+            </mat-paginator>
+        </div>
+    </ng-container>
+</div>
+
+<ng-template #questionContainer>
+    <app-flypanel-add-test-item [mode]="mode" [previousQuestion]="selectedRow" (addQuestion)="saveQuestion($event)" (closed)="close()" ></app-flypanel-add-test-item>
+</ng-template>
+
+<ng-template #previewTestQuestion>
+    <app-flypanel-preview-test-questions (closed)="close()" [previousQuestion]="selectedRow"></app-flypanel-preview-test-questions>
+</ng-template>

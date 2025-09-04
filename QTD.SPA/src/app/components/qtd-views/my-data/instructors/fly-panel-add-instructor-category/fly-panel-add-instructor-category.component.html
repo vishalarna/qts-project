@@ -1,0 +1,91 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <!-- {{oldIssuingAuthority ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+        <ng-container *ngIf="mode==='Add'">
+          Add New Category
+         </ng-container>
+       <ng-container *ngIf="mode==='Edit'" >
+                Edit Category
+               </ng-container>
+       <ng-container *ngIf="mode==='Copy'">
+             Copy Category
+     </ng-container>
+      </p>
+      <app-button (click)="closeInstructorCategory()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <form [formGroup]="instructorCategoryForm">
+      <div class="flex flex-row px-12 ">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label class="label required" [for]="'insCategoryTitle'" [text]="'Category Title '">
+          </app-label>
+          <app-textbox type="text" formControlName="insCategoryTitle" [placeholder]="'Title'">
+          </app-textbox>
+          <app-input-error text="Issuing Category Title is required"
+            *ngIf="instructorCategoryForm.get('insCategoryTitle')?.invalid">
+          </app-input-error>
+        </div>
+      </div>
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'insCategoryDescription'" [text]="'Category Description'"></app-label>
+          <app-textarea type="text" formControlName="insCategoryDescription"
+            placeholder="Enter {{('Instructor' | labelReplacement)| async}} Category Description"
+            [value]="instructorCategoryForm.get('insCategoryDescription')?.value || ''">
+          </app-textarea>
+        </div>
+      </div>
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'insCategoryWebsite'" [text]="'Category Website'"></app-label>
+          <app-textbox type="text" formControlName="insCategoryWebsite"
+            placeholder="Enter {{('Instructor' | labelReplacement)| async}} Category Website">
+          </app-textbox>
+        </div>
+      </div>
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'EffectiveDate'" [text]="'Effective Date '"></app-label>
+          <app-date  formControlName="EffectiveDate" placeholder="Select Date">
+          </app-date>
+         <!--  <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+          </app-input-error> -->
+        </div>
+      </div>
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'Note'" [text]="'Note'"></app-label>
+          <app-textarea [value]="instructorCategoryForm.get('Note')?.value || ''" type="text" formControlName="Note" [placeholder]="'Enter Note'">
+          </app-textarea>
+        </div>
+      </div>
+      <div *ngIf="mode==='Add'" class="px-12 mt-8 float-left py-3">
+        <mat-checkbox formControlName="AddAnother" name="AddAnotherInstructorCategory">
+          Add Another Category
+        </mat-checkbox>
+      </div>
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='Add'">
+        <app-button [spinner]="showSpinner" [disabled]="instructorCategoryForm.invalid || showSpinner"
+          type="button" size="sm"  text="Save" (clicked)="createNewInsCategory()">
+        </app-button>
+      </div>
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='Edit'">
+        <app-button [spinner]="showSpinner" [disabled]="instructorCategoryForm.invalid || showSpinner "
+          type="button" size="sm"  text="Update" (clicked)="updateinsCategory()">
+        </app-button>
+      </div>
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='Copy'">
+        <app-button [spinner]="showSpinner" [disabled]="instructorCategoryForm.invalid || showSpinner "
+          type="button" size="sm"  text="Copy" (clicked)="createNewInsCategory()">
+        </app-button>
+      </div>
+
+
+    </form>
+  </ng-container>
+

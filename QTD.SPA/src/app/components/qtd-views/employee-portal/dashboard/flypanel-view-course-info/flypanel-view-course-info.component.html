@@ -1,0 +1,247 @@
+<section class="flex flex-col w-full p-5">
+  <div class="flex flex-row w-full justify-between cursor-pointer" style="align-items:center;">
+    <span class="font-bold text-xl">View Course Information</span>
+    <app-icon (click)="closed.emit()" icon="close"></app-icon>
+  </div>
+  <div class="flex w-full mt-3">
+    <mat-tab-group class="w-full">
+      <mat-tab [label]="'COURSE INFORMATION'">
+        <app-data-loader *ngIf="courseSpinner"></app-data-loader>
+        <div *ngIf="!courseSpinner" class="flex flex-col">
+          <span class="font-bold text-lg">{{("ILA" | labelReplacement)| async}} Name</span>
+          <span>{{courseInfo.ilaName}}</span>
+          <div *ngIf="courseInfo.isNercStandards" class="mt-4" style="display:grid;row-gap:2rem;">
+            <span class="font-bold text-lg mb-3">Total Credit Hours</span>
+            <span *ngIf="courseInfo.subRequirements.length < 1">No Certificates Linked With Course</span>
+            <div style="display:grid;grid-template-columns: 1fr 1fr 1fr;grid-row-gap:2rem;">
+              <div *ngFor="let hours of courseInfo.subRequirements">
+                  <div class="flex flex-col">
+                    <span class="font-bold">
+                      {{hours.hours | number:'2.0'}}
+                    </span>
+                    <span class="text-gray-400">
+                      {{hours.name | titlecase}}
+                    </span>
+                  </div>
+              </div>
+            </div>
+            <!-- <div style="grid-row: 1;grid-column: 2;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{courseInfo.opceHsHours | number:'2.0'}}
+                </span>
+                <span class="text-gray-400">
+                  Operation Topic Hours/CEHs
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 1;grid-column: 3;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{courseInfo.standardHours | number:'2.0'}}
+                </span>
+                <span class="text-gray-400">
+                  Standard Hours
+                </span>
+              </div>
+            </div> -->
+            <!-- <div style="grid-row: 2;grid-column: 1;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{courseInfo.simulationsHours | number:'2.0'}}
+                </span>
+                <span class="text-gray-400">
+                  Simulation Hours
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 2;grid-column: 2;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{courseInfo.emergencyOPHours | number:'2.0'}}
+                </span>
+                <span class="text-gray-400">
+                  Emergency Operation Hours
+                </span>
+              </div>
+            </div> -->
+          </div>
+          <!-- <div *ngIf="courseInfo.isNercStandards" class="mt-4" style="display:grid;row-gap:2rem;">
+            <div style="grid-row: 1;grid-column: 1;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{courseInfo.pmjTotalTrainingHours | number:'2.0'}}
+                </span>
+                <span class="text-gray-400">
+                  PJM Total Training Hours
+                </span>
+              </div>
+            </div>
+          </div> -->
+          <span class="font-bold text-lg mb-3 mt-5">Prerequisites</span>
+          <div class="flex flex-col w-full mb-5" *ngIf="courseInfo.prerequisitesList.length > 0">
+            <div *ngFor="let preReq of courseInfo.prerequisitesList" class="flex flex-col w-full">
+              <span>{{preReq.number ?? "N/A" + ' - ' +preReq.name}}</span>
+            </div>
+          </div>
+          <span class="mb-5" *ngIf="courseInfo.prerequisitesList.length < 1">Prerequisites Not Required</span>
+          <span class="font-bold text-lg mb-3">Training Plan</span>
+          <div [innerHTML]="courseInfo.trainingPlan === null || courseInfo.trainingPlan === '' ? 'No Trainng Plan Available':courseInfo.trainingPlan" class="mb-3"></div>
+          <span class="font-bold text-lg mb-3">Learning Objectives</span>
+          <span class="mt-3" *ngIf="eoSource.data.length < 1">No Learning Objectives Linked</span>
+          <div *ngIf="eoSource.data.length > 0" class="flex w-full">
+            <table mat-table [dataSource]="eoSource" class="w-full">
+              <ng-container matColumnDef="type">
+                <th style="width:13%;" mat-header-cell *matHeaderCellDef>
+                  Type
+                </th>
+                <td mat-cell *matCellDef="let row,index as i">
+                  {{row.type}}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="num">
+                <th style="width:13%;" mat-header-cell *matHeaderCellDef>
+                  No.
+                </th>
+                <td mat-cell *matCellDef="let row,index as i">
+                  {{row.number}}
+                </td>
+              </ng-container>
+              <ng-container matColumnDef="statement">
+                <th style="width:75%;" mat-header-cell *matHeaderCellDef>
+                  Statement
+                </th>
+                <td mat-cell *matCellDef="let row,index as i">
+                  {{row.description}}
+                </td>
+              </ng-container>
+              <tr mat-row *matHeaderRowDef="displayColumns"></tr>
+              <tr mat-row *matRowDef="let row; columns : displayColumns"></tr>
+              <tr class="mat-row text-center " *matNoDataRow>
+                <td [attr.colspan]="displayColumns.length" class="mat-cell w-full m-2">No Objectives found</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </mat-tab>
+
+      <mat-tab [label]="'CLASS DETAILS'">
+        <app-data-loader *ngIf="classSpinner"></app-data-loader>
+        <div *ngIf="!classSpinner" class="w-full flex flex-col">
+          <div class="mt-4 mb-4" style="display:grid;row-gap: 2rem;">
+            <!-- <div style="grid-row: 1;grid-column: 1;">
+              <span class=" text-gray-400 text-lg">ILA Details</span>
+            </div> -->
+            <div style="grid-row: 1;grid-column: 1;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{classInfo.ilaName}}
+                </span>
+                <span class="text-gray-400">
+                  {{("ILA" | labelReplacement)| async}} Name
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 1;grid-column: 2;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{classInfo.ilaNumber}}
+                </span>
+                <span class="text-gray-400">
+                  {{("ILA" | labelReplacement)| async}} Number
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 1;grid-column: 3;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{classInfo.startDate | date:'dd-MM-yyyy h:mm a'}}
+                </span>
+                <span class="text-gray-400">
+                  Start Date/Time
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 2;grid-column: 1;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{classInfo.endDate | date:'dd-MM-yyyy h:mm a'}}
+                </span>
+                <span class="text-gray-400">
+                  End Date/Time
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 2;grid-column: 2;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{classInfo.instructor}}
+                </span>
+                <span class="text-gray-400">
+                  {{"Instructor"}}
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 2;grid-column: 3;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{classInfo.location}}
+                </span>
+                <span class="text-gray-400">
+                  {{("Location" | labelReplacement) | async }}
+                </span>
+              </div>
+            </div>
+            <div style="grid-row: 3;grid-column: 1;">
+              <div class="flex flex-col">
+                <span class="font-bold">
+                  {{classInfo.deliveryMethod}}
+                </span>
+                <span class="text-gray-400">
+                  Delivery Method
+                </span>
+              </div>
+            </div>
+          </div>
+          <span class="text-lg font-bold mt-5 mb-3">Course {{("Instruction" | labelReplacement)| async}}s</span>
+          <div class="mb-5" [innerHTML]="classInfo.courseInstruction === null || classInfo.courseInstruction === '' ? 'N/A' :classInfo.courseInstruction"></div>
+
+          <span class="text-lg font-bold mb-3">Webinar Link</span>
+          <div class="flex p-2 mb-5" style="width:70%;background-color: #F3F3F3;border-radius: 4px;">
+            <span class="text-gray-500">{{classInfo.webinarLink === null || classInfo.webinarLink === '' ? "N/A":classInfo.webinarLink}}</span>
+          </div>
+
+          <span class="text-lg font-bold mb-2">Course Completion Requirements</span>
+          <span class="text-gray-500 mb-2">In order to receive credit for this course, students are required to complete the following:</span>
+          <div class="flex flex-col">
+            <mat-checkbox [disabled]="true" [checked]="classInfo.preTestRequired" class="my-1 black">Pretest</mat-checkbox>
+            <mat-checkbox [disabled]="true" [checked]="classInfo.CBTRequired" class="my-1">CBT</mat-checkbox>
+            <mat-checkbox [disabled]="true" [checked]="classInfo.finalTestRequired" class="my-1">Final Assessment</mat-checkbox>
+            <mat-checkbox [disabled]="true" [checked]="classInfo.finalTestRequired" class="my-1 ml-5">Written Test</mat-checkbox>
+            <mat-checkbox [disabled]="true" [checked]="classInfo.taskQualificationRequired" class="my-1 ml-5">{{("Task" | labelReplacement)| async}} Qualification</mat-checkbox>
+            <mat-checkbox [disabled]="true" [checked]="false" class="my-1 ml-5">Oral Test/Discussion</mat-checkbox>
+            <mat-checkbox [disabled]="true" [checked]="false" class="my-1 ml-5">Simulator Scenario</mat-checkbox>
+            <mat-checkbox [disabled]="true" [checked]="classInfo.studentEvaluationRequired" class="my-1">Student Evaluation</mat-checkbox>
+          </div>
+        </div>
+      </mat-tab>
+      <mat-tab label="RESOURCES">
+        <app-data-loader *ngIf="resourceLoader"></app-data-loader>
+        <div *ngIf="!resourceLoader" class="w-full flex flex-col">
+          <span *ngIf="ilaFiles.length < 1">No Files linked to {{("ILA" | labelReplacement)| async}}</span>
+          <div *ngIf="ilaFiles.length > 0">
+            <span class="font-bold text-lg">Uploaded Files for Course</span>
+            <div class="flex flex-col">
+              <div class="my-3 flex flex-row justify-between" *ngFor="let file of ilaFiles,index as i">
+                <span>{{file.fileName}}</span>
+                <app-button [disabled]="downloadSpinner[i]" [spinner]="downloadSpinner[i]" variant="text"
+                iconPosition="left" icon="cloud_download" (clicked)="downloadFile(file,i)" class="ml-3" text="download">
+              </app-button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </mat-tab>
+    </mat-tab-group>
+  </div>
+</section>

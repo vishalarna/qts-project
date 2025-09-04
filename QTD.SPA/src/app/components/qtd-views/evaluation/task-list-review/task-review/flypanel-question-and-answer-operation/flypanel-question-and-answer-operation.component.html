@@ -1,0 +1,56 @@
+<div class="flex flex-row justify-between items-center px-12 mt-3 mb-3">
+  <p class="text-xl font-bold text-gray-900 mb-0">
+    Question and Answer Operation
+  </p>
+  <app-button
+    (click)="closeFlyPanel()"
+    ButtonType="icon"
+    icon="close"
+  ></app-button>
+</div>
+<div *ngIf = "isLoading" class="operation-spinner">
+  <app-spinner></app-spinner>
+</div>
+<div class="m-3" [formGroup]="quesAnsOperationForm" *ngIf = "!isLoading">
+  <div class="flex flex-col ml-5 mt-3">
+    <app-label text="Operation Type" class="font-weight-bold label required"></app-label>
+    <mat-select placeholder = "Select Operation Type"
+      formControlName="operation"
+      class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+      (selectionChange)="onOperationTypeChange($event.value)">
+      <mat-option *ngFor="let item of operationType" [value]="item.id">
+        {{ item.type }}
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <ng-container *ngIf="quesAnsOperationForm.get('operation').value">
+    <ng-container *ngIf="operationTypeName !='CreateRecord'">
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label
+        text="{{ 'Task' | labelReplacement | async }} Question"
+        class="font-weight-bold label required"
+      ></app-label>
+      <mat-select (selectionChange) = "onTaskQuestionChange($event.value)"
+        formControlName="taskQuestion" placeholder = "Select {{ 'Task' | labelReplacement | async }} Question"
+        class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+        <mat-option *ngFor = "let qd of taskQuestionData"[value] = "qd.id">{{qd.questionNumber}}</mat-option>
+      </mat-select>
+    </div>
+  </ng-container>
+
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label text="Question" class="font-weight-bold" [ngClass]="{'label required': operationTypeName != 'RemoveLink'}"></app-label>
+      <app-textbox formControlName = "question" class="mt-1"></app-textbox>
+    </div>
+
+    <div class="flex flex-col ml-5 mt-3">
+      <app-label text="Answer" class="font-weight-bold" [ngClass]="{'label required': operationTypeName != 'RemoveLink'}"></app-label>
+      <app-textbox formControlName = "answer"  class="mt-1"></app-textbox>
+    </div>
+
+    <div class="flex justify-end mt-3">
+      <app-button size="sm" text="Save" [disabled] = "saveDisabled()" (clicked) = "onQuesAnsOperationSave()" type="submit"></app-button>
+    </div>
+  </ng-container>
+</div>

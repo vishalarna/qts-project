@@ -1,0 +1,51 @@
+<ng-container>
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <!-- {{oldProcedure ? "Edit Issuing Authority":"Add New Issuing Authority"}} -->
+    
+        <ng-container *ngIf="mode==='Add'" > 
+                  New Student Evaluation Question
+                </ng-container>
+                <ng-container *ngIf="mode==='Edit'" > 
+                    Edit Student Evaluation Question
+                  </ng-container>
+        <ng-container *ngIf="mode==='Copy'">
+        Copy Student Evaluation Question
+      </ng-container>
+        
+      </p>
+      <app-button (click)="closedefinition()" ButtonType='icon' icon="close"></app-button>
+    </div>
+  
+    <form [formGroup]="questionForm">
+      
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+            <app-label
+            [for]="'questionStem'"
+            [text]="'Question Stem'"
+            class="mt-6 float-left label"
+          ></app-label>
+          <ckeditor
+            name="questionStem"
+            [editor]="editor"
+            formControlName="questionStem"
+          >
+          </ckeditor>
+        </div>
+      </div>
+                
+      <div class="px-12 mt-8 float-right py-3">
+        <app-button  [spinner]="showSpinner" *ngIf="mode === 'Add' || mode === 'Copy'" [disabled]="questionForm.invalid || showSpinner"
+          type="button" size="sm"  text="Save" class="mr-4" (clicked)="saveQuestion()">
+        </app-button>
+        <app-button [spinner]="showSpinner" *ngIf="mode === 'Edit'" [disabled]="questionForm.invalid || showSpinner"
+        type="button" size="sm"  text="Update" class="mr-4" (clicked)="updateQuestion()">
+      </app-button>
+      </div>
+      
+      
+    </form>
+  </ng-container>
+    
+  

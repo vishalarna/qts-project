@@ -1,0 +1,246 @@
+<!--Heading starts-->
+<div class="flex flex-col" [ngClass]="{ 'px-12 py-12':linkIlas}">
+  <ng-container *ngIf="linkIlas">
+    <div class="flex flex-col">
+      <div class="flex flex-row justify-between">
+        <h2>Add {{("ILA" | labelReplacement)| async}}s</h2>
+        <app-button ButtonType="icon" icon="close" (click)="closeFlyPanel()"></app-button>
+
+      </div>
+      <div class="px-1">
+        <p class="text-gray-300">Select {{("ILA" | labelReplacement)| async}}s by provider or by Training Program, to link to {{EmpName}}'s IDP:</p>
+      </div>
+    </div>
+    <div class="flex flex-row items-center border-b-0.8 border-gray-one mt-3">
+      <div class="flex flex-grow" *ngIf="viewSelected==='Provider'">
+        <app-icon icon="search"></app-icon>
+        <input class="text-sm flex-grow focus:outline-none" placeholder="Search" type="text"
+          (input)="filterData(dataSource.data,$event)" [(ngModel)]="filterIlaString">
+      </div>
+      <div class="flex flex-row">
+        <!-- <app-button type="button" color="secondary" size="sm" leftIcon="filter_alt" rightIcon="expand_more"
+                    text="Filter By" [matMenuTriggerFor]="filterMenu"></app-button>
+                <mat-menu #filterMenu="matMenu" backdropClass="qtd__menu">
+                    <label [disabled]="isProvider" mat-menu-item (click)="filterBy='Provider';isProvider=true;getProviderData()">Provider</label>
+                    <label [disabled]="!isProvider" mat-menu-item (click)="filterBy='Topic';isProvider=false;getTopicData()">Topic</label>
+                </mat-menu> -->
+      </div>
+
+    </div>
+
+    <!-- Heading ends -->
+
+    <div class="flex flex-row mt-3 items-center text-gray-four justify-between text-xs btn-group">
+
+      <div class="cursor-pointer" *ngIf="viewSelected==='Provider'">
+        <span> Showing:
+          <label  class="mb-0">
+            <p *ngIf="showActive" class="font-bold">
+              Active
+            </p>
+            <p *ngIf="!showActive" class="font-bold">
+              Inactive
+            </p>
+
+          </label>
+          <app-icon icon="expand_more" ></app-icon>
+        </span>
+      </div>
+
+    </div>
+    <div class="flex flex-row justify-between">
+      <app-label text="{{('ILA' | labelReplacement)| async}}s by {{viewSelected}}" class="text-lg font-bold"></app-label>
+      <div class="flex flex-row float-right bg-white-one text-sm" style="width:43%">
+        <button (click)="ToggleILAGroupBy('Provider')" class="p-2"
+          style="border-top-left-radius: 2px;border-bottom-left-radius: 2px;width:50%; outline: none;color: rgba(122, 128, 126, 1);font-weight:medium;border: 1px solid rgba(122, 128, 126, 0.2);"
+          [ngStyle]="viewSelected==='Provider' ? {'background-color': 'rgba(92, 155, 49,0.1)', 'color': 'rgba(92, 155, 49, 1)','border': '1px solid rgba(92, 155, 49, 1)'} : {'background-color': 'white','color': 'rgba(122, 128, 126, 1)','border': '1px solid rgba(122, 128, 126, 0.2)'}">Provider</button>
+
+        <button (click)="ToggleILAGroupBy('Training Program')" class="p-2"
+          style="border-top-right-radius: 2px;border-top-right-radius: 2px;width:50% ;outline: none;color: rgba(122, 128, 126, 1);font-weight:medium;border: 1px solid rgba(122, 128, 126, 0.2);"
+          [ngStyle]="viewSelected==='Training Program' ? {'background-color': 'rgba(92, 155, 49,0.1)', 'color': 'rgba(92, 155, 49, 1)','border': '1px solid rgba(92, 155, 49, 1)'} : {'background-color': 'white','color': 'rgba(122, 128, 126, 1)','border': '1px solid rgba(122, 128, 126, 0.2)'}">Training
+          Program</button>
+      </div>
+    </div>
+    <div>
+      <app-label text="IDP Year:"></app-label>
+        <mat-select
+            [value]="yearNow" 
+            (selectionChange)="IDPYearSelected($event)" 
+            class="appearance-none rounded w-full px-4 border py-2.5 mt-2 align-item-end bg-white"
+            style="width:30%"
+            required>
+          <mat-option *ngFor="let i of range" [value]="i">
+            {{i}}
+          </mat-option>
+        </mat-select>
+    </div>
+    <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="linkedIds.length > 0">
+      <div class="flex flex-row w-full justify-between mb-3">
+        <p class="text-xs text-gray-four pt-2">
+          <ng-container *ngIf="'ILA' | labelReplacement | async as ilaLabel">
+            {{ linkedIds.length + " " + ilaLabel + "s selected" }}
+          </ng-container>
+        </p>        
+        <app-button (clicked)="linkILA()" [spinner]="showLinkIlaLoader" class="mb-2" type="button" color="secondary"
+          size="sm" [disabled]="showLinkIlaLoader" text="Add to IDPs">
+        </app-button>
+      </div>
+      <hr>
+      <p class="text-xs text-gray-four mt-3">Selecting a Provider or Topic will select all {{("ILA" | labelReplacement)| async}}s
+        linked
+        to
+        the given Provider or Topic</p>
+    </div>
+
+    <span *ngIf="dataSource.data !== undefined && dataSource.data.length < 1 && viewSelected === 'Provider' && !isILALoading">No {{("ILA" | labelReplacement)| async}}s
+      Found</span>
+    <app-data-loader *ngIf="isILALoading"></app-data-loader>
+
+    <ng-container *ngIf="dataSource.data !== undefined && dataSource.data.length > 0 && viewSelected === 'Provider'">
+      <div class="flex flex-col ">
+        <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="qtd-tree">
+          <!-- This is the tree node template for leaf nodes -->
+          <!-- There is inline padding applied to this node using styles.
+                  This padding value depends on the mat-icon-button width. -->
+          <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+            <ng-container *ngIf="node.checkbox">
+              <mat-checkbox (change)="onIlaChange($event,node)" [checked]="node.selected">
+                {{node.description}}</mat-checkbox>
+            </ng-container>
+            <ng-container *ngIf="!node.checkbox">
+              <app-icon style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;<span
+                style="color: rgb(92, 155, 49);">{{node.description}}</span>
+            </ng-container>
+            <!-- <ng-container *ngIf="!node.checkbox && filtered(node) && node.HasChild">
+                        <span>{{node.description}}</span>
+                      </ng-container> -->
+          </mat-tree-node>
+
+          <!-- This is the tree node template for expandable nodes -->
+          <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
+            <div class="mat-tree-node">
+              <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.description">
+                <app-icon [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'">
+                </app-icon>
+              </button>
+
+              <mat-checkbox style="margin-left: 4px;margin-top: 6px;" [checked]="node.selected" *ngIf="node.checkbox" [indeterminate]="node.indeterminate && !node.selected"
+                (change)="itemToggle($event.checked,node)">{{node.description}}
+              </mat-checkbox>
+                <ng-container *ngIf="!node.checkbox">
+                  <app-icon style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;<span style="color: rgb(92, 155, 49);">{{node.description}}</span>
+                </ng-container>
+            </div>
+
+            <div [class.qtd-tree-invisible]="!treeControl.isExpanded(node)" role="group">
+              <ng-container matTreeNodeOutlet></ng-container>
+            </div>
+          </mat-nested-tree-node>
+        </mat-tree>
+
+      </div>
+    </ng-container>
+
+    <!-- For ILAs by Training Program -->
+    <ng-container *ngIf="viewSelected === 'Training Program'">
+      <!-- <div ></div> -->
+      <!-- <div class="flex flex-col">
+        <div class="flex flex-row">
+      <app-label text="Position">
+      </app-label>
+       formControlName="trainingProgtype"
+      <mat-select class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white" placeholder="Select Training Program Type" (selectionChange)="chnagetrainingProgramType($event)">
+        <mat-option  *ngFor="let i of trainingProgramList" [value]="i.id">
+          {{i.trainingProgramTypeTitle}}
+        </mat-option>
+      </mat-select>
+    </div>
+    </div> -->
+
+      <div class="items-center px-1 mt-2">
+        <div class="flex flex-col px-2 py-3">
+          <app-label text="{{('Position' | labelReplacement)| async}}"></app-label>
+          <mat-select (selectionChange)="getTrainingProgramTypes($event)" class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+            <mat-option *ngFor="let i of positionsList" [value]="i">
+              {{i.positionTitle}}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="flex flex-col px-2 py-3">
+          <app-label text="Training Program Type"></app-label>
+          <mat-select (selectionChange)="trainingProgramSelectionChanged($event)" class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+            <mat-option *ngFor="let i of trainingProgramList" [value]="i">
+              {{i.trainingProgramTypeTitle}}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="flex flex-col px-2 py-3" *ngIf="this.showVersion">
+          <app-label text="Version"></app-label>
+          <mat-select [(ngModel)]="selectedVersion" (selectionChange)="VersionSelected($event)" class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+            <mat-option *ngFor="let i of selectedTr" [value]="i.id">
+              {{i.tpVersionNo}}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="flex flex-col px-2 py-3" *ngIf="this.showYear">
+          <app-label text="Year"></app-label>
+          <mat-select [(ngModel)]="selectedYear"  (selectionChange)="YearSelected($event)" class="appearance-none rounded border w-full px-4 py-2.5 mt-2 align-item-end bg-white">
+            <mat-option *ngFor="let year of yearsDropdown.sort()" [value]="year">
+              {{year}}
+            </mat-option>
+          </mat-select>
+        </div>
+        <div class="flex flex-col flex-wrap bg-gray-one mb-3 mt-3  px-3 py-3 rounded" *ngIf="unlinkIds.length > 0">
+          <div class="flex flex-row w-full justify-between mb-3">
+            <p class="text-xs text-gray-four pt-2">{{unlinkIds.length}} {{("ILA" | labelReplacement)| async}} Selected</p>
+            <app-button class="mb-2" (clicked)="linkILAs()" type="button" color="secondary" size="sm" text="Add to IDP">
+            </app-button>
+          </div>
+        </div>
+        <mat-table [dataSource]="DataSource" class="table-bordered" style="width: 98%;margin-left: 8px;">
+          <ng-container matColumnDef="id">
+            <mat-header-cell *matHeaderCellDef>
+              <mat-checkbox (change)="$event ? masterToggle() : null"
+                [checked]="selection.hasValue() && isAllSelected()"
+                [indeterminate]="selection.hasValue() && !isAllSelected()">
+              </mat-checkbox>
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              <mat-checkbox (click)="$event.stopPropagation()" (change)="$event ? selectrow(row) : null"
+                [checked]="selection.isSelected(row)">
+              </mat-checkbox>
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="num">
+            <mat-header-cell *matHeaderCellDef> {{("ILA" | labelReplacement)| async}} #
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{row.number===null || row.number===undefined || row.number===''?"N/A":row.number}}
+            </mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="title">
+            <mat-header-cell *matHeaderCellDef> Title
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">
+              {{row.name===null || row.name===undefined || row.name===''?"N/A":row.name}}
+            </mat-cell>
+          </ng-container>
+          <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+
+          <tr class="mat-row flex text-center " *matNoDataRow>
+            <td class="mat-cell w-full m-2">No data to display</td>
+          </tr>
+
+        </mat-table>
+      </div>
+
+
+
+    </ng-container>
+  </ng-container>
+
+  <app-fly-panel-add-ila *ngIf="addIla" (refresh)="refreshILAsTree()"
+    (closed)="addIla=false;linkIlas=true;refreshILAsTree()"></app-fly-panel-add-ila>
+
+</div>

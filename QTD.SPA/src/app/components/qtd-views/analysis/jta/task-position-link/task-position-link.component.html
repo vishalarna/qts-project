@@ -1,0 +1,131 @@
+<!-- header starts -->
+<app-header [canGoBack]="true" prevUrl='/analysis/jta/task-detail' [queryParams]="{taskId:taskId}"
+    title="{{'L.TaskLinkedToPositions' | translate | dynamicLabelReplacement| async }}"></app-header>
+<!-- header ends -->
+<!-- main-header starts -->
+<div class="flex flex-col px-12 py-8">
+    <div class="flex flex-row text-sm text-gray-four">
+        <p class="mb-12">Job and {{("Task" | labelReplacement)| async}} Analysis / {{daNumber + ". " +
+            this.taskDetail?.subdutyArea?.dutyArea?.description}} /
+            {{daNumber
+            + "." + sdaNumber + " " + taskDetail?.subdutyArea?.description }} / {{("Task" | labelReplacement)| async}} {{tNumber}} / {{("Position" | labelReplacement)| async}}s Linkage
+        </p>
+    </div>
+
+    <div class="flex flex-row items-center space-x-6 mb-6">
+        <p class="text-sm text-gray-four font-medium">{{("Task" | labelReplacement)| async}} {{tNumber}}</p>
+    </div>
+
+    <p class="w-15/24 font-bold text-xl text-gray-five mb-6">{{taskDetail?.description}}</p>
+
+</div>
+<!-- main-header ends -->
+
+<!-- Positions starts -->
+<div class="flex flex-col px-12 mb-3">
+    <div class="">
+
+        <!-- table starts -->
+        <div class="border-gray-one w-21/24 shadow-xs border-0.5 rounded">
+            <!-- table header starts -->
+            <div
+                class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one float-right ">
+                <div class="flex flex-row space-x-4 text-sm" id="addNewPos" *ngIf="PosToUnlink.length==0">
+                    <button class="btn-icon-secondary" id="btnAddNewPos" (click)="openFlyInPanel(posPanel)">
+                        <svg class="feather feather-plus mr-2" xmlns="http://www.w3.org/2000/svg" width="20" height="20"
+                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="12" y1="5" x2="12" y2="19"></line>
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Add {{("Position" | labelReplacement)| async}}s
+                    </button>
+                </div>
+                <div class="flex flex-row space-x-4 text-sm " id="unlinkPos" *ngIf="PosToUnlink.length>0">
+                    <button class="btn-icon-secondary" (click)="UnlinkPositionsToTask()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-minus mr-2">
+                            <line x1="5" y1="12" x2="19" y2="12"></line>
+                        </svg>
+                        Unlink from {{("Task" | labelReplacement)| async}}
+                    </button>
+                </div>
+            </div>
+            <!-- table header ends -->
+
+            <!-- table content starts -->
+            <div class="flex-row bg-white-one rounded-b-md m-2">
+                <table datatable class="table w-full text-left mt-5 row-border hover" [dtOptions]="dtOptions"
+                    [dtTrigger]="dtTrigger">
+                    <thead class="table-row-group">
+
+                        <tr class="table-row text-xs text-gray-four">
+                            <th class="table-cell w-7/24 py-5 pl-6 border-b-0.8 border-gray-one font-normal">
+
+                                <p class="inline-block">{{("Position" | labelReplacement)| async}}s</p>
+                            </th>
+                            <th class="table-cell w-4/24 py-5 border-b-0.8 border-gray-one font-normal">RR Status
+                            </th>
+                            <th class="table-cell w-4/24 py-5 border-b-0.8 border-gray-one font-normal">{{("Task" | labelReplacement)| async}} Group
+                            </th>
+                            <th class="table-cell w-4/24 py-5 border-b-0.8 border-gray-one font-normal">Impact RRTs
+                                (R5)</th>
+                            <th class="table-cell w-4/24 py-5 border-b-0.8 pr-6 font-normal">Impact RRTs (R6)</th>
+                            <th class="table-cell w-1/24 py-5 border-b-0.8 pr-6 font-normal">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr href="" class="table-row border-b-8 text-sm hover:bg-gray-50"
+                            *ngFor="let item of LinkedPositions">
+                            <td class="pl-6 py-6 table-cell align-middle border-b-0.8 border-gray-one">
+                                <input type="checkbox" class="mr-4 bg-green-300" (change)="RemoveFromLinkList(item.id)">
+                                {{item.name}}
+                            </td>
+                            <td class="table-cell align-middle border-b-0.8 border-gray-one">-</td>
+                            <td class="table-cell align-middle border-b-0.8 border-gray-one">-</td>
+                            <td class="table-cell align-middle border-b-0.8 border-gray-one">-</td>
+                            <td class="table-cell align-middle border-b-0.8 border-gray-one">-</td>
+                            <td class="table-cell align-middle border-b-0.8 border-gray-one">
+                                <div ngbDropdown class="d-inline-block">
+                                    <div id="dropdownBasic1" ngbDropdownToggle>
+                                        <svg class="w-6 h-6 stroke-current text-gray-400" fill="none"
+                                            stroke="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1">
+                                        <a href="/implementation/emp/view" ngbDropdownItem translate>Change PR
+                                            Status</a>
+                                        <a href="/implementation/emp/edit" ngbDropdownItem translate>Assign {{("Task" | labelReplacement)| async}}
+                                            group</a>
+                                        <button ngbDropdownItem translate>Impact RRTs (R5)</button>
+                                        <div class="dropdown-divider"></div>
+                                        <button ngbDropdownItem translate
+                                            (click)="UnlinkPositionsToTask(item.id)">Disconnect from {{("Task" | labelReplacement)| async}}</button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </tbody>
+                </table>
+            </div>
+            <!-- table content ends -->
+        </div>
+        <!-- table ends -->
+    </div>
+</div>
+<!-- Positions ends -->
+
+
+
+
+
+
+<ng-template #posPanel>
+    <app-fly-panel-positions (closed)="flyPanelService.close()" [showLinkBtn]="true"></app-fly-panel-positions>
+</ng-template>

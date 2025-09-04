@@ -1,0 +1,293 @@
+<app-header [toggleMenuIcon]="true" breadcrumbs="{{('Employee' | labelReplacement)| async}}s"></app-header>
+<div class="flex flex-row flex-wrap ml-8 mt-3">
+    <p class="font-bold text-lg px-4">{{("Employee" | labelReplacement)| async}} Overview</p>
+</div>
+
+<div class="px-10 pb-12 flex flex-row">
+    <ng-container *ngIf="!isLoading">
+        <div class="container bg-white rounded m-3 p-3 shadow-sm w-full mb-4">
+            <div class="flex flex-row justify-between">
+                <div class="flex flex-col">
+                    <p>Max {{("Employee" | labelReplacement)| async}} for License Type</p>
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':catCompleted>0 ,'text-lg text-black':catCompleted==0}" (click)="openFlyInPanelList(ListEmp,'All')"><b>{{catCompleted}}</b></span>
+
+                </div>
+                <div class="flex flex-col">
+                    <p>Active</p>
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':activeCount>0 ,'text-lg text-black':activeCount==0}" (click)="openFlyInPanelList(ListEmp,'Active')"><b>{{activeCount}}</b></span>
+
+                </div>
+                <!-- <span class=" pl-3 pr-3"></span> -->
+                <div class="flex flex-col">
+                    <p>Inactive</p>
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':inactiveCount>0 ,'text-lg text-black':inactiveCount==0}" (click)="openFlyInPanelList(ListEmp,'Inactive')"><b>{{inactiveCount}}</b></span>
+                </div>
+                <div class="flex flex-col">
+                    <p>Marked as Trainees</p>
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':statisticsData?.totalTrainee>0 ,'text-lg text-black':statisticsData?.totalTrainee==0}" (click)="openFlyInPanelList(ListEmp,'Trainee')"><b>{{statisticsData?.totalTrainee}}</b></span>
+                </div>
+                <div class="flex flex-col " >
+                    <p>With Expired certificates</p>
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':statisticsData?.totalEmployeesWithExpiredCertificate>0 ,'text-lg text-black':statisticsData?.totalEmployeesWithExpiredCertificate==0}" (click)="openFlyInPanelList(ListEmp,'ExpiredCertificates')"><b>{{statisticsData?.totalEmployeesWithExpiredCertificate}}</b></span>
+
+                </div>
+                <div class="flex flex-col " >
+                    <p>With No certificates</p>
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':statisticsData?.totalEmployeesWithNoCertificate>0 ,'text-lg text-black':statisticsData?.totalEmployeesWithNoCertificate==0}" (click)="openFlyInPanelList(ListEmp,'NoCertificates')"><b>{{statisticsData?.totalEmployeesWithNoCertificate}}</b></span>
+
+                </div>
+            </div>
+
+        </div>
+    </ng-container>
+
+</div>
+
+<div  *ngIf="filterDataCheck && !isLoading" >
+
+    <div class="flex flex-col justify-between ml-12 px-4 py-2 bg-white-one pt-2 mr-12">
+        <div class="flex flex-row justify-between">
+            <p>Organization Manager Filter Applied :  {{empOrgManagerFilter}} </p>
+            <p>Organization Filter Applied : {{empOrgFilter}}</p>
+            <p>{{("Position" | labelReplacement)| async}} Filter Applied : {{empPositionFilter}} </p>
+        </div>
+
+        <div class="flex flex-row justify-between">
+            <p>Status Filter Applied : {{empStatusFilter}}</p>
+            <p style="  padding-left: 3rem;">TQ Evaluator Filter Applied : {{empTaskEvaluatorFilter}}</p>
+            <app-button variant="text" class="mt-2 ml-12" (clicked)="clearFilterFunction()" text="Clear filter" icon="clear" iconPosition="right"></app-button>
+        </div>
+
+      </div>
+
+
+
+</div>
+
+
+
+<app-data-loader *ngIf="isLoading"></app-data-loader>
+<!-- main-page starts -->
+<div *ngIf="!isLoading" class="flex flex-row flex-wrap ml-4 mt-3">
+    <app-button variant="text" class="mt-2 ml-8" text="Bulk Edit" icon="edit" iconPosition="left"
+            routerLink="/my-data/bulkedit/employees"></app-button>
+</div>
+
+<div class="flex flex-col px-12 pb-12 mt-12" *ngIf="empDataSource">
+    <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8">
+        <!-- search and buttons starts -->
+        <div
+            class="flex flex-row items-center bg-white-one rounded-t-md py-4 px-6 space-x-2 border-b-0.8 border-gray-one ">
+            <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+
+            <div class="flex flex-grow">
+                <!-- <app-icon icon="search"></app-icon> -->
+                <input class="text-sm flex-grow focus:outline-none" placeholder="Enter name or {{('Employee' | labelReplacement)| async}} ID to search"
+                type="text" (keyup)="filterEmps($event)" [(ngModel)]="clearSearch">
+                <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+            </div>
+
+            <!-- <input class="text-sm flex-grow focus:outline-none" placeholder="Enter name or {{('Employee' | labelReplacement)| async}} ID to search"
+                type="text" (keyup)="filterEmps($event)"> -->
+            <div class="flex flex-row space-x-4 text-sm">
+                <app-button color="secondary" text="Filters" size="sm" icon="filter_alt" iconPosition="left"
+                    (clicked)="openFlyInPanel()">
+                </app-button>
+                <app-button text="Add {{('Employee' | labelReplacement)| async}}" size="sm" icon="expand_more" [matMenuTriggerFor]="addEmpMenu">
+                </app-button>
+                <mat-menu #addEmpMenu="matMenu">
+                    <label mat-menu-item (click)="AddEmployeeManually()">Manually</label>
+                    <label mat-menu-item (click)="UploadCsv()" >Upload CSV</label>
+                    <label mat-menu-item (click)="AddByApi()">API</label>
+                </mat-menu>
+
+            </div>
+        </div>
+        <!-- search and button ends -->
+        <!-- table starts -->
+        <div class="flex-row bg-white-one rounded-b-md m-2 ">
+
+            <mat-table [dataSource]="empDataSource" matSort (matSortChange)="sortData($event)" >
+                <ng-container matColumnDef="index">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Index </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.index}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="image">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> <img style="border-radius: 50%;width: 50px;height: 50px;" class="img-fluid mr-2 mt-2 ml-2 mb-2" [src]="row.image"
+                        onerror="this.src='assets/img/ImageNotFound.jpg'"> </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="name">
+                    <mat-header-cell *matHeaderCellDef  mat-sort-header> Name </mat-header-cell>
+                    <mat-cell *matCellDef="let row" class="cursor-pointer" (click)="openEmpPage('edit',row.id)" >
+
+                        <div id="container">
+                            <div id="1" style="color:green">  {{row.name}} </div>
+                            <div id="2"> <div class="box">
+                                {{row.email}}
+                            </div></div>
+                        </div>
+                       </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="position">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Position" | labelReplacement)| async}}s </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <ng-container *ngFor="let pos of row.position">
+                            {{pos.positionTitle}}<br/>
+                        </ng-container>
+                        <!-- <span *ngFor="let pos of row.position">
+                            {{pos.position?.positionTitle}}<br/>
+                        </span> -->
+
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="employeeNum">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Employee" | labelReplacement)| async}} ID </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.employeeNum}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="organization">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Organization </mat-header-cell>
+                    <mat-cell *matCellDef="let row" > {{row.organization}} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="status">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Status </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> <!-- {{row.status}} -->
+                        <p class="py-2 px-2 rounded flex flex-row text-center text-xs  font-medium"
+                            [ngClass]="{'customcolorgreen':row.status==='Active','customcolorgray':row.status!=='Active'}">
+                            {{row.status | uppercase}}
+                        </p>
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="organizationManager">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> Organization Manager </mat-header-cell>
+                    <mat-cell *matCellDef="let row" class="items-center"> {{row.organizationManager }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="tqEvaluator">
+                    <mat-header-cell *matHeaderCellDef mat-sort-header> TQ Evaluator </mat-header-cell>
+                    <mat-cell *matCellDef="let row"> {{row.tqEvaluator == true ? 'YES' : 'NO' }} </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="id">
+                    <mat-header-cell *matHeaderCellDef> Action </mat-header-cell>
+                    <mat-cell *matCellDef="let row">
+                        <div class="flex flex-row items-center text-gray-four btn-group">
+                            <button mat-icon-button [matMenuTriggerFor]="menu" (click)="onActionClick(row.tqEvaluator,row.classSh,row.tq)">
+                                <app-icon icon="more_vert"></app-icon>
+                            </button>
+                            <mat-menu #menu="matMenu">
+                            <!--     <label (click)="openEmpPage('view',row.id)" mat-menu-item translate>L.Open</label> -->
+                                <label  mat-menu-item translate (click)="openEmpIDP(row.id,row.name)">View IDP</label>
+                                <label mat-menu-item translate (click)="deleteEmp(row.id)" [disabled]="deleteCheck[row.index] || row.condition ">L.Delete</label>
+<!--                                 <label mat-menu-item translate (click)="changeStatus(statusModal,row.status,row.id,row.name)">{{row.status==='Active'?"L.InActive":"L.Active"}}</label>
+ -->                                <label mat-menu-item translate (click)="changeStatus(activeInactive,row.status,row.name,row.id)">{{row.status==='Active'?"L.InActive":"Make Active"}}</label>
+                            </mat-menu>
+                            <!-- </mat-menu> -->
+                        </div>
+                    </mat-cell>
+                </ng-container>
+                <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+                <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+                <!-- Row shown when there is no matching data.-->
+                <tr class="mat-row flex text-center " *matNoDataRow>
+                    <td class="mat-cell w-full m-2">No data matching the filter</td>
+                </tr>
+
+            </mat-table>
+
+            <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+                aria-label="Select page of periodic elements">
+            </mat-paginator>
+
+        </div>
+        <!-- table ends -->
+    </div>
+    <div class="m-3">
+        <app-button text="Get Help" size="sm" icon="help_outline" iconPosition="left" class="float-right"></app-button>
+    </div>
+</div>
+<!-- main-page ends -->
+
+<ng-template #empFilters>
+
+    <div class="flex flex-row justify-between border-b items-center px-6 pb-4">
+        <h1 class="text-xl font-medium text-gray-900">Filters</h1>
+        <button class="focus:outline-none" (click)="flyPanelService.close()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12">
+                </path>
+            </svg>
+        </button>
+    </div>
+    <!-- form starts here -->
+    <form class="block text-sm px-6">
+        <div class="mt-12">
+            <label class="inline-block">Status</label>
+            <mat-select class="appearance-none rounded border bg-gray-50 w-full px-4 py-3 mt-2" name="statusFilter"
+                [(ngModel)]="empStatusFilter">
+                <mat-option value="All">All</mat-option>
+                <mat-option value="active">Active</mat-option>
+                <mat-option value="inactive">Inactive</mat-option>
+            </mat-select>
+        </div>
+        <div class="mt-8">
+            <label class="inline-block text-gray-700">{{("Position" | labelReplacement)| async}}s</label>
+            <mat-select class="appearance-none rounded border bg-gray-50 w-full px-4 py-3 mt-2" name="posFilter"
+                [(ngModel)]="empPositionFilter">
+                <mat-option value="All">All</mat-option>
+                <mat-option *ngFor="let item of positions" [value]="item.positionTitle">{{item.positionTitle}}</mat-option>
+            </mat-select>
+        </div>
+
+        <div class="mt-8">
+            <label class="inline-block text-gray-700">Organization</label>
+            <mat-select class="appearance-none rounded border bg-gray-50 w-full px-4 py-3 mt-2" name="orgFilter"
+                [(ngModel)]="empOrgFilter">
+                <mat-option  value="All">All</mat-option>
+                <mat-option *ngFor="let item of organizations" [value]="item.name">{{item.name}}</mat-option>
+            </mat-select>
+        </div>
+        <div class="mt-8">
+            <label class="inline-block text-gray-700">Organization Manager</label>
+            <mat-select class="appearance-none rounded border bg-gray-50 w-full px-4 py-3 mt-2" name="orgFilter"
+                [(ngModel)]="empOrgManagerFilter">
+                <mat-option  value="All">All</mat-option>
+                <mat-option *ngFor="let item of organizationManager" [value]="item.action">{{item.action}}</mat-option>
+            </mat-select>
+        </div>
+        <div class="mt-8">
+            <label class="inline-block text-gray-700">{{("Task" | labelReplacement)| async}} Qualification Evaluator </label>
+            <mat-select class="appearance-none rounded border bg-gray-50 w-full px-4 py-3 mt-2" name="orgFilter"
+                [(ngModel)]="empTaskEvaluatorFilter">
+                <mat-option  value="All">All</mat-option>
+                <mat-option *ngFor="let item of taskEvaluator" [value]="item.action">{{item.action}}</mat-option>
+            </mat-select>
+        </div>
+
+        <button type="button" (click)="applyFilters();filterDataCheck = true"
+            class="inline-block text-green-one border border-green-one py-3 px-6 w-full rounded font-medium text-sm mt-8 text-center">Apply
+            filters</button>
+    </form>
+    <!-- form ends here -->
+</ng-template>
+
+<!-- <ng-template #statusModal>
+    <app-qtd-dialogue [header]="modalHeader" [reasonDescription]="modalReason" [description]="modalDescription" cancelText="No" confirmText="Yes"
+        [showEffectiveDateAndReason]="true" (canceled)="dialog.closeAll()" (confirmed)="MakeActive($event)">
+    </app-qtd-dialogue>
+</ng-template> -->
+
+<ng-template #activeInactive>
+    <app-active-inactive-dialogue (dataTransfer)="GetData($event)" [empIdActive]="empIdActive" [empActiveStatus]="empActiveStatus" [header]="modalHeader" [reasonDescription]="modalReason" [description]="modalDescription"
+    cancelText="No" confirmText="Yes" (canceled)="dialog.closeAll()" (confirmed)="MakeActive($event)">
+    </app-active-inactive-dialogue>
+</ng-template>
+
+<ng-template #ListEmp>
+    <app-fly-panel-emp-list [ListName]="ListName">
+    </app-fly-panel-emp-list>
+</ng-template>

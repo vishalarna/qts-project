@@ -1,0 +1,86 @@
+<div class="flex justify-between">
+  <h2 class="panel-header">R-R Task Filters</h2>
+   <app-button
+    ButtonType="icon"
+    icon="close"
+    (clicked)="handleCloseButtonClick()"
+  ></app-button>  
+</div>
+
+<app-data-loader *ngIf="isLoading"></app-data-loader>
+<div *ngIf="!isLoading">
+  <div class="p-0 report-comp-section-padding ml-2">
+    <form class="flex flex-col" [formGroup]="filterPositionForm">
+      <div class="form-option-wrapper">
+        <div>
+          <label class="report-comp-section-label">{{("Position" | labelReplacement)| async}}</label>
+          <mat-select
+          formControlName="position"
+          placeholder="Select {{('Position' | labelReplacement)| async}}"
+          class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+          >
+            <mat-option *ngFor="let position of positionList" [value]="position">
+              {{ position.positionTitle }}
+            </mat-option>
+            <mat-select-trigger class="select-trigger">
+              {{ filterPositionForm.get('position').value ? filterPositionForm.get('position').value.positionTitle : 'Select Position' }}
+              <button class="btn" mat-icon-button (click)="onClearButtonClick($event)" >
+              <mat-icon class="mat-icon" >clear</mat-icon>
+          </button>
+        </mat-select-trigger>
+          </mat-select>
+        </div>
+      </div>
+      <div class="form-option-wrapper">
+        <div>
+          <label class="report-comp-section-label">Duty Area</label>
+          <mat-select
+          class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+          formControlName="dutyArea"
+          placeholder="Select Duty Area"
+          (selectionChange)="onDutyAreaChange($event)"
+          >
+            <mat-option *ngFor="let dutyArea of dutyAreaList" [value]="dutyArea">
+              {{ dutyArea.letter + dutyArea.number + ' - ' + dutyArea.title }}
+            </mat-option>
+            <mat-select-trigger class="select-trigger">
+              {{ filterPositionForm.get('dutyArea').value 
+                ? (filterPositionForm.get('dutyArea').value.letter + filterPositionForm.get('dutyArea').value.number + ' - ' + filterPositionForm.get('dutyArea').value.title) 
+                : 'Select Duty Area' }}
+              <button class="btn" mat-icon-button (click)="onDutyAreaClearButtonClick($event, 'DutyArea')" >
+              <mat-icon class="mat-icon">clear</mat-icon>
+          </button>
+        </mat-select-trigger>
+          </mat-select>
+        </div>
+        <div>
+          <label class="report-comp-section-label">Sub Duty Area</label>
+          <mat-select
+          class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+          formControlName="subDutyArea"
+          placeholder="Select SubDutyArea"
+          >
+            <mat-option
+            *ngFor="let subDutyArea of subDutyAreaList"
+            [value]="subDutyArea"
+            >
+            {{ subDutyArea.subNumber + ' - ' + subDutyArea.title }}
+            </mat-option>
+            <mat-select-trigger  class="select-trigger">
+              {{ filterPositionForm.get('subDutyArea').value 
+                ? (filterPositionForm.get('subDutyArea').value.subNumber + ' - ' + filterPositionForm.get('subDutyArea').value.title )
+                : 'Select Sub Duty Area' }}
+              <button class="btn" mat-icon-button (click)="onDutyAreaClearButtonClick($event,'SubDutyArea')" >
+              <mat-icon  class="mat-icon">clear</mat-icon>
+          </button>
+        </mat-select-trigger>
+          </mat-select>
+        </div>
+      </div>
+    </form>
+  </div>
+  <div class="btn-select">
+  <app-button class="p-1"  icon_pos color="primary" text="Select " size="sm" (click)="onSelectButtonClick()">
+  </app-button>
+  </div>
+</div>

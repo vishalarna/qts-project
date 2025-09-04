@@ -1,0 +1,236 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+        padding-left: 0px !important;
+        border-left: 0 !important;
+    }
+
+    tr.open-border-table-row th:last-child {
+        border-right: 0 !important;
+    }
+
+    .expired-row {
+        color: lightgray;
+        font-style: italic;
+    }
+
+</style>
+@{
+    var groupedEnablingObjectives = Model.EnablingObjectives.GroupBy(e => e.EnablingObjective_Category).OrderBy(g => g.Key?.Number).ToList();
+}
+<table id="content-table" class="table" style="border-collapse: collapse">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div>
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div></div>
+                    }
+                    <div style="text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+
+    @if (groupedEnablingObjectives.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{
+                    int j = 1;
+                }
+
+                @foreach (var group in groupedEnablingObjectives)
+                {
+                    @{
+                        var category = group?.Key;
+                    }
+
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <div>
+                            <table style="width:100%; border:0;border-collapse:collapse;font-size:1rem;margin-bottom:1rem;border: none !important;">
+                                <tr>
+                                    @if (Model.DisplayColumns.Where(r => r == "Category").Count() > 0 && category != null)
+                                    {
+                                        <td style="border: none !important; font-size: 1rem; font-weight:600;" colspan="12">
+                                            <b> @category?.Number - @category?.Title</b>
+                                        </td>
+                                    }
+                                </tr>
+                                @foreach (var subGroup in group.GroupBy(e => e.EnablingObjective_SubCategory).OrderBy(s => s.Key?.Number))
+                                {
+                                    var subCategory = subGroup?.Key;
+
+                                    <tr>
+                                        @if (Model.DisplayColumns.Where(r => r == "Sub-Category").Count() > 0 && category != null && subCategory != null)
+                                        {
+                                            <td colspan="12" style="border: none !important;padding-left:20px; font-weight:500;">
+                                                @category?.Number.@subCategory?.Number - @subCategory?.Title
+                                            </td>
+                                        }
+                                    </tr>
+
+                                    var topicGroups = subGroup.GroupBy(e => e.EnablingObjective_Topic).OrderBy(t => t.Key?.Number);
+                                    @foreach (var topicGroup in topicGroups)
+                                    {
+                                        var topic = topicGroup?.Key;
+
+                                        @if (topic != null)
+                                        {
+                                            <tr>
+                                                @if (Model.DisplayColumns.Where(r => r == "Topic").Count() > 0)
+                                                {
+                                                    <td colspan="12" style="border: none !important;padding-left:30px; font-weight:500;">
+                                                        @category?.Number.@subCategory?.Number.@topic?.Number - @topic?.Title
+                                                    </td>
+                                                }
+                                            </tr>
+                                        }
+
+                                        @foreach (var enablingObjective in topicGroup.OrderBy(e => e.FullNumber, new AlphaNumericSortHelper()))
+                                        {
+
+                                            <tr class="@(!enablingObjective.Active ? "expired-row" : "")">
+                                                <td colspan="12" style="border: none !important; padding-left:@(topic != null ? 50 : 30)px; font-weight:400;">
+                                                    @enablingObjective?.FullNumber
+                                                    @if (Model.DisplayColumns.Where(r => r == "Show Meta label").Count() > 0 && enablingObjective.isMetaEO)
+                                                    {
+                                                        <span style="color: green;">(META)</span>
+                                                    }
+
+                                                    @if (Model.DisplayColumns.Where(r => r == "Show Skill Qualification label").Count() > 0 && enablingObjective.IsSkillQualification)
+                                                    {
+                                                        <span style="color: green;">(SQ)</span>
+                                                    }
+                                                    <span>@enablingObjective?.Description</span>
+                                                </td>
+                                            </tr>
+
+                                            @foreach (var taskLink in enablingObjective.Task_EnablingObjective_Links)
+                                            {
+                                                if (taskLink?.Task != null)
+                                                {
+                                                    <tr>
+                                                        <td style="padding-left: 106px; color: #3DB1DD; border: none !important;">
+                                                            @taskLink.Task.FullNumber @taskLink.Task.Description
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+
+                                            @foreach (var metaLink in enablingObjective.EnablingObjective_MetaEO_Links)
+                                            {
+                                                if (Model.DisplayColumns.Where(r => r == "Show EOs linked to Meta").Count() > 0)
+                                                {
+                                                    <tr class="@(!metaLink.EnablingObjective?.Active == true ? "expired-row" : "")">
+                                                        <td style="padding-left: 60px; border: none !important;">
+                                                            @metaLink.EnablingObjective?.FullNumber  @metaLink.EnablingObjective?.Description
+                                                        </td>
+                                                    </tr>
+
+                                                    @foreach (var taskLinks in metaLink.EnablingObjective?.Task_EnablingObjective_Links)
+                                                    {
+                                                        @if (taskLinks?.Task != null)
+                                                        {
+                                                            <tr>
+                                                                <td style="padding-left: 106px; color: #3DB1DD; border: none !important;">
+                                                                    @taskLinks.Task.FullNumber @taskLinks.Task.Description
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                            
+                                        }
+                                    }
+                                }
+                                <tr></tr>
+                            </table>
+                        </div>
+                    </div>
+
+                    @if (!group.Equals(groupedEnablingObjectives.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+
+                    @{
+                        j++;
+                    }
+                }
+
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= groupedEnablingObjectives.Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

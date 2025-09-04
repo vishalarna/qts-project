@@ -1,0 +1,94 @@
+<!--Add New Topic Starts-->
+<ng-container *ngIf="change_topic === false && edit_topic === true">
+    <div class="bg-white-one shadow-md py-2 h-screen w-full overflow-x-hidden overflow-y-scroll">
+        <div class="flex flex-row justify-between items-center px-12 mt-5">
+            <p class="text-xl font-bold text-gray-900" *ngIf="this.edit_topic === true && this.oldTopic === undefined">
+                Add New Topic</p>
+            <p class="text-xl font-bold text-gray-900"
+                *ngIf="this.edit_topic === true && this.oldTopic !== undefined && this.topic_copy_mode === false">Edit
+                Topic</p>
+            <p class="text-xl font-bold text-gray-900"
+                *ngIf="this.topic_copy_mode === true && this.edit_topic === true && this.oldTopic !== undefined">Copy
+                Topic</p>
+            <app-button [disabled]="showLoader" (click)="closeTopic()" ButtonType='icon' icon="close">
+            </app-button>
+        </div>
+        <div [formGroup]="topicForm">
+            <div class="flex flex-row items-center px-12">
+                <mat-checkbox formControlName="isPriority">
+                    Mark as priority
+                </mat-checkbox>
+            </div>
+            <div class="px-12 mt-4">
+                <app-label [for]="'TopicName'" [text]="'Topic Name '"></app-label>
+                <app-textbox type="text" [name]="'TopicName'" formControlName="TopicName" [defaultValue]="TopicName"
+                    [placeholder]="'Enter name'">
+                </app-textbox>
+                <app-input-error text="Topic Name Is required" *ngIf="topicForm.get('TopicName')?.invalid">
+                </app-input-error>
+            </div>
+        </div>
+
+        <div class="float-left px-12 mt-4" *ngIf="this.edit_topic === true && this.oldTopic === undefined">
+            <mat-checkbox [(ngModel)]="anotherCheck">Add another Topic</mat-checkbox>
+
+<!--             <app-button (clicked)="anotherCheck = true" variant="text" text="Add another Topic" icon="add" iconPosition="left"></app-button>
+ -->
+        </div>
+
+        <div class="relative px-12 overflow-hidden mt-4">
+            <app-button [spinner]="showLoader" [disabled]="topicForm.invalid || showLoader" color="secondary"
+                (clicked)="OnSaveTopic()" type="button" text="Save" size="sm" class="float-right mt-4"></app-button>
+        </div>
+    </div>
+</ng-container>
+<!--Add New Topic Ends-->
+
+
+<!--Change Topic Starts-->
+<ng-container *ngIf="change_topic === true && edit_topic === false">
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+        <p class="text-xl font-bold text-gray-900">Change Topic</p>
+        <app-button (click)="flyPanelSrvc.close()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <!--Provider title-->
+    <div class="ml-12 mr-12 mt-8">
+        <div class="flex flex-row justify-between">
+            <p class="font-medium">Topic</p>
+            <app-button (clicked)="OnAddNewTopic()" variant="text" text="Add New Topic"></app-button>
+        </div>
+        <mat-select [formControl]="topicsControl" multiple placeholder="Select Topic" class="appearance-none rounded border w-full px-4 py-2.5 mt-2">
+            <mat-select-trigger>
+              <mat-chip-list>
+                <mat-chip *ngFor="let i of topicsControl.value" [removable]="true"
+                          (removed)="removeTopic(i)"
+                          [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                          selected>
+                  {{ i.name }}
+                  <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                  </app-icon>
+                </mat-chip>
+              </mat-chip-list>
+            </mat-select-trigger>
+            <mat-option [hidden]="!i.active" *ngFor="let i of topics"  [value]="i">
+              {{i.name}}
+            </mat-option>
+        </mat-select>
+        <!-- <app-textbox type="text" [name]="'ProviderName'" [defaultValue]="ProviderName" [placeholder]="'Enter Title'"></app-textbox>-->
+    </div>
+
+    <!--Reason Box-->
+    <div class="ml-12 mr-12 mt-8">
+        <p class="font-medium">Reason for Changing {{("ILA" | labelReplacement)| async}} Topic <span class="text-gray-four font-normal">(Optional)</span>
+        </p>
+        <ckeditor [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+    </div>
+
+    <!--Save Button-->
+    <div class="float-right mr-12 ml-12 mt-12">
+        <app-button color="secondary" (clicked)="changeTopic()" [disabled]="showLoader"
+            [spinner]="showLoader" text="Save Changes" size="sm"></app-button>
+    </div>
+</ng-container>
+<!--Change Topic Ends-->

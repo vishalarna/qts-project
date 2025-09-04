@@ -1,0 +1,221 @@
+﻿@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+        table-layout: fixed;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table" style="width: 100%; margin-bottom: 0px; border-collapse: collapse;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div class="header-combined-line" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img class="header-logo" src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b style="margin: 0; padding: 0;">@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    <tr style=" border-collapse: collapse;">
+        <td colspan="12" style="border: none; border-collapse: collapse;" class="strip-container">
+            @{
+                int j = 1;
+            }
+
+            @foreach (var employee in Model.Position_History.Select(r => r.Employee).Distinct())
+            {
+                <div class="@(j%2==0?"strip-dark":"")"></div>
+                <div style="padding-top:5px" id="@("page" + j)" class="@(j%2==0?"strip":"")">
+                    <table style="width: 100%; border-collapse: collapse;">
+                        @if (Model.DisplayColumns.Where(r => r == "Employee").Count() > 0)
+                        {
+                            <tr class="excel-not-include">
+                                <td style="border:none !important;padding-left: 0;font-size: 1.4rem;" colspan="12">
+                                    <table style="table-layout: auto">
+                                        <tr>
+                                            <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0">
+                                                <span style="padding: 0px 5px;">@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)):</span>
+                                            </td>
+                                            <td style="font-weight:600;border: none;padding:0px;vertical-align:top;">
+                                                <span style="padding: 0px 5px; color: #800000;">@employee.Person.FirstName  @employee.Person.LastName</span>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        }
+
+                        @if (Model.DisplayColumns.Where(r => r == "Current Positions").Count() > 0)
+                        {
+                            <tr class="excel-not-include">
+                                <td style="border:none !important;padding-left: 0;font-size: 1.4rem;" colspan="12">
+                                    <table style="table-layout: auto">
+                                        <tr>
+                                            <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0;">
+                                                <span style="padding: 0px 5px;">Current @("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</span>
+                                            </td>
+                                            <td style="font-weight:600;color: #800000; border:none; padding:0px; vertical-align:top;">
+                                                @{
+                                                    var activePositions = employee.EmployeePositions.Where(r => r.Active).Select(r => r.Position.PositionTitle).Distinct();
+                                                    var positionList = string.Join(", ", activePositions);
+                                                }
+                                                @positionList
+                                            </td>
+
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        }
+
+                        @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0)
+                        {
+                            <tr class="excel-not-include">
+                                <td style="border:none !important;padding-left: 0;font-size: 1.4rem;" colspan="12">
+                                    <table style="table-layout: auto">
+                                        <tr>
+                                            <td style="font-weight:600;border: none;padding:0px;vertical-align:top;padding-left: 0;">
+                                                <span style="padding: 0px 5px;">Organization:</span>
+                                            </td>
+                                            <td style="font-weight:600;color: #800000;border:none; padding:0px; vertical-align:top;">
+                                                @{
+                                                    var activeOrganizations = employee.EmployeeOrganizations.Where(r => r.Active).Select(r => r.Organization.Name).Distinct();
+                                                    var organizationList = string.Join(", ", activeOrganizations);
+                                                }
+                                                @organizationList
+                                            </td>
+
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        }
+
+                        <tr class="excel-not-include">
+                            <td style="border:none !important;padding-left: 0" colspan="12">
+                                <table style="table-layout: auto;width:100%;border-collapse:collapse">
+                                    <tr style=" border-bottom: 0;">
+                                        <th style="border: 1px solid #000;padding:5px; border-left:0px !important;"></th>
+                                        @if (Model.DisplayColumns.Where(r => r == "Positions").Count() > 0)
+                                        {
+                                            <th style="border: 1px solid #000; padding:5px;border-right: 0 " align="left"> @("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s </th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Start Date").Count() > 0)
+                                        {
+                                            <th style="border: 1px solid #000;padding:5px;" align="left">Start Date</th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Qualification Date").Count() > 0)
+                                        {
+                                            <th style="border: 1px solid #000;padding:5px;" align="left"> Qualification Date </th>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "End Date").Count() > 0)
+                                        {
+                                            <th style="border: 1px solid #000; padding:5px;" align="left">End Date</th>
+                                        }
+                                    </tr>
+
+                                    @foreach (var positionHistory in Model.Position_History.Where(r => r.EmployeeId == employee.Id).DistinctBy(r => new { r.Position.PositionTitle, r.EndDate, r.StartDate, r.QualificationDate }).OrderByDescending(r => r.StartDate).ThenBy(r => r.Position.PositionTitle))
+                                    {
+                                        <tr>
+                                            <td style="border: none !important; padding:5px;" align="left">@(positionHistory.Active ? "Current" : "")</td>
+                                            @if (Model.DisplayColumns.Where(r => r == "Positions").Count() > 0)
+                                            {
+                                                <td style=" border: none !important;padding:5px;" align="left">@positionHistory.Position.PositionTitle</td>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Start Date").Count() > 0)
+                                            {
+                                                <td style=" border: none !important;padding:5px;" align="left">@positionHistory.StartDate.ToShortDateString()</td>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Qualification Date").Count() > 0)
+                                            {
+                                                <td style="border: none !important; padding: 5px;" align="left">
+                                                    @(positionHistory.Trainee ? "Trainee " : "")
+                                                    @positionHistory.QualificationDate?.ToShortDateString()
+                                                </td>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "End Date").Count() > 0)
+                                            {
+                                                <td style=" border: none !important;padding:5px;" align="left">@positionHistory.EndDate?.ToShortDateString()</td>
+                                            }
+                                        </tr>
+                                    }
+                                    <tr></tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                @if (!employee.Equals(Model.Position_History.Select(r => r.Employee).Distinct().Last()))
+                {
+                    <div style="page-break-after:always"></div>
+                    <div class="@(j%2==0?"strip-dark":"")"></div>
+                }
+                @{
+                    j++;
+                }
+            }
+        </td>
+    </tr>
+    @if (Model.Position_History.Select(r => r.Employee).Distinct().Count() <= 0)
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Position_History.Select(r => r.Employee).Distinct().Count(); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

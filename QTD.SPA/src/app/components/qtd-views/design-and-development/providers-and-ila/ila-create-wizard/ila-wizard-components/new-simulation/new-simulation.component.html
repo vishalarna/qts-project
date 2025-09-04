@@ -1,0 +1,134 @@
+
+<form [formGroup]="createNewSimulation">
+    <div class="bg-white-one h-auto ml-20 border-gray-one shadow-xs border-0.5 w-4/5 rounded mat-elevation-z8 px-16 py-14">
+        <p class="text-xl font-semibold text-gray-900">Create New Simulator Scenario</p>
+
+        <!--Content Starts Here-->
+        <div>
+            <p class="font-normal">{{("ILA" | labelReplacement)| async}} Name</p>
+            <input type="text"  class="h-10 border w-23/24 rounded p-2 bg-white-one"
+                placeholder="Enter {{('ILA' | labelReplacement)| async}} Name" [disabled]="true" formControlName="ILAName" />
+        </div>
+
+        <div class="mt-8">
+            <p class="font-normal">Scenario Title</p>
+            <input type="text" (change)="OnTitleChange()" formControlName="ScenarioTitle"
+                class="h-10 border w-23/24 rounded p-2 bg-white-one" placeholder="Enter Scenario Title" /><br>
+            <app-input-error
+            *ngIf="createNewSimulation.get('ScenarioTitle')?.invalid && createNewSimulation.get('ScenarioTitle')?.hasError('required')"
+            [text]="'Title is Required'">
+            </app-input-error>
+        </div>
+
+        <div class="mt-10">
+            <p class="font-normal">Scenario Description/{{("Task" | labelReplacement)| async}}</p>
+            <ckeditor formControlName="ScenarioDescription" [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+            <app-input-error
+            *ngIf="createNewSimulation.get('ScenarioDescription')?.invalid && createNewSimulation.get('ScenarioDescription')?.hasError('required')"
+            [text]="'Description is Required'">
+            </app-input-error><br>
+            <mat-checkbox class="mt-4" [checked]="true">Make avaliable in Simulator Scenario Library <app-icon class="ml-2"
+                    icon="help_outline"></app-icon>
+            </mat-checkbox>
+        </div>
+
+        <div class="mt-8">
+            <app-button variant="text" text="Link Scenario Objectives" iconPosition="left" icon="link"
+                (clicked)="openFlyPanel(linkTask,'Objectives')"></app-button>
+
+            <div class="mat-elevation-z8 mt-3 " *ngIf="eoid">
+                <mat-table [dataSource]="DataSource" matSort class="rounded-sm rounded">
+                    <ng-container matColumnDef="number">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> #
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.number}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="type">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Type
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.type}} </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="description">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header> Description
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
+                    </ng-container>
+
+                    <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+                </mat-table>
+
+            </div>
+
+        </div>
+
+        <div class="mt-12">
+            <app-button variant="text" text="Link {{('Task' | labelReplacement)| async}}" iconPosition="left" icon="link"
+                (clicked)="openFlyPanel(linkTask,'Task')"></app-button>
+
+                <div class="mat-elevation-z8 mt-3 " *ngIf="taskid">
+                    <mat-table [dataSource]="EODataSource" matSort class="rounded-sm rounded">
+                        <ng-container matColumnDef="number">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> #
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.number}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="type">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Type
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.type}} </mat-cell>
+                        </ng-container>
+                        <ng-container matColumnDef="description">
+                            <mat-header-cell *matHeaderCellDef mat-sort-header> Description
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row"> {{row.description}} </mat-cell>
+                        </ng-container>
+    
+                        <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
+                        <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
+                    </mat-table>
+    
+                </div>
+        </div>
+
+        <div class="mt-8">
+            <app-label text="Scenario {{('Position' | labelReplacement)| async}}" class="mt-6"></app-label>
+            <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                <mat-select [formControl]="positionsControl" multiple placeholder="Select Scenario {{('Position' | labelReplacement)| async}}">
+                    <mat-select-trigger>
+                        <mat-chip-list>
+                            <mat-chip *ngFor="let i of positionsControl.value" [removable]="true"
+                                (removed)="removePosition(i)"
+                                [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                                selected>
+                                {{ i.name }}
+                                <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove></app-icon>
+                            </mat-chip>
+                        </mat-chip-list>
+                    </mat-select-trigger>
+
+                    <mat-option *ngFor="let i of positions" [value]="i" #matOption (click)="OnClick(matOption.selected)">
+                        {{i.name}}
+                    </mat-option>
+                </mat-select>
+            </mat-form-field>
+        </div>
+
+        <div class="float-right w-36">
+            <app-button (clicked)="onSaveClick()" [disabled]="!createNewSimulation.valid" color="secondary" text="Save Scenario" size="sm"></app-button>
+        </div>
+
+
+    </div>
+</form>
+<!--Content Ends Here-->
+
+
+<!-- <ng-template #objectives>
+    <app-fly-panel-objectives [isCustomEO]="false" (closed)="flyPanelSrvc.close()"></app-fly-panel-objectives>
+</ng-template> -->
+
+
+<ng-template #linkTask>
+    <app-fly-panel-link-task [isTaskCheck]="isTaskCheck" (eoId)="recieveEOMessage($event)" (taskId)="recieveTaskMessage($event)"></app-fly-panel-link-task>
+</ng-template>

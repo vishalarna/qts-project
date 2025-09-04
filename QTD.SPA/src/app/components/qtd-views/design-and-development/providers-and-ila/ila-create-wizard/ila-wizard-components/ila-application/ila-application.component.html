@@ -1,0 +1,189 @@
+<app-data-loader *ngIf="loader"></app-data-loader>
+<div *ngIf="!preview_application && !loader" class="flex flex-col mt-5 main  bg-slate-200" style="padding-bottom: 20px !important;">
+  <div class="flex flex-row-reverse mb-3 text-xs">
+    <div class="ml-4">
+      <app-button
+        type="submit"
+        size="sm"
+        text="Save"
+        [spinner]="saveSpinner"
+        [disabled]="ILAApplicationForm.invalid || saveSpinner"
+        (click)="saveApplicationInfo()"
+      >
+      </app-button>
+    </div>
+    <!--Export As CSV-->
+    <!-- <app-button (clicked)="downloadAsCSV()" size="sm" variant="text" [ngStyle]="{'color':ILAApplicationForm.valid ? 'primary' : 'grey' }" [disabled]="!ILAApplicationForm.valid" class="ml-4" text="Export as CSV" icon="upload" iconPosition="left">
+    </app-button> -->
+    <button (click)="downloadAsCSV()" [ngStyle]="{'color':ILAApplicationForm.valid ? 'rgb(92, 155, 49)' : 'grey' }" [disabled]="!ILAApplicationForm.valid" class="ml-4">
+     <app-icon [ngStyle]="{'color':ILAApplicationForm.valid ? 'rgb(92, 155, 49)' : 'grey' }" icon="upload"></app-icon> Export As CSV
+    </button>
+
+    <!--Preview ILA Application-->
+    <!-- <app-button  [disabled]="!ILAApplicationForm.valid" (click)="previewIlaApplication()" variant="text" text="Preview ILA Application" icon="visibility" iconPosition="left">
+    </app-button> -->
+    <app-spinner *ngIf = "spinner"></app-spinner>
+    <button *ngIf = "!spinner" (click)="downloadILAApplicationReport()" [ngStyle]="{'color':ILAApplicationForm.valid ? 'rgb(92, 155, 49)' : 'grey' }" [disabled]="!ILAApplicationForm.valid" class="ml-4">
+      <app-icon [ngStyle]="{'color':ILAApplicationForm.valid ? 'rgb(92, 155, 49)' : 'grey' }" icon="visibility"></app-icon> Preview NERC {{("ILA" | labelReplacement)| async}} Application
+     </button>
+  </div>
+  <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8 px-2 py-5 pb-3">
+    <form [formGroup]="ILAApplicationForm" class="pb-4 ml-5 text-sm">
+      <div class="ml-5">
+        <div class="font-semibold">
+          <h2>Course Details</h2>
+        </div>
+        <p>NERC Certificates</p>
+        <table class="styled-table">
+          <thead>
+              <tr>
+                  <th>Certificate Name</th>
+                  <th>CEHs/Operating Topics</th>
+                  <th>Standard Hours</th>
+                  <th>Simulation Hours</th>
+                  <th>Emergency Operations Related</th>
+              </tr>
+          </thead>
+          <tbody>
+            <tr *ngIf="ilaNercCertDetails?.length == 0">
+              <td class="no-data-found" colspan="5">No Data Found</td>
+            </tr>
+              <tr *ngFor = "let cert of ilaNercCertDetails">
+                  <td>{{cert?.certificationName}}</td>
+                  <td>{{cert?.cehHours ?? 0}}</td>
+                  <td>{{cert?.standardReqHour ?? 0}}</td>
+                  <td>{{cert.simulationReqHour ?? 0}}</td>
+                  <td>{{cert?.isEmergencyOpHours ? "✔" : "X"}}</td>
+              </tr>
+          </tbody>
+      </table>
+
+        <div class="my-3 font-semibold">
+          <h2>Application Details</h2>
+        </div>
+        <div class="flex flex-col mb-3">
+          <label>{{("ILA" | labelReplacement)| async}} Date start</label>
+          <app-date matInput formControlName="startDate" class="form_field text-xs" placeholder="Select Date"></app-date>
+        </div>
+        <div>
+          <mat-checkbox formControlName="doesActivityConform">This activity conforms to the criteria for System Operator Credential Maintenance</mat-checkbox>
+        </div>
+        <div class="flex flex-col" formGroupName="pilotCheckBoxes">
+
+          <mat-checkbox (change)="pilotChanged($event,'pilot2')" formControlName="pilot2">Pilot Data is attached. Select N/A if not applicable</mat-checkbox>
+          <mat-checkbox (change)="pilotChanged($event,'pilot3')" formControlName="pilot3">N/A</mat-checkbox>
+          <app-input-error
+          *ngIf="ILAApplicationForm.get('pilotCheckBoxes')?.invalid"
+          [text]="'One option should be selected'">
+          </app-input-error>
+        </div>
+        <div class="flex flex-col mt-4">
+          <div class="flex align-middle">
+            <label>Assessment {{("Tool" | labelReplacement)| async}}s</label>
+            <app-icon class="ml-2" icon="help_outline"></app-icon>
+          </div>
+        </div>
+        <div class="flex flex-col">
+          <form [formGroup]="assessmentCheckBoxes" class="flex flex-col">
+            <mat-checkbox  [formControlName]="'writtenOrOnline'">Written/Online Exam</mat-checkbox>
+            <mat-checkbox [formControlName]="'perform'">Perform Demonstration</mat-checkbox>
+            <!-- <mat-checkbox *ngFor="let assesment of assesmentTools" [formControlName]="'assesment'+assesment.id">{{assesment.name}}</mat-checkbox> -->
+          <div class="flex flex-row items-center">
+            <mat-checkbox formControlName="others" #check_tool>Other Type Assessment {{("Tool" | labelReplacement)| async}}s</mat-checkbox>
+            <div class="text-xs">
+              <mat-form-field class="ml-4" appearance="outline">
+                <mat-label>Enter assessment {{("Tool" | labelReplacement)| async}}s here ...</mat-label>
+                <input [disabled]="!check_tool.checked" matInput type="text" formControlName="assessment_tool">
+              </mat-form-field>
+            </div>
+          </div>
+          <div>
+            <app-input-error
+            *ngIf="assessmentCheckBoxes?.invalid"
+            text="At least One Assessment {{('Tool' | labelReplacement)| async}}s is required">
+            </app-input-error>
+          </div>
+        </form>
+          <!-- Recognized Operator Training Topics and its drop down checkboxes -->
+          <div class="my-3 font-semibold">
+            <h2>Recognized Operator Training Topics</h2>
+          </div>
+          <form [formGroup]="TRainingTopicForm">
+            <mat-accordion>
+              <mat-expansion-panel *ngFor="let accordion_title of accordion_titles" hideToggle="true" expanded="false">
+                <mat-expansion-panel-header>
+                  <mat-panel-title class="flex flex-row items-center text-xs font-medium">
+                    <mat-icon>keyboard_arrow_down</mat-icon>
+                    {{accordion_title.name}}
+                  </mat-panel-title>
+
+              </mat-expansion-panel-header>
+                <mat-grid-list cols="3" rowHeight="50px" gutterSize="15px">
+                  <mat-grid-tile *ngFor="let item of accordion_title.trainingTopics" > <mat-checkbox [formControlName]="item.id+'ttopic'" >{{item.name}}</mat-checkbox></mat-grid-tile>
+
+                </mat-grid-list>
+              </mat-expansion-panel>
+            </mat-accordion>
+          </form>
+
+          <div class="my-3 font-semibold">
+            <h2>NERC Target Audience</h2>
+          </div>
+          <!-- NERC Target Audience CheckBoxes -->
+          <form [formGroup]="NercTargetAudienceForm">
+            <div class="grid">
+              <mat-checkbox *ngFor="let item of nercTargetArray" [formControlName]="'nercTarget' + item.id" class="cols">{{item.name}}</mat-checkbox>
+            <div class="flex flex-row items-center cols">
+                <mat-checkbox formControlName="others" #check>Others</mat-checkbox>
+                <div class="text-xs">
+                  <mat-form-field class="ml-4" appearance="outline">
+                    <mat-label></mat-label>
+                    <input [disabled]="!check.checked" formControlName="othersData" matInput type="text" >
+                  </mat-form-field>
+                </div>
+              </div>
+            </div>
+          </form>
+
+          <div class="my-3 font-semibold">
+            <h2>Application Dates</h2>
+          </div>
+          <!-- Application Dates Date Selectors -->
+          <div class="flex flex-row gap-x-2 mb-3">
+            <div>
+              <div class="flex flex-col gap-x-2">
+                <label>Application Submission Date</label>
+                <app-date formControlName="applicationSubmissionDate" class="form_field text-xs" placeholder="Select Date"></app-date>
+                <app-input-error
+            *ngIf="ILAApplicationForm.get('applicationSubmissionDate')?.invalid"
+            [text]="'Application Submission Date is required'">
+          </app-input-error>
+              </div>
+            </div>
+            <div>
+              <div class="flex flex-col ml-4">
+                <label>Approval Date</label>
+                <app-date formControlName="approvalDate" class="form_field text-xs" placeholder="Select Date"></app-date>
+                <app-input-error
+            *ngIf="ILAApplicationForm.get('approvalDate')?.invalid"
+            [text]="'Approval Date is required'">
+          </app-input-error>
+              </div>
+            </div>
+          </div>
+          <div class="flex flex-row gap-x-2">
+            <div class="flex flex-col">
+              <label>Expiration Date</label>
+              <app-date formControlName="expirationDate" class="form_field text-xs" placeholder="Select Date"></app-date>
+              <app-input-error
+            *ngIf="ILAApplicationForm.get('expirationDate')?.invalid"
+            [text]="'Expiration Date is required'">
+          </app-input-error>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </form>
+  </div>
+</div>

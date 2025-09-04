@@ -1,0 +1,7 @@
+.greenText{
+  color: #5c9b31;
+}
+
+:host ::ng-deep .innerParaMargin p{
+  margin: 0;
+}

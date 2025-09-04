@@ -1,0 +1,42 @@
+.form-datawrap-heading{
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 166%;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.4px;
+    color: #000D09;
+}
+.form-check label {
+    padding: 0 0 0 26px;
+}
+.form-space-top{
+    margin:22px 0 0;
+}
+.custom-formdatawrap .form-check {
+    margin: 0 0 26px;
+    padding: 0;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 157%;
+    display: flex;
+    align-items: center;
+    letter-spacing: 0.1px;
+    color: #000D09;
+}
+label.emailaddress span {
+    padding: 0 0 0 4px;
+    font-size: 12px;
+    line-height: 143%;
+    /* display: flex; */
+    /* align-items: center; */
+    letter-spacing: 0.15px;
+    color: rgba(122, 128, 126, 0.67);
+}
+label.emailaddress {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 143%;
+    letter-spacing: 0.15px;
+    color: #000D09;
+}

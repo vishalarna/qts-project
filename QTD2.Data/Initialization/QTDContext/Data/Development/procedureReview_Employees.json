@@ -1,0 +1,47 @@
+[
+  {
+    "Id": 1,
+    "ProcedureReviewId": 1,
+    "EmployeeId": 1,
+    "IsCompleted": true,
+    "IsStarted": true,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 2,
+    "ProcedureReviewId": 2,
+    "EmployeeId": 2,
+    "IsCompleted": false,
+    "IsStarted": true,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 3,
+    "ProcedureReviewId": 3,
+    "EmployeeId": 3,
+    "IsCompleted": true,
+    "IsStarted": false,
+    "Deleted": false,
+    "Active": true
+  },
+  {
+    "Id": 4,
+    "ProcedureReviewId": 4,
+    "EmployeeId": 4,
+    "IsCompleted": true,
+    "IsStarted": true,
+    "Deleted": true,
+    "Active": false
+  },
+  {
+    "Id": 5,
+    "ProcedureReviewId": 5,
+    "EmployeeId": 5,
+    "IsCompleted": false,
+    "IsStarted": false,
+    "Deleted": false,
+    "Active": true
+  }
+]

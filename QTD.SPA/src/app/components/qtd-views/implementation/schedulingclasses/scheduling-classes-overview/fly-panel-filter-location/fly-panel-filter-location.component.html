@@ -1,0 +1,35 @@
+
+<ng-container >
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900" >Filter by: {{("Location" | labelReplacement)| async}}s</p>
+      <app-button [disabled]="showSpinner" (click)="closeProvider()" ButtonType='icon' icon="close"></app-button>
+    </div>
+   
+    <form [formGroup]="locationForm">
+      <div class="flex flex-row px-12">
+          <div class="flex flex-col float-left pr-4 mb-6" style="width: 100vw;">
+              <app-label required [for]="'Location'" text="Select {{('Location' | labelReplacement)| async}}"
+              class="mt-6 float-left label required">
+            </app-label>
+              <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                <mat-select formControlName="locationId" placeholder="Select {{('Location' | labelReplacement)| async}}s" required (selectionChange)="onOptionSelection($event)">
+              <mat-option *ngFor="let p of location_list" [value]="p.id">
+                {{p?.locName}}
+              </mat-option>
+
+            </mat-select>
+                </mat-form-field>
+         </div>
+        
+     
+     </div>
+     <div class="px-12 mt-8 float-right py-3">
+      <app-button [spinner]="showSpinner" [disabled]="locationForm.invalid ||showSpinner" (click)="selectedLocationName();selectLocation()" type="button" size="sm"
+        color="secondary" text="Apply Filter">
+      </app-button>
+    </div>
+  </form>
+ 
+  </ng-container>
+
+  

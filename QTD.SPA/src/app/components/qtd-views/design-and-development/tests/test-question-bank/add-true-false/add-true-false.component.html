@@ -1,0 +1,76 @@
+<div class="flex flex-col">
+  <section>
+    <form [formGroup]="tfForm">
+      <label class="font-medium">Question</label>
+      <ckeditor #ckeditor  [editor]="Editor" formControlName="question"
+        ></ckeditor>
+      <app-input-error *ngIf="tfForm.get('question')?.hasError('required')" text="Enter Question Description">
+      </app-input-error>
+    </form>
+  </section>
+  <p class="font-medium mb-2">Choices</p>
+  <span>Enter Choice below and select the correct one</span>
+  <form [formGroup]="tfForm">
+    <mat-radio-group formControlName="correct">
+
+      <div class="flex flex-row justify-between rounded-md pb-2 pt-0 mt-3"
+        style="border: 1px solid lightgray;align-items: center;">
+        <div class="flex flex-row w-full" style="align-items:baseline;">
+          <app-icon cdkDragHandle class="pt-2 mr-2" icon="drag_indicator" style="color: darkgrey!important;cursor:move">
+          </app-icon>
+          <mat-radio-button [value]="1" class="mr-3"></mat-radio-button>
+          <span class="text-gray-400">True</span>
+        </div>
+      </div>
+
+      <div class="flex flex-row justify-between rounded-md pb-2 pt-0 mt-2"
+        style="border: 1px solid lightgray;align-items: center;">
+        <div class="flex flex-row w-full" style="align-items:baseline;">
+          <app-icon class="pt-2 mr-2" icon="drag_indicator" style="color: darkgrey!important;cursor:move">
+          </app-icon>
+          <mat-radio-button [value]="2" class="mr-3"></mat-radio-button>
+          <span class="text-gray-400">False</span>
+        </div>
+      </div>
+      <app-input-error *ngIf="tfForm.get('correct')?.hasError('required')"
+        text="Select the Correct Option"></app-input-error>
+    </mat-radio-group>
+  </form>
+  <section *ngIf="mode === 'add' && showSaveButton" class="flex flex-row mt-4 justify-between">
+     <!--add another-->
+    <mat-checkbox [(ngModel)]="AddAnother" [disabled]="tfForm.invalid" >Add Another True/False</mat-checkbox>
+
+    <!--save-->
+    <app-button [spinner]="saveSpinner" (clicked)="close=true;saveTF($event,close)" class="mr-2"
+      [disabled]="tfForm.invalid || saveSpinner || saveAndAddSpinner" size="sm" ButtonType="button"
+      text="Save"></app-button>
+
+
+  </section>
+
+  <!--copy-->
+  <section *ngIf="mode === 'copy'" class="flex flex-row mt-4" style="justify-content: flex-end;">
+    <app-button [spinner]="saveSpinner" (clicked)="close=true;openSaveDialog(saveDialog)" class="mr-2"
+      [disabled]="tfForm.invalid || saveSpinner || saveAndAddSpinner" size="sm" ButtonType="button"
+      text="Copy"></app-button>
+  </section>
+
+  <!--edit-->
+  <section *ngIf="mode === 'edit'" class="flex flex-row mt-4" style="justify-content: flex-end;">
+    <app-button [spinner]="saveSpinner" (clicked)="openDialog(reasonDialog)" class="mr-2"
+      [disabled]="tfForm.invalid || saveSpinner || saveAndAddSpinner" size="sm" ButtonType="button"
+      text="Update"></app-button>
+  </section>
+</div>
+
+<ng-template #reasonDialog>
+  <app-qtd-dialogue [header]="'Update True / False'" [cancelText]="'No'" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" [reasonOnly]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="updateTFData($event)"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #saveDialog>
+  <app-qtd-dialogue [header]="'Save True / False'" [cancelText]="'No'" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" [reasonOnly]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="saveTF($event,close)"></app-qtd-dialogue>
+</ng-template>

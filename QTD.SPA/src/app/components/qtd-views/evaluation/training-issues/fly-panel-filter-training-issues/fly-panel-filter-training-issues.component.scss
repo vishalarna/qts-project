@@ -1,0 +1,56 @@
+.type-select{
+    padding: 0;
+}
+.mb-0{
+    margin-bottom: 0;
+}
+.header-spacing{
+    padding: 1.5rem 1.5rem 1.5rem 3rem;
+}
+.container-spacing{
+    padding: 1.5rem 1.5rem 1.5rem 3rem;
+}
+.input-box-wrap{
+    gap: 4rem;
+}
+.input-box{
+    width: 100%;
+}
+.input-box {
+    position: relative;
+}
+
+.date-picker-wrapper {
+    position: relative;
+}
+
+.close-icon {
+    position: absolute;
+    right: 0;
+    top: 5px;
+    bottom: 0;
+    margin: auto;
+    height: 20px;
+    line-height: 1;
+}
+.icon{
+    font-size: 23px;
+}
+.gap-20{
+    gap: 20px;
+}
+.checkbox-warp{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.checkbox-label{
+    margin-bottom: -8px;
+}
+
+.overview-spinner {
+    height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }

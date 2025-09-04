@@ -1,0 +1,171 @@
+
+<div class="container-fluid page-wrapper" >
+  <div class="col mb-4">
+    <h2 class="navbar-heading mb-3">CBT Release Settings</h2>
+    <div class="d-flex align-items-center">
+      <input type="checkbox" id="course" (click)="setCbtRequired($event)" [checked]="setCbtRequiredValue()">
+      <label class="label-spacing m-0 text-style" for="course"> CBT required for course</label>
+    </div>
+  </div>
+  <div *ngIf="getCbtRequiredForCourseCurrentValue()">
+  <div class="d-flex align-items-center justify-content-between file-bg" *ngIf="!this.cbtData">
+    <span class="text-danger">You must save the CBT before uploading the package</span>
+   </div>
+    <div *ngIf="this.cbtData"> 
+      <div class="col">
+        <div class="row m-0 justify-content-between align-items-center">
+          <h2 class=" m-0 text-style">Previously Imported CBT</h2>
+          <div>
+            <app-button variant="text" text="Disconnect Scorm Package" *ngIf="this.currentScormUpload"
+                        (clicked)="onDisconnectPackageClick(true)"></app-button> &nbsp;
+            &nbsp;
+            <span *ngIf="this.currentScormUpload">| &nbsp; &nbsp;</span>
+            <app-button variant="text" text="Import Scorm Package"
+            (clicked)="onImportScormClick(true)"></app-button>
+          </div>
+        </div>
+      </div>
+      <div class="panel-spin" *ngIf="spinner" style="overflow: hidden;">
+        <app-spinner *ngIf="spinner" color="rgb(92, 155, 49)" class="items-center"></app-spinner>
+      </div>
+      <div class="col" *ngIf="!spinner">
+        <div class="d-flex align-items-center justify-content-between file-bg">
+          <div class="d-flex align-items-center" *ngIf="!this.hasError">
+            <i class="fa fa-file pr-1"></i>
+            <span>{{fileName}}</span>
+          </div>
+          <div class="d-flex align-items-center" *ngIf="this.hasError">
+            <span style="color:red">Failed To Upload File</span>
+          </div>
+          <span class="date-style"><i>Date Imported: {{dateImported | date: 'MM/dd/yyyy'}}</i></span>
+        </div>
+      </div>
+     </div> 
+    <h2 class="col navbar-heading mb-3">CBT Learning Contract {{("Instruction" | labelReplacement)| async}}s</h2>
+    <div class="col heighttop justify-content-between">
+      <div class="col-md-12" id="editor">
+        <ckeditor
+                  [editor]="editor"
+                  [config]="config"
+                  [(ngModel)]="cbtLearningInstructions"
+                  (change)="setCbtInstructionContent($event)"
+                  toolbarPosition="bottom">
+        </ckeditor>
+      </div>
+      <div class="d-block pt-4">
+        <h2 class="cbt-radio-header">Make CBT available:<span class="required">*</span></h2>
+        <div class="d-block align-items-center checkbox-spacing pd-left-10">
+          <div>
+            <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
+                             [value]="getCbtAvailability()" (change)="setCbtAvailabilityChange($event)">
+              <mat-radio-button class="example-radio-button pr-3"
+                                *ngFor="let availability of cbtAvailabilityEnum;let idx = index"
+                                [value]="availability.id">
+                {{availability.name}}
+              </mat-radio-button>
+            </mat-radio-group>
+          </div>
+        </div>
+      </div>
+      <div class="pt-4">
+        <h2>CBT Due Date<span class="required">*</span></h2>
+        <span class="due-date-description pt-1">The number of days/weeks/months following the class end date/time
+                    students
+                    have to complete the CBT in
+                    EMP.After this due date, the CBT will be removed from EMP and Students will not be awarded a
+                    grade.</span>
+        <div class="border-number-box bg-white py-2 flex mt-3" style="width: 20%; align-items: center">
+          <input #dateAmount name="dueDateAmount" (keypress)="keyPressNumbers($event)" class=" text-base w-full h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded modifiedTextbox"
+          [value]="getDueDateValues('amount')" (input)="handleDueDateAmountChange(dateAmount.value)" />
+          <mat-select [value]="getDueDateValues('dateInterval')" (selectionChange)="handleDueDateIntervalChange($event)">
+            <mat-option *ngFor="let type of empSettingsReleaseTypes" [value]="type.typeId">{{type.typeName}}</mat-option>
+          </mat-select>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="d-flex justify-content-end pt-4" *ngIf="!spinner">
+  <app-button [disabled]="disableSaveButton()" text="Save" size="sm" class="mr-3 btn-sm" (clicked)="onSaveButtonClickAsync()"></app-button>
+</div>
+<div *ngIf="openDisconnectScormPopup" class="modal-wrap datawrap-model">
+  <div class="modal-dialog modal-lg m-t-9r">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title datawrap-modal-title">Disconnect SCORM Package</h4>
+        <button type="button" class="close" aria-label="Close" (click)="onDisconnectPackageClick(false)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body" *ngIf="launchedStudentsList && launchedStudentsList.length > 0">
+        <div class="">
+          <div class="datawrap-modal-body"> Records indicate that the following {{("Employee" | labelReplacement)| async}}s have launched the
+            CBT, see table below for
+            details.
+          </div>
+          <div class="table-responsive datawrap-modal-table">
+            <table class=" table table-bordered">
+              <tbody>
+              <tr *ngFor="let val of launchedStudentsList">
+                <td>{{val.firstName}} {{val.lastName}}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="datawrap-modal-list">
+            For those {{("Employee" | labelReplacement)| async}}s that have:
+            <ul>
+              <li class="py-2"><i><b>Not started the CBT - </b>Disconnecting the SCORM package will remove the existing CBT from EMP. If a new SCORM file is attached to this course, it will be automatically released to any {{("Employee" | labelReplacement)| async}}s enrolled in the course, but have not started the course. A version history will be made.</i>
+              </li>
+              <li class="py-2"><i><b>Started or launched the CBT - </b>A new version of the {{("ILA" | labelReplacement)| async}} will be created and {{("Employee" | labelReplacement)| async}}s who have an In Progress status will receive the new version of the CBT course in their EMP. Course completion records will remain available for the previously imported SCORM package.</i>
+              </li>
+              <li class="py-2"><i><b>Completed the CBT - </b>
+                Determine if the {{("Employee" | labelReplacement)| async}}s will need to be re-enrolled in the {{("ILA" | labelReplacement)| async}} to complete the new version and re-enroll the  {{("Employee" | labelReplacement)| async}} in the {{("ILA" | labelReplacement)| async}}.</i>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <div class="modal-body" *ngIf="!launchedStudentsList || launchedStudentsList.length === 0">
+        <div class="datawrap-modal-body">
+          Disconnecting this SCORM package won't affect in-progress CBTs since no students have started the CBT.
+        </div>
+      </div>
+      <div class="modal-footer">
+        <app-button (clicked)="onDisconnectPackageClick(false)" size="sm" class="mr-3" text="Cancel">
+        </app-button>
+        <app-button color="secondary" variant="outlined" size="sm" class="mr-3" text="Disconnect Scorm"
+                    (clicked)="onDisconnectCourseAsync()">
+        </app-button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div *ngIf="openImportScormPopup" class="modal-wrap datawrap-model">
+  <div class="modal-dialog modal-lg m-t-9r">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 class="modal-title datawrap-modal-title">Import SCORM Package</h4>
+        <button type="button" class="close" aria-label="Close" (click)="onImportScormClick(false)">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="datawrap-modal-body">
+          <p>
+            <strong>Warning:</strong> Changes made to the SCORM file here will be applied to ALL CLASSES in this {{("ILA" | labelReplacement)| async}}. 
+            If you do NOT want this change applied to all classes in this {{("ILA" | labelReplacement)| async}}, it is recommended that you create a new {{("ILA" | labelReplacement)| async}} to implement this change.
+          </p>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <app-button (clicked)="onImportScormClick(false)" size="sm" class="mr-3" text="Cancel"></app-button>
+        <app-button color="secondary" variant="outlined" size="sm" class="mr-3" text="OK"
+        (clicked)="fileInput.click()"></app-button>
+        <input #fileInput type="file" (change)="onScormImportClickEvent($event)" style="display:none"/>
+      </div>
+    </div>
+  </div>
+</div>
+

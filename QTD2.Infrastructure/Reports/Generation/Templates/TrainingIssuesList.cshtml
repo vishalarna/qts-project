@@ -1,0 +1,202 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    tr.open-border-table-row td {
+        border: 1px solid black;
+    }
+
+        tr.open-border-table-row th:first-child, tr.open-border-table-row td:first-child {
+            border-left: 0 !important;
+        }
+
+        tr.open-border-table-row th:last-child, tr.open-border-table-row td:last-child {
+            border-right: 0 !important;
+        }
+
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+
+    .expired-row {
+        color: gray;
+        font-style: italic;
+    }
+</style>
+
+
+<table id="content-table" class="table landscape-report">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.TrainingIssues.Count() > 0)
+    {
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+                <table style="width:100% ;border-collapse:collapse;">
+                    <thead>
+                        <tr class="open-border-table-row">
+                            @if (Model.DisplayColumns.Where(r => r == "Issue ID").Count() > 0)
+                            {
+                                <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:9%;">Issue ID</th>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Created Date").Count() > 0)
+                            {
+                                <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:9%;">Created Date</th>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Due Date").Count() > 0)
+                            {
+                                <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:9%;">Due Date</th>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Training Issue Title").Count() > 0)
+                            {
+                                <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:22%;">Training Issue Title</th>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Severity").Count() > 0)
+                            {
+                                <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:7%;">Severity</th>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Driver").Count() > 0)
+                            {
+                                <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:9%;">Driver</th>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Training Component").Count() > 0)
+                            {
+                                <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:9%;">Training Component</th>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Pending Action Items").Count() > 0)
+                            {
+                                <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:8%;">Pending Action Items</th>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Open/Closed Status").Count() > 0)
+                            {
+                                <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:9%;">Open/Closed Status</th>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Active/Inactive Status").Count() > 0)
+                            {
+                                <th style="border:1px solid black;text-align: left;vertical-align: bottom; padding: 5px; width:9%;">Active/Inactive Status</th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var trainingIssue in Model.TrainingIssues.OrderBy(m => m.IssueID))
+                        {
+                            <tr class="open-border-table-row  @(!trainingIssue.Active ? "expired-row" : "")">
+                                @if (Model.DisplayColumns.Where(r => r == "Issue ID").Count() > 0)
+                                {
+                                    <td style="padding: 5px; vertical-align: top;width:9%">@trainingIssue.IssueID</td>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Created Date").Count() > 0)
+                                {
+                                    <td style="padding: 5px; vertical-align: top;width:9%">@trainingIssue.TrainingIssueCreatedDate.ToShortDateString()</td>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Due Date").Count() > 0)
+                                {
+                                    <td style="padding: 5px; vertical-align: top;width:9%">@trainingIssue.DueDate.ToShortDateString()</td>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Training Issue Title").Count() > 0)
+                                {
+                                    <td style="padding: 5px; vertical-align: top;width:22%">@trainingIssue.IssueTitle</td>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Severity").Count() > 0)
+                                {
+                                    <td style="padding: 5px; vertical-align: top;width:7%">@(trainingIssue.Severity?.Severity ?? "")</td>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Driver").Count() > 0)
+                                {
+                                    <td style="padding: 5px; vertical-align: top;width:9%">
+                                        @(trainingIssue.DriverType?.Type +
+                                            (trainingIssue.DriverType != null && trainingIssue.DriverSubType != null ? " - " : "") +
+                                            trainingIssue.DriverSubType?.SubType)
+                                    </td>
+
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Training Component").Count() > 0)
+                                {
+                                    <td style="padding: 5px; vertical-align: top;width:9%">@(trainingIssue.DataElement.DataElementDisplay ?? "")</td>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Pending Action Items").Count() > 0)
+                                {
+                                    <td style="padding: 5px; vertical-align: top;width:8%">@trainingIssue.ActionItems.Count(ai => ai.StatusId == 1 || ai.StatusId == 2)</td>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Open/Closed Status").Count() > 0)
+                                {
+                                    <td style="padding: 5px; vertical-align: top;width:9%">@trainingIssue.Status?.Status</td>
+                                }
+                                @if (Model.DisplayColumns.Where(r => r == "Active/Inactive Status").Count() > 0)
+                                {
+                                    <td style="padding: 5px; vertical-align: top;width:9%">@(trainingIssue.Active ? "Active" : "Inactive")</td>
+                                }
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+

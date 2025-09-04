@@ -1,0 +1,82 @@
+<app-data-loader *ngIf="isLoading"></app-data-loader>
+<div *ngIf="!isLoading" class="flex flex-col bg-white rounded-sm">
+
+  <mat-form-field class="searchField" appearance="outline">
+    <div class="flex flex-row">
+      <mat-icon matPrefix>search</mat-icon>
+      <input (input)="inputChange()" [(ngModel)]="filterString" type="text" matInput
+        placeholder="Enter keywords to search">
+        <app-icon icon="close" class="cursor-pointer" (click)="clearFilter()"></app-icon>
+  
+    </div>
+    
+  </mat-form-field>
+
+  <table style="border-top:0.8px solid #E1E5E4" mat-table matSort [dataSource]="dataSource" (matSortChange)="sortData($event)">
+    <!-- <ng-container matColumnDef="cb">
+      <th style="width:5%;" mat-header-cell *matHeaderCellDef>
+        <mat-checkbox (change)="masterToggle($event)"
+          [indeterminate]="selection.selected.length > 0 && selection.selected.length < dataSource.data.length"
+          [checked]="dataSource.data.length > 0 && selection.selected.length === dataSource.data.length"></mat-checkbox>
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <mat-checkbox [checked]="selection.selected.includes(row)" (change)="checkChange($event,row)"></mat-checkbox>
+      </td>
+    </ng-container> -->
+    <ng-container matColumnDef="evaluatorName">
+      <th style="width:20%" mat-header-cell *matHeaderCellDef mat-sort-header >
+        Evaluators
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <span class="linkText">{{row.evaluatorName}}</span>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="positionTitle" >
+      <th style="width:15%" mat-header-cell *matHeaderCellDef mat-sort-header>
+        {{("Position" | labelReplacement)| async}}s
+      </th>
+      <td mat-cell *matCellDef="let row">
+        {{row.positionTitle === '' ? 'n/a':row.positionTitle | uppercase}}
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="count">
+      <th style="width:50%" mat-header-cell *matHeaderCellDef mat-sort-header>
+        Pending {{("Task" | labelReplacement)| async}} & Skill Qualifications
+      </th>
+      <td class="linkText" mat-cell *matCellDef="let row">
+        <span (click)="selectedData = row;openFlyPanel(assignedPanel)" class="linkText cursor-pointer">{{row.count |
+          number:'2.0'}}</span>
+      </td>
+    </ng-container>
+    <ng-container matColumnDef="unlink">
+      <th style="width:10%" mat-header-cell *matHeaderCellDef mat-sort-header>
+
+      </th>
+      <td mat-cell *matCellDef="let row">
+        <app-icon (click)="unlinkData(removeDialog,row)" icon="unlink" class="text-gray-400 cursor-pointer"></app-icon>
+      </td>
+    </ng-container>
+
+    <tr mat-header-row class="pl-2 pr-2" *matHeaderRowDef="displayedColumns"></tr>
+    <tr mat-row class="pr-2 pl-2" *matRowDef="let row; columns: displayedColumns"></tr>
+    <!-- Row shown when there is no matching data.-->
+    <tr class="mat-row" *matNoDataRow>
+      <td class="mat-cell text-center" [attr.colspan]="displayedColumns.length">No Evaluator Records Found</td>
+    </tr>
+  </table>
+  <mat-paginator #paginator showFirstLastButtons [pageSizeOptions]="[20, 40, 60]">
+
+  </mat-paginator>
+</div>
+
+
+<ng-template #assignedPanel>
+  <app-flypanel-assigned-task-qualification (saved)="readyData();flyPanelService.close();" [evalData]="selectedData"
+    (closed)="flyPanelService.close()"></app-flypanel-assigned-task-qualification>
+</ng-template>
+
+<ng-template #removeDialog>
+  <app-qtd-dialogue [description]="description" [header]="'Remove Evaluator'" [confirmText]="'Yes'" [cancelText]="'No'"
+    [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()"
+    (confirmed)="removeEvaluator()"></app-qtd-dialogue>
+</ng-template>

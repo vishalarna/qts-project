@@ -1,0 +1,25 @@
+:host ::ng-deep .mat-form-field-appearance-outline.mat-form-field-disabled,
+:host ::ng-deep .mat-form-field-outline {
+  opacity: 0;
+  outline: none;
+}
+
+:host ::ng-deep .mat-form-field-appearance-outline .mat-form-field-outline {
+  color: white !important;
+}
+
+:host ::ng-deep .mat-row{
+  vertical-align: top;
+}
+
+:host ::ng-deep .mat-cell{
+  padding: 1rem 1rem 1rem 1rem;
+}
+
+.mat-header-cell{
+  padding-left:1rem;
+}
+
+:host ::ng-deep .searchField>.mat-form-field-wrapper {
+  padding-bottom: 0 !important;
+}

@@ -1,0 +1,78 @@
+<div class="container">
+  <div class="row align-items-center mt-8">
+    <div class="col-lg-8">
+      <h2 class="font-weight-bold text-gray-900">Manage {{("Employee" | labelReplacement)| async}}s</h2>
+    </div>
+    <div class="col-lg-4 d-flex justify-content-end">
+      <app-button class="mx-2" color="secondary" size="sm" text="Unlink {{('Employee' | labelReplacement)| async}}(s)" *ngIf="selection.selected.length>0" (click)="unlinkItemsModal(unlinkEmployees)"></app-button>
+      <app-button text="Add {{('Employee' | labelReplacement)| async}}s" size="sm" color="secondary" (clicked)="openFlyInPanelAddEmployees(addEmployeePanel)" ></app-button>
+    </div>
+  </div>
+   <mat-table [dataSource]="employeeDataSource" matSort class="w-full employee-list-data" style="border-top:0.8px solid #E1E5E4">
+    <ng-container matColumnDef="checkBox">
+      <mat-header-cell  mat-sort-header *matHeaderCellDef>
+        <mat-checkbox (change)="$event ? masterToggle() : null" [checked]="selection.hasValue() && isAllSelected()" [indeterminate]="selection.hasValue() && !isAllSelected()" ></mat-checkbox>
+      </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <mat-checkbox (change)="$event ? selection.toggle(row) : null" [checked]="selection.isSelected(row)" ></mat-checkbox>
+      </mat-cell>
+    </ng-container>
+    <ng-container matColumnDef="employees">
+        <mat-header-cell  mat-sort-header *matHeaderCellDef>
+          {{("Employee" | labelReplacement)| async}}s
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 ml-2 mb-2" [src]="row.empImage" onerror="this.src='assets/img/ImageNotFound.jpg'" />
+          <div>
+            <div class="font-bold  mb-1 employee-name">{{ row.empFirstName }} {{ row.empLastName }}</div>
+            <div class="text-gray-500">{{ row.empUserName }}</div>
+          </div>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="position">
+        <mat-header-cell mat-sort-header *matHeaderCellDef>
+          {{("Position" | labelReplacement)| async}}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{row.positions}}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="organization">
+        <mat-header-cell mat-sort-header *matHeaderCellDef>
+          Organization
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{row.organizations}}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <mat-header-cell mat-sort-header *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <app-button icon="link_off" ButtonType="icon" (click)="unlinkItemsModal(unlinkEmployees,row)"></app-button>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row class="pl-2 pr-2" *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row class="pr-2 pl-2" *matRowDef="let row; columns: displayedColumns"></mat-row>
+     
+      <tr class="mat-row flex text-center no-data-row" *matNoDataRow>
+        <td class="mat-cell w-full m-2">No {{("Employee" | labelReplacement)| async}}s Records Found</td>
+      </tr>
+    </mat-table>
+</div>
+
+<ng-template #addEmployeePanel>
+  <app-fly-panel-dif-survey-employees [alreadyLinkedEmployees]="inputDifSurveyVM.employees" [difSurveyId]="inputDifSurveyVM.id" (updatedEmployees)="updateEmployeesList($event)"> </app-fly-panel-dif-survey-employees>
+</ng-template>
+<ng-template #unlinkEmployees>
+  <app-qtd-dialogue
+    [header]="unlinkHeader"
+    [isHTML]="true"
+    [isQuestion]="false"
+    [description]="unlinkDescription"
+    cancelText="No"
+    confirmText="Yes"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="unlinkemployeesAsync()"
+  >
+  </app-qtd-dialogue>
+</ng-template>

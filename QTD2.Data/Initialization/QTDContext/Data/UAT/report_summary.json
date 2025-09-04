@@ -1,0 +1,50 @@
+﻿[
+  {
+    "Id": 1,
+    "Employee": {
+      "FirstName": "Lauren",
+      "LastName": "Broox",
+      "Image": "https://via.placeholder.com/150",
+      "EmailAddress": "lauren.broox@qts.com"
+    },
+    "DateAdded": "11-07-2022",
+    "DateCompleted": "11-7-2022",
+    "Score": 75,
+    "Grade": 50,
+    "Retake": "No",
+    "Interrupt": "No",
+    "Restart": "No"
+  },
+  {
+    "Id": 2,
+    "Employee": {
+      "FirstName": "Cody",
+      "LastName": "Fisher",
+      "Image": "https://via.placeholder.com/150",
+      "EmailAddress": "cody.fisher@qts.com"
+    },
+    "DateAdded": "11-07-2022",
+    "DateCompleted": "11-7-2022",
+    "Score": 72,
+    "Grade": 89,
+    "Retake": "No",
+    "Interrupt": "No",
+    "Restart": "No"
+  },
+  {
+    "Id": 3,
+    "Employee": {
+      "FirstName": "Craig",
+      "LastName": "Westervelt",
+      "Image": "https://via.placeholder.com/150",
+      "EmailAddress": "craig.westervelt@qts.com"
+    },
+    "DateAdded": "11-07-2022",
+    "DateCompleted": "11-7-2022",
+    "Score": 83,
+    "Grade": 61,
+    "Retake": "No",
+    "Interrupt": "No",
+    "Restart": "No"
+  }
+]  

@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+
+#nullable disable
+
+namespace LegacyToQtd2Migrator.Legacy.Data
+{
+    public partial class VwIlatask
+    {
+        public int Tid { get; set; }
+        public string Task { get; set; }
+        public string Task1 { get; set; }
+        public string Tdesc { get; set; }
+        public int Corid { get; set; }
+        public int? Daid { get; set; }
+        public int? Danum { get; set; }
+        public int? DasubNum { get; set; }
+        public string Da { get; set; }
+        public string MainDuty { get; set; }
+        public int? Tnum { get; set; }
+        public int? TsubNum { get; set; }
+        public string Daletter { get; set; }
+        public int? Flag { get; set; }
+        public int? Sequence { get; set; }
+        public byte[] Ts { get; set; }
+        public string Tstandards { get; set; }
+    }
+}

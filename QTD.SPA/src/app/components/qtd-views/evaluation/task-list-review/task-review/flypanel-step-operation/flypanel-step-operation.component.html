@@ -1,0 +1,50 @@
+<div class="flex flex-row justify-between items-center px-12 mt-5 mb-3">
+  <p class="text-xl font-bold text-gray-900 mb-0">Step Operation</p>
+  <app-button
+    (click)="closeFlyPanel()"
+    ButtonType="icon"
+    icon="close"
+  ></app-button>
+</div>
+<div *ngIf = "isLoading" class="operation-spinner">
+  <app-spinner></app-spinner>
+</div>
+<div class="m-3" [formGroup]="stepOperationForm" *ngIf = "!isLoading">
+  <div class="flex flex-col ml-5 mt-3">
+    <app-label text="Operation Type" class="font-weight-bold label required"></app-label>
+    <mat-select placeholder = "Select Operation Type"
+      formControlName="operation"
+      class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+      (selectionChange) = "onOperationTypeChange($event.value)">
+      <mat-option *ngFor="let item of operationType" [value]="item.id">
+        {{ item.type }}
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <ng-container *ngIf="stepOperationForm.get('operation').value">
+    <ng-container *ngIf="operationTypeName !='CreateRecord'">
+      <div class="flex flex-col ml-5 mt-3">
+        <app-label 
+          text="{{ 'Task' | labelReplacement | async }} Step"
+          class="font-weight-bold label required"
+        ></app-label>
+        <mat-select (selectionChange) = "onTaskStepChange($event.value)" placeholder = "Select {{ 'Task' | labelReplacement | async }} Step"
+          formControlName="taskStep"
+          class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+        >
+          <mat-option *ngFor = "let ts of taskSteps" [value] = "ts.id" [innerHtml] = "ts.number"></mat-option>
+        </mat-select>
+      </div>
+    </ng-container>
+    <ng-container>
+      <div class="flex flex-col ml-5 mt-3">
+        <app-label text="Description" class="font-weight-bold" [ngClass]="{'label required': operationTypeName != 'RemoveLink'}"></app-label>
+        <app-textbox type="text" formControlName = "description" class="mt-1"></app-textbox>
+      </div>
+    </ng-container>
+    <div class="flex justify-end mt-3">
+      <app-button size="sm" text="Save" [disabled] = "saveDisabled()" (clicked) = "onStepOperationSave()" type="submit"></app-button>
+    </div>
+  </ng-container>
+</div>

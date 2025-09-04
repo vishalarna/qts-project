@@ -1,0 +1,17 @@
+.bg-light-orange{
+    background-color: #ffeeee;
+}
+.container {
+    display: flex;
+    justify-content: space-between;
+  }
+  
+  .left {
+    align-self: flex-start;
+    line-break:anywhere;
+  }
+  
+  .right {
+    align-self: flex-end;
+    line-break:anywhere;
+  }

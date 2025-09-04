@@ -1,0 +1,59 @@
+<div class="container">
+  <div class="row align-items-center mt-8">
+    <div class="col-lg-8">
+      <h2 class="font-weight-bold text-gray-900">Tasks Setup</h2>
+      <h3 class="text-gray-400">Select one of the following options</h3>
+    </div>
+    <div class="col-lg-4 d-flex justify-content-end">
+      <app-button text="Add Tasks" size="sm" color="secondary" (clicked)="openAddTaskFlyPanel(AddTasktoSurvey)" ></app-button>
+    </div>
+    
+    <div class="linked-task-data w-100">
+      <mat-table matSort  style="border-top: 0.8px solid #e1e5e4 ; width:100%" [dataSource]="dataSource" (matSortChange) = "sortDataSourceData($event)">
+      <ng-container matColumnDef="taskNumber">
+        <mat-header-cell mat-sort-header  *matHeaderCellDef>#</mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{row.taskNumber}}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="taskDescription">
+        <mat-header-cell mat-sort-header *matHeaderCellDef>
+          Task Description
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          {{row.taskDescription}}
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <mat-header-cell mat-sort-header *matHeaderCellDef></mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <app-button icon="link_off" ButtonType="icon" (click)="unlinkItemsModal(unlinkTask,row)"></app-button>
+        </mat-cell>
+      </ng-container>
+      <mat-header-row class="pl-2 pr-2" *matHeaderRowDef="displayedColumns" ></mat-header-row>
+      <mat-row class="pr-2 pl-2" *matRowDef="let row; columns: displayedColumns" ></mat-row>
+      <tr class="mat-row flex text-center no-data-row" *matNoDataRow>
+        <td class="mat-cell w-full m-2">No Task Records Found</td>
+      </tr>
+      </mat-table>
+    </div>
+  </div>
+
+  <ng-template #unlinkTask>
+    <app-qtd-dialogue
+      header="Unlink Task"
+      [isHTML]="true"
+      [isQuestion]="false"
+      [description]="unlinkDescription"
+      cancelText="No"
+      confirmText="Yes"
+      (canceled)="dialog.closeAll()"
+      (confirmed)="unlinkTaskAsync()"
+    >
+    </app-qtd-dialogue>
+  </ng-template>
+
+  <ng-template #AddTasktoSurvey>
+    <app-fly-panel-dif-survey-tasks [alreadyLinkedTasks]="inputDifSurveyVM.tasks" [positionId]="inputDifSurveyVM.positionId" [difSurveyId]="inputDifSurveyVM.id" (updatedTasks)="updateTaskList($event)"></app-fly-panel-dif-survey-tasks>
+  </ng-template>
+</div>

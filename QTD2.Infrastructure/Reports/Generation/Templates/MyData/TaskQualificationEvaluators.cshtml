@@ -1,0 +1,268 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .inner-table {
+        margin-left: 25px;
+        margin-right: 25px;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        width:90%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+    a.pagerNumber:hover {
+        background-color: cornflowerblue;
+        color: white;
+    }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .tq-status{
+        font-size: 14px;
+        font-weight: 500;
+        color: #0c0cda;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+<table id="content-table" class="table" style="width:98%; margin:auto;">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !    important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center;word-break:break-word;width:60%;">
+                    <b style="display: block; color: #020378; font-weight: bold; font-size: 16px; text-align: center; margin-top: 8px;">@Model.Title </b>
+                </div>
+                <div><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+  
+    @if (Model.Evaluators.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border:none" class="strip-container">
+                @{int j = 1;}
+
+                @foreach (var eval in Model.Evaluators)
+                {
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table class="table">
+                            <tr>
+                                @if (Model.DisplayColumns.Contains("Evaluator Name"))
+                                {
+                                    <th style="border: 2px solid #000;border-left:0;padding:5px; padding-left:0" align="left">Evaluator Name</th>
+                                }
+                                @if (Model.DisplayColumns.Contains("Organization"))
+                                {
+                                    <th style="border: 2px solid #000;border-left:0;padding:5px;" align="left">Organization Name</th>
+                                }
+                                @if (Model.DisplayColumns.Contains("Position Abbreviation"))
+                                {
+                                    <th style="border: 2px solid #000;border-right:0;padding:5px;" align="left">Position</th>
+                                }
+                                @if (Model.DisplayColumns.Contains("Number of Pending Qualifications"))
+                                {
+                                    <th style="border: 2px solid #000;border-right:0;padding:5px;" align="left"># of Pending Qualifications</th>
+                                }
+                            </tr>
+                            <tr>
+                                @if (Model.DisplayColumns.Contains("Evaluator Name"))
+                                {
+                                    <td style="border: none; border-bottom: 1px solid #000; padding: 5px;">@eval?.Person?.LastName , @eval?.Person?.FirstName</td>
+                                }
+                                @if (Model.DisplayColumns.Contains("Organization"))
+                                {
+                                    var orgList = eval?.EmployeeOrganizations?.Where(x => x.Active).Select(empPos => empPos.Organization?.Name).ToList();
+                                    <td style="border: none; border-bottom: 1px solid #000; padding: 5px;">@(new RawString(string.Join(" , ", orgList)))</td>
+                                }
+                                @if (Model.DisplayColumns.Contains("Position Abbreviation"))
+                                {
+                                    var posList = eval?.EmployeePositions?.Where(x=>x.Active).Select(empPos => empPos.Position?.PositionAbbreviation).Distinct().ToList();
+                                    <td style="border: none; border-bottom: 1px solid #000; padding: 5px;">@(new RawString(string.Join(" , ", posList)))</td>
+                                }
+                                @if (Model.DisplayColumns.Contains("Number of Pending Qualifications"))
+                                {
+                                    var pendingTQList = eval.TaskQualification_Evaluator_Links
+                                    .Where(x => x.TaskQualification.IsPending == true && x.TaskQualification?.IsReleasedToEMP == true)
+                                    .ToList();
+                                    <td style="border: none; border-bottom: 1px solid #000; padding: 5px;">@pendingTQList.Count()</td>
+                                }
+                            </tr>
+                            @if (Model.ShowAssignedAndPendingQualifications)
+                            {
+                                <tr>
+                                    <td style="border: 0; padding: 0;padding-top:8px;padding-left:23px" colspan="10">
+                                        <div class="tq-status">Pending & Assigned</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 0; padding: 0;padding-top:8px" class="strip-container" colspan="10">
+                                        <table class="inner-table">
+                                            <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 25% ">
+                                                    @("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements))
+                                                </th>
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 15% ">
+                                                    @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Number
+                                                </th>
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 20% ">
+                                                    Release Date
+                                                </th>
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 20% ">
+                                                    Due Date
+                                                </th>
+                                            </tr>
+                                            @foreach (var tq in eval.TaskQualification_Evaluator_Links.Where(tqLink => tqLink.TaskQualification.IsPending == true && tqLink.TaskQualification?.IsReleasedToEMP == true).OrderBy(tqel => tqel.TaskQualification?.DueDate).ThenBy(tqel => tqel.TaskQualification?.Employee?.Person.LastName).ThenBy(tqel => tqel.TaskQualification?.Employee?.Person.FirstName))
+                                            {
+                                                <tr>
+                                                    @{
+                                                        var person = tq.TaskQualification?.Employee?.Person;
+                                                    }
+                                                    <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 25% ">
+                                                        @person?.LastName , @person?.FirstName
+                                                    </td>
+                                                    <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 15% ">
+                                                        @tq?.TaskQualification?.Task?.FullNumber
+                                                    </td>
+                                                    <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 20% ">
+                                                        @(tq?.TaskQualification?.TQEmpSetting?.ReleaseDate?.ToShortDateString() ?? "")
+                                                    </td>
+                                                    <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 20% ">
+                                                        @(tq?.TaskQualification?.DueDate?.ToShortDateString() ?? "")
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.ShowCompletedTaskQualifications)
+                            {
+                                <tr>
+                                    <td style="border: 0; padding: 0;padding-top:8px;padding-left:23px" colspan="10">
+                                        <div class="tq-status">Completed</div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 0; padding: 0;padding-top:8px" class="strip-container" colspan="10">
+                                        <table class="inner-table">
+                                            <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 25% ">
+                                                    @("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements))
+                                                </th>
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 15% ">
+                                                    @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Number
+                                                </th>
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 20% ">
+                                                    Release Date
+                                                </th>
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 20% ">
+                                                    Due Date
+                                                </th>
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 20% ">
+                                                    Completed Date
+                                                </th>
+                                            </tr>
+                                            @foreach (var tq in eval.TaskQualification_Evaluator_Links.Where(tqLink => tqLink?.TaskQualification?.IsComplete == true && tqLink.TaskQualification?.IsReleasedToEMP == true).OrderBy(tqel => tqel.TaskQualification?.DueDate).ThenBy(tqel => tqel.TaskQualification?.Employee?.Person.LastName).ThenBy(tqel => tqel.TaskQualification?.Employee?.Person.FirstName))
+                                            {
+                                                <tr>
+                                                    @{
+                                                        var person = tq.TaskQualification?.Employee?.Person;
+                                                    }
+                                                    <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 25% ">
+                                                        @person?.LastName , @person?.FirstName
+                                                    </td>
+                                                    <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 15% ">
+                                                        @tq?.TaskQualification?.Task?.FullNumber
+                                                    </td>
+                                                    <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 20% ">
+                                                        @(tq?.TaskQualification?.TQEmpSetting?.ReleaseDate?.ToShortDateString() ?? "")
+                                                    </td>
+                                                    <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 20% ">
+                                                        @(tq?.TaskQualification?.DueDate?.ToShortDateString() ?? "")
+                                                    </td>
+                                                    <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 20% ">
+                                                        @(tq?.TaskQualification?.TaskQualificationDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString() ?? "")
+                                                    </td>
+                                                </tr>
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                            <tr></tr>
+                        </table>
+                    </div>
+                    @if (eval != Model.Evaluators?.Last())
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{ j++; }
+                }
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr>
+            <td colspan="12" style="text-align: center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+
+@if (Model.ShowAssignedAndPendingQualifications || Model.ShowCompletedTaskQualifications)
+{
+    <div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+        @for (int i = 1; i <= Model.Evaluators.Count(); i++)
+        {
+            <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+        }
+    </div>
+}

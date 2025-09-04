@@ -1,0 +1,243 @@
+<app-header title="Training Maps"></app-header>
+
+<div class="flex flex-col px-12 pb-12">
+    <div class="flex flex-row mb-6 justify-between">
+
+        <span>
+            <app-button icon="arrow_drop_down" size="sm" type="button" variant="text" color="primary" text="Last Viewed"
+                [matMenuTriggerFor]="sortMenu">
+            </app-button>
+            <mat-menu #sortMenu="matMenu">
+                <button mat-menu-item>
+                    <span>By Added Date</span>
+                </button>
+                <button mat-menu-item>
+                    <span>Last Viewed</span>
+                </button>
+            </mat-menu>
+        </span>
+
+        <app-button icon="account_tree" size="sm" type="button" color="primary" text="New Training Map" (clicked)="CreateTM()">
+        </app-button>
+
+    </div>
+    <mat-grid-list cols="3" rowHeight="2:2">
+        <mat-grid-tile>
+            <mat-card>
+                <mat-card-content>
+                    <img mat-card-image src="./assets/img/qtd.png">
+                </mat-card-content>
+                <mat-divider inset></mat-divider>
+                <mat-card-footer>
+                    <mat-card-title-group>
+                        <mat-card-subtitle>
+                            <span class="p-1 qtd-chip">
+                                Initial Training Program
+                            </span>
+                        </mat-card-subtitle>
+                        <span>
+                            <app-button ButtonType="icon" icon="more_horiz" [matMenuTriggerFor]="menu">
+                            </app-button>
+                            <mat-menu #menu="matMenu">
+                                <button mat-menu-item>
+                                    <app-icon icon="preview"></app-icon>
+                                    <span>Preview</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="edit"></app-icon>
+                                    <span>Edit</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="content_copy"></app-icon>
+                                    <span>Copy</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="toggle_on"></app-icon>
+                                    <span>Active/Inactive</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="delete"></app-icon>
+                                    <span>Delete</span>
+                                </button>
+                            </mat-menu>
+                        </span>
+                    </mat-card-title-group>
+                    <mat-card-title>Transmission Systems Operator (TSO)</mat-card-title>
+
+                    <mat-card-title-group>
+                        <mat-card-subtitle>
+                            <app-icon icon="schedule"></app-icon>
+                            <i>12/08/22 - 12/11/2022</i>
+                        </mat-card-subtitle>
+                        <i> Edited 5 Days ago</i>
+                    </mat-card-title-group>
+
+
+                </mat-card-footer>
+            </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-card>
+                <mat-card-content>
+                    <img mat-card-image src="./assets/img/qtd.png">
+                </mat-card-content>
+                <mat-divider inset></mat-divider>
+                <mat-card-footer>
+                    <mat-card-title-group>
+                        <mat-card-subtitle>
+                            <span class="p-1 qtd-chip">
+                                Initial Training Program
+                            </span>
+                        </mat-card-subtitle>
+                        <span>
+                            <app-button ButtonType="icon" icon="more_horiz" [matMenuTriggerFor]="menu">
+                            </app-button>
+                            <mat-menu #menu="matMenu">
+                                <button mat-menu-item>
+                                    <app-icon icon="preview"></app-icon>
+                                    <span>Preview</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="edit"></app-icon>
+                                    <span>Edit</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="content_copy"></app-icon>
+                                    <span>Copy</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="toggle_on"></app-icon>
+                                    <span>Active/Inactive</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="delete"></app-icon>
+                                    <span>Delete</span>
+                                </button>
+                            </mat-menu>
+                        </span>
+                    </mat-card-title-group>
+                    <mat-card-title>Transmission Systems Operator (TSO)</mat-card-title>
+
+                    <mat-card-title-group>
+                        <mat-card-subtitle>
+                            <app-icon icon="schedule"></app-icon>
+                            <i>12/08/22 - 12/11/2022</i>
+                        </mat-card-subtitle>
+                        <i> Edited 5 Days ago</i>
+                    </mat-card-title-group>
+
+
+                </mat-card-footer>
+            </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-card>
+                <mat-card-content>
+                    <img mat-card-image src="./assets/img/qtd.png">
+                </mat-card-content>
+                <mat-divider inset></mat-divider>
+                <mat-card-footer>
+                    <mat-card-title-group>
+                        <mat-card-subtitle>
+                            <span class="p-1 qtd-chip">
+                                Initial Training Program
+                            </span>
+                        </mat-card-subtitle>
+                        <span>
+                            <app-button ButtonType="icon" icon="more_horiz" [matMenuTriggerFor]="menu">
+                            </app-button>
+                            <mat-menu #menu="matMenu">
+                                <button mat-menu-item>
+                                    <app-icon icon="preview"></app-icon>
+                                    <span>Preview</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="edit"></app-icon>
+                                    <span>Edit</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="content_copy"></app-icon>
+                                    <span>Copy</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="toggle_on"></app-icon>
+                                    <span>Active/Inactive</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="delete"></app-icon>
+                                    <span>Delete</span>
+                                </button>
+                            </mat-menu>
+                        </span>
+                    </mat-card-title-group>
+                    <mat-card-title>Transmission Systems Operator (TSO)</mat-card-title>
+
+                    <mat-card-title-group>
+                        <mat-card-subtitle>
+                            <app-icon icon="schedule"></app-icon>
+                            <i>12/08/22 - 12/11/2022</i>
+                        </mat-card-subtitle>
+                        <i> Edited 5 Days ago</i>
+                    </mat-card-title-group>
+
+
+                </mat-card-footer>
+            </mat-card>
+        </mat-grid-tile>
+        <mat-grid-tile>
+            <mat-card>
+                <mat-card-content>
+                    <img mat-card-image src="./assets/img/qtd.png">
+                </mat-card-content>
+                <mat-divider inset></mat-divider>
+                <mat-card-footer>
+                    <mat-card-title-group>
+                        <mat-card-subtitle>
+                            <span class="p-1 qtd-chip">
+                                Initial Training Program
+                            </span>
+                        </mat-card-subtitle>
+                        <span>
+                            <app-button ButtonType="icon" icon="more_horiz" [matMenuTriggerFor]="menu">
+                            </app-button>
+                            <mat-menu #menu="matMenu">
+                                <button mat-menu-item>
+                                    <app-icon icon="preview"></app-icon>
+                                    <span>Preview</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="edit"></app-icon>
+                                    <span>Edit</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="content_copy"></app-icon>
+                                    <span>Copy</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="toggle_on"></app-icon>
+                                    <span>Active/Inactive</span>
+                                </button>
+                                <button mat-menu-item>
+                                    <app-icon icon="delete"></app-icon>
+                                    <span>Delete</span>
+                                </button>
+                            </mat-menu>
+                        </span>
+                    </mat-card-title-group>
+                    <mat-card-title>Transmission Systems Operator (TSO)</mat-card-title>
+
+                    <mat-card-title-group>
+                        <mat-card-subtitle>
+                            <app-icon icon="schedule"></app-icon>
+                            <i>12/08/22 - 12/11/2022</i>
+                        </mat-card-subtitle>
+                        <i> Edited 5 Days ago</i>
+                    </mat-card-title-group>
+
+
+                </mat-card-footer>
+            </mat-card>
+        </mat-grid-tile>
+
+    </mat-grid-list>
+</div>

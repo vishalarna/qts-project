@@ -1,0 +1,57 @@
+<div class="flex flex-row justify-between items-center px-12 mt-5 mb-4">
+  <p class="text-xl font-bold text-gray-900 mb-0">Create Person</p>
+  <app-button
+    (click)="closePersonFlyPanel()"
+    ButtonType="icon"
+    icon="close"
+  ></app-button>
+</div>
+
+<div class="person-form mx-12">
+  <form [formGroup]="personForm">
+    <div class="d-flex">
+      <div class="label required">
+        <label class="label">First Name:</label>
+        <app-textbox
+          type="text"
+          placeholder="Enter First Name"
+          formControlName="firstName"
+        ></app-textbox>
+      </div>
+      <div class="ml-2">
+        <label class="label">Middle Name:</label>
+        <app-textbox
+          type="text"
+          placeholder="Enter Middle Name"
+          formControlName="middleName"
+        ></app-textbox>
+      </div>
+      <div class="ml-2 label required">
+        <label class="label">Last Name:</label>
+        <app-textbox
+          type="text"
+          placeholder="Enter Last Name"
+          formControlName="lastName"
+        ></app-textbox>
+      </div>
+    </div>
+    <div class="w-50 mt-4 label required">
+      <label class="label">Username:</label>
+      <app-textbox
+        type="text"
+        placeholder="Enter Username"
+        formControlName="username"
+      ></app-textbox>
+    </div>
+    <div class="d-flex justify-content-end mt-5">
+      <app-button
+        [disabled]="personForm.invalid"
+        ButtonType="button"
+        color="secondary"
+        size="sm"
+        text="Create Person"
+        (clicked)="createPerson()"
+      ></app-button>
+    </div>
+  </form>
+</div>

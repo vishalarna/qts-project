@@ -1,0 +1,138 @@
+<div class="flex flex-col">
+
+  <section class="flex flex-col">
+    <form [formGroup]="questionForm">
+      <label class="font-medium">Question</label>
+      <ckeditor #ckeditor  [editor]="Editor" formControlName="question"></ckeditor>
+      <app-input-error *ngIf="questionForm.get('question')?.hasError('required')" text="Enter Question Description">
+      </app-input-error>
+    </form>
+  </section>
+
+  <section class="flex flex-col mt-4">
+    <p class="font-bold">Match the Correct Column</p>
+    <span class="text-xs text-gray-400">Write down the questions and the choices in the respective columns below. Enter
+      the correct answer in the
+      third column</span>
+  </section>
+
+  <section class="w-full mt-3">
+    <!-- Top Grid with Headers -->
+    <div style="display:grid;grid-template-columns: 16% 39% 6% 39%;">
+      <div class="pt-3 pb-3" style="grid-column: 1;border: 1px solid lightgray;border-top-right-radius: 0.2rem; text-align: center;">
+        Correct Answer
+      </div>
+      <div class="flex pt-3 pb-3"
+        style="grid-column: 2;align-items: center;justify-content: center;border: 1px solid lightgray;">
+        Questions
+      </div>
+      <div class="pt-3 pb-3" style="grid-column: 3;border: 1px solid lightgray;border-top-left-radius: 0.2rem;">
+      </div>
+      <div class="flex pt-3 pb-3"
+        style="grid-column: 4;align-items: center;justify-content: center;border: 1px solid lightgray;">
+        Choices
+      </div>
+
+    </div>
+
+    <!-- Middle grid with Data -->
+    <form [formGroup]="matchForm" *ngFor="let mq of matchQuestions,index as i"
+      style="display:grid;grid-template-columns: 16% 39% 6% 39%;">
+      <div class="flex pt-3 pb-3" *ngIf="mq.hasQuestion"
+        style="grid-column: 1;align-items: center;justify-content: center;border: 1px solid lightgray;">
+        <!-- <input [attr.disabled]="!mq.hasChoice ? true:null" formControlName="correct{{i}}" (input)="getKey(i,$event);"
+          maxlength="1" type="text" style="width: 100%;height: 100%;text-align: center;outline:none"> -->
+        <mat-select [disabled]="!mq.hasChoice" [value]="correctAnswers[i]" style="text-align: center;"
+          formControlName="correct{{i}}">
+          <mat-option [value]="item" *ngFor="let item of correctAnswers">
+            {{item}}
+          </mat-option>
+        </mat-select>
+      </div>
+      <div *ngIf="mq.hasQuestion" class="pt-3 pb-3 pl-2" style="grid-column: 2;border: 1px solid lightgray;">
+        <textarea formControlName="question{{i}}" type="text"
+          style="width: 100%;height: 100%;outline:none;resize: none;"></textarea>
+      </div>
+      <div class="flex pt-3 pb-3"
+        style="grid-column: 3;align-items: center;justify-content: center;border: 1px solid lightgray;">
+        {{mq.colCharacter}}
+      </div>
+      <div class="pl-2 pt-2" *ngIf="mq.hasChoice" class="pt-3 pb-3" style="grid-column: 4;border: 1px solid lightgray;">
+        <textarea formControlName="choice{{i}}" type="text"
+          style="width: 100%;height: 100%;outline:none;resize: none;"></textarea>
+      </div>
+    </form>
+    <div style="display:grid;grid-template-columns: 16% 39% 6% 39%;" *ngIf="mode == 'add' || mode == 'edit'">
+      <div class="pt-3 pb-3" style="grid-column: 1;border: 1px solid lightgray; border-bottom-right-radius: 0.2rem;">
+      </div>
+      <div class="flex pt-3 pb-3"
+        style="grid-column: 2;align-items: center;justify-content: center;border: 1px solid lightgray;">
+        <div class="flex flex-col">
+          <app-button *ngIf="totalQuestions < totalChoices" (clicked)="addQuestion()" text="Add another Question"
+            ButtonType="button" variant="text" color="secondary" icon="add" iconPosition="left"></app-button>
+          <app-button [ngClass]="totalQuestions < totalChoices ? 'pt-2':''" *ngIf="totalQuestions > 4"
+            (clicked)="removeQuestion()" text="Remove Question" ButtonType="button" variant="text" color="secondary"
+            icon="delete" iconPosition="left"></app-button>
+        </div>
+      </div>
+      <div class="pt-3 pb-3" style="grid-column: 3;border: 1px solid lightgray; border-bottom-left-radius: 0.2rem;">
+      </div>
+      <div class="flex pt-3 pb-3"
+        style="grid-column: 4;align-items: center;justify-content: center;border: 1px solid lightgray;">
+        <div class="flex flex-col">
+          <app-button *ngIf="totalChoices < 10" (clicked)="addChoice()" text="Add another Choice" ButtonType="button"
+            variant="text" color="secondary" icon="add" iconPosition="left"></app-button>
+          <app-button [ngClass]="totalQuestions < totalChoices ? 'pt-2':''" *ngIf="totalQuestions < totalChoices"
+            (clicked)="removeChoice()" text="Remove Choice" ButtonType="button" variant="text" color="secondary"
+            icon="delete" iconPosition="left"></app-button>
+        </div>
+      </div>
+    </div>
+    <div class="flex flex-col">
+      <app-input-error *ngIf="totalQuestions > totalChoices"
+        text="Questions cannot be more then choices"></app-input-error>
+      <app-input-error class="mb-2 mt-2" *ngIf="matchForm.invalid"
+        text="Please Fill in all the question, description and Correct answer fields"></app-input-error>
+    </div>
+  </section>
+
+  <section *ngIf="mode === 'add' && showSaveButton" class="flex flex-row mt-4 justify-between" >
+    <!--add another-->
+    <mat-checkbox [(ngModel)]="AddAnother"
+      [disabled]="totalQuestions > totalChoices || matchForm.invalid || questionForm.invalid"> Add Another Match the Column</mat-checkbox >
+
+
+    <!--Save-->
+    <app-button (clicked)="close=true;saveTestItem($event,close)" [spinner]="saveSpinner"
+      [disabled]="totalQuestions > totalChoices || saveSpinner || saveAndAddSpinner || matchForm.invalid || questionForm.invalid"
+      class="mr-2" ButtonType="button" text="Save" color="secondary" size="sm"></app-button>
+
+
+  </section>
+
+  <!--copy-->
+  <section *ngIf="mode ==='copy'" class="flex flex-row mt-4" style="justify-content:flex-end">
+    <app-button (clicked)="close=true;openSaveDialog(saveDialog)" [spinner]="saveSpinner"
+      [disabled]="totalQuestions > totalChoices || saveSpinner || saveAndAddSpinner || matchForm.invalid || questionForm.invalid"
+      class="mr-2" ButtonType="button" text="Copy" color="secondary" size="sm"></app-button>
+  </section>
+
+  <!--edit-->
+  <section *ngIf="mode ==='edit'" class="flex flex-row mt-4" style="justify-content:flex-end">
+    <app-button (clicked)="close=true;openDialog(reasonDialog)" [spinner]="saveSpinner"
+      [disabled]="totalQuestions > totalChoices || saveSpinner || saveAndAddSpinner || matchForm.invalid || questionForm.invalid"
+      class="mr-2" ButtonType="button" text="Update" color="secondary" size="sm"></app-button>
+  </section>
+</div>
+
+<ng-template #reasonDialog>
+  <app-qtd-dialogue [header]="'Update Match The Column'" [cancelText]="'No'" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" [reasonOnly]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="updateMatchColData($event)"></app-qtd-dialogue>
+</ng-template>
+
+<ng-template #saveDialog>
+  <app-qtd-dialogue [header]="'Save Match The Column'" [cancelText]="'No'" confirmText="Yes"
+    [showEffectiveDateAndReason]="true" [reasonOnly]="true" (canceled)="dialog.closeAll()"
+    (confirmed)="saveTestItem($event,close)"></app-qtd-dialogue>
+</ng-template>

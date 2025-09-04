@@ -1,0 +1,6 @@
+canvas{
+  width:380px;
+}
+:host ::ng-deep mat-select.disable-select {
+  background-color: #e1e1e1 !important;
+}

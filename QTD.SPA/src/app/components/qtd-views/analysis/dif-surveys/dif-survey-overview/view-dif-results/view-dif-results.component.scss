@@ -1,0 +1,248 @@
+.navbar-heading {
+  font-style: normal;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 160%;
+  letter-spacing: 0.15px;
+  color: #000d09;
+  padding: 0 0 0 24px;
+}
+
+.back-icon {
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  background: rgba(92, 155, 49, 0.11);
+  box-shadow: 0px 0px 30px rgb(122 128 126 / 10%);
+  border-radius: 100px;
+  text-align: center;
+  line-height: 40px;
+  color: #5c9b31;
+}
+
+.back-icon mat-icon {
+  font-size: 16px;
+  width: 10px;
+  line-height: inherit;
+}
+
+.panel-section {
+  padding: 2.5rem ;
+  height: 100%;
+}
+
+.dropdown-toggle::after {
+  content: none !important;
+}
+
+.mat-column-index {
+  flex: 0 0 60px;
+}
+
+.mat-column-image {
+  flex: 0 0 70px;
+}
+
+.mat-column-name {
+  flex: 0 0 230px;
+}
+
+.mat-column-position {
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+}
+
+.mat-column-id {
+  flex: 0 0 auto;
+}
+
+.customcolorgreen {
+  background-color: rgba(92, 155, 49, 0.1);
+  color: rgba(92, 155, 49, 1);
+}
+
+.customcolorgray {
+  background-color: rgba(122, 128, 126, 0.2);
+  color: rgba(122, 128, 126, 1);
+}
+
+.box {
+  inline-size: 120px;
+  overflow-wrap: break-word;
+}
+
+#container {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: column;
+}
+
+.text-light-gray {
+  color: rgba(122, 128, 126, 1);
+}
+
+.mat-table-custom {
+  width: 100%;
+  border-spacing: 8px;
+  border-collapse: separate;
+}
+
+.mat-cell,
+.mat-header-cell {
+  padding: 8px;
+}
+
+.mat-header-cell {
+  color: rgba(122, 128, 126, 1) !important;
+  font-weight: 400 !important;
+}
+
+.mat-row-custom {
+  margin-bottom: 8px;
+}
+
+.mat-column-taskDescription {
+  word-wrap: break-word !important;
+  white-space: unset !important;
+  flex: 0 0 28% !important;
+  width: 28% !important;
+  overflow-wrap: break-word;
+  word-wrap: break-word;
+  word-break: break-word;
+  -ms-hyphens: auto;
+  -moz-hyphens: auto;
+  -webkit-hyphens: auto;
+  hyphens: auto;
+}
+
+:host ::ng-deep .dif-survey-header .header-back-button span mat-icon {
+  font-size: 30px;
+  position: relative;
+  bottom: 2px;
+  right: 5px;
+  color: #278f6d;
+}
+
+app-button.header-back-button {
+  background-color: rgba(39, 143, 109, 0.11);
+  border-radius: 50%;
+}
+
+.dif-survey-header {
+  padding: 1.12rem 1.5rem;
+  background-color: white;
+  box-shadow: 0px 0px 30px 0px rgba(122, 128, 126, 0.1);
+  justify-content: space-between;
+}
+.view-enroll-btn{
+  margin-left: 110rem;
+}
+.mat-column-defaultTrainingStatus{
+  flex: 0 0 10% !important;
+  width: 10% !important;
+}
+.header-gap{
+  gap: 10rem;
+}
+.ps-3{
+  padding-right: 20px;
+}
+.mb-0{
+  margin-bottom: 0;
+}
+.me-3{
+  margin-left: 1rem;
+}
+.mat-row-custom{
+  margin-bottom: unset;
+}
+.header-text{
+  font-size: 14px;
+}
+.table-heading{
+  font-size: 20px;
+  font-weight: 500;
+  font-family: Roboto, sans-serif;
+  color: #15372C;
+}
+.table-position{
+  position: relative;
+}
+.tool-bar{
+  z-index: 100;
+    position: absolute;
+    bottom: 0rem;
+    background: #fff;
+}
+.comment-box{
+  position: absolute;
+  z-index: 20;
+  bottom: 0rem;
+  right: 1rem;
+  background: #fff;
+}
+.nav-date{
+  font-size: 16px;
+  font-weight: 500;
+}
+
+:host ::ng-deep  .task-description-col {
+  min-width: 25%;
+}
+.tbl-resultBx .mat-cell, .tbl-resultBx .mat-header-cell{
+  position: relative;
+  overflow: visible;
+}
+.tbl-comment-ta{
+  resize: none;
+  border:1px solid grey;
+  border-radius: 4px;
+  padding: 8px;
+  outline-width: 0;
+  font-size: 14px;
+}
+.tbl-comment-ta:focus,.tbl-comment-ta:focus-visible {
+  outline-width: 0;
+}
+.view-enroll-btn.result-view-enrollment{
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;  
+}
+
+.task-rating-number{
+  padding-left: 1.5rem;
+  min-width: 90px;
+}
+.customcolor {
+  background-color: rgba(152, 183, 124, 0.1);
+  width: 120px; 
+  display: inline-block;
+  text-align: center; 
+  margin-top: 12px;
+  color: #67ae7f;
+}
+.closed-cell{
+  opacity: 0.5;  
+}
+.inactive-text{
+  color: gray;
+}
+.inactive-description{
+  color: gray;
+  font-style: italic;
+}
+.customcolor {
+  background-color: rgba(152, 183, 124, 0.1);
+  width: 120px; 
+  display: inline-block;
+  text-align: center; 
+  margin-top: 12px;
+  color: #67ae7f;
+}
+.closed-cell{
+  opacity: 0.5;  
+}
+.inactive-text{
+  color: gray;
+}

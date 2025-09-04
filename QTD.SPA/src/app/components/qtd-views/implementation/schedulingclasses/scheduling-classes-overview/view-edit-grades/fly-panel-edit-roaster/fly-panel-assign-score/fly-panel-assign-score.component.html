@@ -1,0 +1,41 @@
+<ng-container >
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900" >Assign Score/Grades</p>
+      <app-button [disabled]="showSpinner" (click)="closeProvider()" ButtonType='icon' icon="close"></app-button>
+    </div>
+    <div [formGroup]="assignScoreForm">
+    
+      <div class="px-12 mt-4">
+        <app-label class="label required" [for]="'PretestScore'" [text]="'Pre Test Score'"></app-label>
+        <app-textbox type="text" formControlName="PretestScore"
+          [placeholder]="'Pretest Score'">
+        </app-textbox>  
+        <app-input-error text="Provider Name is required" *ngIf="assignScoreForm.get('Pretest Score')?.invalid">
+        </app-input-error>
+    </div>
+    <div class="px-12 mt-4">
+        <app-label class="label required" [for]="'PreTestGrade'" [text]="'Pretest Grade'"></app-label>
+            <app-textbox type="text" [name]="'PreTestGrade'"
+              formControlName="PreTestGrade" [placeholder]="'PreTest Grade'">
+            </app-textbox>
+            <app-input-error text="Provider Number is required" *ngIf="assignScoreForm.get('PreTestGrade')?.invalid">
+            </app-input-error>
+    </div>
+   
+    <div class="px-12 mt-4">
+        <app-label [for]="'Notes'" [text]="'Notes'"></app-label>
+                    <app-textarea required type="text"  [placeholder]="'Notes'"
+                      formControlName="Notes"
+                      [customClasses]="'text-base border w-full h-auto py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+                    </app-textarea>
+                    <app-input-error *ngIf="assignScoreForm.get('Notes')?.invalid" text="Please Enter Test Notes"></app-input-error>
+    </div>
+   
+      <!-- Form Ends Here-->
+    </div>
+    <div class="px-12 mt-8 float-right">
+      <app-button [spinner]="showSpinner" [disabled]="assignScoreForm.invalid || showSpinner" type="button" size="sm"
+        color="secondary" text="Save">
+      </app-button>
+    </div>
+  </ng-container>

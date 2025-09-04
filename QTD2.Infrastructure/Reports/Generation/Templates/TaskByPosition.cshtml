@@ -1,0 +1,956 @@
+﻿@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .rich-text {
+        display: inline-block;
+    }
+
+        .rich-text p {
+            margin: 0 !important;
+            padding: 0 !important;
+            display: inline-block;
+        }
+
+        .rich-text figure {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .rich-text img {
+            width: 400px !important;
+            height: auto !important;
+            display: block !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            object-fit: cover;
+            overflow: hidden;
+        }
+
+        .rich-text ul, .rich-text ol {
+            margin: 0 !important;
+            padding: 0 0 0 0px !important;
+            list-style-position: inside !important;
+        }
+
+        .rich-text figure img {
+            width: 400px !important;
+            height: auto !important;
+            display: block !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            object-fit: cover;
+            overflow: hidden;
+        }
+
+        .rich-text li {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+    .expired-row {
+        color: gray;
+        font-style: italic;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+<table id="content-table" class="table">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; margin:0  !important;text-align: center; border: none !important;padding-bottom:0px">
+            <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
+                <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify;-webkit-box-align:center; border-bottom: 3px solid #020378;padding-top:10px;">
+                    @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                    {
+                        <div style="width: 25%;">
+                            <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !important;height: 65px !important;object-fit: scale-down !important;" />
+                        </div>
+                    }
+                    else
+                    {
+                        <div style="width: 20%;"></div>
+                    }
+                    <div style="width: 50%; text-align: center; font-size: 24px; color: #020378;">
+                        <b>@Model.Title </b>
+                    </div>
+                    <div style="width: 25%;text-align: right;"><b>Printed Date:</b> @DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    @{
+        var groupedIndependentTaskGroupTasks = Model.Tasks.Where(t => !t.Task_TrainingGroups.Any()).OrderBy(t => t.SubdutyArea.DutyArea.Letter).ThenBy(t => t.SubdutyArea.DutyArea.Number).ThenBy(t => t.SubdutyArea.SubNumber).ThenBy(t => t.Number)
+        .GroupBy(t => t.SubdutyArea.DutyArea)
+        .Select(g => new
+        {
+            DutyArea = g.Key,
+            DutyAreaList = g.ToList()
+        }).ToList();
+
+        var trainingGroupTasks = Model.Tasks.Where(t => t.Task_TrainingGroups.Any(ttg => Model.TaskGroupIds.Contains(ttg.TrainingGroup.Id)))
+        .SelectMany(t => t.Task_TrainingGroups.Where(ttg => Model.TaskGroupIds.Contains(ttg.TrainingGroup.Id)),
+        (t, ttg) => new { Task = t, Group = ttg.TrainingGroup })
+        .GroupBy(x => x.Group).OrderBy(g => g.Key.GroupNumber)
+        .Select(g => new
+        {
+            TrainingGroup = g.Key,
+            TrainingGroupList = g.Select(x => x.Task).Distinct().ToList()
+        })
+        .ToList();
+
+    }
+    @if (Model.Positions.Count() > 0 || Model.Tasks.Select(r => r.SubdutyArea.DutyArea).Distinct().Count() > 0)
+    {
+        @if (Model.DisplayColumns.Where(r => r == "R-R Definition").Count() > 0)
+        {
+            <tr>
+                <td style="text-align: center; border:none !important" colspan="12">
+                    <b>
+                        R-R
+                        @("Definition".ReplaceLabel(Model.ClientSettings_LabelReplacements))
+                    </b>
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: center; border: none !important" colspan="12">
+                    A
+                    Reliability-Rated @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) is a @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) that if performed incorrectly could jeopardize the reliability of the Bulk
+                    Electric System
+                </td>
+            </tr>
+        }
+        <tr>
+            <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
+                @{
+                    int j = 1;
+                    int m = 0;
+                }
+
+                @if (Model.TaskGroupIds.Count() > 0)
+                {
+                    @{
+                        m = 1;
+                    }
+                    <div style="padding:5px;" id="@("page" + m)" class="@(m != 1 ? "strip" : "")">
+                        <table class="table" style="margin:0;padding:0;">
+                            <tr class="excel-not-include">
+                                <td style="border:none !important;padding: 0px;" colspan="12">
+                                    <table style="table-layout: auto">
+                                        <tr>
+                                            <td style="border: none !important;padding: 10px;vertical-align:top">
+                                                <div style="color:#2fa32f;font-size:16px;font-weight:600;">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))s Not Assigned to a @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Group</div>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+
+                            @foreach (var orderDA in groupedIndependentTaskGroupTasks)
+                            {
+                                @{
+                                    var dutyArea = orderDA.DutyAreaList.First().SubdutyArea?.DutyArea;
+                                }
+                                @if (dutyArea != null)
+                                {
+                                    <tr class="excel-not-include">
+                                        <td style="border:none !important;padding: 0px;" colspan="12">
+                                            <table style="table-layout: auto">
+                                                <tr style="height:10px">
+                                                    <td style="border:none !important;font-weight:bold;font-size:20px; padding-bottom:2px; padding-top:10px;">
+                                                        @dutyArea.Letter@dutyArea.Number - @dutyArea.Title
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+                                }
+                                @{
+                                    var orderSubDutyArea = orderDA.DutyAreaList.GroupBy(x => x.SubdutyArea).Select(group => new
+                                    {
+                                        SubDutyArea = group.Key,
+                                        SubDutyAreaList = group.ToList()
+                                    }).ToList();
+                                }
+                                @foreach (var orderSDA in orderSubDutyArea)
+                                {
+                                    @{
+                                        var subDutyArea = orderSDA.SubDutyAreaList.First().SubdutyArea;
+                                    }
+                                    @if (dutyArea != null && subDutyArea != null)
+                                    {
+                                        <tr class="excel-not-include">
+                                            <td style="border:none !important;padding: 0px;" colspan="12">
+                                                <table style="table-layout: auto">
+                                                    <tr>
+                                                        <td style="border: none !important; font-weight: bold; padding-left: 40px;padding-top: 10px; padding-bottom: 2px;">
+                                                            @dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber - @subDutyArea.Title
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    }
+                                    @foreach (var orderTask in orderSDA.SubDutyAreaList)
+                                    {
+                                        <tr class="excel-not-include">
+                                            <td style="border:none !important;padding: 0px;" colspan="12">
+                                                <table style="table-layout: auto">
+                                                    <tr class=" @(!orderTask.Active ? "expired-row" :"")">
+                                                        <td style="border: none !important; padding-top: 2px; padding-left: 80px;font-weight:600;">
+                                                            <span style="@(orderTask.IsMeta ? "color: green;" : "")">
+                                                                @(orderTask.IsMeta ? "(Meta)" : " ")
+                                                                @(orderTask.IsReliability ? "*" : " ")
+                                                            </span>
+                                                            <span>@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber.@orderTask.Number - @orderTask.Description</span>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Task Steps & Sub-Steps").Count() > 0)
+                                        {
+                                            @foreach (var taskStep in orderTask.Task_Steps.OrderBy(t => t.Number))
+                                            {
+                                                <tr class="excel-not-include">
+                                                    <td style="border:none !important;padding: 0px;" colspan="12">
+                                                        <table style="table-layout: auto">
+                                                            <tr>
+                                                                <td style="border: none !important;vertical-align:top;padding-left: 160px;" class="rich-text">@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber.@orderTask.Number.@taskStep.Number - @(new RawString(@taskStep.Description))</td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Task Details").Count() > 0)
+                                        {
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important;padding: 0px;padding-top: 12px;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        <tr>
+                                                            <td style="border: none;padding:0px;text-decoration: underline;vertical-align:top;padding-left: 72px">
+                                                                <span style="padding: 0px 5px;">Conditions:</span>
+                                                            </td>
+                                                            <td style="border: none;padding:0px;vertical-align:top;" class="rich-text">
+                                                                <span style="padding: 0px 5px;">@(new RawString(@orderTask.Conditions))</span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important;padding: 0px;padding-top: 12px;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        <tr>
+                                                            <td style="border: none;padding:0px;text-decoration: underline;vertical-align:top;padding-left: 72px">
+                                                                <span style="padding: 0px 5px;">References:</span>
+                                                            </td>
+                                                            <td style="border: none;padding:0px;vertical-align:top;" class="rich-text">
+                                                                <span style="padding: 0px 5px;">@(new RawString(@orderTask.References))</span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important;padding: 0px;padding-top: 12px;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        <tr>
+                                                            <td style="border: none;padding:0px;text-decoration: underline;vertical-align:top;padding-left: 72px">
+                                                                <span style="padding: 0px 5px;">Criteria:</span>
+                                                            </td>
+                                                            <td style="border: none;padding:0px;vertical-align:top;" class="rich-text">
+                                                                <span style="padding: 0px 5px;">@(new RawString(@orderTask.Criteria))</span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        }
+
+                                        @if (Model.DisplayColumns.Where(r => r == "Tools").Count() > 0)
+                                        {
+                                            @{
+                                                var tools = orderTask.Task_Tools.ToList();
+                                            }
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important; padding: 0px; padding-top: 12px;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        @for (int i = 0; i < tools.Count; i++)
+                                                        {
+                                                            var tool = tools[i];
+                                                            <tr>
+                                                                @if (i == 0)
+                                                                {
+                                                                    <td style="text-decoration: underline; border: none !important; padding-left: 77px; vertical-align: top;white-space: nowrap;">
+                                                                        @("Tool".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:
+                                                                    </td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="border: none !important;white-space: nowrap;"></td>
+                                                                }
+                                                                <td style="border: none !important;white-space: nowrap;">@tool.Tool.Name</td>
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Include Enabling Objectives").Count() > 0)
+                                        {
+                                            @{
+                                                var orderedEos = orderTask.Task_EnablingObjective_Links.OrderBy(eo => eo.EnablingObjective.FullNumber, new AlphaNumericSortHelper()).ToList();
+                                            }
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important; padding: 0px; padding-top: 12px;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        @foreach (var eo in orderedEos)
+                                                        {
+                                                            <tr>
+                                                                @if (orderedEos.IndexOf(eo) == 0)
+                                                                {
+                                                                    <td style="text-decoration: underline; border: none !important; padding-left: 77px;vertical-align:top;"> @("Enabling Objective".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="border: none !important"></td>
+                                                                }
+                                                                <td style="border:none !important;padding-right:10px;">
+                                                                    @eo.EnablingObjective.FullNumber - @eo.EnablingObjective.Description
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        }
+                                        @if (Model.DisplayColumns.Where(r => r == "Safety Hazards").Count() > 0)
+                                        {
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important; padding: 0px; padding-top: 12px;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        @foreach (var hazard in orderTask.SafetyHazard_Task_Links)
+                                                        {
+                                                            <tr>
+                                                                <td colspan="1" style="border:none !important"></td>
+                                                                @if (orderTask.SafetyHazard_Task_Links.ToList().IndexOf(hazard) == 0)
+                                                                {
+
+                                                                    <td style="text-decoration: underline; border: none !important; padding-left: 77px;vertical-align:top;"> @("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</td>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <td style="border: none !important"></td>
+                                                                }
+                                                                <td style="border:none !important;white-space: nowrap;">
+                                                                    @hazard.SaftyHazard.Title
+                                                                </td>
+                                                            </tr>
+                                                        }
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        }
+                                        <tr></tr>
+                                    }
+                                }
+                            }
+                        </table>
+                    </div>
+                    @if (groupedIndependentTaskGroupTasks.Count() > 0)
+                    {
+                        <div style="page-break-before:always;margin:5px 0;" class="strip-dark"></div>
+                    }
+                    @foreach (var position in Model.Positions)
+                    {
+                        @{
+                            var positionTaskListIds = position.Position_Tasks.Select(pt => pt.TaskId).ToHashSet();
+                            var allPositionTasks = trainingGroupTasks.SelectMany(tg => tg.TrainingGroupList).Where(t => positionTaskListIds.Contains(t.Id)).ToList();
+                            var approvalDate = allPositionTasks.SelectMany(t => t.TaskReviews.Where(r => r.TaskId == t.Id && r.TaskListReview != null && r.TaskListReview.ApprovalDate != null && r.TaskListReview.StatusId == 2)).OrderByDescending(r => r.TaskListReview.ApprovalDate).Select(r => r.TaskListReview.ApprovalDate).FirstOrDefault();
+                        }
+
+                        <div style="padding:5px;" id="@("page" + (m+j))" class="@((m+j) != 1 ? "strip" : "")">
+                            <table style="width:100% ;border-collapse:collapse;">
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 0px;" colspan="12">
+                                        <table style="table-layout: auto;width:100%;">
+                                            <tr>
+                                                <td style="font-weight: bold ;border:none !important; font-size: 1.3rem; padding: 0 0 15px 0; width: 75%;">
+                                                    @position.PositionTitle (@position.PositionAbbreviation)
+                                                </td>
+                                                @if (Model.DisplayColumns.Where(r => r == "Review Date").Count() > 0)
+                                                {
+                                                    <td style="border:none !important;padding: 0px; font-size: 1.3rem; padding: 0 0 15px 0; text-align: right;width: 25%;">
+                                                        <b>Review Date:</b> @approvalDate?.ToShortDateString()
+                                                    </td>
+                                                }
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Positions Description").Count() > 0 && !string.IsNullOrWhiteSpace(position.PositionDescription))
+                                {
+                                    <tr class="excel-not-include">
+                                        <td style="border:none !important;padding: 0px;" colspan="12">
+                                            <table style="table-layout: auto">
+                                                <tr>
+                                                    <td style="border:none !important; font-size: 1rem; padding: 0 0 15px 0;">
+                                                        @position.PositionDescription
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+                                }
+                                @foreach (var tgTask in trainingGroupTasks)
+                                {
+                                    @{
+                                        var positionTaskIds = position.Position_Tasks.Select(pt => pt.TaskId).ToHashSet();
+                                        var positionTasks = tgTask.TrainingGroupList.Where(t => positionTaskIds.Contains(t.Id)).OrderBy(t => t.Number).ToList();
+                                    }
+
+                                    @if (positionTasks.Any())
+                                    {
+                                        <tr class="excel-not-include">
+                                            <td style="border:none !important;padding: 0px;" colspan="12">
+                                                <table style="table-layout: auto">
+                                                    <tr>
+                                                        <td style="border: none !important;padding: 10px;vertical-align:top">
+                                                            <div style="color:#2fa32f;font-size:16px;font-weight:600;">@("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Group - @tgTask.TrainingGroup.GroupName</div>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                    @foreach (var dutyArea in positionTasks.Select(r => r.SubdutyArea.DutyArea).Distinct().OrderBy(t => t.Number))
+                                    {
+                                        <tr class="excel-not-include">
+                                            <td style="border:none !important;padding: 0px;" colspan="12">
+                                                <table style="table-layout: auto">
+                                                    <tr style="height:10px">
+                                                        <td style="border:none !important;font-weight:bold;font-size:20px; padding-bottom:2px;padding-top:10px">
+                                                            @dutyArea.Letter@dutyArea.Number - @dutyArea.Title
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+
+
+                                        @foreach (var subDutyArea in positionTasks.Select(r => r.SubdutyArea).Where(r => r.DutyAreaId == dutyArea.Id).Distinct().OrderBy(t => t.SubNumber))
+                                        {
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important;padding: 0px;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        <tr>
+                                                            <td style="border: none !important; font-weight: bold; padding-top: 2px;padding-left: 40px; padding-bottom: 2px;">
+                                                                @dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber - @subDutyArea.Title
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            @foreach (var task in positionTasks.Where(r => r.SubdutyAreaId == subDutyArea.Id).Distinct().OrderBy(t => t.Number))
+                                            {
+                                                <tr class="excel-not-include">
+                                                    <td style="border:none !important;padding: 0px;" colspan="12">
+                                                        <table style="table-layout: auto">
+                                                            <tr class=" @(!task.Active ? "expired-row" :"")">
+                                                                <td style="border: none !important; padding-top: 2px; padding-left: 80px;font-weight:600;">
+                                                                    <span style="@(task.IsMeta ? "color: green;" : "")">
+                                                                        @(task.IsMeta ? "(Meta)" : " ")
+                                                                        @(task.IsReliability ? "*" : " ")
+                                                                    </span>
+                                                                    <span>@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber.@task.Number - @task.Description</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+
+                                                @if (Model.DisplayColumns.Where(r => r == "Task Steps & Sub-Steps").Count() > 0)
+                                                {
+                                                    @foreach (var taskStep in task.Task_Steps.OrderBy(t => t.Number))
+                                                    {
+                                                        <tr class="excel-not-include">
+                                                            <td style="border:none !important;padding: 0px;" colspan="12">
+                                                                <table style="table-layout: auto">
+                                                                    <tr>
+                                                                        <td style="border: none !important;padding-left: 160px; vertical-align: top;" class="rich-text">@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber.@task.Number.@taskStep.Number - @(new RawString(@taskStep.Description))</td>
+                                                                    </tr>
+                                                                </table>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Task Details").Count() > 0)
+                                                {
+                                                    <tr class="excel-not-include">
+                                                        <td style="border:none !important;padding: 0px;padding-top: 12px;" colspan="12">
+                                                            <table style="table-layout: auto">
+                                                                <tr>
+                                                                    <td style="border: none;padding:0px;text-decoration: underline;vertical-align:top;padding-left: 72px">
+                                                                        <span style="padding: 0px 5px;">Conditions:</span>
+                                                                    </td>
+                                                                    <td style="border: none;padding:0px;vertical-align:top;" class="rich-text">
+                                                                        <span style="padding: 0px 5px;">@(new RawString(@task.Conditions))</span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="excel-not-include">
+                                                        <td style="border:none !important;padding: 0px;padding-top: 12px;" colspan="12">
+                                                            <table style="table-layout: auto">
+                                                                <tr>
+                                                                    <td style="border: none;padding:0px;text-decoration: underline;vertical-align:top;padding-left: 72px">
+                                                                        <span style="padding: 0px 5px;">References:</span>
+                                                                    </td>
+                                                                    <td style="border: none;padding:0px;vertical-align:top;" class="rich-text">
+                                                                        <span style="padding: 0px 5px;">@(new RawString(@task.References))</span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                    <tr class="excel-not-include">
+                                                        <td style="border:none !important;padding: 0px;padding-top: 12px;" colspan="12">
+                                                            <table style="table-layout: auto">
+                                                                <tr>
+                                                                    <td style="border: none;padding:0px;text-decoration: underline;vertical-align:top;padding-left: 72px">
+                                                                        <span style="padding: 0px 5px;">Criteria:</span>
+                                                                    </td>
+                                                                    <td style="border: none;padding:0px;vertical-align:top;" class="rich-text">
+                                                                        <span style="padding: 0px 5px;">@(new RawString(@task.Criteria))</span>
+                                                                    </td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+
+                                                @if (Model.DisplayColumns.Where(r => r == "Tools").Count() > 0)
+                                                {
+                                                    @{
+                                                        var tools = task.Task_Tools.ToList();
+                                                    }
+                                                    <tr class="excel-not-include">
+                                                        <td style="border:none !important; padding: 0px; padding-top: 12px;" colspan="12">
+                                                            <table style="table-layout: auto">
+                                                                @for (int i = 0; i < tools.Count; i++)
+                                                                {
+                                                                    var tool = tools[i];
+                                                                    <tr>
+                                                                        @if (i == 0)
+                                                                        {
+                                                                            <td style="text-decoration: underline; border: none !important; padding-left: 77px; vertical-align: top;white-space: nowrap;">
+                                                                                @("Tool".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:
+                                                                            </td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="border: none !important;white-space: nowrap;"></td>
+                                                                        }
+                                                                        <td style="border: none !important;white-space: nowrap;">@tool.Tool.Name</td>
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Include Enabling Objectives").Count() > 0)
+                                                {
+                                                    @{
+                                                        var orderedEos = task.Task_EnablingObjective_Links.OrderBy(eo => eo.EnablingObjective.FullNumber, new AlphaNumericSortHelper()).ToList();
+                                                    }
+                                                    <tr class="excel-not-include">
+                                                        <td style="border:none !important; padding: 0px; padding-top: 12px;" colspan="12">
+                                                            <table style="table-layout: auto">
+                                                                @foreach (var eo in orderedEos)
+                                                                {
+                                                                    <tr>
+                                                                        @if (orderedEos.IndexOf(eo) == 0)
+                                                                        {
+                                                                            <td style="text-decoration: underline; border: none !important; padding-left: 77px;vertical-align:top;"> @("Enabling Objective".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="border: none !important"></td>
+                                                                        }
+                                                                        <td style="border:none !important;padding-right:10px;">
+                                                                            @eo.EnablingObjective.FullNumber - @eo.EnablingObjective.Description
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                @if (Model.DisplayColumns.Where(r => r == "Safety Hazards").Count() > 0)
+                                                {
+                                                    <tr class="excel-not-include">
+                                                        <td style="border:none !important; padding: 0px; padding-top: 12px;" colspan="12">
+                                                            <table style="table-layout: auto">
+                                                                @foreach (var hazard in task.SafetyHazard_Task_Links)
+                                                                {
+                                                                    <tr>
+                                                                        @if (task.SafetyHazard_Task_Links.ToList().IndexOf(hazard) == 0)
+                                                                        {
+                                                                            <td style="text-decoration: underline; border: none !important; padding-left: 77px;vertical-align:top;"> @("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</td>
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            <td style="border: none !important"></td>
+                                                                        }
+                                                                        <td style="border:none !important;white-space: nowrap;">
+                                                                            @hazard.SaftyHazard.Title
+                                                                        </td>
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                <tr></tr>
+                                            }
+                                        }
+
+                                    }
+                                }
+                            </table>
+                        </div>
+                        <div class="customized-footer" style="margin:0;padding:0">*R-R is Reliability Related</div>
+                        @if (!position.Equals(Model.Positions.Last()))
+                        {
+                            <div style="page-break-after:always"></div>
+                            <div class="strip-dark"></div>
+                        }
+                        @{
+                            j++;
+                        }
+                    }
+                }
+                else
+                {
+                    @foreach (var position in Model.Positions)
+                    {
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                            <table class="table" style="width:100% ;border-collapse:collapse;">
+
+                                @{
+                                    var positionTasks = Model.Tasks.Where(t => position.Position_Tasks.Select(pt => pt.TaskId).Contains(t.Id)).OrderBy(t => t.Number);
+                                    var approvalDate = positionTasks.SelectMany(t => t.TaskReviews.Where(r => r.TaskId == t.Id && r.TaskListReview != null && r.TaskListReview.ApprovalDate != null && r.TaskListReview.StatusId == 2)).OrderByDescending(r => r.TaskListReview.ApprovalDate).Select(r => r.TaskListReview.ApprovalDate).FirstOrDefault();
+                                }
+
+                                <tr class="excel-not-include">
+                                    <td style="border:none !important;padding: 0px;" colspan="12">
+                                        <table style="table-layout: auto;width:100%;">
+                                            <tr id="@("page" + j)">
+                                                <td style="font-weight: bold ;border:none !important; font-size: 1.3rem; padding: 0 0 15px 0;width: 75%;"
+                                                    colspan="12">
+                                                    @position.PositionTitle (@position.PositionAbbreviation)
+                                                </td>
+                                                @if (Model.DisplayColumns.Where(r => r == "Review Date").Count() > 0)
+                                                {
+                                                    <td style="border: none !important; text-align: right; font-size:1.3rem; padding: 0 0 15px 0;width: 25%;">
+                                                        <b>Review Date:</b> @approvalDate?.ToShortDateString()
+                                                    </td>
+                                                }
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                                @if (Model.DisplayColumns.Where(r => r == "Positions Description").Count() > 0 && !string.IsNullOrWhiteSpace(position.PositionDescription))
+                                {
+                                    <tr class="excel-not-include">
+                                        <td style="border:none !important;padding: 0px;" colspan="12">
+                                            <table style="table-layout: auto">
+                                                <tr>
+                                                    <td style="border:none !important; font-size: 1rem; padding: 0 0 15px 0;"
+                                                        colspan="12">
+                                                        @position.PositionDescription
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+                                }
+
+
+                                @foreach (var dutyArea in positionTasks.Select(r => r.SubdutyArea.DutyArea).Distinct().OrderBy(t => t.Number))
+                                {
+                                    <tr class="excel-not-include">
+                                        <td style="border:none !important;padding: 0px;" colspan="12">
+                                            <table style="table-layout: auto">
+                                                <tr style="height:10px">
+                                                    <td style="border:none !important;font-weight:bold;font-size:20px; padding-bottom:2px;padding-top:10px">
+                                                        @dutyArea.Letter@dutyArea.Number - @dutyArea.Title
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </td>
+                                    </tr>
+
+                                    @foreach (var subDutyArea in positionTasks.Select(r => r.SubdutyArea).Where(r => r.DutyAreaId == dutyArea.Id).Distinct().OrderBy(t => t.SubNumber))
+                                    {
+                                        <tr class="excel-not-include">
+                                            <td style="border:none !important;padding: 0px;" colspan="12">
+                                                <table style="table-layout: auto">
+                                                    <tr>
+                                                        <td style="border: none !important; font-weight: bold; padding-left: 40px; padding-top: 2px; padding-bottom: 2px;">
+                                                            @dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber - @subDutyArea.Title
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                        @foreach (var task in positionTasks.Where(r => r.SubdutyAreaId == subDutyArea.Id).Distinct().OrderBy(t => t.Number))
+                                        {
+                                            <tr class="excel-not-include">
+                                                <td style="border:none !important;padding: 0px;" colspan="12">
+                                                    <table style="table-layout: auto">
+                                                        <tr class=" @(!task.Active ? "expired-row" :"")">
+                                                            <td style="border: none !important; padding-top: 2px; padding-left: 80px;font-weight:600;">
+                                                                <span style="@(task.IsMeta ? "color: green;" : "")">
+                                                                    @(task.IsMeta ? "(Meta)" : " ")
+                                                                    @(task.IsReliability ? "*" : " ")
+                                                                </span>
+                                                                <span>@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber.@task.Number - @task.Description</span>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </td>
+                                            </tr>
+
+                                            @if (Model.DisplayColumns.Where(r => r == "Task Steps & Sub-Steps").Count() > 0)
+                                            {
+                                                @foreach (var taskStep in task.Task_Steps.OrderBy(t => t.Number))
+                                                {
+                                                    <tr class="excel-not-include">
+                                                        <td style="border:none !important;padding: 0px;" colspan="12">
+                                                            <table style="table-layout: auto">
+                                                                <tr>
+                                                                    <td style="border: none !important;padding-left: 160px; vertical-align: top;" class="rich-text">@dutyArea.Letter@dutyArea.Number.@subDutyArea.SubNumber.@task.Number.@taskStep.Number - @(new RawString(@taskStep.Description))</td>
+                                                                </tr>
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Task Details").Count() > 0)
+                                            {
+                                                <tr class="excel-not-include">
+                                                    <td style="border:none !important;padding: 0px;padding-top: 12px;" colspan="12">
+                                                        <table style="table-layout: auto">
+                                                            <tr>
+                                                                <td style="border: none;padding:0px;text-decoration: underline;vertical-align:top;padding-left: 72px">
+                                                                    <span style="padding: 0px 5px;">Conditions:</span>
+                                                                </td>
+                                                                <td style="border: none;padding:0px;vertical-align:top;" class="rich-text">
+                                                                    <span style="padding: 0px 5px;">@(new RawString(@task.Conditions))</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr class="excel-not-include">
+                                                    <td style="border:none !important;padding: 0px;padding-top: 12px;" colspan="12">
+                                                        <table style="table-layout: auto">
+                                                            <tr>
+                                                                <td style="border: none;padding:0px;text-decoration: underline;vertical-align:top;padding-left: 72px">
+                                                                    <span style="padding: 0px 5px;">References:</span>
+                                                                </td>
+                                                                <td style="border: none;padding:0px;vertical-align:top;" class="rich-text">
+                                                                    <span style="padding: 0px 5px;">@(new RawString(@task.References))</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                                <tr class="excel-not-include">
+                                                    <td style="border:none !important;padding: 0px;padding-top: 12px;" colspan="12">
+                                                        <table style="table-layout: auto">
+                                                            <tr>
+                                                                <td style="border: none;padding:0px;text-decoration: underline;vertical-align:top;padding-left: 72px">
+                                                                    <span style="padding: 0px 5px;">Criteria:</span>
+                                                                </td>
+                                                                <td style="border: none;padding:0px;vertical-align:top;" class="rich-text">
+                                                                    <span style="padding: 0px 5px;">@(new RawString(@task.Criteria))</span>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            }
+
+                                            @if (Model.DisplayColumns.Where(r => r == "Tools").Count() > 0)
+                                            {
+                                                @{
+                                                    var tools = task.Task_Tools.ToList();
+                                                }
+                                                <tr class="excel-not-include">
+                                                    <td style="border:none !important; padding: 0px; padding-top: 12px;" colspan="12">
+                                                        <table style="table-layout: auto">
+                                                            @for (int i = 0; i < tools.Count; i++)
+                                                            {
+                                                                var tool = tools[i];
+                                                                <tr>
+                                                                    @if (i == 0)
+                                                                    {
+                                                                        <td style="text-decoration: underline; border: none !important; padding-left: 77px; vertical-align: top;white-space: nowrap;">
+                                                                            @("Tool".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:
+                                                                        </td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td style="border: none !important;white-space: nowrap;"></td>
+                                                                    }
+                                                                    <td style="border: none !important;white-space: nowrap;">@tool.Tool.Name</td>
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    </td>
+                                                </tr>
+
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Include Enabling Objectives").Count() > 0)
+                                            {
+                                                @{
+                                                    var orderedEos = task.Task_EnablingObjective_Links.OrderBy(eo => eo.EnablingObjective.FullNumber, new AlphaNumericSortHelper()).ToList();
+                                                }
+                                                <tr class="excel-not-include">
+                                                    <td style="border:none !important; padding: 0px; padding-top: 12px;" colspan="12">
+                                                        <table style="table-layout: auto">
+                                                            @foreach (var eo in orderedEos)
+                                                            {
+                                                                <tr>
+                                                                    @if (orderedEos.IndexOf(eo) == 0)
+                                                                    {
+                                                                        <td style="text-decoration: underline; border: none !important; padding-left: 77px;vertical-align:top;"> @("Enabling Objective".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td style="border: none !important"></td>
+                                                                    }
+                                                                    <td style="border:none !important;padding-right:10px;">
+                                                                        @eo.EnablingObjective.FullNumber - @eo.EnablingObjective.Description
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            @if (Model.DisplayColumns.Where(r => r == "Safety Hazards").Count() > 0)
+                                            {
+                                                <tr class="excel-not-include">
+                                                    <td style="border:none !important; padding: 0px; padding-top: 12px;" colspan="12">
+                                                        <table style="table-layout: auto">
+                                                            @foreach (var hazard in task.SafetyHazard_Task_Links)
+                                                            {
+                                                                <tr>
+                                                                    @if (task.SafetyHazard_Task_Links.ToList().IndexOf(hazard) == 0)
+                                                                    {
+                                                                        <td style="text-decoration: underline; border: none !important; padding-left: 77px;vertical-align:top;"> @("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                        <td style="border: none !important"></td>
+                                                                    }
+                                                                    <td style="border:none !important;white-space: nowrap;">
+                                                                        @hazard.SaftyHazard.Title
+                                                                    </td>
+                                                                </tr>
+                                                            }
+                                                        </table>
+                                                    </td>
+                                                </tr>
+                                            }
+                                            <tr></tr>
+                                        }
+                                        <tr>
+                                            <td colspan="12" style="border:none">
+                                                <div class="customized-footer" style="margin:0;padding:0;">*R-R is Reliability Related</div>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                            </table>
+                        </div>
+                        @if (!position.Equals(Model.Positions.Last()))
+                        {
+                            <div style="page-break-after:always"></div>
+                            <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                        }
+                        @{
+                            j++;
+                        }
+                    }
+                }
+            </td>
+        </tr>
+
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+</table>
+<div class="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= (Model.TaskGroupIds.Any() ? Model.Positions.Count() + 1 : Model.Positions.Count()); i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>
+

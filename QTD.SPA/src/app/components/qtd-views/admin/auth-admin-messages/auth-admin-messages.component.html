@@ -1,0 +1,66 @@
+<app-header breadcrumbs="Admin Message For QTDUsers"></app-header>
+
+<form [formGroup]="messageFormGroup">
+  <div class="flex items-center justify-center">
+    <div class="w-75 max-w-xl">
+      <div class="flex flex-col float-left pr-6 mb-6 cell-width">
+        <app-label [for]="'Expiration Date'" [text]="'Expiry Date '" class="mt-6 float-left label"></app-label>
+        <app-date formControlName="expiryDate" placeholder="Select Date">
+        </app-date>
+      </div>
+      <app-textarea type="text" [placeholder]="'Enter your message...'" formControlName="messageToUsers"  [value]="messageFormGroup.get('messageToUsers')?.value"
+        [customClasses]="'text-base border w-full h-40 py-4 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded'">
+      </app-textarea>
+
+      <div class="text-right mt-4">
+        <app-button [disabled]="messageFormGroup.invalid" type="button" (clicked)="onSubmit()" color="secondary"
+          text="Submit" size="sm" class="mr-2">
+        </app-button>
+      </div>
+    </div>    
+  </div>
+</form>
+
+<div class="flex flex-row justify-center w-100">
+      <span *ngIf="adminMessageDataSource.data.length==0"
+        class="bg-white rounded m-3 py-3 px-3 mx-4 d-flex justify-center shadow-sm w-75 text-2xl ">No Data
+        Available</span>
+      <div *ngIf="adminMessageDataSource.data.length>0" class="bg-white rounded m-3 py-3 px-3 mx-4 shadow-sm w-75">
+        <mat-table [dataSource]="adminMessageDataSource" #adminMessageSort="matSort" matSort>
+          <ng-container matColumnDef="message">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Messages
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.message}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="receivedDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Received Date
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.receivedDate | dateFormat | async}}</mat-cell>
+          </ng-container>
+          
+          <ng-container matColumnDef="expirationDate">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Expiration Date
+            </mat-header-cell>            
+            <mat-cell *matCellDef="let row">{{row.expirationDate | dateFormat | async}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="instance">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Instance Name
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.instance}}</mat-cell>
+          </ng-container>
+          <ng-container matColumnDef="received">
+            <mat-header-cell *matHeaderCellDef mat-sort-header>
+              Received
+            </mat-header-cell>
+            <mat-cell *matCellDef="let row">{{row.received}}</mat-cell>
+          </ng-container>
+
+          <mat-header-row *matHeaderRowDef="columnsToDisplay"></mat-header-row>
+          <mat-row *matRowDef="let row; columns: columnsToDisplay"></mat-row>
+        </mat-table>
+      </div>
+    </div>

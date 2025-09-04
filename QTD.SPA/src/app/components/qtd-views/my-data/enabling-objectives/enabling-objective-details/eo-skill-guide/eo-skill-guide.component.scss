@@ -1,0 +1,33 @@
+.mainGrid{
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  grid-auto-flow: column;
+  gap:1.5rem;
+  margin-top: 2rem;
+}
+
+.mainBorder{
+  border-right: 2px #e8e8e8 solid;
+}
+
+.bottomBorder{
+  border-bottom: 1px #e8e8e8 solid;
+}
+
+.circularBorder{
+  border: 2px solid gray;
+  border-radius: 16px;
+}
+
+ul{
+  list-style: disc;
+}
+
+ol{
+  list-style:decimal;
+}
+
+// mat-cell, mat-header-cell {
+//   text-align: center;
+//   justify-content:center;
+// }

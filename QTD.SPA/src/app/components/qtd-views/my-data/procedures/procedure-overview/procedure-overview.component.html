@@ -1,0 +1,151 @@
+<div class="flex flex-row flex-wrap ml-4 px-8 mt-3">
+    <p class="font-bold text-lg">{{("Procedure" | labelReplacement)| async}}s Overview</p>
+</div>
+<div class="px-10 pb-12 flex flex-row">
+    <app-data-loader *ngIf="isLoading"></app-data-loader>
+    <ng-container *ngIf="!isLoading && statsVM">
+        <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4">
+
+            <div class="mb-4">Issuing Authorities</div>
+            <div class="flex flex-row ">
+                <div class="flex flex-col ">
+                    <span   (click)="statsVM.iaActive>0 && openFlyInPanel(ProcedureNotLinkedTo,'Activeia')" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':statsVM.iaActive>0 ,'text-lg text-black':statsVM.iaActive==0}">
+                        {{statsVM.iaActive | number : '2.'}}
+                    </span>
+                    <p>Active</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span (click)="statsVM.iaInactive>0 && openFlyInPanel(ProcedureNotLinkedTo,'Inactiveia')" [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':statsVM.iaInactive>0 ,'text-lg text-black':statsVM.iaInactive==0}">
+                        {{statsVM.iaInactive | number : '2.'}}
+                    </span>
+                    <p>Inactive</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm w-fit mb-4">
+
+            <div class="mb-4">{{("Procedure" | labelReplacement)| async}}s</div>
+            <div class="flex flex-row">
+                <div class="flex flex-col">
+                    <span (click)="statsVM.procActive>0 && openFlyInPanel(ProcedureNotLinkedTo,'Activeproc')" [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':statsVM.procActive>0 ,'text-lg text-black':statsVM.procActive==0}">
+                        {{statsVM.procActive | number : '2.'}}
+                    </span>
+                    <p>Active</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span (click)="statsVM.procInactive>0 && openFlyInPanel(ProcedureNotLinkedTo,'Inactiveproc')" [ngClass]="{'text-xl text-red-600 font-bold cursor-pointer':statsVM.procInactive>0 ,'text-lg text-black':statsVM.procInactive==0}">
+                        {{statsVM.procInactive | number : '2.'}}
+                    </span>
+                    <p>Inactive</p>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="container bg-white rounded m-3 pt-3 pl-3 shadow-sm mb-4 w-fit">
+
+            <div class="mb-4">{{("Procedure" | labelReplacement)| async}}s Not Linked to</div>
+            <div class="flex flex-row">
+                <div class="flex flex-col">
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':statsVM.procNotLinkedToTasks>0 ,'text-lg text-black':statsVM.procNotLinkedToTasks==0}"
+                        (click)="statsVM.procNotLinkedToTasks>0 && openFlyInPanel(ProcedureNotLinkedTo,'Tasks')">
+                        {{statsVM.procNotLinkedToTasks | number : '2.'}}
+                    </span>
+                    <p>{{("Task" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span  [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':statsVM.procNotLinkedToEOs>0 ,'text-lg text-black':statsVM.procNotLinkedToEOs==0}"
+                        (click)="statsVM.procNotLinkedToEOs && openFlyInPanel(ProcedureNotLinkedTo,'Enabling Objectives')">
+                        {{statsVM.procNotLinkedToEOs | number : '2.'}}
+                    </span>
+                    <p>{{("Enabling Objective" | labelReplacement)| async}}</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':statsVM.procNotLinkedToSHs>0 ,'text-lg text-black':statsVM.procNotLinkedToSHs==0}"
+                        (click)="statsVM.procNotLinkedToSHs && openFlyInPanel(ProcedureNotLinkedTo,'Safety Hazards')">
+                        {{statsVM.procNotLinkedToSHs | number : '2.'}}
+                    </span>
+                    <p>{{("Safety Hazard" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span   [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':statsVM.procNotLinkedToRRs>0 ,'text-lg text-black':statsVM.procNotLinkedToRRs==0}"
+                        (click)="statsVM.procNotLinkedToRRs && openFlyInPanel(ProcedureNotLinkedTo,'Regulatory Requirements')">
+                        {{statsVM.procNotLinkedToRRs | number : '2.'}}
+                    </span>
+                    <p>{{("Regulatory Requirement" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+                <div class="flex flex-col">
+                    <span  [ngClass]="{'text-xl text-qtd font-bold cursor-pointer':statsVM.procNotLinkedToILAs>0 ,'text-lg text-black':statsVM.procNotLinkedToILAs==0}"
+                        (click)="statsVM.procNotLinkedToILAs &&  openFlyInPanel(ProcedureNotLinkedTo,'ILAs')">
+                        {{statsVM.procNotLinkedToILAs | number : '2.'}}
+                    </span>
+                    <p>{{("ILA" | labelReplacement)| async}}s</p>
+                </div>
+                <span class=" pl-3 pr-3"></span>
+            </div>
+
+
+        </div>
+    </ng-container>
+</div>
+<div class="flex flex-row flex-wrap ml-4 px-8 mr-4 justify-between">
+    <p class="font-bold text-lg">Latest Activity</p>
+    <app-button variant="text" text="View all history" (clicked)="openFlyInPanel(ProcedureHistory,'')"></app-button>
+</div>
+<app-data-loader *ngIf="!dataSource || isLoading"></app-data-loader>
+<div class="px-12 pb-12 mt-2" *ngIf="dataSource">
+    <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8">
+
+        <mat-table [dataSource]="dataSource" matSort *ngIf="dataSource">
+            <ng-container matColumnDef="name">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Procedure" | labelReplacement)| async}}s </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.name}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="desc">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Description of Change </mat-header-cell>
+                <mat-cell *matCellDef="let row"> {{row.desc}} </mat-cell>
+            </ng-container>
+            <ng-container matColumnDef="modifyDate">
+                <mat-header-cell *matHeaderCellDef mat-sort-header> Modified By </mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                    <div class="flex flex-col">
+                        <span class="text-qtd">{{row.modifyBy}}</span>
+                        <span class="mt-2">{{row.modifyDate | date:'medium' }}</span>
+                    </div>
+                </mat-cell>
+            </ng-container>
+            <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+            <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+
+            <!-- Row shown when there is no matching data.-->
+            <tr class="mat-row flex text-center " *matNoDataRow>
+                <td class="mat-cell w-full m-2">No data matching the filter</td>
+            </tr>
+
+        </mat-table>
+
+       <!--  <mat-paginator [pageSizeOptions]="[20, 40, 60]" showFirstLastButtons
+            aria-label="Select page of periodic elements">
+        </mat-paginator>
+ -->
+
+    </div>
+</div>
+
+<ng-template #ProcedureNotLinkedTo>
+    <app-fly-panel-add-procedure-not-linked [activeInactiveCheck]="activeInactiveCheck" [NotLinkedToName]="NotLinkedToPanelName">
+    </app-fly-panel-add-procedure-not-linked>
+</ng-template>
+
+<ng-template #ProcedureHistory>
+    <app-fly-panel-procedures-history></app-fly-panel-procedures-history>
+</ng-template>

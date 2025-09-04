@@ -1,0 +1,79 @@
+<div class="flex flex-row justify-between items-center px-12 mt-5 mb-3">
+  <p class="text-xl font-bold text-gray-900 mb-0">Sub Duty Operation</p>
+  <app-button
+    (click)="closeFlyPanel()"
+    ButtonType="icon"
+    icon="close"
+  ></app-button>
+</div>
+<div *ngIf = "isLoading" class="operation-spinner">
+  <app-spinner></app-spinner>
+</div>
+<div class="m-3" [formGroup]="subDutyForm" *ngIf = "!isLoading">
+  <div class="flex flex-col ml-5 mt-3">
+    <app-label text = "Operation Type" class="font-weight-bold label required"></app-label>
+    <mat-select placeholder = "Select Operation Type"
+      formControlName="operation"
+      class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+    >
+      <mat-option *ngFor="let item of operationType" [value]="item.id">
+        {{ item.type }}
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <ng-container *ngIf = "subDutyForm.get('operation')?.valid">
+  <div class="flex flex-col ml-5 mt-3">
+    <app-label text = "Duty Area" class="font-weight-bold label required"></app-label>
+    <mat-select #select="matSelect"
+      formControlName="dutyArea"
+      placeholder="Select Duty Area"
+      (selectionChange)="
+        getSubDutyAreas($event.value); subDutyForm.get('subDutyArea')?.reset()
+      "
+      class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+    >
+    <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="searchText" (input)="dutyAreaSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)">
+      <mat-option
+        *ngFor="let d of filteredDutyArea"
+        [value]="d.id"
+        [hidden]="!d.active"
+      >
+        {{ d.letter }} - {{ d.number }} - {{ d.title }}
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <div class="flex flex-col ml-5 mt-3">
+    <app-label text = "Sub Duty Area" class="font-weight-bold label required"></app-label>
+    <mat-select #subDutySelect="matSelect"
+      (selectionChange)="setTaskNumber($event.value)"
+      formControlName="subDutyArea"
+      placeholder="Select Sub Duty Area"
+      class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+    >
+    <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="searchText" (input)="subDutyAreaSearch()" (blur) = "resetSearch()" (keydown)="handleKeyDownSd($event)">
+      <mat-option
+        *ngFor="let sda of filteredSubDutyArea"
+        [value]="sda.id"
+        [hidden]="!sda.active"
+      >
+        {{ sda.subNumber }} - {{ sda.title }}
+      </mat-option>
+    </mat-select>
+  </div>
+
+  <div class="flex justify-end mt-3">
+    <app-button
+      size="sm"
+      text="Save"
+      type="submit"
+      (clicked) = "saveSubDutyOperation()"
+      [disabled]="
+        subDutyForm.get('subDutyArea')?.invalid ||
+        subDutyForm.get('operation')?.invalid
+      "
+    ></app-button>
+  </div>
+</ng-container>
+</div>

@@ -1,0 +1,72 @@
+<div class="row switch-box">
+    <div class="flex w-full" style="justify-content: center">
+        <div class="flex flex-col">
+            <section class="
+              flex flex-row
+              pt-4
+              pb-4
+              rounded-sm
+            ">
+                <div class="flex flex-col bg-white p-4 ml-3">
+                    <div class="panel-heading">
+                        <p> Customize Dashboard</p>
+                    </div>
+                    <!-- <div class="flex flex-row justify-content-end gap-2">
+                        <button type="button" class="close-btn">X</button>
+                    </div> -->
+
+                    <div *ngFor="let item of CombinedUniqueName">
+                        <div class="accrodian-subheading">
+                            {{item}}
+                        </div>
+                        <div *ngIf="!getgroupcategoryList(item)">
+                            <div class="toggle-filter-data" *ngFor="let val of getCategoryValuesList(item); let i=index">
+                                <span>{{val.dashboardSetting.name}}</span>
+                                <div class="col-md-2 custom-control custom-switch text-right p-0">
+                                    <input type="checkbox" class="custom-control-input" id="{{val.id}}"
+                                        (change)="onToggleChange($event, val)"
+                                        [checked]="val.enabled">
+                                    <label class="custom-control-label" for="{{val.id}}"></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div *ngIf="getgroupcategoryList(item)" class="customize-dashboard-panels">
+                            <div *ngFor="let element of this.uniqueGroupNames, let i=index">
+                                <mat-accordion id="acc{{i}}">
+                                    <mat-expansion-panel>
+                                        <mat-expansion-panel-header>
+                                            <mat-panel-title>{{element}}</mat-panel-title>
+                                            <div class="col-md-2 custom-control custom-switch text-right p-0">
+                                                <input type="checkbox" (change)="onParentToggleChange($event, element)" class="custom-control-input" id="groupClass_{{i}}">
+                                                <label class="custom-control-label" for="groupClass_{{i}}"></label>
+                                            </div>
+                                        </mat-expansion-panel-header>
+                                        <div class="toggle-filter-dataaccordian">
+                                            <div class="toggle-filter-data"
+                                                *ngFor="let val of getCategoryGroupList(element)">
+                                                <span>{{val.dashboardSetting.name}}</span>
+                                                <div class="col-md-2 custom-control custom-switch text-right p-0">
+                                                    <input type="checkbox" class="custom-control-input"
+                                                        id="{{val.dashboardSetting.name}}"
+                                                        (change)="onChildToggleChange($event, val.dashboardSetting.groupName, i,val.dashboardSetting.id)"
+                                                        [checked]="val.enabled">
+                                                    <label class="custom-control-label"
+                                                        for="{{val.dashboardSetting.name}}"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </mat-expansion-panel>
+                                </mat-accordion>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="flex flex-row justify-content-end gap-2">
+                        <app-button type="submit" color="primary" (clicked)="SaveButtonClick()" size="md" text="Save"
+                            class="save-btn">
+                        </app-button>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>

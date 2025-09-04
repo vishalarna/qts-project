@@ -1,0 +1,107 @@
+[
+ {
+  "Id": 1,
+  "IssuingAuthorityId": 1,
+  "Number": "EOP-001",
+  "Title": "Emergency Operations Planning",
+  "Active": true
+ },
+ {
+  "Id": 2,
+  "IssuingAuthorityId": 1,
+  "Number": "EOP-002",
+  "Title": "Capacity and Energy Emergencies",
+  "Active": true
+ },
+ {
+  "Id": 3,
+  "IssuingAuthorityId": 1,
+  "Number": "INT-001",
+  "Title": "Interchange Information",
+  "Active": true
+ },
+ {
+  "Id": 4,
+  "IssuingAuthorityId": 1,
+  "Number": "INT-003",
+  "Title": "Interchange Transaction Implementation",
+  "Active": true
+ },
+ {
+  "Id": 5,
+  "IssuingAuthorityId": 1,
+  "Number": "IRO-001",
+  "Title": "Reliability Coordination - Responsibilities and Authorities",
+  "Active": true
+ },
+ {
+  "Id": 6,
+  "IssuingAuthorityId": 1,
+  "Number": "IRO-002",
+  "Title": "Reliability Coordination - Facilities",
+  "Active": true
+ },
+ {
+  "Id": 7,
+  "IssuingAuthorityId": 1,
+  "Number": "PER-001",
+  "Title": "Operating Personnel Responsibility and Authority",
+  "Active": true
+ },
+ {
+  "Id": 8,
+  "IssuingAuthorityId": 2,
+  "Number": "PWC_001",
+  "Title": "Transmission Control Center Overview",
+  "Active": true
+ },
+ {
+  "Id": 9,
+  "IssuingAuthorityId": 2,
+  "Number": "PWC_002",
+  "Title": "Voltage and Reactive Control",
+  "Active": true
+ },
+ {
+  "Id": 10,
+  "IssuingAuthorityId": 2,
+  "Number": "PWC_003",
+  "Title": "Three-Part Communication ",
+  "Active": true
+ },
+ {
+  "Id": 11,
+  "IssuingAuthorityId": 2,
+  "Number": "PWC_004",
+  "Title": "Training Program Procedures",
+  "Active": true
+ },
+ {
+  "Id": 12,
+  "IssuingAuthorityId": 2,
+  "Number": "PWC_005",
+  "Title": "Loss of Communication",
+  "Active": true
+ },
+ {
+  "Id": 13,
+  "IssuingAuthorityId": 2,
+  "Number": "PWC_006",
+  "Title": "Shift Change",
+  "Active": true
+ },
+ {
+  "Id": 14,
+  "IssuingAuthorityId": 2,
+  "Number": "PWC_007",
+  "Title": "System Monitoring",
+  "Active": true
+ },
+ {
+  "Id": 15,
+  "IssuingAuthorityId": 2,
+  "Number": "PWC_008",
+  "Title": "Emergency Operations ",
+  "Active": true
+ }
+]

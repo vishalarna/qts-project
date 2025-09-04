@@ -1,0 +1,46 @@
+
+.float-child {
+    width: 30%;
+    float: left;
+    padding: 20px 19px;
+}
+.float-child p {
+    color: #7A807E;
+}
+h3{
+    color: #7A807E;
+}
+
+#container {
+    display: flex;                  /* establish flex container */
+    flex-direction: row;            /* default value; can be omitted */
+    flex-wrap: nowrap;              /* default value; can be omitted */
+    justify-content: space-between; /* switched from default (flex-start, see below) */
+  }
+  #container > div {
+    width: auto;
+    height: 100%;
+  }
+
+  .d-flex{
+    display: flex;
+  }
+
+  .hour-heading{
+    font-size: large;
+    font-weight: bold;
+    color:#567DFF;
+    padding-left: 10px;
+  }
+
+  .detail-heading{
+    font-size:14px;
+    font-weight:500;
+    padding-top: 20px;
+    padding-right: 10px;
+  }
+
+ .detail-input {
+  width: 10ch;      
+  min-width: 30px; 
+}

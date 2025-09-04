@@ -1,0 +1,129 @@
+<div class="flex flex-col w-full p-5">
+
+  <section class="flex flex-row justify-between" style="align-items:center;">
+    <span *ngIf="mode === 'add'" class="text-lg font-bold">Add {{("Task" | labelReplacement)| async}} Qualification</span>
+    <span *ngIf="mode === 'edit' || mode === 'special'" class="text-lg font-bold">Edit {{("Task" | labelReplacement)| async}} Qualification</span>
+    <app-icon (click)="closed.emit()" icon="close" class="text-gray-500 cursor-pointer"></app-icon>
+  </section>
+
+  <section class="flex flex-col mt-5">
+    <form [formGroup]="qualificationForm">
+      <div class="flex flex-row w-full mb-4">
+        <div class="flex flex-col mr-3" style="width:50%;">
+          <label class="text-gray-400">{{("Employee" | labelReplacement)| async}} Name</label>
+          <app-textbox formControlName="name" [disabled]="true"></app-textbox>
+        </div>
+        <div class="flex flex-col" style="width:50%;">
+          <label class="text-gray-400">{{("Task" | labelReplacement)| async}} Number</label>
+          <app-textbox formControlName="number" [disabled]="true"></app-textbox>
+        </div>
+      </div>
+      <div class="flex flex-row mb-4">
+        <div class="flex" style="width:50%;">
+          <div class="flex flex-col mr-3" style="width:50%;">
+            <label class="font-medium">{{("Task" | labelReplacement)| async}} Qualification Date</label>
+            <app-date formControlName="qualDate" (changed)="taskQualificationDateChanged($event)"></app-date>
+          </div>
+          <div class="flex flex-col float-left mt-0 mb-6 mr-3"  style="width:50%;">
+            <app-label [for]="'Time'" [text]="'Time '" class="label"></app-label>
+            <mat-form-field appearance="outline">
+              <input matInput type="time" formControlName="qualTime"/>
+            </mat-form-field>
+          </div>
+        </div>
+       
+        <!-- <div class="flex flex-col float-left mb-6 w-full m-2">
+          <app-label [for]="'Time'" [text]="'Time '" class="label"></app-label>
+          <mat-form-field appearance="outline">
+            <input matInput type="time" formControlName="qualTime"/>
+          </mat-form-field>
+        </div> -->
+        <div class="flex flex-col" style="width:50%;">
+          <label class="font-medium">Evaluator</label>
+          <mat-select multiple placeholder="Select Evaluator" formControlName="evaluatorId"
+            class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white">
+            <mat-select-trigger>
+              <mat-chip-list>
+                <mat-chip *ngFor="let i of qualificationForm.get('evaluatorId')?.value" [removable]="true"
+                  [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
+                  selected (removed)="removeData(i)">
+                  {{i.person.firstName + ' ' + i.person.lastName}}
+                  <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
+                  </app-icon>
+                </mat-chip>
+              </mat-chip-list>
+            </mat-select-trigger>
+            <mat-option [value]="eval" *ngFor="let eval of evaluators">
+              {{eval.person.firstName + ' ' + eval.person.lastName}}
+            </mat-option>
+          </mat-select>
+        </div>
+      </div>
+      <div class="flex flex-row mb-4">
+        <div class="flex flex-col mr-3" style="width:50%;">
+          <label class="font-medium">Evaluation Method</label>
+          <mat-select placeholder="Select Evaluation Method" formControlName="evalMethod"
+            class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white">
+            <mat-option [value]="eval.id" *ngFor="let eval of evaluationMethods">
+              {{eval.description}}
+            </mat-option>
+          </mat-select>
+          <app-input-error *ngIf="qualificationForm.get('evalMethod')?.hasError('required')"
+            text="Evaluation Method required"></app-input-error>
+        </div>
+        <div class="flex flex-col" style="width:50%;">
+          <!-- class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white" -->
+          <label class="font-medium">Criteria Met</label>
+          <mat-radio-group class="mt-4" formControlName="criteria">
+            <mat-radio-button [value]="true">Yes</mat-radio-button>
+            <mat-radio-button class="ml-4" [value]="false">No</mat-radio-button>
+          </mat-radio-group>
+          <app-input-error *ngIf="qualificationForm.get('criteria')?.hasError('required')"
+            text="Criteria Option is required"></app-input-error>
+        </div>
+      </div>
+      <div class="flex flex-col mb-4" style="width:50%;">
+        <label class="font-medium">Due Date</label>
+        <app-date formControlName="dueDate"></app-date>
+        <app-input-error *ngIf="qualificationForm.get('dueDate')?.hasError('required')"
+          text="Due Date is Required"></app-input-error>
+      </div>
+      <div class="flex flex-col mb-5">
+        <label class="font-medium">Comments</label>
+        <app-textbox formControlName="comments" placeholder="Enter comments here"></app-textbox>
+      </div>
+      <!-- <div class="flex flex-col mb-5">
+        <label class="font-medium">Evaluator</label>
+        <mat-select placeholder="Select Evaluator" formControlName="evaluatorId"
+            class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white">
+            <mat-option [value]="eval.id" *ngFor="let eval of evaluators">
+              {{eval.person.firstName + ' ' + eval.person.lastName}}
+            </mat-option>
+          </mat-select>
+      </div> -->
+      <div *ngIf="mode === 'add'" class="flex flex-row justify-between" style="align-items:center;">
+        <div class="flex flex-row cursor-pointer" style="align-items:center;">
+          <!-- <app-icon icon="add"></app-icon>
+          <span class="linkText ml-2">Add another Task Qualification</span> -->
+          <mat-checkbox formControlName="another">Add another {{("Task" | labelReplacement)| async}} Qualification</mat-checkbox>
+        </div>
+        <app-button (clicked)="addQualification()" [disabled]="qualificationForm.invalid || spinner" [spinner]="spinner"
+          text="Save" size="sm" ButtonType="button"></app-button>
+      </div>
+
+      <!-- Use this button for Update logic -->
+      <div *ngIf="mode === 'edit'" class="flex flex-row" style="justify-content:flex-end;">
+
+        <app-button (clicked)="updateData()" [disabled]="qualificationForm.invalid || spinner" [spinner]="spinner"
+          text="Save" size="sm" ButtonType="button"></app-button>
+      </div>
+
+      <div *ngIf="mode === 'special'" class="flex flex-row" style="justify-content:flex-end;">
+
+        <app-button (clicked)="addQualification()" [disabled]="qualificationForm.invalid || spinner" [spinner]="spinner"
+          text="Save" size="sm" ButtonType="button"></app-button>
+      </div>
+    </form>
+  </section>
+
+</div>

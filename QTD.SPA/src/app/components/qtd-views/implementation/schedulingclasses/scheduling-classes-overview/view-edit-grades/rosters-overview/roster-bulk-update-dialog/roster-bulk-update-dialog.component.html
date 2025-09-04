@@ -1,0 +1,163 @@
+<app-data-loader *ngIf = "loader"></app-data-loader>
+<div class="flex flex-col" *ngIf = "!loader">
+  <div class="flex flex-row justify-between pb-3" style="align-items: center">
+    <span class="text-xl font-bold">Bulk Edit Final Grade</span>
+    <app-icon
+      (click)="canceled.emit()"
+      icon="close"
+      class="text-gray-500 cursor-pointer"
+    ></app-icon>
+  </div>
+
+  <mat-dialog-content style="border-top-width: 2px">
+    <div
+      class="flex flex-row my-3"
+      style="align-items: flex-start; justify-content: flex-end"
+    >
+      <div [formGroup]="bulkEditFormGroup" class="d-flex justify-between flex-wrap">
+          <div class="align-items-center mr-3 w-30">
+            <app-label
+              text="Date Completed"              
+              for="dateCompleted"
+            ></app-label>
+            <div class="position-relative" style="min-width: 14.5rem">
+              <app-date
+                class="bulk-edit-input"
+                formControlName="dateCompleted"
+               (input) = "handleDateCompletion($event)"
+              ></app-date>  
+              <app-input-error
+              class="position-absolute left-0"
+              style="top: 60px"
+              *ngIf="dateCompletionError"
+              text="Date Completed should be date or empty"
+            ></app-input-error>           
+            </div>          
+          </div>
+        <div class="align-items-center mx-3 w-30">
+          <app-label text="Score" for="score"></app-label>
+          <div class="position-relative" style="min-width: 14.5rem">
+            <app-textbox
+              type="text"
+              class="bulk-edit-input"
+              formControlName="score"
+              [maxLength] = "3" 
+              (keypress)="keyPressNumbers($event)"
+            ></app-textbox>
+            <app-input-error
+              class="position-absolute left-0"
+              style="top: 60px"
+              *ngIf="scoreError"
+              text="Score should be a number or empty"
+            ></app-input-error>          
+          </div>
+        </div>
+        <div class="w-30">
+          <app-label
+            text="Grade"
+            for="gradeValue"
+          ></app-label>
+          <div class="position-relative">
+            <app-textbox
+              formControlName="gradeValue"
+              class="bulk-edit-input"
+              [maxLength]="1"
+              (input)="checkInput($event)"
+            ></app-textbox>
+            <app-input-error
+              class="position-absolute left-0"
+              style="top: 60px"
+              *ngIf="gradeError"
+              text="Please Enter a Valid Grade i.e. P, F, W, O"
+            ></app-input-error>
+          </div>
+        </div>
+        <div class="my-4 w-100">
+            <app-label
+              text="Grade Notes"
+              for="gradeNotes"
+            ></app-label>
+            <div class="position-relative">
+              <app-textarea
+                formControlName="gradeNotes"
+                class="bulk-edit-input"
+              ></app-textarea>
+            </div>
+          </div>
+
+          <div *ngIf = "ilaCertData != null && ilaCertData.length > 0">
+            <div class="mt-3">
+              <p class="credit-info">Partial Credit was enabled for one or more certificates linked to this course. Award partial credit hours below.</p>
+              <p class="credit-info">Leaving the field blank will award the Employee the full credit hours assigned to this course</p>
+            </div>
+      
+            <div class="mt-3">
+              <table class="styled-table">
+                <thead>
+                  <tr>
+                    <th>{{ 'Employee' | labelReplacement | async }}</th>
+                    <th>NERC CEH</th>
+                    <th *ngFor="let certSub of ilaCertData[0]?.ilaCertificationSubRequirementLinkVM">
+                      NERC {{ certSub.reqName }}
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let emp of employeesDetail; let j = index;">
+                    <td>{{ emp.employeeName }}</td>
+                    <td (click)="onEditCeh(j)" class="editable-column">
+                      <ng-container *ngIf="editedCell === 'ceh_' + j; else viewCeh">
+                        <div class="d-flex align-items-center">
+                          <input id="cehInput_{{j}}" type="text"  [value]="cehHrValues[j] ??''" 
+                                (input)="onCehHrInput($event, j)" (click)="$event.stopPropagation()"/>
+                        </div>
+                      </ng-container>
+                      <ng-template #viewCeh>
+                        <app-label [text]="cehHrValues[j] !== null && cehHrValues[j] !== undefined ? cehHrValues[j] : ''"></app-label>
+                      </ng-template>
+                    </td>
+                    <td *ngFor="let certSub of ilaCertData[0]?.ilaCertificationSubRequirementLinkVM; let i = index"
+                        (click)="onEditSub(j, i)" class="editable-column">
+                      <ng-container *ngIf="editedCell === 'sub_' + j + '_' + i; else viewSub">
+                        <div class="d-flex align-items-center">
+                          <input id="subInput_{{j}}_{{i}}" type="text"  [value]="subCreditValues[j][i] ?? ''" 
+                              (input)="onSubCreditInput($event, j, i)"  (click)="$event.stopPropagation()"/>
+                        </div>
+                      </ng-container>
+                      <ng-template #viewSub>
+                        <app-label [text]="subCreditValues[j][i] !== null && subCreditValues[j][i] !== undefined ? subCreditValues[j][i] : ''"></app-label>
+                      </ng-template>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div >
+            <mat-checkbox class="text-base" formControlName="isQualificationCompleted" [disabled] = "populateOjtDisable">
+                Record {{("Task" | labelReplacement)| async}} Qualification Completion
+            </mat-checkbox >
+            <app-icon icon="help_outline" class="p-2" [matTooltip]="helpString"></app-icon>
+          </div>
+      </div>
+    </div>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <app-button class="mb-4" text="Save" size="sm" [disabled]="handleDisable(bulkEditFormGroup.get('gradeValue')?.value)" (click)="submitData(submitDialog)"></app-button>
+  </mat-dialog-actions>
+</div>
+
+<ng-template #submitDialog>
+  <app-qtd-dialogue
+    header="Submit"
+    [isHTML]="true"
+    [description]="warningDialogDescription"
+    cancelText="No"
+    confirmText="Yes"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="bulkUpdate()"
+  >
+  </app-qtd-dialogue>
+</ng-template>

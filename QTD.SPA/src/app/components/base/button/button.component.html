@@ -1,0 +1,57 @@
+
+<ng-container *ngIf="ButtonType=='button'">
+    <button class="flex flex-row" style="flex-wrap: wrap;align-items: center;min-height: 2.5rem;justify-content: center;" *ngIf="variant=='contained'" [type]="type" [ngClass]="['btn', 'btn-'+color ,' btn-'+size]"
+        [class]="customClasses" [class.rounded-pill]="shape=='round'" [disabled]="disabled"
+        (click)="clicked.emit($event);"
+        [attr.data-cy]="cy">
+        <ng-container *ngIf="!rightIcon && !leftIcon">
+            <app-icon *ngIf="icon && iconPosition=='left'" [icon]="icon"></app-icon>
+            {{text}}
+            <app-icon *ngIf="icon && iconPosition=='right'" [icon]="icon"></app-icon>
+        </ng-container>
+        <ng-container *ngIf="rightIcon && leftIcon">
+            <app-icon [icon]="leftIcon"></app-icon>
+            {{text}}
+            <app-icon [icon]="rightIcon"></app-icon>
+        </ng-container>
+        <app-spinner *ngIf="spinner"></app-spinner>
+    </button>
+
+    <button *ngIf="variant=='outlined'" [type]="type" [ngClass]="['btn', 'h-10', 'btn-'+color ,' btn-'+size]"
+        [class]="customClasses" [class.rounded-pill]="shape=='round'" [disabled]="disabled"
+        (click)="clicked.emit($event);"
+        [attr.data-cy]="cy">
+        <app-icon *ngIf="icon && iconPosition=='left'" [icon]="icon"></app-icon>
+        {{text}}
+        <app-icon *ngIf="icon && iconPosition=='right'" [icon]="icon"></app-icon>
+        <app-spinner *ngIf="spinner"></app-spinner>
+    </button>
+
+    <button *ngIf="variant=='text'" class="btn-text" [type]="type" [disabled]="disabled"
+        [class]="customClasses" (click)="clicked.emit($event);"
+        [attr.data-cy]="cy">
+        <app-icon *ngIf="icon && iconPosition=='left'" [icon]="icon"></app-icon>
+        {{text}}
+        <app-icon *ngIf="icon && iconPosition=='right'" [icon]="icon"></app-icon>
+        <app-spinner *ngIf="spinner"></app-spinner>
+    </button>
+
+</ng-container>
+
+<button *ngIf="ButtonType=='icon'" mat-icon-button aria-label="icon button" [disabled]="disabled"
+    (click)="clicked.emit($event);"
+    [attr.data-cy]="cy">
+    <app-icon [icon]="icon"></app-icon>
+</button>
+
+<button *ngIf="ButtonType=='btn-icon'" ngClass="btn-icon" [class]="customClasses" [disabled]="disabled"
+    (click)="clicked.emit($event)"
+    [attr.data-cy]="cy">
+    <app-icon [icon]="icon" [class]="iconClass"></app-icon>
+</button>
+
+<button *ngIf="ButtonType=='text'" [class]="customClasses" (click)="clicked.emit($event)"
+[attr.data-cy]="cy">
+    <app-icon [icon]="icon" [class]="iconClass"></app-icon>
+    {{text}}
+</button>

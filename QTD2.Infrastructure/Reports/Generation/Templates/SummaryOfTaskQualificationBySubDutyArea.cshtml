@@ -1,0 +1,369 @@
+@using RazorEngine.Text
+@using QTD2.Infrastructure.Reports.Generation
+@using QTD2.Infrastructure.ExtensionMethods
+@using QTD2.Domain.Entities.Core
+@using QTD2.Domain.Helpers;
+<style>
+    .table {
+        font-family: Roboto, "Helvetica Neue", sans-serif;
+        color: #000;
+        border-collapse: collapse;
+        width: 100%;
+    }
+
+    .inner-table {
+        margin-left: 25px;
+        margin-right: 25px;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+        width:90%;
+    }
+
+    a.pagerNumber {
+        text-decoration: none;
+        background-color: white;
+        color: black;
+    }
+
+        a.pagerNumber:hover {
+            text-decoration: none;
+            background-color: cornflowerblue;
+            color: white;
+        }
+
+    .strip {
+        margin: 10px 0px;
+    }
+
+    .strip-container .strip-dark {
+        height: 10px;
+        background-color: #e8e8e8;
+    }
+
+    .row-inactive {
+        color: darkgray;
+        font-style: italic;
+    }
+
+    @@media print {
+        .pager {
+            display: none !important;
+        }
+
+        .strip-container .strip-dark {
+            background-color: white;
+        }
+    }
+</style>
+
+@{
+    var count = 0;
+}
+
+<table id="content-table" class="table" style="border-collapse: collapse;width:100%">
+    <tr>
+        <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;">
+
+            <div class="repeatedReportHeader" style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: space-between; border-bottom: 3px solid #020378;">
+
+                @if (!string.IsNullOrEmpty(Model.CompanyLogo))
+                {
+                    <div>
+                        <img src="@Model.CompanyLogo" alt="Company logo" style="height: 46px;width: 65px;padding-bottom: 10px;float: left;width: 150px !    important;height: 65px !important;object-fit: scale-down !important;" />
+                    </div>
+                }
+                else
+                {
+                    <div></div>
+                }
+                <div style="text-align: center;word-break:break-word;width:60%;">
+                    <b style="display: block; color: #020378; font-weight: bold; font-size: 16px; text-align: center; margin-top: 8px;">@Model.Title </b>
+                </div>
+                <div><b>Printed Date:</b>@DateTime.Now.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToShortDateString()</div>
+            </div>
+        </td>
+    </tr>
+
+    @if (Model.Employees.Count() > 0)
+    {
+        <tr>
+            <td colspan="12" style="border: 0; padding: 0" class="strip-container">
+                @{int j = 1;}
+                @foreach (var employee in Model.Employees)
+                {
+                    @{
+                        var filteredTasks = Model.Tasks.Where(t => employee.EmployeePositions.Any(ep => ep.Position.Position_Tasks.Any(pt => pt.TaskId == t.Id)));
+
+                        var dutyAreaTaskLists = filteredTasks.GroupBy(t => t.SubdutyArea?.DutyArea?.Id)
+                        .OrderBy(da => da.First().SubdutyArea.DutyArea.Letter)
+                        .ThenBy(da => da.First().SubdutyArea.DutyArea.Number)
+                        .Select(group => new
+                        {
+                            DutyAreaId = group.Key,
+                            DutyAreaTaskList = group.ToList()
+                        }).ToList();
+
+                        if (dutyAreaTaskLists.Count() < 1)
+                        {
+                            count++;
+                            continue;
+                        }
+                    }
+                    <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    <div style="padding:5px;" id="@("page" + j)" class="@(j % 2 == 0 ? "strip" : "")">
+                        <table style="width:100% ;border-collapse:collapse;">
+                            @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
+                            {
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px">
+                                        <b>@("Employee".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Name:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@employee.Person?.LastName, @employee.Person?.FirstName </span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Position").Count() > 0)
+                            {
+                                var posList = employee.EmployeePositions.Select(ep => ep.Position.PositionTitle + (ep.Trainee ? " [Trainee]" : string.Empty)).ToList();
+
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px">
+                                        <b>@("Position".ReplaceLabel(Model.ClientSettings_LabelReplacements))s:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@(new RawString(string.Join(", ", posList)))</span>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.DisplayColumns.Where(r => r == "Organization").Count() > 0) 
+                            {
+                                var orgList = employee.EmployeeOrganizations.Select(eo => eo.Organization.Name).ToList();
+
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px">
+                                        <b>Organization:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@(new RawString(string.Join(", ", orgList)))</span>
+                                    </td>
+                                </tr>
+                            }
+
+                            @foreach (var dutyAreaTaskList in dutyAreaTaskLists)
+                            {
+                                var dutyArea = dutyAreaTaskList.DutyAreaTaskList.First().SubdutyArea.DutyArea;
+                                <tr>
+                                    <td style="border: none !important; font-size: 1rem; padding: 10px">
+                                        <b>DutyArea:</b>
+                                        <span style="font-size:0.8rem;margin-left:5px">@dutyArea?.Letter@dutyArea?.Number - @dutyArea?.Title</span>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td style="border: 0; padding: 0" class="strip-container">
+                                        <table class="table">
+                                            <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;width:15%">
+                                                    Sub-DA #
+                                                </th>
+                                                <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;width:40%">
+                                                    Sub Duty Area Description
+                                                </th>
+                                                @if (Model.DisplayColumns.Contains("Total Tasks"))
+                                                {
+                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width:15%">
+                                                        <span>Total @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))s</span>
+                                                        <div style="display: -webkit-box; display: flex; align-items: center; -webkit-box-pack: justify; justify-content: center; margin: 0 0 3px 0;">
+                                                            <span style="color:red;">
+                                                                @{
+                                                                    var flags = new List<string>();
+
+                                                                    var hasInactiveTask = dutyAreaTaskList.DutyAreaTaskList.Any(r => !r.Active);
+
+                                                                    if (Model.OnlyRRTasks)
+                                                                    {
+                                                                        flags.Add("RR Only");
+                                                                    }
+                                                                    if (hasInactiveTask)
+                                                                    {
+                                                                        flags.Add("Include Inactive Tasks");
+                                                                    }
+                                                                    if (flags.Any())
+                                                                    {
+                                                                        @($"({String.Join(", ", flags)})")
+                                                                    }
+                                                                }
+                                                            </span>
+                                                        </div>
+                                                    </th>
+
+                                                }
+                                                @if (Model.DisplayColumns.Contains("Completed Tasks"))
+                                                {
+                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width:15%">
+                                                        Completed @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements))s
+                                                    </th>
+                                                }
+                                                <th style="border-bottom: 2px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px;width:15%">
+                                                    Percent Completed
+                                                </th>
+                                            </tr>
+                                            @{
+                                                var subDutyAreaTaskLists = dutyAreaTaskList.DutyAreaTaskList.GroupBy(t => t.SubdutyArea?.Id)
+                                                .OrderBy(sda => sda.First().SubdutyArea.SubNumber)
+                                                .Select(group => new
+                                                {
+                                                    SubDutyAreaId = group.Key,
+                                                    SubDutyAreaTaskList = group.ToList()
+                                                }).ToList();
+                                            }
+                                            @foreach (var subDutyAreaTaskList in subDutyAreaTaskLists)
+                                            {
+                                                var subDutyAreaTasks_leftOuterJoinedTo_TaskQualifications =
+                                                    subDutyAreaTaskList.SubDutyAreaTaskList
+                                                    .GroupJoin(
+                                                        employee.TaskQualifications,
+                                                        task => task.Id,
+                                                        taskQualification => taskQualification.TaskId,
+                                                        (_task, _taskQualifications) => new { Task = _task, Qualifications = _taskQualifications })
+                                                    .SelectMany(t => t.Qualifications.DefaultIfEmpty(), (t, tq) => new { Task = t.Task, TaskQualification = tq });
+
+                                                var totalTaskCount = subDutyAreaTaskList.SubDutyAreaTaskList.Count();
+                                                var completedTaskCount = subDutyAreaTaskList.SubDutyAreaTaskList
+                                                    .Count(t => subDutyAreaTasks_leftOuterJoinedTo_TaskQualifications.Any(r => r.TaskQualification != null && r.Task.Id == t.Id));
+                                                var percentageComplete = (completedTaskCount * 100) / totalTaskCount;
+                                                var subDutyArea = subDutyAreaTaskList.SubDutyAreaTaskList.First().SubdutyArea;
+                                                <tr>
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 15%">
+                                                        @subDutyArea.DutyArea?.Letter @subDutyArea.DutyArea?.Number.@subDutyArea.SubNumber
+                                                    </td>
+                                                
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 40%">
+                                                        @subDutyArea.Description
+                                                    </td>
+                                                    @if (Model.DisplayColumns.Contains("Total Tasks"))
+                                                    {
+                                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 15%">
+                                                            @totalTaskCount
+                                                        </td>
+                                                    }
+                                                    @if (Model.DisplayColumns.Contains("Completed Tasks"))
+                                                    {
+                                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 15%">
+                                                            @completedTaskCount
+                                                        </td>
+                                                    }
+                                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center; width: 15%">
+                                                        @percentageComplete %
+                                                    </td>
+                                                        
+                                                </tr>
+                                                @if (Model.IncludetaskQualificationDetails)
+                                                {
+                                                    <tr>
+                                                        <td style="border: 0; padding: 0;padding-top:8px" class="strip-container" colspan="10">
+                                                            <table class="inner-table">
+                                                                <tr style="border-bottom: 2px solid #000; border-top: 2px solid #000; border-collapse: collapse; padding: 10px">
+                                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 15% ">
+                                                                        @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) #
+                                                                    </th>
+                                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 40% ">
+                                                                        @("Task".ReplaceLabel(Model.ClientSettings_LabelReplacements)) Description
+                                                                    </th>
+                                                                    <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 15% ">
+                                                                        Qualification Date
+                                                                    </th>
+                                                                    @if (Model.DisplayColumns.Contains("Evaluator"))
+                                                                    {
+                                                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 15% ">
+                                                                            Evaluator
+                                                                        </th>
+                                                                    }
+                                                                    @if (Model.DisplayColumns.Contains("Evaluation Method"))
+                                                                    {
+                                                                        <th style="border-bottom: 2px solid #000; border-right: 1px solid #000; border-left: 1px solid #000; border-top: 2px solid #000; text-align: center; vertical-align: bottom; padding: 5px; width: 15% ">
+                                                                            Evaluation Method
+                                                                        </th>
+                                                                    }
+                                                                </tr>
+                                                                @foreach (var subDutyAreaTask_leftOuterJoinedTo_TaskQualification in subDutyAreaTasks_leftOuterJoinedTo_TaskQualifications.OrderBy(t => t.Task.FullNumber, new AlphaNumericSortHelper()))
+                                                                {
+                                                                    var evaluators = subDutyAreaTask_leftOuterJoinedTo_TaskQualification.TaskQualification?.TaskQualification_Evaluator_Links?
+                                                                        .Where(m => subDutyAreaTask_leftOuterJoinedTo_TaskQualification.TaskQualification?.TaskReQualificationEmp_SignOff.Any(s => s.EvaluatorId == m.EvaluatorId) ?? false)
+                                                                        .DistinctBy(m => m.Evaluator.Person)
+                                                                        .Select(m => $"{m.Evaluator?.Person?.FirstName} {m.Evaluator?.Person?.LastName}")
+                                                                        .ToList() ?? new List<String>();
+
+                                                                    var evaluationMethods = subDutyAreaTask_leftOuterJoinedTo_TaskQualification.TaskQualification?.TaskReQualificationEmp_SignOff?
+                                                                        .Select(m => m.EvaluationMethod?.Description)
+                                                                        .Where(desc => desc != null)
+                                                                        .ToList() ?? new List<String>();
+                                                                    if (subDutyAreaTask_leftOuterJoinedTo_TaskQualification.TaskQualification?.EvaluationMethod?.Description != null)
+                                                                    {
+                                                                        evaluationMethods.Add(subDutyAreaTask_leftOuterJoinedTo_TaskQualification.TaskQualification?.EvaluationMethod?.Description);
+                                                                    }
+                                                                    evaluationMethods = evaluationMethods.Distinct().ToList();
+
+                                                                    <tr class="@(subDutyAreaTask_leftOuterJoinedTo_TaskQualification.Task.Active ? "": "row-inactive")">
+                                                                        <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 15%">
+                                                                            @(subDutyAreaTask_leftOuterJoinedTo_TaskQualification.Task.IsReliability ? "*" : "")@subDutyAreaTask_leftOuterJoinedTo_TaskQualification.Task.FullNumber
+                                                                        </td>
+                                                                        <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 15%">
+                                                                            @subDutyAreaTask_leftOuterJoinedTo_TaskQualification.Task.Description
+                                                                        </td>
+                                                                        <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 15%">
+                                                                            @subDutyAreaTask_leftOuterJoinedTo_TaskQualification.TaskQualification?.TaskQualificationDate?.ToShortDateString()
+                                                                        </td>
+                                                                        @if (Model.DisplayColumns.Contains("Evaluator"))
+                                                                        {
+                                                                            <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 15%">
+                                                                                @(string.Join(", ",evaluators))
+                                                                            </td>
+                                                                        }
+                                                                        @if (Model.DisplayColumns.Contains("Evaluation Method"))
+                                                                        {
+                                                                            <td style="padding: 5px; vertical-align: top; text-align: center; border-collapse: collapse; border: 1px solid #000; width: 15%">
+                                                                                @(string.Join(", ", evaluationMethods))
+                                                                            </td>
+                                                                        }
+                                                                    </tr>
+                                                                }
+                                                            </table>
+                                                        </td>
+                                                    </tr>
+                                                }
+                                                <tr></tr>
+                                            }
+                                        </table>
+                                    </td>
+                                </tr>
+                            }
+                        </table>
+                    </div>
+                    @if (!employee.Equals(Model.Employees.Last()))
+                    {
+                        <div style="page-break-after:always"></div>
+                        <div class="@(j % 2 == 0 ? "strip-dark" : "")"></div>
+                    }
+                    @{j++;}
+                }
+            </td>
+        </tr>
+        <tr>
+            <td colspan="7" style="border:none">
+                <div class="table" style="border-collapse: collapse;margin:auto;margin-top:10px;margin-bottom:0">*R-R is Reliability Related</div>
+            </td>
+        </tr>
+    }
+    else
+    {
+        <tr style="border:none">
+            <td style="border:none;text-align:center">
+                <i>No data available to generate requested report</i>
+            </td>
+        </tr>
+    }
+
+</table>
+<div class="pager pdf-remove" id="pager" style="display: flex; justify-content: flex-start; align-items: center; background-color: white; border-top: 1px solid #d5d3d366; width: 100%; max-width: 100%; overflow-x: auto; position: sticky; bottom: 0; right: 0px; overflow-y: hidden; white-space: nowrap; ">
+
+    @for (int i = 1; i <= Model.Employees.Count() - count; i++)
+    {
+        <a href=@("#page"+i) class="pagerNumber" style="padding:0.9rem;">@i</a>
+    }
+</div>

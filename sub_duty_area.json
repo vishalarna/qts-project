@@ -1,0 +1,211 @@
+[
+  {
+	  "Id":1,
+	  "DutyAreaId ":1,
+	  "Title ":"System Monitoring and Control",
+	  "Number":1,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":2,
+	  "DutyAreaId ":1,
+	  "Title ":"Facility Control",
+	  "Number":2,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":3,
+	  "DutyAreaId ":1,
+	  "Title ":"Voltage Control",
+	  "Number":3,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":4,
+	  "DutyAreaId ":2,
+	  "Title ":"Generating Unit Operation",
+	  "Number":1,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":5,
+	  "DutyAreaId ":2,
+	  "Title ":"Generation Outages",
+	  "Number":3,
+	  "Active":TRUE,
+  },
+  
+  
+  {
+	  "Id":6,
+	  "DutyAreaId ":2,
+	  "Title ":"OLD Generation Outages",
+	  "Number":4,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":7,
+	  "DutyAreaId ":3,
+	  "Title ":"Energy Accounting",
+	  "Number":2,
+	  "Active":TRUE,
+  },
+  {
+	  "Id":8,
+	  "DutyAreaId ":3,
+	  "Title ":"Emergencies",
+	  "Number":4,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":9,
+	  "DutyAreaId ":3,
+	  "Title ":"Curtailments and TLR ",
+	  "Number":5,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":10,
+	  "DutyAreaId ":4,
+	  "Title ":"Scheduling of Resources",
+	  "Number":1,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":11,
+	  "DutyAreaId ":4,
+	  "Title ":"Real Time Dispatch",
+	  "Number":2,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":12,
+	  "DutyAreaId ":4,
+	  "Title ":"Automatic Generation Control and Frequency Control",
+	  "Number":3,
+	  "Active":TRUE,
+  },
+  
+  
+  {
+	  "Id":13,
+	  "DutyAreaId ":5,
+	  "Title ":"Responding to Capacity and Energy Emergencies",
+	  "Number":1,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":13,
+	  "DutyAreaId ":5,
+	  "Title ":"Responding to Capacity and Energy Emergencies",
+	  "Number":1,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":14,
+	  "DutyAreaId ":5,
+	  "Title ":"Responding to IROL and SOL Violations",
+	  "Number":2,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":15,
+	  "DutyAreaId ":5,
+	  "Title ":"Severe test system Disturbances",
+	  "Number":4,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":16,
+	  "DutyAreaId ":6,
+	  "Title ":"Monitoring Metering and Data and Voice Communications test systems",
+	  "Number":1,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":17,
+	  "DutyAreaId ":6,
+	  "Title ":"Monitoring Protective test systems (Relaying)",
+	  "Number":2,
+	  "Active":TRUE,
+  },
+  
+  
+  {
+	  "Id":18,
+	  "DutyAreaId ":6,
+	  "Title ":"Monitoring and Testing Control Center Equipment",
+	  "Number":3,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":19,
+	  "DutyAreaId ":7,
+	  "Title ":"Logs, Reports and Notifications",
+	  "Number":2,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":20,
+	  "DutyAreaId ":7,
+	  "Title ":"Document and test system maintenance",
+	  "Number":3,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":21,
+	  "DutyAreaId ":7,
+	  "Title ":"Administrative tools",
+	  "Number":4,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":22,
+	  "DutyAreaId ":8,
+	  "Title ":"DSO Tasks",
+	  "Number":1,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":23,
+	  "DutyAreaId ":8,
+	  "Title ":"OLD DSO Tasks",
+	  "Number":2,
+	  "Active":FALSE,
+  },
+  
+  {
+	  "Id":24,
+	  "DutyAreaId ":9,
+	  "Title ":"Lineman Tasks",
+	  "Number":3,
+	  "Active":TRUE,
+  },
+  
+  {
+	  "Id":26,
+	  "DutyAreaId ":10,
+	  "Title ":"Locomotive Servicing",
+	  "Number":1,
+	  "Active":TRUE,
+  },
+]

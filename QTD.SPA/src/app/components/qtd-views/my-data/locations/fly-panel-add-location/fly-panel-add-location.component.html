@@ -1,0 +1,176 @@
+<ng-container *ngIf="locationCategoryCheck===false">
+    <div class="flex flex-row justify-between items-center px-12 mt-5">
+      <p class="text-xl font-bold text-gray-900">
+        <ng-container *ngIf="mode==='Add'">
+           Add New {{("Location" | labelReplacement)| async}}s
+          </ng-container>
+        <ng-container *ngIf="mode==='Edit'" >
+                 Edit {{("Location" | labelReplacement)| async}}s
+                </ng-container>
+        <ng-container *ngIf="mode==='Copy'">
+        Copy {{("Location" | labelReplacement)| async}}s
+      </ng-container>
+
+      </p>
+      <app-button (click)="closeLocation()" ButtonType='icon' icon="close"></app-button>
+    </div>
+
+    <form [formGroup]="locationForm">
+      <div class="flex flex-row px-12 ">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+            <div class="flex flex-row justify-between">
+                <app-label required [for]="'locCategory'" [text]="'Category'"
+                  class="mt-6 float-left label required">
+                </app-label>
+
+                <app-button class="pt-4" (clicked)="openAddNewLocationCategory()" variant="text" text="Add New Category" icon="add"
+                iconPosition="left">
+              </app-button>
+              </div>
+            <mat-form-field appearance="outline" class="text-sm dropdown w-full">
+                <mat-select formControlName="locCategory" placeholder="Select {{('Location' | labelReplacement)| async}}s Category">
+                  <mat-option *ngFor="let i of locationCategoryList" [value]="i.id" [hidden]="!i.active">
+                    {{i.locCategoryTitle}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+        </div>
+      </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'locNumber'" text="{{('Location' | labelReplacement)| async}}s Number" class="mt-6 float-left label required"></app-label>
+          <app-textbox type="text" formControlName="locNumber"
+            placeholder="Enter {{('Location' | labelReplacement)| async}}s number">
+          </app-textbox>
+        </div>
+    </div>
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'locName'" text="{{('Location' | labelReplacement)| async}}s Name" class="mt-6 float-left label required"></app-label>
+          <app-textbox type="text" formControlName="locName"
+            placeholder="Enter {{('Location' | labelReplacement)| async}}s Name">
+          </app-textbox>
+        </div>
+      </div>
+      <!-- <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'insDescription'" [text]="'Location Description'"></app-label>
+          <app-textbox type="text" formControlName="insDescription"
+            [placeholder]="'Enter Location Info'">
+          </app-textbox>
+        </div>
+      </div> -->
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'locDescription'" [text]="'Description'"></app-label>
+          <app-textarea type="text" formControlName="locDescription"
+            placeholder="Enter {{('Location' | labelReplacement)| async}}s Description"
+            [value]="locationForm.get('locDescription')?.value || ''"
+            [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+          </app-textarea>
+        </div>
+      </div>
+
+       <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'locAddress'" [text]="'Address'"></app-label>
+          <app-textbox type="text" formControlName="locAddress"
+          placeholder="Enter {{('Location' | labelReplacement)| async}}s Address">
+        </app-textbox>
+    </div>
+    </div>
+
+    <div class="flex flex-row px-12">
+      <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+        <app-label [for]="'locCity'" [text]="'City'"></app-label>
+        <app-textbox type="text" formControlName="locCity"
+        placeholder="Enter {{('Location' | labelReplacement)| async}}s City">
+      </app-textbox>
+  </div>
+  </div>
+
+  <div class="flex flex-row px-12">
+    <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+      <app-label [for]="'locState'" [text]="'State'"></app-label>
+      <app-textbox type="text" formControlName="locState"
+      placeholder="Enter {{('Location' | labelReplacement)| async}}s State">
+    </app-textbox>
+</div>
+</div>
+
+<div class="flex flex-row px-12">
+  <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+    <app-label [for]="'locZipCode'" [text]="'Zip Code'"></app-label>
+    <app-textbox type="text" formControlName="locZipCode"
+    placeholder="Enter {{('Location' | labelReplacement)| async}}s Zip Code">
+  </app-textbox>
+</div>
+</div>
+
+<div class="flex flex-row px-12">
+  <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+    <app-label [for]="'locPhone'" [text]="'Phone'"></app-label>
+    <app-textbox type="text" formControlName="locPhone"
+    placeholder="Enter {{('Location' | labelReplacement)| async}}s Phone">
+  </app-textbox>
+</div>
+</div>
+
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 22vw;">
+          <app-label [for]="'EffectiveDate'" [text]="'Effective Date '"></app-label>
+          <app-date  formControlName="EffectiveDate" placeholder="Select Date">
+          </app-date>
+        <!--   <app-input-error *ngIf="dateError" text="Please Enter Valid date greater or equal to current date">
+          </app-input-error> -->
+        </div>
+      </div>
+
+
+      <div class="flex flex-row px-12">
+        <div class="flex flex-col float-left pr-4 mb-6" style="width: 50vw;">
+          <app-label [for]="'Note'" [text]="'Note'" class="label required"></app-label>
+          <app-textarea [value]="locationForm.get('Notes')?.value || ''" type="text" formControlName="Notes" [placeholder]="'Enter Note'"
+            [customClasses]="'text-base border w-full h-auto px-6 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded '">
+          </app-textarea>
+        </div>
+      </div>
+
+      <div  *ngIf="mode==='Add'" class="flex flex-row px-12 mt-8 float-left py-3">
+        <mat-checkbox formControlName="AddAnother" name="AddAnother">
+        </mat-checkbox>
+        <span class="mb-1 ml-1"> Add Another {{("Location" | labelReplacement)| async}}s</span>
+      </div>
+
+
+      <!-- <div class="px-12 mt-8 float-right py-3">
+        <app-button [spinner]="showSpinner" [disabled]="locationForm.invalid || showSpinner || dateError"
+          type="button" size="sm"  text="Save">
+        </app-button>
+      </div> -->
+
+
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='Add'">
+        <app-button [spinner]="showSpinner" [disabled]="locationForm.invalid || showSpinner" (clicked)="createNewLocation()"
+          type="button" size="sm"  text="Save">
+        </app-button>
+      </div>
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='Edit'">
+        <app-button [spinner]="showSpinner" [disabled]="locationForm.invalid || showSpinner" (clicked)="updateLocation()"
+          type="button" size="sm"  text="Update">
+        </app-button>
+      </div>
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='Copy'">
+        <app-button [spinner]="showSpinner" [disabled]="locationForm.invalid || showSpinner" (clicked)="createNewLocation()"
+          type="button" size="sm"  text="Copy">
+        </app-button>
+      </div>
+
+
+    </form>
+</ng-container>
+
+<app-fly-panel-add-location-category (refresh)="getCategoriesList()" *ngIf="locationCategoryCheck===true" (closed)="locationCategoryCheck=false"></app-fly-panel-add-location-category>
+
