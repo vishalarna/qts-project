@@ -58,3 +58,28 @@
 mat-toolbar.h-100-important {
   height: 100% !important;
 }
+
+:host ::ng-deep .objectives-table-list .mat-header-cell:nth-child(1),
+:host ::ng-deep .objectives-table-list .mat-cell:nth-child(1) {
+  max-width: 15%;
+}
+
+:host ::ng-deep .objectives-table-list .mat-header-cell:nth-child(2),
+:host ::ng-deep .objectives-table-list .mat-cell:nth-child(2) {
+  max-width: 15%;
+}
+
+:host ::ng-deep .objectives-table-list .mat-header-cell:nth-child(3),
+:host ::ng-deep .objectives-table-list .mat-cell:nth-child(3) {
+  max-width: 15%;
+}
+
+:host ::ng-deep .objectives-table-list .mat-header-cell:nth-child(4),
+:host ::ng-deep .objectives-table-list .mat-cell:nth-child(4) {
+  max-width: 40%;
+}
+
+:host ::ng-deep .objectives-table-list .mat-header-cell:nth-child(5),
+:host ::ng-deep .objectives-table-list .mat-cell:nth-child(5) {
+  max-width: 15%;
+}

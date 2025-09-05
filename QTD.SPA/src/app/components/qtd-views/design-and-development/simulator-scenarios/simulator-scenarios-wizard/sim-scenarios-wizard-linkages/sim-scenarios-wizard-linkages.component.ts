@@ -354,7 +354,8 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
     procedures?.forEach((val) => {
       var procedureVm = new SimulatorScenario_Procedure_VM(
         val.id,
-        val.description
+        val.description,
+        val.title
       );
       this.procedureUpdateOptions.setProcedures(procedureVm);
     });

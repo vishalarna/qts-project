@@ -12,13 +12,15 @@ namespace QTD2.Infrastructure.Model.SimulatorScenario
         public int ProcedureId { get; set; }
         public string Number { get; set; }
         public string Description { get; set; }
+        public string Title { get; set; }
 
-        public SimulatorScenario_Procedure_VM(int id, int procedureId, string number, string description)
+        public SimulatorScenario_Procedure_VM(int id, int procedureId, string number, string description, string title)
         {
             Id = id;
             ProcedureId = procedureId;
             Number = number;
             Description = description;
+            Title = title;
         }
         public SimulatorScenario_Procedure_VM() { }
     }

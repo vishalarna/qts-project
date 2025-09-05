@@ -5,9 +5,11 @@ export class SimulatorScenario_Procedure_VM{
     procedureId: string;
     number: string;
     description: string;
+    title: string;
 
-    constructor(procedureId: string,  description: string){
+    constructor(procedureId: string,  description: string, title: string){
         this.procedureId = procedureId;
         this.description = description;
+        this.title = title;
     }
 }

@@ -193,7 +193,7 @@ namespace QTD2.Application.Services.Shared
                 }
                 foreach (var simScenario_Procedure in simScenario.Procedures)
                 {
-                    var simulatorScenario_Procedure_VM = new SimulatorScenario_Procedure_VM(simScenario_Procedure.Id, simScenario_Procedure.ProcedureId, simScenario_Procedure.Procedure.Number, simScenario_Procedure.Procedure.Description);
+                    var simulatorScenario_Procedure_VM = new SimulatorScenario_Procedure_VM(simScenario_Procedure.Id, simScenario_Procedure.ProcedureId, simScenario_Procedure.Procedure.Number, simScenario_Procedure.Procedure.Description, simScenario_Procedure.Procedure.Title);
                     simScenarioVM.Procedures.Add(simulatorScenario_Procedure_VM);
                 }
                 foreach (var simScenario_TaskCriteria in simScenario.TaskCriterias)
@@ -630,7 +630,7 @@ namespace QTD2.Application.Services.Shared
 
         public SimulatorScenario_Procedure_VM MapSimulatorScenarioToSimulatorScenario_Procedure_VM(SimulatorScenario_Procedure simulatorScenario_Procedure)
         {
-            var simulatorScenario_Procedure_VM = new SimulatorScenario_Procedure_VM(simulatorScenario_Procedure.Id, simulatorScenario_Procedure.ProcedureId, simulatorScenario_Procedure.Procedure.Number, simulatorScenario_Procedure.Procedure.Description);
+            var simulatorScenario_Procedure_VM = new SimulatorScenario_Procedure_VM(simulatorScenario_Procedure.Id, simulatorScenario_Procedure.ProcedureId, simulatorScenario_Procedure.Procedure.Number, simulatorScenario_Procedure.Procedure.Description, simulatorScenario_Procedure.Procedure.Title);
             return simulatorScenario_Procedure_VM;
         }
 
