@@ -36,6 +36,7 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
   @Input() mode: string;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('procedureSort') procedureSort: MatSort;
+  @ViewChild('objectiveSort') objectiveSort: MatSort;
   @ViewChild('metaPaginator') set metaPaginator(paging: MatPaginator) {
     if (paging) this.objAndTasksDataSource.paginator = paging;
   }
@@ -105,7 +106,7 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
       'description',
       'action',
     ];
-    this.displayProceduresColumns = ['id', 'number', 'description', 'action'];
+    this.displayProceduresColumns = ['id', 'number', 'title', 'action'];
     this.eoTaskList = [];
     this.objectiveUpdateOptions = new SimulatorScenario_UpdateEnablingObjectives_VM();
     this.positionsUpdateOptions = new SimulatorScenario_UpdatePositions_VM();
@@ -292,6 +293,7 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
           ...this.inputSimulatorScenario_VM.enablingObjectives,
         ];
         this.objAndTasksDataSource.data = this.eoTaskList;
+
       });
   }
 
@@ -380,6 +382,9 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
           this.inputSimulatorScenario_VM.procedures.map((k) => k.procedureId);
         this.proceduresDataSource.data =
           this.inputSimulatorScenario_VM.procedures;
+          setTimeout(() => {
+      this.proceduresDataSource.sort = this.procedureSort;
+    }, 1);
         this.alert.successToast('Simulator Scenario ' +
           (await this.labelPipe.transform('Procedure')) +
             's Updated Successfully'
@@ -523,6 +528,9 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
     this.alert.successToast('Simulator Scenario ' + (await this.labelPipe.transform('Enabling Objective')) + 's Updated Successfully' );
   }
   this.isObjectiveLinkUnlink = false;
+   setTimeout(() => {
+      this.objAndTasksDataSource.sort = this.objectiveSort;
+    }, 1);
   }
 
    getUnlinkSelectedText(){

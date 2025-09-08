@@ -51,7 +51,7 @@
     </div>
     <ng-container *ngIf="!isObjectiveLinkUnlink">
         <div class="objectives-table-list">
-            <mat-table [dataSource]="objAndTasksDataSource" matSort>
+            <mat-table [dataSource]="objAndTasksDataSource" matSort #objectiveSort="matSort">
                 <ng-container matColumnDef="id">
                     <mat-header-cell *matHeaderCellDef>
                         <mat-checkbox
@@ -162,7 +162,7 @@
                     <mat-cell mat-cell *matCellDef="let row"> {{row.number}} </mat-cell>
                 </ng-container>
 
-                <ng-container matColumnDef="description">
+                <ng-container matColumnDef="title">
                     <mat-header-cell *matHeaderCellDef mat-sort-header> Description </mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"> {{row.title}} </mat-cell>
                 </ng-container>
