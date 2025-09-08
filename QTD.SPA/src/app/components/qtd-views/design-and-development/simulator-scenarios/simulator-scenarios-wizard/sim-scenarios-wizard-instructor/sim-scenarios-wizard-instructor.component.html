@@ -2,7 +2,7 @@
     <section class="bg-white section p-4 mt-4">
         <div class="flex flex-row justify-between w-full space-x-4 text-sm mb-3">
             <div>
-                <p class="font-bold text-lg">Select Rating Scale</p>
+                <p class="font-bold text-lg">Operating Skills Scorecard</p>
             </div>
         </div>
         <div class="step-control">
@@ -22,14 +22,12 @@
             <p class="font-bold text-lg">Operating Skills Evaluation Method</p>
         </div>
         <div>
-            <app-textarea formControlName="operatingSkills" type="text" (input)="onOperatingSkillsInput()" [isDisabled]="mode === 'view'"
-                [value]="ratingScaleForm.get('operatingSkills')?.value">
-            </app-textarea>
+            <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="operatingSkills" (change)="onOperatingSkillsInput()"></ckeditor>
         </div>
     </section>
     <section class="bg-white section p-4 mt-4">
         <div>
-            <p class="font-bold text-lg">Notes</p>
+            <p class="font-bold text-lg">Instructor Prep & Other Notes</p>
         </div>
         <ckeditor [editor]="editor" [disabled]="mode === 'view'" name="notes" formControlName="notes" (input)="onNotesInput()"></ckeditor>
     </section>
