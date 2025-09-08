@@ -6,6 +6,7 @@ import { MatLegacyCheckboxModule as MatCheckboxModule } from '@angular/material/
 import { RouterModule, Routes } from '@angular/router';
 import { SimScenariosWizardDetailsComponent } from './sim-scenarios-wizard-details.component';
 import { MatLegacySelectModule as MatSelectModule } from '@angular/material/legacy-select';
+import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
 
 const routes: Routes = [
   {
@@ -24,6 +25,7 @@ const routes: Routes = [
     ReactiveFormsModule,
     MatCheckboxModule,
     MatSelectModule,
+    CKEditorModule
   ],
   exports :[SimScenariosWizardDetailsComponent]
 })

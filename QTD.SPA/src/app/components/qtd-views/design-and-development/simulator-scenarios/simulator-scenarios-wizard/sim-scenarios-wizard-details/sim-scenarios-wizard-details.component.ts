@@ -2,6 +2,7 @@ import { Component, Input, OnInit } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { SimulatorScenario_Difficulty_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Difficulty_VM';
 import { SimulatorScenario_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_VM';
+import * as ckcustomBuild from 'src/app/ckcustomBuild/build/ckeditor.js'
 
 @Component({
   selector: 'app-sim-scenarios-wizard-details',
@@ -13,7 +14,7 @@ export class SimScenariosWizardDetailsComponent implements OnInit {
   @Input() difficultyList: SimulatorScenario_Difficulty_VM[];
   @Input() mode: string;
   scenarioDetailsForm: UntypedFormGroup;
-
+  editor = ckcustomBuild;
   constructor(
     private formBuilder: UntypedFormBuilder
   ) { }

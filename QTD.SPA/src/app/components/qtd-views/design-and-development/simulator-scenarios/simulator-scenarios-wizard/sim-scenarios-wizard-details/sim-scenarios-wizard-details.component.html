@@ -9,10 +9,7 @@
 
         <div class="mt-4">
             <app-label [for]="'scenarioDescription'" text="Description"></app-label>
-            <app-textarea type="text" formControlName="scenarioDescription" placeholder="Enter Description" [isDisabled]="mode == 'view'"
-                (input)="onDescriptionInput()"
-                [value]="this.scenarioDetailsForm.get('scenarioDescription')?.value || ''">
-            </app-textarea>
+            <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="scenarioDescription" (change)="onDescriptionInput()"></ckeditor>
         </div>
 
         <div class="mt-4">
