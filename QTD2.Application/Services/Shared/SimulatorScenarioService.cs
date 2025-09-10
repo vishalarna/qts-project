@@ -540,7 +540,7 @@ namespace QTD2.Application.Services.Shared
 
         }
 
-        public async Task<List<SimulatorScenario_Task_Criteria_VM>> GetTaskCriteriasForPositionAsync(int id, int positionId)
+        public async Task<List<SimulatorScenario_Task_Criteria_By_Position_VM>> GetTaskCriteriasForPositionAsync(int id, int positionId)
         {
             var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Tasks", "TaskCriterias.Task" });
             if (simScenario == null)
@@ -553,12 +553,13 @@ namespace QTD2.Application.Services.Shared
             {
                 throw new ArgumentNullException($"Position with id {positionId} not found.");
             }
-
-            var taskCriteriasForPosition = new List<SimulatorScenario_Task_Criteria_VM>();
-            foreach (var position_task in position.Position_Tasks)
+            var scenarioTaskIds = simScenario.Tasks.Select(t => t.TaskId);
+            var simLinkTasks = position.Position_Tasks.Where(x => scenarioTaskIds.Contains(x.TaskId)).Select(x => x.Task).ToList();
+            var taskCriteriasForPosition = new List<SimulatorScenario_Task_Criteria_By_Position_VM>();
+            foreach (var task in simLinkTasks)
             {
-                var taskCriteriaVM = new SimulatorScenario_Task_Criteria_VM(
-                    null, position_task.TaskId, position_task.Task.getFullNumber(), position_task.Task.Description, string.Empty
+                var taskCriteriaVM = new SimulatorScenario_Task_Criteria_By_Position_VM(
+                    null, task.Id,position.PositionAbbreviation, task.getFullNumber(), task.Description, task.Criteria
                 );
                 taskCriteriasForPosition.Add(taskCriteriaVM);
             }
@@ -578,18 +579,20 @@ namespace QTD2.Application.Services.Shared
             return taskCriteriasForPosition;
         }
 
-        public async Task<List<SimulatorScenario_Task_Criteria_VM>> GetAllTaskCriteriasForPositionAsync(int id)
+        public async Task<List<SimulatorScenario_Task_Criteria_By_Position_VM>> GetAllTaskCriteriasForPositionAsync(int id)
         {
-            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "TaskCriterias.Task.SubdutyArea.DutyArea", "Positions" });
+            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Tasks","TaskCriterias.Task.SubdutyArea.DutyArea", "Positions" });
 
-            var taskCriteriaList = new List<SimulatorScenario_Task_Criteria_VM>();
+            var taskCriteriaList = new List<SimulatorScenario_Task_Criteria_By_Position_VM>();
             if (simScenario != null)
             {
                 var distinctTasks = (await _positionDomainService.GetPositionTasksByIdAsync(simScenario.Positions.Select(x => x.PositionID).ToList())).SelectMany(x => x.Position_Tasks.Select(y => y.Task)).Distinct();
-                foreach (var distinctTask in distinctTasks)
+                var scenarioTaskIds = simScenario.Tasks.Select(t => t.TaskId);
+                var simLinkTasks = distinctTasks.Where(x => scenarioTaskIds.Contains(x.Id)).ToList();
+                foreach (var distinctTask in simLinkTasks)
                 {
-                    var taskCriteriaVM = new SimulatorScenario_Task_Criteria_VM(
-                        null, distinctTask.Id, distinctTask.getFullNumber(), distinctTask.Description, string.Empty
+                    var taskCriteriaVM = new SimulatorScenario_Task_Criteria_By_Position_VM(
+                        null, distinctTask.Id,distinctTask.Position_Tasks.Select(x => x.Position.PositionAbbreviation).FirstOrDefault(), distinctTask.getFullNumber(), distinctTask.Description, distinctTask.Criteria
                     );
                     taskCriteriaList.Add(taskCriteriaVM);
                 }

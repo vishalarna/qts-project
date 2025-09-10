@@ -12,6 +12,39 @@
 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(1),
 :host ::ng-deep .table-list .mat-cell:nth-child(1) {
-  max-width: 5rem;
-  align-self: flex-start;
+  max-width: 10%;
 }
+
+:host ::ng-deep .table-list .mat-header-cell:nth-child(2),
+:host ::ng-deep .table-list .mat-cell:nth-child(2) {
+  max-width: 10%;
+}
+
+:host ::ng-deep .table-list .mat-header-cell:nth-child(3),
+:host ::ng-deep .table-list .mat-cell:nth-child(3) {
+  max-width: 35%;
+}
+
+:host ::ng-deep .table-list .mat-header-cell:nth-child(4),
+:host ::ng-deep .table-list .mat-cell:nth-child(4) {
+  max-width: 35%;
+}
+
+:host ::ng-deep .table-list .mat-header-cell:nth-child(5),
+:host ::ng-deep .table-list .mat-cell:nth-child(5) {
+  max-width: 10%;
+}
+:host ::ng-deep .table-list .mat-cell:nth-child(4) .rich-html ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+  }
+
+:host ::ng-deep .table-list .mat-cell:nth-child(4) .rich-html ol {
+    list-style-type: decimal;
+    padding-left: 1.5rem;
+  }
+
+  
+ :host .rich-html li {
+    margin-bottom: 0.25rem;
+  }

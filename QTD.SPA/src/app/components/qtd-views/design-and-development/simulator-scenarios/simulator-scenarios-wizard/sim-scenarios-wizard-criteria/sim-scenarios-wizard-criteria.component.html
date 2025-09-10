@@ -27,16 +27,29 @@
     <ng-container>
         <div class="table-list">
             <mat-table mat-table [dataSource]="tasksDataSource">
+                <ng-container matColumnDef="positionAbbreviation">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef>Position</mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"> {{row.positionAbbreviation}}</mat-cell>
+                </ng-container>
                 <ng-container matColumnDef="completeTaskNumber">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef> </mat-header-cell>
+                    <mat-header-cell mat-header-cell *matHeaderCellDef>Task</mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"> {{row.completeTaskNumber}}</mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="description">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef>Task Statement</mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row"> {{row.description}}</mat-cell>
                 </ng-container>
 
                 <ng-container matColumnDef="criteria">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef> </mat-header-cell>
+                    <mat-header-cell mat-header-cell *matHeaderCellDef>Task Performance Criteria</mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row">
+                            <div class="rich-html" [innerHTML]="row.criteria"></div>                            
+                    </mat-cell>
+                </ng-container>
+                <ng-container matColumnDef="actions">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef>Simulator Performance Criteria</mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row">
                         <div>
-                            <div>{{ row.description }}</div>
                             <div>
                                 <app-button *ngIf="row.id || mode === 'edit'" variant="text" text="Performance Criteria" icon="edit" iconPosition="left"
                                 (click)="openFlypanel(editCriteria, row)">
@@ -47,11 +60,11 @@
                                 (click)="resetCriteria(deleteCriteria, row)">
                                 </app-button>
                             </div>
-                        </div>                 
+                        </div>
                     </mat-cell>
                 </ng-container>
 
-                <!-- <mat-header-row mat-header-row *matHeaderRowDef="displayTasksColumns"></mat-header-row> -->
+                <mat-header-row mat-header-row *matHeaderRowDef="displayTasksColumns"></mat-header-row>
                 <mat-row mat-row *matRowDef="let row; columns: displayTasksColumns;"></mat-row>
             </mat-table>
         </div>

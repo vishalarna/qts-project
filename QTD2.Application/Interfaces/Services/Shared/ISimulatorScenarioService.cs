@@ -27,8 +27,8 @@ namespace QTD2.Application.Interfaces.Services.Shared
         public System.Threading.Tasks.Task DeleteSimScenarioById(int simScenarioId);
         public Task<List<SimulatorScenario_EnablingObjective_VM>> UpdateEnablingObjectivesAsync(int id, SimulatorScenario_UpdateEnablingObjectives_VM options);
         public Task<List<SimulatorScenario_Procedure_VM>> UpdateProceduresAsync(int id, SimulatorScenario_UpdateProcedures_VM options);
-        public Task<List<SimulatorScenario_Task_Criteria_VM>> GetTaskCriteriasForPositionAsync(int id, int positionId);
-        public Task<List<SimulatorScenario_Task_Criteria_VM>> GetAllTaskCriteriasForPositionAsync(int id);
+        public Task<List<SimulatorScenario_Task_Criteria_By_Position_VM>> GetTaskCriteriasForPositionAsync(int id, int positionId);
+        public Task<List<SimulatorScenario_Task_Criteria_By_Position_VM>> GetAllTaskCriteriasForPositionAsync(int id);
         public Task<SimulatorScenario_Task_Criteria_VM> CreateTaskCriteriaAsync(int id, SimulatorScenario_Task_Criteria_VM options);
         public Task<SimulatorScenario_Task_Criteria_VM> UpdateTaskCriteriaAsync(int id, int simulatorScenarioTaskCriteriaId, SimulatorScenario_Task_Criteria_VM options);
         public System.Threading.Tasks.Task DeleteTaskCriteriaAsync(int id, int simulatorScenarioTaskCriteriaId);

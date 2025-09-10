@@ -10,6 +10,7 @@ import { SimulatorScenario_Position_VM } from '@models/SimulatorScenarios_New/Si
 import { SimulatorScenario_Prerequisite_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Prerequisite_VM';
 import { SimulatorScenario_Procedure_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Procedure_VM';
 import { SimulatorScenario_Status_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Status_VM';
+import { SimulatorScenario_Task_Criteria_By_Position_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Task_Criteria_By_Position_VM';
 import { SimulatorScenario_Task_Criteria_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Task_Criteria_VM';
 import { SimulatorScenario_TasksResponseVM } from '@models/SimulatorScenarios_New/SimulatorScenario_TasksResponseVM';
 import { SimulatorScenario_UpdateCollaborators_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_UpdateCollaborators_VM';
@@ -151,7 +152,7 @@ export class SimulatorScenariosService {
       .get(this.baseUrlWithSim + `/${id}/positions/${positionId}/taskCriterias`)
       .pipe(
         map((res: any) => {
-          return res['result'] as SimulatorScenario_Task_Criteria_VM[];
+          return res['result'] as SimulatorScenario_Task_Criteria_By_Position_VM[];
         })
       )
       );
@@ -162,7 +163,7 @@ export class SimulatorScenariosService {
       .get(this.baseUrlWithSim + `/${id}/positions/allTaskCriterias`)
       .pipe(
         map((res: any) => {
-          return res['result'] as SimulatorScenario_Task_Criteria_VM[];
+          return res['result'] as SimulatorScenario_Task_Criteria_By_Position_VM[];
         })
       )
       );

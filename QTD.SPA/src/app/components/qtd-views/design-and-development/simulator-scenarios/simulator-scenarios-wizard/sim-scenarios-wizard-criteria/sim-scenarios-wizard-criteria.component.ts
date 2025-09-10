@@ -26,7 +26,7 @@ export class SimScenariosWizardCriteriaComponent implements OnInit {
   selectedPosition: string = '';
   taskSelected: SimulatorScenario_Task_Criteria_VM;
   loader: boolean = false;
-  displayTasksColumns: string[] = ['completeTaskNumber', 'criteria'];
+  displayTasksColumns: string[] = ['positionAbbreviation','completeTaskNumber', 'description', 'criteria', 'actions'];
   deleteDescription: string;
   deletesimulatorTaskCriteriaId: string;
   get positionsList(): SimulatorScenario_Position_VM[] {
@@ -63,6 +63,7 @@ export class SimScenariosWizardCriteriaComponent implements OnInit {
     else{
       let selectedPositionDetails = this.positionsList?.find(x => x.id == event.value);
       this.selectedPosition = selectedPositionDetails?.positionTitle;
+      console.log(this.positionsList)
       await this.getTaskCriteriaByPositionAsync(this.inputSimScenariosId, selectedPositionDetails?.positionId);
     }
   }
@@ -76,6 +77,7 @@ export class SimScenariosWizardCriteriaComponent implements OnInit {
   async getTaskCriteriaByPositionAsync(id: string, positionId: string) {
     await this.simSceariosService.getTaskCriteriaByPosition(id, positionId).then((res) => {
       this.tasksDataSource.data = res;
+      console.log(res);
     });
   }
 
@@ -103,6 +105,7 @@ export class SimScenariosWizardCriteriaComponent implements OnInit {
   async getAllTaskCriteriasAsync() {
     await this.simSceariosService.getAllTaskCriterias(this.inputSimScenariosId).then((res) => {
       this.tasksDataSource.data = res;
+      console.log(this.tasksDataSource.data)
     });
   }
 
