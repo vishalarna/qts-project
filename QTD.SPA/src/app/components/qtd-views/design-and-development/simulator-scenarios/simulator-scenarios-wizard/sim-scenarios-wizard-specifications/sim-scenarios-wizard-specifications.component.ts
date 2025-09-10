@@ -4,6 +4,7 @@ import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { SimulatorScenario } from '@models/SimulatorScenario/SimulatorScenario';
 import { SimulatorScenario_Position_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Position_VM';
 import { SimulatorScenario_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_VM';
+import * as ckcustomBuild from 'src/app/ckcustomBuild/build/ckeditor.js'
 
 @Component({
   selector: 'app-sim-scenarios-wizard-specifications',
@@ -19,7 +20,7 @@ export class SimScenariosWizardSpecificationsComponent implements OnInit {
   displayPositionsColumns: string[] = ['number', 'description']
   taskEoObjectivesData:any[];
   positionsData:SimulatorScenario_Position_VM[];
-
+  editor = ckcustomBuild;
   constructor(private formBuilder: UntypedFormBuilder) { }
 
   async ngOnInit(): Promise<void> {

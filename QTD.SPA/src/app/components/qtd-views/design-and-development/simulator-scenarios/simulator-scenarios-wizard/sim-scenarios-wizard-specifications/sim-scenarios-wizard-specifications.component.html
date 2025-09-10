@@ -9,62 +9,36 @@
                 </div>
                 <div>
                     <div class="mb-4">
-                        <app-label for="'networkConfiguration'" text="Network Configuration"></app-label>
-                        <app-textarea formControlName="networkConfiguration" type="text"
-                            (input)="onNetworkConfigurationInput()"
-                            [isDisabled]="mode === 'view'"
-                            [value]="specificationsForm.get('networkConfiguration')?.value">
-                        </app-textarea>
+                        <app-label for="'networkConfiguration'" text="Network Configuration"></app-label>                        
+                        <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="networkConfiguration" (change)="onNetworkConfigurationInput()"></ckeditor>
                     </div>
                     <div class="mb-4">
-                        <app-label for="'loadingConditions'" text="Loading Conditions"></app-label>
-                        <app-textarea formControlName="loadingConditions" type="text"
-                            (input)="onLoadingConditionsInput()"
-                            [isDisabled]="mode === 'view'"
-                            [value]="specificationsForm.get('loadingConditions')?.value">
-                        </app-textarea>
+                        <app-label for="'loadingConditions'" text="Loading Conditions"></app-label>                        
+                        <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="loadingConditions" (change)="onLoadingConditionsInput()"></ckeditor>
                     </div>
                     <div class="mb-4">
-                        <app-label for="'generations'" text="Generations"></app-label>
-                        <app-textarea formControlName="generations" type="text" (input)="onGenerationInput()"
-                            [isDisabled]="mode === 'view'"
-                            [value]="specificationsForm.get('generations')?.value">
-                        </app-textarea>
+                        <app-label for="'generations'" text="Generations"></app-label>                        
+                        <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="generations" (change)="onGenerationInput()"></ckeditor>
                     </div>
                     <div class="mb-4">
-                        <app-label for="'interchange'" text="Interchange"></app-label>
-                        <app-textarea formControlName="interchange" type="text" (input)="onInterchangeInput()"
-                            [isDisabled]="mode === 'view'"
-                            [value]="specificationsForm.get('interchange')?.value">
-                        </app-textarea>
+                        <app-label for="'interchange'" text="Interchange"></app-label>                        
+                        <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="interchange" (change)="onInterchangeInput()"></ckeditor>
                     </div>
                     <div class="mb-4">
-                        <app-label for="'otherBaseCase'" text="Other Base Case"></app-label>
-                        <app-textarea formControlName="otherBaseCase" type="text" (input)="onOtherBaseCaseInput()"
-                            [isDisabled]="mode === 'view'"
-                            [value]="specificationsForm.get('otherBaseCase')?.value">
-                        </app-textarea>
+                        <app-label for="'otherBaseCase'" text="Other Base Case"></app-label>                        
+                        <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="otherBaseCase" (change)="onOtherBaseCaseInput()"></ckeditor>
                     </div>
                     <div class="mb-4">
                         <app-label for="'validityChecks'" text="Validity Checks"></app-label>
-                        <app-textarea formControlName="validityChecks" type="text" (input)="onValidityChecksInput()"
-                            [isDisabled]="mode === 'view'"
-                            [value]="specificationsForm.get('validityChecks')?.value">
-                        </app-textarea>
+                        <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="validityChecks" (change)="onValidityChecksInput()"></ckeditor>
                     </div>
                     <div class="mb-4">
                         <app-label for="'rolePlays'" text="Role Plays"></app-label>
-                        <app-textarea formControlName="rolePlays" type="text" (input)="onRolePlaysInput()"
-                            [isDisabled]="mode === 'view'"
-                            [value]="specificationsForm.get('rolePlays')?.value">
-                        </app-textarea>
+                        <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="rolePlays" (change)="onRolePlaysInput()"></ckeditor>
                     </div>
                     <div>
                         <app-label for="'documentation'" text="Documentation"></app-label>
-                        <app-textarea formControlName="documentation" type="text" (input)="onDocumentationInput()"
-                            [isDisabled]="mode === 'view'"
-                            [value]="specificationsForm.get('documentation')?.value">
-                        </app-textarea>
+                        <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="documentation" (change)="onDocumentationInput()"></ckeditor>
                     </div>
                 </div>
             </section>
