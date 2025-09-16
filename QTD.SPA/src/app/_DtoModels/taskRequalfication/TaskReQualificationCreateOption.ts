@@ -4,6 +4,9 @@ export class TaskReQualificationCreateOption {
     traineeId: string;
     taskQualificationId: string;
     taskId: string;
+    skillId:string;
+    skillDescription:string;
+    skillQualificationId:string;
   }
   
   export interface SuggestionList {
@@ -20,6 +23,9 @@ export class TaskReQualificationCreateOption {
     traineeId: string;
     taskQualificationId: string;
     taskId: string;
+    skillId:string;
+    skillDescription:string;
+    skillQualificationId:string;
   }
   
   export interface StepsList {
@@ -35,6 +41,9 @@ export class TaskReQualificationCreateOption {
     traineeId: string;
     taskQualificationId: string;
     taskId: string;
+    skillId:string;
+    skillDescription:string;
+    skillQualificationId:string;
   }
   
   export interface QuesionAnswerList {
@@ -56,5 +65,7 @@ export class TaskReQualificationCreateOption {
     isFormSubmitted!:boolean;
     isEvaluatorSignOff!:boolean;
     isTraineeSignOff!:boolean;
+    skillQualificationId:string;
+    skillQualificationDate:string;
   }
   

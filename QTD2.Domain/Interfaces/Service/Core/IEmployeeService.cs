@@ -64,5 +64,7 @@ namespace QTD2.Domain.Interfaces.Service.Core
         public System.Threading.Tasks.Task<Employee> GetEmployeeWithOrgAndPosAsync(int employeeId);
         public System.Threading.Tasks.Task<List<Employee>> GetEmployeesByIdsAsync(List<int> employeeIds, bool includeTrainees);
         public System.Threading.Tasks.Task<List<Employee>> GetEmployeesWithPersonPositionCertificationsAsync(List<int> employeeIds);
+        public System.Threading.Tasks.Task<Employee> GetEmployeeByPersonId(int personId);
+        public Task<Employee> GetEmployeeByIdAsync(int id);
     }
 }

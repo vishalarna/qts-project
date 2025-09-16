@@ -82,12 +82,17 @@ export class FlyPanelCreateQtdUserComponent implements OnInit {
     this.newReviewers.emit(newQtdUsers);
     this.closeQtdFlyPanel();
   }
-
+  
   isAllSelected() {
-    var filteredRows = this.personDataSource.filteredData;
-    var numSelected = filteredRows.filter(row => this.selection.isSelected(row)).length;
-    var numRows = filteredRows.length;
-    return numSelected === numRows && numRows > 0;
+    const filteredRows = this.personDataSource.filteredData;
+    const numSelected = filteredRows.filter(row => this.selection.isSelected(row)).length;
+    return numSelected > 0 && numSelected === filteredRows.length;
+  }
+
+  isSomeSelected() {
+    const filteredRows = this.personDataSource.filteredData;
+    const numSelected = filteredRows.filter(row => this.selection.isSelected(row)).length;
+    return numSelected > 0 && numSelected < filteredRows.length;
   }
 
   masterToggle() {
@@ -96,7 +101,7 @@ export class FlyPanelCreateQtdUserComponent implements OnInit {
     } else {
       this.personDataSource.filteredData.forEach(row => this.selection.select(row));
     }
-  }
+  } 
 
   openAddNewUserFlyPanel() {
     this.isNewPersonFlyPanel = true;

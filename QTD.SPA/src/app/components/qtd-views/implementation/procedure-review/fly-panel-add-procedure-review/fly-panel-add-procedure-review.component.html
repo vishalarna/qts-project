@@ -130,7 +130,23 @@
                   </mat-form-field>
                 </div>
               </div>
-            </form>
+              <span class="text-lg font-bold ml-2">{{("Procedure" | labelReplacement)| async}} Review Due Date Extension</span>
+            
+              <div class="flex flex-col" style="padding-left: 10px;">
+                <span class="text-gray-400">
+                  The number of days/weeks/months following the
+                  end date/time students have to complete the {{("Procedure" | labelReplacement)| async}} Review in EMP.
+                  After this due date, the {{("Procedure" | labelReplacement)| async}} Review will be removed from EMP.
+                </span>
+                <div class="border py-2 flex mt-3" style="width: 20%; align-items: center; padding-left: 10px;">
+                  <app-textbox  formControlName="extensionAmount" class="flex-1 px-2 py-1 border-0 rounded-none" (keypress)="keyPressNumbers($event)"></app-textbox>
+                  <mat-select formControlName="extensionType" >
+                    <mat-option *ngFor="let type of extensionTypes" [value]="procedureReviewExtensionType[type]">{{type}}</mat-option>
+                  </mat-select>
+                </div>
+            
+              </div>  
+            </form>    
           </div>
         </section>
 

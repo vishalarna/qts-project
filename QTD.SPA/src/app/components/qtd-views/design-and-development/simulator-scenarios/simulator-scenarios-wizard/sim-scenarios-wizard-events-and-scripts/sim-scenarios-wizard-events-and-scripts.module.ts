@@ -10,6 +10,8 @@ import { SimScenariosWizardEventsAndScriptsComponent } from './sim-scenarios-wiz
 import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-menu';
 import { FlyPanelAddEventModule } from './fly-panel-add-event/fly-panel-add-event.module';
 import { DragDropModule } from '@angular/cdk/drag-drop';
+import { FlyPanelAddScriptModule } from './fly-panel-add-script/fly-panel-add-script.module';
+import { MatSortModule } from '@angular/material/sort';
 
 @NgModule({
   declarations: [SimScenariosWizardEventsAndScriptsComponent],
@@ -25,6 +27,8 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
     MatMenuModule,
     FlyPanelAddEventModule,
     DragDropModule,
+    FlyPanelAddScriptModule,
+    MatSortModule
   ],
   exports :[SimScenariosWizardEventsAndScriptsComponent]
 })

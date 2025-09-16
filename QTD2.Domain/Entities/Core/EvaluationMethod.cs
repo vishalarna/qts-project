@@ -12,6 +12,7 @@ namespace QTD2.Domain.Entities.Core
 
         public virtual ICollection<TaskQualification> TaskQualifications { get; set; } = new List<TaskQualification>();
         public virtual ICollection<TaskReQualificationEmp_SignOff> TaskReQualificationEmp_SignOff { get; set; } = new List<TaskReQualificationEmp_SignOff>();
+        public virtual ICollection<SkillQualificationEmp_SignOff> SkillQualificationEmp_SignOff { get; set; } = new List<SkillQualificationEmp_SignOff>();
         public EvaluationMethod()
         {
         }

@@ -71,5 +71,13 @@ namespace QTD2.API.QTD.Controllers
             return StatusCode(StatusCodes.Status200OK);
         }
 
+        [HttpDelete]
+        [Route("/reports")]
+        public async Task<IActionResult> DeleteReportsAsync( ReportDeleteOptions options)
+        {
+            await _reportsService.DeleteReportsAsync(options);
+            return Ok();
+        }
+
     }
 }

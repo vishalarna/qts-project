@@ -153,7 +153,7 @@
               class="mr-3"></mat-checkbox>
             <label class="mr-1">Release to all assigned Evaluators - One Sign Off is Required.</label>
             <app-icon
-              matTooltip="'{{('Task' | labelReplacement)| async}}s will be released to all assigned Evaluators on the {{('Task' | labelReplacement)| async}} Qualification Release Date. Upon successful submission of one {{('Task' | labelReplacement)| async}} Qualification for the listed {{('Task' | labelReplacement)| async}}(s), the pending {{('Task' | labelReplacement)| async}} Qualifications will be removed from all other assigned Evaluator\'s dashboards'"
+              matTooltip="'{{('Task' | labelReplacement)| async}}s & Skills will be released to all assigned Evaluators on the {{('Task' | labelReplacement)| async}} & Skill Qualification Release Date. Upon successful submission of one {{('Task' | labelReplacement)| async}} & Skill Qualification for the listed {{('Task' | labelReplacement)| async}}(s) & Skill(s), the pending {{('Task' | labelReplacement)| async}} & Skill Qualifications will be removed from all other assigned Evaluator\'s dashboards'"
               icon="help_outline" class="text-gray-400"></app-icon>
           </div>
           <div class="flex flex-row mt-3" style="align-items:baseline;">
@@ -178,16 +178,16 @@
             text="Please Select Required Release Setting Option"></app-input-error>
           <div class="flex flex-col mt-3" style="margin-left:2.5rem">
             <app-label class="mb-2 text-gray-400"
-              text="Select the settings for when to release TQs to Evaluator dashboards:"></app-label>
+              text="Select the settings for when to release TQs & SQs to Evaluator dashboards:"></app-label>
             <div class="flex flex-row" style="align-items: baseline;">
               <mat-checkbox [disabled]="releaseSelection.selected[0] !== 2"
                 [checked]="whenToReleaseSelection.selected[0] === 1"
                 (change)="$event.checked ? whenToReleaseSelection.select(1):whenToReleaseSelection.deselect(1);"
                 class="mr-3"></mat-checkbox>
-              <label>Release listed {{("Task" | labelReplacement)| async}}s to all Evaluator's EMP dashboards on the {{("Task" | labelReplacement)| async}} Qualification Release Date -
+              <label>Release listed {{("Task" | labelReplacement)| async}}s & Skill to all Evaluator's EMP dashboards on the {{("Task" | labelReplacement)| async}} & Skill Qualification Release Date -
                 order of Evaluator completion does not matter.
                 <app-icon class="text-gray-400"
-                  [matTooltip]="'When required sign-offs are reached for each Task, the pending qualifications will be removed from all other Evaluator\'s dashboards'"
+                  [matTooltip]="'When required sign-offs are reached for each Task & Skill, the pending qualifications will be removed from all other Evaluator\'s dashboards'"
                   icon="help_outline"></app-icon></label>
             </div>
             <div>
@@ -197,7 +197,7 @@
                 class="mr-3"></mat-checkbox>
               <label>Release listed {{("Task" | labelReplacement)| async}}s to all Evaluator's EMP dashboards in the order specified above.
                 <app-icon class="text-gray-400"
-                  matTooltip="'The {{('Task' | labelReplacement)| async}}s will release to the first Evaluator on the Release Date and to subsequent evaluators when the previous Evaluator has submitted qualification results'"
+                  matTooltip="'The {{('Task' | labelReplacement)| async}}s & Skills will release to the first Evaluator on the Release Date and to subsequent evaluators when the previous Evaluator has submitted qualification results'"
                   icon="help_outline"></app-icon>
               </label>
             </div>
@@ -313,12 +313,12 @@
                   <mat-tree [dataSource]="enablingObjectiveDataSource" [treeControl]="EOTreeControl" class="qtd-tree">
                     <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
                       <mat-checkbox [checked]="node.selected" (change)="onEOChange($event,node)" *ngIf="node.checkbox !== undefined && node.checkbox">
-                        {{node.description}} 
+                        {{node.description}}
                       </mat-checkbox>
                       <ng-container *ngIf="node.checkbox !== undefined && !node.checkbox">
                         <div class="flex">
                           <app-icon class="mr-2" style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;
-                          <span style="color: rgb(92, 155, 49);">{{node.description}} 
+                          <span style="color: rgb(92, 155, 49);">{{node.description}}
                           </span>
                         </div>
                       </ng-container>
@@ -486,7 +486,7 @@
             </div>
           </div>
         </form>
-
+ 
         <div class="flex mt-4" style="justify-content:flex-end;">
           <app-button [disabled]="reviewForm.invalid || saveSpinner" [spinner]="saveSpinner" style="width:30%;"
             text="Save" size="sm" color="secondary" ButtonType="button" (clicked)="releaseTQ()"></app-button>

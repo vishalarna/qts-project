@@ -25,5 +25,11 @@ namespace QTD2.Domain.Services.Core
         {
             return (await FindAsync(r => r.Person.Username == username && r.Active)).FirstOrDefault();
         }
+
+        public async System.Threading.Tasks.Task<List<QTDUser>> GetAllActiveWithEmployeeData()
+        {
+            var users = await FindWithIncludeAsync(r => r.Active, new string[] { "Person.Employee.EmployeePositions", "Person.Employee.EmployeeOrganizations" });
+            return users.ToList();
+        }
     }
 }

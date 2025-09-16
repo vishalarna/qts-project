@@ -578,5 +578,35 @@ namespace QTD2.Application.Services.Shared
             }
             return certifyingBodyWithSubsVm;
         }
+
+        public async Task<List<SubRequirementVM>> GetCertifyingBodiesWithSubRequirementsAsync(bool isLevelEditing)
+        {
+            var certifyingBodies = await _certifyingBodyService.GetCertifyingBodiesAsync(isLevelEditing);
+
+            var allSubRequirements = new List<SubRequirementVM>();
+
+            foreach (var certifyingBody in certifyingBodies)
+            {
+                var firstMatchingCertification = certifyingBody.Certifications.FirstOrDefault();
+
+                var certificationSubRequirements = firstMatchingCertification?.CertificationSubRequirements
+                    .Select(sub => new SubRequirementVM
+                    {
+                        SubRequirementId = sub.Id,
+                        ReqHour = 0,
+                        ReqName = sub.ReqName
+                    }).ToList();
+
+                if (certificationSubRequirements != null && certificationSubRequirements.Any())
+                {
+                    allSubRequirements.AddRange(certificationSubRequirements);
+                }
+
+                certifyingBody.Certifications = null;
+            }
+
+            return allSubRequirements;
+        }
+
     }
 }

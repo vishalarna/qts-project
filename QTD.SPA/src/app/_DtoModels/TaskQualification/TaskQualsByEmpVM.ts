@@ -10,4 +10,11 @@ export class TaskQualsByEmpVM{
   releaseDate?: Date;
   requiredRequals!: string;
   canStart!: boolean;
+  skillId!: string;
+  skillNumber: string;
+  skillDescription: string;
+  sqDueDate?: Date;
+  sqId: string;
+  sqEmpReleaseDate: Date; 
+  skillQualificationId:string;
 }

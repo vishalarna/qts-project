@@ -21,19 +21,19 @@ namespace QTD2.Domain.Services.Core
 
         public async Task<SimulatorScenario> GetForCopy(int id)
         {
-            var simulatorScenarioCopy = await FindWithIncludeAsync(r => r.Id == id, new string[] { "ILAs", "Procedures", "TaskCriterias", "EventsAndScritps.Criterias", "Positions", "Collaborators", "Prerequisites", "EnablingObjectives", "Tasks" });
+            var simulatorScenarioCopy = await FindWithIncludeAsync(r => r.Id == id, new string[] { "ILAs", "Procedures", "TaskCriterias", "Events", "Positions", "Collaborators", "Prerequisites", "EnablingObjectives", "Tasks" });
             return simulatorScenarioCopy.First();
         }
 
         public async Task<SimulatorScenario> GetSimulatorScenarioWithEventsAndScriptsAsync(int id)
         {
-            var obj = await FindWithIncludeAsync(r => r.Id == id, new[] { "EventsAndScritps.Criterias.Criteria.Task" });
+            var obj = await FindWithIncludeAsync(r => r.Id == id, new[] { "Events" });
             return obj.First();
         }
 
         public async Task<SimulatorScenario> GetAsync(int id)
         {
-            var simScenario = await GetWithIncludeAsync(id, new[] { "Collaborators.User.Person", "EventsAndScritps", "Collaborators.Permission" });
+            var simScenario = await GetWithIncludeAsync(id, new[] { "Collaborators.User.Person", "Events.Scripts.Criterias", "Collaborators.Permission" });
             var simScenarioWithPositions = await GetWithIncludeAsync(id, new[] { "Positions.Position" });
             var simScenarioWithTasks = await GetWithIncludeAsync(id, new[] { "Tasks.Task.SubdutyArea.DutyArea" });
             var simScenarioWithEOs = await GetWithIncludeAsync(id, new[] { "EnablingObjectives.EnablingObjective.EnablingObjective_Topic.EnablingObjectives_SubCategory.EnablingObjectives_Category" });

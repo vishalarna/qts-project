@@ -142,8 +142,8 @@
         <mat-header-cell *matHeaderCellDef class="table-person">
           <mat-checkbox
             (change)="$event ? masterToggle() : null"
-            [checked]="selection.hasValue() && isAllSelected()"
-            [indeterminate]="selection.hasValue() && !isAllSelected()"
+            [checked]="isAllSelected()"
+            [indeterminate]="isSomeSelected()"
             class="mr-3"
           ></mat-checkbox>
         </mat-header-cell>

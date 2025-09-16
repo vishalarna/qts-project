@@ -22,6 +22,7 @@ namespace QTD2.Infrastructure.Model.SimulatorScenario
             Description = description;
             Title = title;
         }
+
         public SimulatorScenario_Procedure_VM() { }
     }
 }

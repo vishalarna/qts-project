@@ -11,6 +11,7 @@ namespace QTD2.Application.Interfaces.Services.Shared
     public interface IQTDService
     {
         public  Task<List<QtdUserVM>> GetAllActiveAsync();
+        public  Task<List<QtdUserVM>> GetAllActiveWithEmployeeData();
         public Task<QtdUserVM> CreateAsync(QtdUserVM qtdUserOption, bool isReturnConflictExp = false);
         public Task<QtdUserVM> UpdateAsync(int id, QtdUserVM qtdUserOption);
         public Task<QtdUserVM> ActivateAsync(int id);

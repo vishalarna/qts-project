@@ -1,5 +1,8 @@
 <app-header [toggleMenuIcon]="false" [canGoBack]="false" [breadcrumbs]="url"></app-header>
-<div class="flex flex-row flex-wrap ml-4 mt-3 justify-between p-3">
+<div *ngIf="isDownloadingReport" style="display: flex; justify-content: center; align-items: center;">
+  <app-spinner></app-spinner>
+</div>
+<div *ngIf="!isDownloadingReport" class="flex flex-row flex-wrap ml-4 mt-3 justify-between p-3">
   <div class="flex flex-row justify-between" style="align-items: baseline; width: 50%">
     <span class="font-bold text-lg" style="width: 50%">Scheduling Classes & Rosters</span>
     <!-- <div class="flex flex-row float-right bg-white-one text-sm"> -->

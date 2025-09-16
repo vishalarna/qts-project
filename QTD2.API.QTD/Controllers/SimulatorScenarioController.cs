@@ -164,51 +164,51 @@ namespace QTD2.API.QTD.Controllers
         }
 
         [HttpPost]
-        [Route("/simulatorScenarios/{id}/eventsAndScripts")]
-        public async Task<IActionResult> CreateEventAndScriptAsync(int id, SimulatorScenario_EventAndScript_VM options)
+        [Route("/simulatorScenarios/{id}/events")]
+        public async Task<IActionResult> CreateEventAsync(int id, SimulatorScenario_Event_VM options)
         {
-            var result = await _simulatorScenarioService.CreateEventAndScriptAsync(id, options);
+            var result = await _simulatorScenarioService.CreateEventAsync(id, options);
             return Ok( new { result });
         }
 
         [HttpGet]
-        [Route("/simulatorScenarios/{id}/eventsAndScripts/{eventAndScriptId}")]
-        public async Task<IActionResult> GetEventAndScriptAsync(int id,int eventAndScriptId)
+        [Route("/simulatorScenarios/{id}/events/{eventId}")]
+        public async Task<IActionResult> GetEventAsync(int id,int eventId)
         {
-            var result = await _simulatorScenarioService.GetEventAndScriptAsync(id, eventAndScriptId);
+            var result = await _simulatorScenarioService.GetEventAsync(id, eventId);
             return Ok( new { result });
         }
 
         [HttpPost]
-        [Route("/simulatorScenarios/{id}/eventsAndScripts/{eventAndScriptId}")]
-        public async Task<IActionResult> CopyEventAndScriptAsync(int id, int eventAndScriptId)
+        [Route("/simulatorScenarios/{id}/events/{eventId}")]
+        public async Task<IActionResult> CopyEventAsync(int id, int eventId)
         {
-            var result = await _simulatorScenarioService.CopyEventAndScriptAsync(id, eventAndScriptId);
+            var result = await _simulatorScenarioService.CopyEventAsync(id, eventId);
             return Ok( new { result });
         }
 
         [HttpDelete]
-        [Route("/simulatorScenarios/{id}/eventsAndScripts/{eventAndScriptId}")]
-        public async Task<IActionResult> DeleteEventAndScriptAsync(int id, int eventAndScriptId)
+        [Route("/simulatorScenarios/{id}/events/{eventId}")]
+        public async Task<IActionResult> DeleteEventAndAsync(int id, int eventId)
         {
-            await _simulatorScenarioService.DeleteEventAndScriptAsync(id, eventAndScriptId);
+            await _simulatorScenarioService.DeleteEventAsync(id, eventId);
             return StatusCode(StatusCodes.Status200OK);
         }
 
         [HttpPut]
-        [Route("/simulatorScenarios/{id}/eventsAndScripts/{eventAndScriptId}")]
-        public async Task<IActionResult> UpdateEventAndScriptAsync(int id, int eventAndScriptId, SimulatorScenario_EventAndScript_VM options)
+        [Route("/simulatorScenarios/{id}/events/{eventId}")]
+        public async Task<IActionResult> UpdateEventAsync(int id, int eventId, SimulatorScenario_Event_VM options)
         {
-            var result = await _simulatorScenarioService.UpdateEventAndScriptAsync(id, eventAndScriptId, options);
+            var result = await _simulatorScenarioService.UpdateEventAsync(id, eventId, options);
             return Ok( new { result });
         }
 
 
         [HttpPut]
-        [Route("/simulatorScenarios/{id}/eventsAndScripts/order")]
-        public async Task<IActionResult> UpdateEventsAndScriptsOrderAsync(int id, SimulatorScenario_UpdateEventsAndScriptsOrder_VM options)
+        [Route("/simulatorScenarios/{id}/events/order")]
+        public async Task<IActionResult> UpdateEventOrderAsync(int id, SimulatorScenario_UpdateEventsAndScriptsOrder_VM options)
         {
-             await _simulatorScenarioService.UpdateEventsAndScriptsOrderAsync(id, options);
+             await _simulatorScenarioService.UpdateEventsOrderAsync(id, options);
             return StatusCode(StatusCodes.Status200OK);
         }
 

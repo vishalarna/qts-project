@@ -1,7 +1,7 @@
 import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import * as ckcustomBuild from 'src/app/ckcustomBuild/build/ckeditor.js';
 import { FlyInPanelService } from 'src/app/_Shared/services/flyInPanel.service';
-import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { SimulatorScenario_Task_Criteria_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Task_Criteria_VM';
 
@@ -35,7 +35,7 @@ export class FlyPanelEditPerformanceCriteriaComponent implements OnInit {
       criteriaValue = this.taskCriteriaVM.criteria;
     }
     this.editCriteriaForm = this.fb.group({
-      criteriaDescription: [criteriaValue],
+      criteriaDescription: [criteriaValue, Validators.required],
     });
   }
 

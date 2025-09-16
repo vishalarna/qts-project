@@ -10,6 +10,7 @@ namespace QTD2.Domain.Interfaces.Service.Core
         Task<List<SaftyHazard>> GetForSafetyHazardsByPositionMatrix(List<int> safetyHazardIds, bool includeInactiveSafetyHazards);
         Task<List<SaftyHazard>> GetForSafetyHazardsAsync();
         public Task<List<SaftyHazard>> GetSafetyHazardsByIdAsync(List<int> safetyHazardIds);
+        public Task<List<SaftyHazard>> GetSafetyHazardsForILAsync(List<int> safetyHazardIds, bool includeInActiveILA);
 
     }
 }

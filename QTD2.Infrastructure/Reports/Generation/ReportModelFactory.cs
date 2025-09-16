@@ -256,6 +256,8 @@ namespace QTD2.Infrastructure.Reports.Generation
                     return typeof(TrainingProgramQualificationCardGenerator);
                 case 112:
                     return typeof(ProceduresByEnablingObjectivesGenerator);
+                case 113:
+                    return typeof(ILAsBySafetyHazardGenerator);
                 default:
                     throw new QTDServerException("No report skeleton found with id " + reportSkeletonId);
             }

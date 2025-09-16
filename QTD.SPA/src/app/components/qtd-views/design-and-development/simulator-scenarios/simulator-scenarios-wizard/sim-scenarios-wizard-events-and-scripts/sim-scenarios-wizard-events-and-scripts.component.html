@@ -6,16 +6,25 @@
                     <p class="font-bold text-lg">Events & Scripts</p>
                 </div>
                 <div>
-                    <app-button variant="text" text="Add New" icon="add" iconPosition="left" *ngIf="mode !== 'view'"
+                    <app-button variant="text" text="Add New Event" icon="add" iconPosition="left" *ngIf="mode !== 'view'"
                         (click)="openFlypanel(addEvent, 'add', null);">
                     </app-button>
                 </div>
             </div>
 
             <ng-container>
-                <div cdkDrag class="table-list">
-                    <mat-table [dataSource]="eventsAndScriptDataSource" cdkDropList [cdkDropListData]="eventsAndScriptDataSource" (cdkDropListDropped)="dropTable($event)" [cdkDropListDisabled]="mode === 'view'">
-
+                <div cdkDrag class="table-list">                   
+                    <mat-table [dataSource]="eventsDataSource" #eventSort="matSort" matSort cdkDropList [cdkDropListData]="eventsDataSource" (cdkDropListDropped)="dropTable($event)" [cdkDropListDisabled]="mode === 'view'"  [multiTemplateDataRows]="true">
+                        <ng-container matColumnDef="expandSimScenarioEvent">
+                            <mat-header-cell *matHeaderCellDef style="max-width: 100px" mat-sort-header>
+                            </mat-header-cell>
+                            <mat-cell *matCellDef="let row;" style="max-width: 100px">
+                                <app-button variant="text"
+                                    [icon]="expandedEventElement === row ? 'expand_less' : 'expand_more'"
+                                    (clicked)="getExpandedEventElement(row); $event.stopPropagation()">
+                                </app-button>
+                            </mat-cell>
+                        </ng-container>
                         <ng-container matColumnDef="drag">
                             <mat-header-cell *matHeaderCellDef></mat-header-cell>
                             <mat-cell *matCellDef="let row"> 
@@ -44,21 +53,65 @@
                                         [matMenuTriggerFor]="menu">
                                     </app-button>
                                     <mat-menu #menu="matMenu">
-                                        <label mat-menu-item [disabled]="mode === 'view'"  (click)="openFlypanel(addEvent, 'edit', row);">Edit</label>
+                                        <label mat-menu-item [disabled]="mode === 'view'"  (click) = "openFlypanel(addScript, 'add', row)">Add New Script</label>
+                                        <label mat-menu-item [disabled]="mode === 'view'"  (click) = "openFlypanel(addEvent, 'edit', row);">Edit</label>
                                         <label mat-menu-item  [disabled]="mode === 'view'" (click) = "copyEventAndScript(row.id)">Copy</label>
                                         <label mat-menu-item [disabled]="mode === 'view'"  (click) = "deleteEventAndScript(row.id)">Delete</label>
                                     </mat-menu>
                                 </div>
                             </mat-cell>
                         </ng-container>
+                        <ng-container matColumnDef="expandedScriptDetail">
+                           <mat-cell *matCellDef="let row" [attr.colspan]="displayEventsColumns" [class.sub-table-cell]="true" class="py-0">
+                              <div style="width: 100%">
+                               <div class="pl-3">
+                                  <ng-container class="mt-4" *ngTemplateOutlet="expandedScriptDetail"></ng-container>
+                               </div>
+                             </div>
+                           </mat-cell>
+                        </ng-container> 
 
-                        <mat-header-row mat-header-row
-                            *matHeaderRowDef="displayEventsAndScriptsColumns"></mat-header-row>
-                        <mat-row mat-row *matRowDef="let row; columns: displayEventsAndScriptsColumns;" cdkDrag
-                        [cdkDragData]="row" [cdkDragDisabled]="mode === 'view'"></mat-row>
+                        <mat-header-row mat-header-row *matHeaderRowDef="displayEventsColumns"></mat-header-row>
+                        <mat-row mat-row *matRowDef="let row; columns: displayEventsColumns;" cdkDrag [cdkDragData]="row" [cdkDragDisabled]="mode === 'view'"></mat-row>
+                         <mat-row [ngStyle]="{ display: expandedEventElement === row ? 'block' : 'none' }" *matRowDef="let row; columns: ['expandedScriptDetail']"class="overview-detail-row"></mat-row>
                     </mat-table>
                 </div>
             </ng-container>
+
+            <ng-template #expandedScriptDetail>
+                <app-data-loader *ngIf="!expandedEventElement"></app-data-loader>
+                <mat-table #scriptSort="matSort" matSort *ngIf="expandedEventElement" [dataSource]="scriptDataSource" class="w-full" [multiTemplateDataRows]="true">
+                    <ng-container matColumnDef="title">
+                        <mat-header-cell mat-sort-header *matHeaderCellDef>
+                            <div class="text-gray-400 text-sm font-weight-normal">Script/Activity Title</div>
+                        </mat-header-cell>
+                        <mat-cell class="pt-3 pb-3" *matCellDef="let row">
+                        <span> {{row.title}}</span>
+                        </mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="description">
+                        <mat-header-cell *matHeaderCellDef mat-sort-header>
+                            <div class="text-gray-400 text-sm font-weight-normal">Script/Activity Description</div>
+                        </mat-header-cell>
+                        <mat-cell *matCellDef="let row">{{row.description}}</mat-cell>
+                    </ng-container>
+                    <ng-container matColumnDef="action">
+                    <mat-header-cell *matHeaderCellDef></mat-header-cell>
+                        <mat-cell *matCellDef="let row">
+                            <div class="flex flex-row items-center text-gray-four btn-group">
+                            <app-button ButtonType="icon" class="text-gray-four" icon="more_horiz" *ngIf="mode !== 'view'"[matMenuTriggerFor]="menu"></app-button>
+                            <mat-menu #menu="matMenu">
+                                <label mat-menu-item [disabled]="mode === 'view'"  (click)="openScriptFlypanel(addScript, 'edit', row);">Edit</label>
+                                <label mat-menu-item  [disabled]="mode === 'view'" (click) = "copyScriptAsync(row.id, row.eventId)">Copy</label>
+                                <label mat-menu-item [disabled]="mode === 'view'"  (click) = "deleteScriptAsync(row.id, row.eventId)">Delete</label>
+                            </mat-menu>
+                            </div>
+                        </mat-cell>
+                    </ng-container>
+                    <mat-header-row *matHeaderRowDef="displayScriptColumns"></mat-header-row>
+                    <mat-row *matRowDef="let row; columns: displayScriptColumns;"></mat-row>
+                </mat-table>
+            </ng-template>
         </section>
     </div>
     <div class="w-30">
@@ -126,7 +179,7 @@
                     </div>
 
                     <div class="mt-4">
-                        <div class="font-bold">
+                        <div class="font-bold rich-html">
                             Documentation
                         </div>
                         <div class="mt-2 rich-html" [innerHTML]="inputSimulatorScenario_VM?.documentation">
@@ -142,4 +195,9 @@
     <app-fly-panel-add-event [inputSimulatorScenario_VM]="inputSimulatorScenario_VM" (closed)="flyPanelService.close()" [mode]="mode" [editEventId]="editEventId"
         [inputSimScenariosId]="inputSimScenariosId" (newEventAdded) = "getNewlyAddedEventData($event)" (eventUpdated)="getUpdatedEventData($event)">
     </app-fly-panel-add-event>
+</ng-template>
+<ng-template #addScript>
+    <app-fly-panel-add-script [inputSimulatorScenario_VM]="inputSimulatorScenario_VM" [editEventId]="editEventId" [scriptId]="editScriptId" [inputSimScenariosId]="inputSimScenariosId"
+     (closed)="flyPanelService.close()" [mode]="mode" (newScriptAdded) ="getNewlyAddedScriptsData($event)" (scriptUpdated)="updateScriptInEvent($event)">
+    </app-fly-panel-add-script>
 </ng-template>

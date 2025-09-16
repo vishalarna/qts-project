@@ -624,7 +624,8 @@
       <mat-menu #addMenu="matMenu">
         <label mat-menu-item (click)="openFlyInPanelProvider(addNewProvider)">Provider</label>
         <label mat-menu-item (click)="openFlyPanel(topicFlyPanel)">Topic</label>
-        <label mat-menu-item routerLink="/dnd/ila/create">{{("ILA" | labelReplacement)| async}}</label>
+        <label mat-menu-item (click)="openBasicILAPanel(basicIlaTemplate)" >Basic {{("ILA" | labelReplacement)| async}}</label>
+        <label mat-menu-item routerLink="/dnd/ila/create">Detailed {{("ILA" | labelReplacement)| async}}</label>
       </mat-menu>
     </div>
   </div>
@@ -743,3 +744,8 @@
     (confirmed)="deleteILA()">
   </app-qtd-dialogue>
 </ng-template>
+
+<ng-template #basicIlaTemplate>
+  <app-fly-panel-add-basic-ila (closed)="flyPanelSrvc.close()" (refresh)="getProviders('')"></app-fly-panel-add-basic-ila>
+</ng-template>
+

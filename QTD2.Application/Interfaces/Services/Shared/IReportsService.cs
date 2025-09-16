@@ -18,5 +18,6 @@ namespace QTD2.Application.Interfaces.Services.Shared
         public Task<IEnumerable<Report>> GetAllAsync();
         public Task<Report> GetAsync(int reportId);
         public Task<Report> GetAsync(int reportId, ReportCreateOrUpdateOptions options);
+        public System.Threading.Tasks.Task DeleteReportsAsync(ReportDeleteOptions options);
     }
 }

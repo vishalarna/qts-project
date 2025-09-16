@@ -25,6 +25,7 @@ import { ProcedureUpdateOptions } from '@models/Procedure/ProcedureUpdateOptions
 import { Procedure } from '@models/Procedure/Procedure';
 import { LicenseHelperService } from 'src/app/_Shared/services/licenseHelper.service';
 import { LabelReplacementPipe } from 'src/app/_Pipes/label-replacement.pipe';
+import { ProcedureReviewExtensionType } from '@models/Procedure/Procedure_review/ProcedureReviewExtensionType';
 
 
 @Component({
@@ -59,7 +60,8 @@ export class FlyPanelAddProcedureReviewComponent implements OnInit {
   stepIndex = 0;
   procedureReview;
   isLicenseValid:boolean=true;
-
+  procedureReviewExtensionType = ProcedureReviewExtensionType;
+  extensionTypes = Object.keys(ProcedureReviewExtensionType).filter((key) => isNaN(Number(key)));
 
 
   displayedColumns: string[] = [
@@ -115,6 +117,8 @@ export class FlyPanelAddProcedureReviewComponent implements OnInit {
       // To Send Server
       startDateTime: new UntypedFormControl(''),
       endDateTime: new UntypedFormControl(''),
+      extensionAmount: new UntypedFormControl(null),
+      extensionType: new UntypedFormControl(null)
     });
   }
 
@@ -384,7 +388,9 @@ export class FlyPanelAddProcedureReviewComponent implements OnInit {
       procedureReviewInstructions: this.procedureForm.get('courseInstruction')?.value,
       procedureReviewTitle: this.procedureForm.get('reviewTitle')?.value,
       startDateTime: this.convertLocalToUtc(this.procedureForm.get('startDateTime')?.value),
-      procedureReviewAcknowledgement:this.procedureForm.get('acknowledgement')?.value
+      procedureReviewAcknowledgement:this.procedureForm.get('acknowledgement')?.value,
+      extensionAmount: this.procedureForm.get('extensionAmount')?.value,
+      extensionType: this.procedureForm.get('extensionType')?.value
     };
     this.procedureService.addProcedureReview(createProcedureReview)
       .subscribe(async (result) => {
@@ -412,7 +418,9 @@ export class FlyPanelAddProcedureReviewComponent implements OnInit {
       procedureReviewInstructions: this.procedureForm.get('courseInstruction')?.value,
       procedureReviewTitle: this.procedureForm.get('reviewTitle')?.value,
       startDateTime: this.convertLocalToUtc(this.procedureForm.get('startDateTime')?.value),
-      procedureReviewAcknowledgement:this.procedureForm.get('acknowledgement')?.value
+      procedureReviewAcknowledgement:this.procedureForm.get('acknowledgement')?.value,
+      extensionAmount: this.procedureForm.get('extensionAmount')?.value,
+      extensionType: this.procedureForm.get('extensionType')?.value
     };
     this.procedureService.updateProcedureReview(this.procedureReviewId, createProcedureReview)
       .subscribe(async (result) => {
@@ -521,7 +529,9 @@ export class FlyPanelAddProcedureReviewComponent implements OnInit {
       startTime: this.datePipe.transform(procedureReview.startDateTime, 'HH:mm'),
       endDate: this.datePipe.transform(procedureReview.endDateTime, 'yyyy-MM-dd'),
       endTime: this.datePipe.transform(procedureReview.endDateTime, 'HH:mm'),
-      acknowledgement: procedureReview.procedureReviewAcknowledgement
+      acknowledgement: procedureReview.procedureReviewAcknowledgement,
+      extensionAmount: procedureReview.extensionAmount,
+      extensionType: procedureReview.extensionType
       //procedureFileName:this.procedureForm.get('procedureId')?.value.fileName,
       //procedureLink:this.procedureForm.get('procedureId')?.value.hyperlink,
     });
@@ -530,5 +540,14 @@ export class FlyPanelAddProcedureReviewComponent implements OnInit {
   async transformTitle(title: string) {
     const labelName = await this.labelPipe.transform(title);
     return labelName;
+  }
+  keyPressNumbers(event: any) {
+    var charCode = (event.which) ? event.which : event.keyCode;
+    if ((charCode < 48 || charCode > 57)) {
+      event.preventDefault();
+      return false;
+    } else {
+      return true;
+    }
   }
 }

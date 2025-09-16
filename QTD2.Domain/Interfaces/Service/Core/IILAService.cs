@@ -58,5 +58,6 @@ namespace QTD2.Domain.Interfaces.Service.Core
         public Task<ILA> GetILAWithProviderAndDeliveryMethodAsync(int id);
         System.Threading.Tasks.Task<List<ILA>> GetILAsWithCertificationSubRequirementsAsync(int ilaId);
         Task<ILA> GetILARequirementsAsync(int ilaId);
+        public Task<ILA> GetILAByNameOrNumberAsync(string name, string number);
     }
 }

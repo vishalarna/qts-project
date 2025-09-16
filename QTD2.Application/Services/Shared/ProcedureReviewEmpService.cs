@@ -99,7 +99,7 @@ namespace QTD2.Application.Services.Shared
                         ProcedureName = procedureReview.Procedure.Title,
                         ProcedureNumber = procedureReview.Procedure.Number,
                         ProcedureReviewTitle = procedureReview.ProcedureReviewTitle,
-                        ProcedureReviewDueDate = procedureReview.EndDateTime,
+                        ProcedureReviewDueDate = procedureReview.EffectiveDueDate,
                         Status = status,
                         File = procedureReview.Procedure.ProceduresFileUpload,
                         FileName = procedureReview.Procedure.FileName,
@@ -129,6 +129,10 @@ namespace QTD2.Application.Services.Shared
                 var employee = await _empService.FindQueryWithIncludeAsync(x => x.PersonId == person.Id, new string[] { "Person" }).FirstOrDefaultAsync();
 
                 var pr_emp = (await _procedureReviewEmployeeLinkDomainService.FindWithIncludeAsync(x => x.EmployeeId == employee.Id && x.ProcedureReviewId == procedureReviewId, new string[] { "ProcedureReview.Procedure", "Employee" })).FirstOrDefault();
+                if (pr_emp.ProcedureReview.EffectiveDueDate < DateTime.UtcNow)
+                {
+                    throw new QTDServerException("This Procedure Review is past expiration and cannot be modified.");
+                }
                 pr_emp.IsStarted = true;
                 await _procedureReviewEmployeeLinkDomainService.UpdateAsync(pr_emp);
 
@@ -153,7 +157,7 @@ namespace QTD2.Application.Services.Shared
                     ProcedureName = pr_emp_updated.ProcedureReview.Procedure.Title,
                     ProcedureNumber = pr_emp_updated.ProcedureReview.Procedure.Number,
                     ProcedureReviewTitle = pr_emp_updated.ProcedureReview.ProcedureReviewTitle,
-                    ProcedureReviewDueDate = pr_emp_updated.ProcedureReview.EndDateTime,
+                    ProcedureReviewDueDate = pr_emp_updated.ProcedureReview.EffectiveDueDate,
                     Status = status,
                     Instructions = pr_emp_updated.ProcedureReview.ProcedureReviewInstructions,
                     Response = pr_emp_updated.ProcedureReviewResponse != null ? pr_emp_updated.ProcedureReviewResponse == true ? "true" : "false" : null,

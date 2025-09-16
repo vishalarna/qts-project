@@ -351,16 +351,19 @@ namespace QTD2.Application.Services.Shared
             {
                 foreach (var item in proceduresReviews)
                 {
-                    toReturnList.Add(new DueTrainingDataVM()
+                    if (item.ProcedureReview?.EffectiveDueDate != null && item.ProcedureReview.EffectiveDueDate >= DateTime.UtcNow)
                     {
-                        Type = "Procedure Review",
-                        Title = item.ProcedureReview?.ProcedureReviewTitle,
-                        Status = item.IsStarted && !item.IsCompleted ? "In Progress" : !item.IsStarted ? "Not Started" : item.IsCompleted ? "Completed" : "Invalid",
-                        Id = item.ProcedureReview?.Id,
-                        ParentId = item.ProcedureReview.ProcedureId,
-                        CanStart = item.ProcedureReview.EndDateTime >= DateTime.UtcNow,
-                        DueDate = item.ProcedureReview.EndDateTime
-                    });
+                        toReturnList.Add(new DueTrainingDataVM()
+                        {
+                            Type = "Procedure Review",
+                            Title = item.ProcedureReview?.ProcedureReviewTitle,
+                            Status = item.IsStarted && !item.IsCompleted ? "In Progress" : !item.IsStarted ? "Not Started" : item.IsCompleted ? "Completed" : "Invalid",
+                            Id = item.ProcedureReview?.Id,
+                            ParentId = item.ProcedureReview.ProcedureId,
+                            CanStart = item.ProcedureReview.EffectiveDueDate >= DateTime.UtcNow,
+                            DueDate = item.ProcedureReview.EffectiveDueDate
+                        });
+                    }
                 }
             }
             if (evaluationRosters != null)

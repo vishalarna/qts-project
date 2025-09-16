@@ -14,4 +14,5 @@ export class TaskQualsByTaskVM{
   evaluatorListWithStatus!: EvaluatorNameWithStatus[];
   tqStatus!: string;
   canStart!:boolean;
+  skillQualificationId:string;
 }

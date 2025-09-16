@@ -32,11 +32,5 @@ namespace QTD2.Domain.Services.Core
             var metaEnablingObjectives = await FindWithIncludeAsync(predicates, new[] { "MetaEO.EnablingObjective_Topic", "MetaEO.EnablingObjective_SubCategory", "MetaEO.EnablingObjective_Category"});
             return metaEnablingObjectives.ToList();
         }
-
-        public async Task<List<EnablingObjective_MetaEO_Link>> GetMetaEOByEoIdAsync(int eoId)
-        {
-            var positions_SQs = await FindAsync(r => r.MetaEOId == eoId);
-            return positions_SQs.ToList();
-        }
     }
 }

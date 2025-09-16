@@ -11,12 +11,12 @@ namespace QTD2.Infrastructure.Model.Task_Requalification
 
         public int? Id { get; set; }
         public int EmpId { get; set; }
-        public int TaskId { get; set; }
+        public int? TaskId { get; set; }
         public DateTime? EmpReleaseDate { get; set; }
         public string EmployeeName { get; set; }
         public string EvaluatorNames { get; set; }
         public DateTime? DueDate { get; set; }
-        public string TaskDescription { get; set; }
+        public string? TaskDescription { get; set; }
         public string PosNames { get; set; }
         public string Number { get; set; }
         public int? TotalRequiredSignOffs { get; set; }
@@ -25,7 +25,12 @@ namespace QTD2.Infrastructure.Model.Task_Requalification
         public DateTime? TaskQualificationDate { get; set; }
         public bool CriteriaMet { get; set; }
         public string? Comment { get; set; }
-
+        public int? EnablingObjectiveId { get; set; }
+        public string? EnablingObjectiveDescription { get; set; }
+        public string? EnablingObjectiveNumber { get; set; }
+        public int? SkillQualificationId { get; set; }
+        public DateTime? SQDueDate { get; set; }
+        public DateTime? SkillQualificationDate { get; set; }
         public TQEmpWithPosAndTaskVM()
         {
 
@@ -33,16 +38,16 @@ namespace QTD2.Infrastructure.Model.Task_Requalification
 
         public TQEmpWithPosAndTaskVM(
                 int id, 
-                int taskId, 
+                int? taskId, 
                 int empId,
-                string number,
-                string taskDescription, 
+                string? number,
+                string? taskDescription, 
                 DateTime? dueDate, 
                 List<TQEvalSignOffModel> tQEvalSignOffModels, 
                 DateTime? empReleaseDate,
                 string posNames,
                 int? totalRequiredSignOffs, 
-                string evaluatorNames, string? comment)
+                string evaluatorNames, string? comment, int? enablingObjectiveId, string? enablingObjectiveDescription, string? enablingObjectiveNumber)
         {
             Id = id;
             TaskId = taskId;
@@ -56,6 +61,9 @@ namespace QTD2.Infrastructure.Model.Task_Requalification
             TotalRequiredSignOffs = totalRequiredSignOffs;
             EvaluatorNames = evaluatorNames;
             Comment = comment;
+            EnablingObjectiveId = enablingObjectiveId;
+            EnablingObjectiveDescription = enablingObjectiveDescription;
+            EnablingObjectiveNumber = enablingObjectiveNumber;
         }
 
         public TQEmpWithPosAndTaskVM(int id, int taskId,string number, string taskDescription,int empId,string employeeName,string posNames, string evaluatorName, DateTime? empReleaseDate, DateTime? dueDate, int totalRequiredSignOffs)

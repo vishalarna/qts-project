@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QTD2.Domain.Entities.Core;
+using System;
 
 namespace QTD2.Infrastructure.Model.ProcedureReview
 {
@@ -11,5 +12,7 @@ namespace QTD2.Infrastructure.Model.ProcedureReview
         public string ProcedureReviewInstructions { get; set; }
         public bool IsEmployeeShowResponses { get; set; }
         public string ProcedureReviewAcknowledgement { get; set; }
+        public ProcedureReviewExtensionType? ExtensionType { get; set; }
+        public int? ExtensionAmount { get; set; }
     }
 }

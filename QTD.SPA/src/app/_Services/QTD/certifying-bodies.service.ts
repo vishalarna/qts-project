@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { CertifyingBodyWithSubRequirementsVM } from '@models/CertifyingBody/CertifyingBodyWithSubRequirementsVM';
+import { CertifyingBodyWithSubRequirementsVM, SubRequirementVM } from '@models/CertifyingBody/CertifyingBodyWithSubRequirementsVM';
 import { firstValueFrom } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { CertificateUpdateOptions } from 'src/app/_DtoModels/Certification/CertificateUpdateOptions';
@@ -182,6 +182,18 @@ export class CertifyingBodiesService {
         })
       )
       );
+  }
+
+  getCertifyingBodiesWithSubRequirementsAsync(isLevelEditing: boolean) {
+    return firstValueFrom(
+      this.http
+        .get(this.baseUrl + `/subrequirements/${isLevelEditing}`)
+        .pipe(
+          map((res: any) => {
+            return res['subReqs'] as SubRequirementVM[];
+          })
+        )
+    );
   }
 
 }

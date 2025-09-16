@@ -8,7 +8,8 @@ import { CertificationCreateOptions } from 'src/app/_DtoModels/Certification/Cer
 import { CertificationILAVM, CertifyingBodyCompactOptions } from 'src/app/_DtoModels/CertifyingBody/CertifyingBodyCompactOptions';
 import { Certification_HistoryCreateOptions } from 'src/app/_DtoModels/Certification_History/Certification_HistoryCreateOptions';
 import { environment } from 'src/environments/environment';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
+import { SubRequirementVM } from '@models/CertifyingBody/CertifyingBodyWithSubRequirementsVM';
 
 
 
@@ -183,6 +184,16 @@ import { firstValueFrom } from 'rxjs';
           })
         )
         );
+    }
+
+    getSubRequirementsByCertId(certId: any) {
+      return firstValueFrom(
+        this.http.get(this.baseUrl + `/${certId}/subrequirements`).pipe(
+          map((res: any) => {
+            return res["subReqs"] as SubRequirementVM[];
+          })
+        )
+      );
     }
   }
 

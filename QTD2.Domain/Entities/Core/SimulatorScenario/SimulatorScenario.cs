@@ -35,12 +35,12 @@ namespace QTD2.Domain.Entities.Core
         public virtual ICollection<SimulatorScenario_ILA> ILAs { get; set; } = new List<SimulatorScenario_ILA>();
         public virtual ICollection<SimulatorScenario_Procedure> Procedures { get; set; } = new List<SimulatorScenario_Procedure>();
         public virtual ICollection<SimulatorScenario_Task_Criteria> TaskCriterias { get; set; } = new List<SimulatorScenario_Task_Criteria>();
-        public virtual ICollection<SimulatorScenario_EventAndScript> EventsAndScritps { get; set; } = new List<SimulatorScenario_EventAndScript>();
         public virtual ICollection<SimulatorScenario_Position> Positions { get; set; } = new List<SimulatorScenario_Position>();
         public virtual ICollection<SimulatorScenario_Prerequisite> Prerequisites { get; set; } = new List<SimulatorScenario_Prerequisite>();
         public virtual ICollection<SimulatorScenario_Collaborator> Collaborators { get; set; } = new List<SimulatorScenario_Collaborator>();
         public virtual ICollection<SimulatorScenario_EnablingObjective> EnablingObjectives { get; set; } = new List<SimulatorScenario_EnablingObjective>();
         public virtual ICollection<SimulatorScenario_Task> Tasks { get; set; } = new List<SimulatorScenario_Task>();
+        public virtual ICollection<SimulatorScenario_Event>  Events { get; set; } = new List<SimulatorScenario_Event>();
         public SimulatorScenario()
         {
         }
@@ -186,11 +186,11 @@ namespace QTD2.Domain.Entities.Core
                 simScenario_TaskCriteria.Id = 0;
                 copy.TaskCriterias.Add(simScenario_TaskCriteria);
             }
-            foreach (var eventAndScript in EventsAndScritps)
+            foreach (var eventAndScript in Events)
             {
-                var simScenario_EventAndScript = eventAndScript.Copy<SimulatorScenario_EventAndScript>(createdBy);
-                simScenario_EventAndScript.Id = 0;
-                copy.EventsAndScritps.Add(simScenario_EventAndScript);
+                var simScenario_Event = eventAndScript.Copy<SimulatorScenario_Event>(createdBy);
+                simScenario_Event.Id = 0;
+                copy.Events.Add(simScenario_Event);
             }
             foreach (var position in Positions)
             {

@@ -36,5 +36,10 @@ namespace QTD2.Domain.Interfaces.Service.Core
         Task<EnablingObjective> GetForCopy(int id);
         public Task<List<EnablingObjective>> GetProcedureLinkedEnablingObjectivesAsync(List<int> enablingObjectiveIds);
         public Task<List<EnablingObjective>> GetEOAsync();
+        public Task<List<EnablingObjective>> GetEOByIdAsync(int eoId);
+        public Task<List<EnablingObjective_Suggestion>> GetAllSuggestionByIdAsync(int eoId);
+        public Task<List<EnablingObjective_Step>> GetAllStepAsync(int eoId);
+        public Task<List<EnablingObjective_Question>> GetAllQuestionByIdAsync(int eoId);
+        public Task<EnablingObjective> GetEnablingObjectiveByIdAsync(int eoId);
     }
 }

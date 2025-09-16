@@ -26,5 +26,11 @@ namespace QTD2.Domain.Services.Core
             return simulatorScenario_ILa.ToList();
         }
 
+        public async Task<List<SimulatorScenario_ILA>> GetSimulatorScenarioILAByILAIdAsync(int ilaId)
+        {
+            var simulatorScenario_ILa = await FindAsync(x => x.ILAID == ilaId);
+            return simulatorScenario_ILa.ToList();
+        }
+
     }
 }

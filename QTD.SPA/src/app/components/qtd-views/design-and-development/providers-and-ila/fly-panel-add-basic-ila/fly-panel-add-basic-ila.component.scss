@@ -1,0 +1,23 @@
+::ng-deep .mat-pseudo-checkbox,
+::ng-deep .mat-mdc-option .mat-pseudo-checkbox,
+::ng-deep .mat-mdc-option .mat-mdc-option-state {
+  display: none !important;
+}
+::ng-deep .mat-checkbox-label {
+    display: flex;
+    align-items: center;
+  }
+
+.label-fixed {
+  display: inline-block;  
+  min-width: 170px;       
+  max-width: 170px;
+  white-space: normal;
+  word-break: break-word;
+  text-align: left;      
+  margin-right: 1rem;     
+}
+
+.input-container {
+  flex: 0.7; 
+}

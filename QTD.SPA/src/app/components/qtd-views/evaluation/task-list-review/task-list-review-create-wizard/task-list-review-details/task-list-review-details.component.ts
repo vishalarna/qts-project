@@ -60,13 +60,12 @@ export class TaskListReviewDetailsComponent implements OnInit {
   initializeCreateReview(){
     this.createTaskListReviewForm = this.fb.group({
       title: new UntypedFormControl(null, [Validators.required]),
-      trainer: new UntypedFormControl(null,[Validators.required]),
       reviewType: new UntypedFormControl(null,[Validators.required]),
       startDate: new UntypedFormControl(null,[Validators.required]),
       endDate: new UntypedFormControl(null,[Validators.required]),
       positions: new UntypedFormControl([]),
-      trainerSearchText: new UntypedFormControl(''),
       positionSearchText: new UntypedFormControl(''),
+      reviewedBy: new UntypedFormControl(null),
     });
   }
 

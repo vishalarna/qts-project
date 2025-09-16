@@ -42,6 +42,9 @@ using ISubDutyAreasDomainService = QTD2.Domain.Interfaces.Service.Core.ISubdutyA
 using ITask_MetaTask_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.ITask_MetaTask_LinkService;
 using DocumentFormat.OpenXml.Office2010.Excel;
 using QTD2.Domain.Helpers;
+using ISkillReQualificationEmp_SignOffDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillQualificationEmp_SignOffService;
+using QTD2.Infrastructure.Model.DutyArea;
+using QTD2.Infrastructure.Model.SubdutyArea;
 
 namespace QTD2.Application.Services.Shared
 {
@@ -87,11 +90,10 @@ namespace QTD2.Application.Services.Shared
         private readonly ITask_MetaTask_LinkDomainService _metaTask_TaskService;
         private readonly QTD2.Domain.Interfaces.Service.Core.ISkillQualificationService _skillQualificationService;
         private readonly QTD2.Domain.Interfaces.Service.Core.ISkillQualificationEmpSettingService _skillQualificationEmpSettingService;
-        private readonly QTD2.Domain.Interfaces.Service.Core.IEnablingObjective_MetaEO_LinkService _enablingObjective_MetaEO_LinkService;
-        private readonly QTD2.Domain.Interfaces.Service.Core.IEnablingObjective_SubCategoryService _enablingObjective_SubCategoryService;
-        private readonly QTD2.Domain.Interfaces.Service.Core.IEnablingObjective_TopicService _enablingObjective_TopicService;
         private readonly QTD2.Domain.Interfaces.Service.Core.ISkillQualification_Evaluator_LinkService _skillQualification_Evaluator_LinkService;
         private readonly QTD2.Domain.Interfaces.Service.Core.ISkillQualificationStatusService _skillQualificationStatusService;
+        private readonly QTD2.Domain.Interfaces.Service.Core.ISkillQualificationEmp_SignOffService _skillQualificationEmp_SignOffService;
+        private readonly ISkillReQualificationEmp_SignOffDomainService _sqEmpSignOffService;
 
         public TaskRequalificationService(
             IStringLocalizer<Domain.Entities.Core.Task> localizer,
@@ -116,13 +118,12 @@ namespace QTD2.Application.Services.Shared
             IDutyAreaDomainService daService,
             ITaskQualEvalLinkDomainService tq_evalService, IPersonDomainService personService, ITaskReQualificationEmp_SignOffDomainService empSignOffService,
             IPositionTask_LinkDomainService position_TaskService, ISubDutyAreasDomainService sdaService, ITask_MetaTask_LinkDomainService metaTask_TaskService,
-            QTD2.Domain.Interfaces.Service.Core.ISkillQualificationService skillQualificationService,  
-            QTD2.Domain.Interfaces.Service.Core.ISkillQualificationEmpSettingService skillQualificationEmpSettingService, 
-            QTD2.Domain.Interfaces.Service.Core.IEnablingObjective_MetaEO_LinkService enablingObjective_MetaEO_LinkService,
-            QTD2.Domain.Interfaces.Service.Core.IEnablingObjective_SubCategoryService enablingObjective_SubCategoryService,
-            QTD2.Domain.Interfaces.Service.Core.IEnablingObjective_TopicService enablingObjective_TopicService,
+            QTD2.Domain.Interfaces.Service.Core.ISkillQualificationService skillQualificationService,
+            QTD2.Domain.Interfaces.Service.Core.ISkillQualificationEmpSettingService skillQualificationEmpSettingService,
             QTD2.Domain.Interfaces.Service.Core.ISkillQualification_Evaluator_LinkService skillQualification_Evaluator_LinkService,
-            QTD2.Domain.Interfaces.Service.Core.ISkillQualificationStatusService skillQualificationStatusService)
+            QTD2.Domain.Interfaces.Service.Core.ISkillQualificationStatusService skillQualificationStatusService,
+            QTD2.Domain.Interfaces.Service.Core.ISkillQualificationEmp_SignOffService skillQualificationEmp_SignOffService,
+            ISkillReQualificationEmp_SignOffDomainService sqEmpSignOffService)
         {
             _localizer = localizer;
             _httpContextAccessor = httpContextAccessor;
@@ -164,11 +165,10 @@ namespace QTD2.Application.Services.Shared
             _metaTask_TaskService = metaTask_TaskService;
             _skillQualificationService = skillQualificationService;
             _skillQualificationEmpSettingService = skillQualificationEmpSettingService;
-            _enablingObjective_MetaEO_LinkService = enablingObjective_MetaEO_LinkService;
-            _enablingObjective_SubCategoryService = enablingObjective_SubCategoryService;
-            _enablingObjective_TopicService = enablingObjective_TopicService;
-            _skillQualification_Evaluator_LinkService  = skillQualification_Evaluator_LinkService;
+            _skillQualification_Evaluator_LinkService = skillQualification_Evaluator_LinkService;
             _skillQualificationStatusService = skillQualificationStatusService;
+            _skillQualificationEmp_SignOffService = skillQualificationEmp_SignOffService;
+            _sqEmpSignOffService = sqEmpSignOffService;
         }
 
         public async Task<TaskQualification> UpdateAsync(int id, TaskQualificationCreateOptions options)
@@ -216,7 +216,7 @@ namespace QTD2.Application.Services.Shared
                         newTaskQualification_Evaluator_Links.Add(newTaskQualification_Evaluator_Link);
                     }
                     await _tq_evalService.AddRangeAsync(newTaskQualification_Evaluator_Links);
-                    
+
                     // Soft-delete discontinued Evaluators' links
                     var removedEvaluatorIds = currentEvaluatorIds.Where(cei => !options.EvaluatorIds.Contains(cei));
                     var removedTaskQualification_Evaluator_Links = taskQualification_Evaluator_Links.Where(tel => removedEvaluatorIds.Contains(tel.EvaluatorId)).ToList();
@@ -504,28 +504,45 @@ namespace QTD2.Application.Services.Shared
             }
         }
 
-        public async Task<List<DutyArea>> GetTaskTreeDataWithPositionIdsAsync(EMPFilterOptions option)
+        public async Task<List<DutyAreaVm>> GetTaskTreeDataWithPositionIdsAsync(EMPFilterOptions option)
         {
             var das = (await _daService.FindQuery(x => x.Active == true).ToListAsync()).OrderBy(o => o.Number).GroupBy(g => g.Letter).SelectMany(s => s).ToList();
+
+            var result = new List<DutyAreaVm>();
+
             foreach (var da in das)
             {
                 da.SubdutyAreas = await _sdaService.FindQuery(x => x.DutyAreaId == da.Id && x.Active == true).OrderBy(o => o.SubNumber).ToListAsync();
+
+                var daVm = new DutyAreaVm
+                {
+                    Id = da.Id,
+                    Title = da.Title,
+                    Description = da.Description,
+                    Letter = da.Letter,
+                    Number = da.Number
+                };
+
                 foreach (var sda in da.SubdutyAreas)
                 {
                     sda.Tasks.Clear();
                     var tasks = new List<Domain.Entities.Core.Task>();
+
                     switch (option.Type.Trim().ToLower())
                     {
                         case "all":
                             var totaltasks = await _taskService.FindQuery(x => x.SubdutyAreaId == sda.Id && x.Active == true).Distinct().ToListAsync();
+
                             for (int i = 0; i < totaltasks.Count; i++)
                             {
                                 if (totaltasks[i].IsMeta)
                                 {
                                     var links = await _metaTask_TaskService.FindQuery(x => x.Meta_TaskId == totaltasks[i].Id).ToListAsync();
+
                                     for (int j = 0; j < links.Count; j++)
                                     {
                                         var posLinks = await _position_TaskService.FindQuery(x => x.TaskId == links[j].TaskId).ToListAsync();
+
                                         foreach (var posLink in posLinks)
                                         {
                                             if (!totaltasks[i].Position_Tasks.Contains(posLink))
@@ -534,6 +551,7 @@ namespace QTD2.Application.Services.Shared
                                             }
                                         }
                                     }
+
                                     totaltasks[i].Position_Tasks = totaltasks[i].Position_Tasks.GroupBy(g => g.Id).Select(s => s.First()).ToList();
                                     tasks.Add(totaltasks[i]);
                                 }
@@ -544,17 +562,20 @@ namespace QTD2.Application.Services.Shared
                                 }
                             }
                             break;
+
                         default:
                             var totaltasksWithFilter = await _taskService.FindQuery(x => x.SubdutyAreaId == sda.Id && x.Active == true).Distinct().ToListAsync();
-                            //tasks = await _taskService.FindQuery(x => x.SubdutyAreaId == sda.Id).Distinct().ToListAsync();
+
                             for (int i = 0; i < totaltasksWithFilter.Count; i++)
                             {
                                 if (totaltasksWithFilter[i].IsMeta)
                                 {
                                     var links = await _metaTask_TaskService.FindQuery(x => x.Meta_TaskId == totaltasksWithFilter[i].Id).ToListAsync();
+
                                     for (int j = 0; j < links.Count; j++)
                                     {
                                         var posLinks = await _position_TaskService.FindQuery(x => x.TaskId == links[j].TaskId && option.PositionIds.Contains(x.PositionId)).ToListAsync();
+
                                         foreach (var posLink in posLinks)
                                         {
                                             if (!totaltasksWithFilter[i].Position_Tasks.Contains(posLink))
@@ -563,6 +584,7 @@ namespace QTD2.Application.Services.Shared
                                             }
                                         }
                                     }
+
                                     if (links.Count > 0)
                                     {
                                         tasks.Add(totaltasksWithFilter[i]);
@@ -571,6 +593,7 @@ namespace QTD2.Application.Services.Shared
                                 else
                                 {
                                     totaltasksWithFilter[i].Position_Tasks = await _position_TaskService.FindQuery(x => x.TaskId == totaltasksWithFilter[i].Id && option.PositionIds.Contains(x.PositionId)).ToListAsync();
+
                                     if (totaltasksWithFilter[i].Position_Tasks.Count > 0)
                                     {
                                         tasks.Add(totaltasksWithFilter[i]);
@@ -580,15 +603,37 @@ namespace QTD2.Application.Services.Shared
                             break;
                     }
 
-                    foreach (var task in tasks)
+                    var sdaVm = new SubDutyAreaVm
                     {
-                        sda.Tasks.Add(task);
+                        Id = sda.Id,
+                        DutyAreaId = sda.DutyAreaId,
+                        Description = sda.Description,
+                        SubNumber = sda.SubNumber,
+                        Title = sda.Title
+                    };
+
+                    foreach (var task in tasks.OrderBy(o => o.Number))
+                    {
+                        sdaVm.Task.Add(new TaskVm
+                        {
+                            Id = task.Id,
+                            SubdutyAreaId = task.SubdutyAreaId,
+                            Description = task.Description,
+                            Number = task.Number,
+                            FullNumber = $"{da.Letter}{da.Number}.{sda.SubNumber}.{task.Number}",
+                            PositionTaskIds = task.Position_Tasks.Select(pt => pt.PositionId).Distinct().ToList()
+                        });
                     }
-                    sda.Tasks = sda.Tasks.OrderBy(o => o.Number).ToList();
+
+                    daVm.SubDutyArea.Add(sdaVm);
+                }
+
+                if (daVm.SubDutyArea.Any(s => s.Task.Any()))
+                {
+                    result.Add(daVm);
                 }
             }
-
-            return das.Where(r => r.SubdutyAreas.SelectMany(s => s.Tasks).Any()).ToList();
+            return result;
         }
 
         public async Task<List<EnablingObjective>> GetEoTreeWithPositionIds(EMPFilterOptions option)
@@ -619,7 +664,7 @@ namespace QTD2.Application.Services.Shared
             };
 
             var taskQualifications = await _taskQualificationService
-                .FindQueryWithIncludeAsync(x => x.IsReleasedToEMP && !x.IsRecalled && pendingTqStatuses.Contains(x.TQStatusId.GetValueOrDefault()), 
+                .FindQueryWithIncludeAsync(x => x.IsReleasedToEMP && !x.IsRecalled && pendingTqStatuses.Contains(x.TQStatusId.GetValueOrDefault()),
                     new string[]{
                         nameof(_taskQualification.TQEmpSetting)
                     })
@@ -681,11 +726,11 @@ namespace QTD2.Application.Services.Shared
         public async Task<List<TaskQualificationEmpVM>> GetAllQualificationsForEmp(int empId, int taskId)
         {
             List<TaskQualificationEmpVM> result = new List<TaskQualificationEmpVM>();
-            
-            var taskQualifications = await _taskQualificationService.FindQueryWithIncludeAsync(x => x.EmpId == empId && x.TaskId == taskId, new string[] { 
-                nameof(_taskQualification.Task), 
-                nameof(_taskQualification.Employee), 
-                nameof(_taskQualification.TaskQualificationStatus), 
+
+            var taskQualifications = await _taskQualificationService.FindQueryWithIncludeAsync(x => x.EmpId == empId && x.TaskId == taskId, new string[] {
+                nameof(_taskQualification.Task),
+                nameof(_taskQualification.Employee),
+                nameof(_taskQualification.TaskQualificationStatus),
                 nameof(_taskQualification.TaskQualification_Evaluator_Links),
                 nameof(_taskQualification.TaskReQualificationEmp_SignOff),
                 nameof(_taskQualification.TQEmpSetting)})
@@ -957,10 +1002,10 @@ namespace QTD2.Application.Services.Shared
             var person = await _empService.FindQueryWithIncludeAsync(x => x.Id == empId, new string[] { nameof(_emp.Person) }).Select(s => s.Person).FirstOrDefaultAsync();
 
             var taskQualifications = await _taskQualificationService
-                .FindQueryWithIncludeAsync(x => x.EmpId == empId && !x.IsRecalled, new string[] { 
-                    nameof(_taskQualification.Task), 
-                    nameof(_taskQualification.TaskQualification_Evaluator_Links), 
-                    nameof(_taskQualification.TaskQualificationStatus), 
+                .FindQueryWithIncludeAsync(x => x.EmpId == empId && !x.IsRecalled, new string[] {
+                    nameof(_taskQualification.Task),
+                    nameof(_taskQualification.TaskQualification_Evaluator_Links),
+                    nameof(_taskQualification.TaskQualificationStatus),
                     nameof(_taskQualification.TaskReQualificationEmp_SignOff),
                     nameof(_taskQualification.TQEmpSetting)
                 })
@@ -1022,12 +1067,12 @@ namespace QTD2.Application.Services.Shared
                 List<string> pendingEvaluators = new List<string>();
                 foreach (var evalId in evalIds)
                 {
-                    var tqEmpOff = taskQualification.TaskReQualificationEmp_SignOff.FirstOrDefault(x=>x.EvaluatorId==evalId);
+                    var tqEmpOff = taskQualification.TaskReQualificationEmp_SignOff.FirstOrDefault(x => x.EvaluatorId == evalId);
                     var eval = await _empService.FindQueryWithIncludeAsync(x => x.Id == evalId, new string[] { nameof(_emp.Person) }).FirstOrDefaultAsync();
                     if (eval != null && eval.TQEqulator)
                     {
                         var evalName = eval.Person.FirstName + ' ' + eval.Person.LastName;
-                        if (tqEmpOff != null && tqEmpOff.IsCompleted.GetValueOrDefault() == true) 
+                        if (tqEmpOff != null && tqEmpOff.IsCompleted.GetValueOrDefault() == true)
                         {
                             signedEvaluators.Add($"* <b>{evalName}</b>");
                         }
@@ -1093,10 +1138,10 @@ namespace QTD2.Application.Services.Shared
             List<TaskQualificationEmpVM> result = new List<TaskQualificationEmpVM>();
 
             var taskQualifications = await _taskQualificationService
-                .FindQueryWithIncludeAsync(x => x.TaskId == id && !x.IsRecalled, new string[] { 
-                    nameof(_taskQualification.Task), 
-                    nameof(_taskQualification.Employee), 
-                    nameof(_taskQualification.TaskQualification_Evaluator_Links), 
+                .FindQueryWithIncludeAsync(x => x.TaskId == id && !x.IsRecalled, new string[] {
+                    nameof(_taskQualification.Task),
+                    nameof(_taskQualification.Employee),
+                    nameof(_taskQualification.TaskQualification_Evaluator_Links),
                     nameof(_taskQualification.TaskQualificationStatus),
                     nameof(_taskQualification.TaskReQualificationEmp_SignOff),
                     nameof(_taskQualification.TQEmpSetting)})
@@ -1259,17 +1304,17 @@ namespace QTD2.Application.Services.Shared
                             DueDate = taskQualification.DueDate,
                             Status = taskQualification.TaskQualificationStatus.Name
                         };
-                         withNum.TQEmpWithTasksVM.Add(empWithTaskObj);
+                        withNum.TQEmpWithTasksVM.Add(empWithTaskObj);
                         task.TaskQualifications = new List<TaskQualification>();
                     }
                 }
-                    var number = await _task_AppService.GetTaskNumberWithLetter(task.SubdutyAreaId, task.Id);
-                    withNum.SDANumber = number.SDANumber;
-                    withNum.DANumber = number.DANumber;
-                    withNum.Letter = number.Letter;
-                    withNum.Task = task;
-                    withNum.CompleteNumber = number.DANumber.ToString() + "." + number.SDANumber.ToString() + "." + number.TaskNumber.ToString();
-                    tasksWithNumbers.Add(withNum);
+                var number = await _task_AppService.GetTaskNumberWithLetter(task.SubdutyAreaId, task.Id);
+                withNum.SDANumber = number.SDANumber;
+                withNum.DANumber = number.DANumber;
+                withNum.Letter = number.Letter;
+                withNum.Task = task;
+                withNum.CompleteNumber = number.DANumber.ToString() + "." + number.SDANumber.ToString() + "." + number.TaskNumber.ToString();
+                tasksWithNumbers.Add(withNum);
             }
             return tasksWithNumbers.OrderBy(t => t.Task.FullNumber, new AlphaNumericSortHelper()).ToList();
         }
@@ -1300,7 +1345,7 @@ namespace QTD2.Application.Services.Shared
             }
         }
 
-        public async Task<List<TQEmpWithTasksVM>> GetEmpWithTasksForTQEvaluator(int id) 
+        public async Task<List<TQEmpWithTasksVM>> GetEmpWithTasksForTQEvaluator(int id)
         {
             List<TQEmpWithTasksVM> result = new List<TQEmpWithTasksVM>();
             var taskQualifications_byEmployees = (await _tq_eval_linkService.FindWithIncludeAsync(
@@ -1322,7 +1367,7 @@ namespace QTD2.Application.Services.Shared
             {
                 var empWithTaskObj = new TQEmpWithTasksVM();
                 var person = await _empService.FindQuery(x => x.Id == taskQualifications_byEmployee.Key).Select(s => s.Person).FirstOrDefaultAsync();
-                    
+
                 foreach (var taskQualification in taskQualifications_byEmployee)
                 {
                     var task = (await _taskService.FindWithIncludeAsync(x => x.Id == taskQualification.TaskId, new string[] { "SubdutyArea.DutyArea" })).FirstOrDefault();
@@ -1373,7 +1418,7 @@ namespace QTD2.Application.Services.Shared
                         positions.Add(pos);
                     }
                 }
-                var tqEvals = await _tq_eval_linkService.FindQueryWithIncludeAsync(x => x.EvaluatorId == tq.Id && x.Active == true && x.TaskQualification.Active == true && !x.TaskQualification.IsRecalled && x.TaskQualification.TaskQualificationDate == null  && ((x.TaskQualification.DueDate ?? DateTime.Now) >= DateTime.Now), new string[] { nameof(_tq_eval_link.TaskQualification) }).ToListAsync();
+                var tqEvals = await _tq_eval_linkService.FindQueryWithIncludeAsync(x => x.EvaluatorId == tq.Id && x.Active == true && x.TaskQualification.Active == true && !x.TaskQualification.IsRecalled && x.TaskQualification.TaskQualificationDate == null && ((x.TaskQualification.DueDate ?? DateTime.Now) >= DateTime.Now), new string[] { nameof(_tq_eval_link.TaskQualification) }).ToListAsync();
                 withCount.Count = tqEvals.Count();
                 withCount.EvaluatorId = tq.Id;
                 withCount.EvaluatorFName = tq.Person.FirstName;
@@ -1939,12 +1984,21 @@ namespace QTD2.Application.Services.Shared
                     var tqEvals = await _tq_eval_linkService.GetPendingTaskQualificationsByEvaluator(employee.Id);
                     var taskIds = tqEvals.Select(tqe => tqe.TaskQualification.TaskId).Distinct().ToList();
                     var tasks = await _taskService.GetTasksWithDutySubDutyAreaByTaskIdsAsync(taskIds);
+                    var sqEvals = await _skillQualification_Evaluator_LinkService.GetPendingSkillQualificationsByEvaluator(employee.Id);
+                    var sqIds = sqEvals.Select(sqe => sqe.SkillQualification.EnablingObjectiveId).Distinct().ToList();
+                    var sqs = await _eoService.GetEnablingObjectivesByIDs(sqIds);
                     foreach (var tqEval in tqEvals)
                     {
                         tqEval.TaskQualification.Task = tasks.FirstOrDefault(t => t.Id == tqEval.TaskQualification.TaskId);
                     }
 
-                    var taskQualifications = tqEvals.Select(x => x.TaskQualification).Where(x => x.Employee?.Person != null && x.Task != null && x.TQEmpSetting != null && x.TQEmpSetting.ReleaseDate < DateTime.UtcNow); 
+                    foreach (var sqEval in sqEvals)
+                    {
+                        sqEval.SkillQualification.EnablingObjective = sqs.FirstOrDefault(t => t.Id == sqEval.SkillQualification.EnablingObjectiveId);
+                    }
+
+                    var taskQualifications = tqEvals.Select(x => x.TaskQualification).Where(x => x.Employee?.Person != null && x.Task != null && x.TQEmpSetting != null && x.TQEmpSetting.ReleaseDate < DateTime.UtcNow);
+                    var skillQualifications = sqEvals.Select(m => m.SkillQualification).Where(x => x.Employee?.Person != null && x.EnablingObjective != null && x.SkillQualificationEmpSetting != null && x.SkillQualificationEmpSetting.ReleaseDate < DateTime.UtcNow);
                     foreach (var taskQual in taskQualifications)
                     {
                         TaskQualificationPengingEvaluatorVM taskQualVM = new TaskQualificationPengingEvaluatorVM();
@@ -1966,6 +2020,10 @@ namespace QTD2.Application.Services.Shared
                         taskQualVM.EmpReleaseDate = tqEmpSetting?.ReleaseDate;
                         taskQualVM.SignOffOrderEnabled = tqEmpSetting?.ReleaseInSpecificOrder ?? false;
                         taskQualVM.ReleaseToAllSingleSignOff = tqEmpSetting.ReleaseToAllSingleSignOff;
+                        taskQualVM.SkillId = null;
+                        taskQualVM.SkillFullNumber = null;
+                        taskQualVM.SkillNumber = null;
+                        taskQualVM.SkillDescription = null;
                         if (tqEmpSetting != null && tqEmpSetting.ReleaseToAllSingleSignOff)
                         {
                             var checkSignOffs = (await _empSignOffService.FindWithIncludeAsync(x => x.TaskQualificationId == taskQual.Id && x.IsCompleted == true, new string[] { "Evaluator.Person" })).FirstOrDefault();
@@ -2074,9 +2132,143 @@ namespace QTD2.Application.Services.Shared
                         taskQualVM.CanStart = !(listwithStatus.Where(x => x.EvaluatorId == employee.Id && x.Status == "Locked").Any());
                         taskQualVMs.Add(taskQualVM);
                     }
+
+                    foreach (var skillQual in skillQualifications)
+                    {
+                        TaskQualificationPengingEvaluatorVM taskQualVM = new TaskQualificationPengingEvaluatorVM();
+                        taskQualVM.SkillQualificationId = skillQual.Id;
+                        taskQualVM.EmpId = skillQual.EmployeeId;
+                        taskQualVM.SkillId = skillQual.EnablingObjectiveId;
+                        taskQualVM.EmpFName = skillQual.Employee.Person.FirstName;
+                        taskQualVM.EmpLastName = skillQual.Employee.Person.LastName;
+                        taskQualVM.EmpEmail = skillQual.Employee.Person.Username;
+                        taskQualVM.EmpNumber = skillQual.Employee.EmployeeNumber;
+                        taskQualVM.EmpPositions = String.Join(",", skillQual.Employee.EmployeePositions.Where(x => x.Active && (x.EndDate == null || x.EndDate >= DateOnly.FromDateTime(DateTime.UtcNow))).Select(x => x.Position.PositionTitle).Distinct());
+                        var eo = skillQual.EnablingObjective;
+                        taskQualVM.SkillFullNumber = eo.FullNumber;
+                        taskQualVM.SkillNumber = eo.Number;
+                        taskQualVM.SkillDescription = eo.Description;
+                        taskQualVM.DueDate = skillQual.DueDate;
+                        var sqEmpSetting = skillQual.SkillQualificationEmpSetting;
+                        taskQualVM.EmpReleaseDate = sqEmpSetting?.ReleaseDate;
+                        taskQualVM.SignOffOrderEnabled = sqEmpSetting?.ReleaseInSpecificOrder ?? false;
+                        taskQualVM.ReleaseToAllSingleSignOff = sqEmpSetting.ReleaseToAllSingleSignOff;
+                        taskQualVM.TaskId = null;
+                        taskQualVM.TaskFullNumber = null;
+                        taskQualVM.TaskNumber = null;
+                        taskQualVM.TaskLetter = null;
+                        taskQualVM.TaskDescription = null;
+                        if (sqEmpSetting != null && sqEmpSetting.ReleaseToAllSingleSignOff)
+                        {
+                            var checkSignOffs = (await _empSignOffService.FindWithIncludeAsync(x => x.TaskQualificationId == skillQual.Id && x.IsCompleted == true, new string[] { "Evaluator.Person" })).FirstOrDefault();
+                            var reaminingEvals = checkSignOffs != null ? 1 : 0;
+                            taskQualVM.RequiredRequals = "One Sign Off Required - " + reaminingEvals + "/1";
+                        }
+                        else
+                        {
+                            var checkSignOffs = (await _sqEmpSignOffService.FindWithIncludeAsync(x => x.SkillQualificationId == skillQual.Id && x.IsCompleted == true, new string[] { "Evaluator.Person" })).ToList();
+                            var signOffs = checkSignOffs.Select(x => x.EvaluatorId).ToList();
+                            var evaluatorsList = await _skillQualification_Evaluator_LinkService.FindQuery(x => x.SkillQualificationId == skillQual.Id).Select(x => x.EvaluatorId).ToListAsync();
+                            var reaminingEvals = evaluatorsList.Count - signOffs.Count;
+                            taskQualVM.RequiredRequals = sqEmpSetting?.MultipleSignOffDisplay + " Sign Offs Required - " + checkSignOffs.Count + "/" + sqEmpSetting?.MultipleSignOffDisplay;
+                        }
+                        var evaluators = (await _skillQualification_Evaluator_LinkService.FindWithIncludeAsync(x => x.SkillQualificationId == skillQual.Id && (!taskQualVM.ReleaseToAllSingleSignOff || x.EvaluatorId == employee.Id), new string[] { "Evaluator.Person" })).ToList();
+
+                        var listwithStatus = new List<EvaluatorNameWithStatus>();
+
+                        foreach (var eval in evaluators)
+                        {
+                            if (eval.Evaluator?.Person != null)
+                            {
+                                var evaluatorQAName = eval.Evaluator.Person.FirstName + " " + eval.Evaluator.Person.LastName;
+                                var evaluatorStatus = (await _sqEmpSignOffService.FindAsync(x => x.EvaluatorId == eval.EvaluatorId && x.SkillQualificationId == skillQual.Id)).FirstOrDefault();
+                                if (evaluatorStatus != null)
+                                {
+                                    if (evaluatorStatus.IsStarted == true)
+                                    {
+                                        listwithStatus.Add(new EvaluatorNameWithStatus()
+                                        {
+                                            EvaluatorId = eval.EvaluatorId,
+                                            EvaluatorName = evaluatorQAName,
+                                            Status = (evaluatorStatus?.IsCompleted ?? false) ? "Completed" : "Pending",
+
+                                        });
+
+                                    }
+
+                                }
+                                else
+                                {
+                                    if (taskQualVM.SignOffOrderEnabled == true)
+                                    {
+                                        var getSignOffedIds = (await _sqEmpSignOffService.FindAsync(x => x.SkillQualificationId == skillQual.Id && x.IsCompleted == true)).Select(s => s.EvaluatorId).ToList();
+                                        var evaluatorforLockingObj = (await _skillQualification_Evaluator_LinkService.FindWithIncludeAsync(x => x.SkillQualificationId == skillQual.Id && !getSignOffedIds.Contains(x.EvaluatorId), new string[] { "Evaluator.Person" })).OrderBy(p => p.Id).ToList();
+
+                                        var indexObj = evaluatorforLockingObj.FindIndex(x => !getSignOffedIds.Contains(x.Id) && x.EvaluatorId == eval.EvaluatorId);
+                                        if (indexObj != 0 && indexObj > 0)
+                                        {
+                                            var previousIndexObj = indexObj - 1;
+                                            var getPreviousEmployeeObj = evaluatorforLockingObj[previousIndexObj];
+                                            var previousEmpStatusObj = (await _sqEmpSignOffService.FindAsync(x => x.EvaluatorId == getPreviousEmployeeObj.EvaluatorId && x.SkillQualificationId == skillQual.Id)).FirstOrDefault();
+                                            if (previousEmpStatusObj != null)
+                                            {
+                                                if ((previousEmpStatusObj.IsCompleted ?? false) == false)
+                                                {
+                                                    listwithStatus.Add(new EvaluatorNameWithStatus()
+                                                    {
+                                                        EvaluatorId = eval.EvaluatorId,
+                                                        EvaluatorName = evaluatorQAName,
+                                                        Status = "Locked"
+
+                                                    });
+                                                }
+                                            }
+                                            else
+                                            {
+                                                listwithStatus.Add(new EvaluatorNameWithStatus()
+                                                {
+                                                    EvaluatorId = eval.EvaluatorId,
+                                                    EvaluatorName = evaluatorQAName,
+                                                    Status = "Locked"
+
+                                                });
+                                            }
+
+                                        }
+                                        else
+                                        {
+                                            listwithStatus.Add(new EvaluatorNameWithStatus()
+                                            {
+                                                EvaluatorId = eval.EvaluatorId,
+                                                EvaluatorName = evaluatorQAName,
+                                                Status = "Not Started"
+
+                                            });
+                                        }
+                                    }
+                                    else
+                                    {
+                                        listwithStatus.Add(new EvaluatorNameWithStatus()
+                                        {
+                                            EvaluatorId = eval.EvaluatorId,
+                                            EvaluatorName = evaluatorQAName,
+                                            Status = "Not Started"
+
+                                        });
+                                    }
+
+                                }
+                            }
+                        }
+
+                        taskQualVM.EvaluatorListWithStatus = listwithStatus;
+                        taskQualVM.Status = skillQual.SkillQualificationStatus.Name;
+                        taskQualVM.CanStart = !(listwithStatus.Where(x => x.EvaluatorId == employee.Id && x.Status == "Locked").Any());
+                        taskQualVMs.Add(taskQualVM);
+                    }
                 }
             }
-            return taskQualVMs.OrderBy(str => str.TaskFullNumber, new AlphaNumericSortHelper()).ToList();
+            return taskQualVMs.OrderBy(x => x.TaskId != null ? 0 : 1).ThenBy(x => x.TaskId != null ? x.TaskFullNumber : x.SkillFullNumber, new AlphaNumericSortHelper()).ToList();
         }
 
 
@@ -2401,7 +2593,7 @@ namespace QTD2.Application.Services.Shared
 
                 var recentTQ = new TaskQualificationEmpVM(tq.TaskQualificationStatus.Name, tq.TaskQualificationStatus.Description, tq.TaskId, tq.EmpId, employee.Person.Username, employee.Person.Image, employee.Person.LastName + ", " + employee.Person.FirstName,
                     tq.TaskQualificationDate, tq.Comments, tq.Task.Description, tq.CriteriaMet, tq.CreatedDate, tq.DueDate,
-                    tq.ModifiedDate, tq.Id, number.Letter + number.DANumber + "." + number.SDANumber + "." + number.TaskNumber, number.Letter, string.Join(',', evalNames), empReleaseDate, requiredRequals,tq.Task.IsReliability,tq.Task.Active, tq.IsRecalled);
+                    tq.ModifiedDate, tq.Id, number.Letter + number.DANumber + "." + number.SDANumber + "." + number.TaskNumber, number.Letter, string.Join(',', evalNames), empReleaseDate, requiredRequals, tq.Task.IsReliability, tq.Task.Active, tq.IsRecalled, null, null, null);
 
                 recentQuals.Add(recentTQ);
 
@@ -2435,15 +2627,15 @@ namespace QTD2.Application.Services.Shared
                 if (setting != null)
                 {
                     empReleaseDate = setting.ReleaseDate;
-                    //requiredRequals = await GetRequiredRequals(setting, sq.Id);
+                    requiredRequals = await GetRequiredSQRequals(setting, sq.Id);
                 }
 
                 var recentSQ = new TaskQualificationEmpVM(
-                    sq.SkillQualificationStatus.Name, sq.SkillQualificationStatus.Description, sq.EnablingObjectiveId, sq.EmployeeId,
+                    sq.SkillQualificationStatus.Name, sq.SkillQualificationStatus.Description, null, sq.EmployeeId,
                     employee.Person.Username, employee.Person.Image, employee.Person.LastName + ", " + employee.Person.FirstName,
-                    sq.SkillQualificationDate, sq.Comments, sq.EnablingObjective.Description, sq.CriteriaMet, sq.CreatedDate, sq.DueDate,
-                    sq.ModifiedDate, sq.Id, sq.EnablingObjective.FullNumber, null, string.Join(',', evalNames), empReleaseDate, requiredRequals,
-                    sq.EnablingObjective.IsSkillQualification, sq.EnablingObjective.Active, sq.IsRecalled);
+                    sq.SkillQualificationDate, sq.Comments, null, sq.CriteriaMet, sq.CreatedDate, sq.DueDate,
+                    sq.ModifiedDate, null, sq.EnablingObjective.FullNumber, null, string.Join(',', evalNames), empReleaseDate, requiredRequals,
+                    sq.EnablingObjective.IsSkillQualification, sq.EnablingObjective.Active, sq.IsRecalled, sq.EnablingObjective.Id, sq.EnablingObjective.Description, sq.Id);
 
                 recentQuals.Add(recentSQ);
             }
@@ -2477,33 +2669,56 @@ namespace QTD2.Application.Services.Shared
             return requiredRequals;
         }
 
+        public async Task<string> GetRequiredSQRequals(SkillQualificationEmpSetting setting, int skillQualificationId)
+        {
+            string requiredRequals = "";
+            if (setting.ReleaseToAllSingleSignOff)
+            {
+                var checkSignOffs = (await _skillQualificationEmp_SignOffService.GetSkillReQualificationEmp_SignOffByTQId(skillQualificationId)).FirstOrDefault();
+
+                var reaminingEvals = 0;
+                if (checkSignOffs != null)
+                {
+                    reaminingEvals = 1;
+                }
+                requiredRequals = "One Sign Off Required - " + reaminingEvals + "/1";
+            }
+            else
+            {
+                var checkSignOffs = (await _skillQualificationEmp_SignOffService.GetSkillReQualificationEmp_SignOffByTQId(skillQualificationId)).ToList();
+                var signOffs = checkSignOffs.Select(x => x.EvaluatorId).ToList();
+                var evaluatorsList = (await _skillQualification_Evaluator_LinkService.GetSkillQualificationEvaluatorLinkByIdAsync(skillQualificationId)).Select(x => x.EvaluatorId).ToList();
+
+                var reaminingEvals = evaluatorsList.Count - signOffs.Count;
+                requiredRequals = setting.MultipleSignOffDisplay + " Sign Offs Required - " + reaminingEvals + "/" + setting.MultipleSignOffDisplay;
+            }
+            return requiredRequals;
+        }
+
         public async Task<List<TQEmpWithPosAndTaskVM>> GetPendingTaskQualificationsAsTraineeAsync(int employeeId)
         {
-            List<TQEmpWithPosAndTaskVM> taskQualifications = new List<TQEmpWithPosAndTaskVM>();
+            List<TQEmpWithPosAndTaskVM> qualifications = new List<TQEmpWithPosAndTaskVM>();
             var employee = await _empService.GetEmployeeById(employeeId);
             if (employee == null)
             {
                 throw new BadHttpRequestException(message: _localizer["Employee Not Found"]);
             }
+
             var tqs = await _taskQualificationService.GetPendingTaskQualificationsListAsTraineeByEmpId(employeeId);
             foreach (var tq in tqs)
             {
                 var setting = await _tqEmpSettingService.GetTQEmpSettingByTQId(tq.Id);
-                DateTime? empReleaseDate = null;
-                if (setting != null)
-                {
-                    empReleaseDate = setting.ReleaseDate;
-                }
+                DateTime? empReleaseDate = setting?.ReleaseDate;
 
                 if (empReleaseDate.HasValue && empReleaseDate.Value > DateTime.UtcNow)
-                {
                     continue;
-                }
+
                 tq.Task = await _taskService.GetTaskByIdAsync(tq.TaskId);
                 var number = await _task_AppService.GetTaskNumberWithLetter(tq.Task.SubdutyAreaId, tq.Task.Id);
                 tq.TaskQualification_Evaluator_Links = await _tq_eval_linkService.GetTaskEvaluatorLinksByTQIdAsync(tq.Id);
+
                 var taskQualification = await _tqEmpSettingService.GetTQEmpSettingByTQId(tq.Id);
-                var totalRequiredSignOffsCount = taskQualification.ReleaseToAllSingleSignOff == true ? 1 : taskQualification.MultipleSignOffDisplay;
+                var totalRequiredSignOffsCount = taskQualification.ReleaseToAllSingleSignOff == true  ? 1 : taskQualification.MultipleSignOffDisplay;
 
                 List<TQEvalSignOffModel> tQEvalSignOffModels = new List<TQEvalSignOffModel>();
                 var completedSignOffsCount = 0;
@@ -2514,39 +2729,99 @@ namespace QTD2.Application.Services.Shared
                     var eval = await _empService.GetWithPersonAsync(evalId);
                     if (eval != null)
                     {
+                        evaluators += string.IsNullOrEmpty(evaluators) ? eval.Person.FirstName + " " + eval.Person.LastName : Environment.NewLine + eval.Person.FirstName + " " + eval.Person.LastName;
 
-                        evaluators += String.IsNullOrEmpty(evaluators) ? eval.Person.FirstName + " " + eval.Person.LastName : Environment.NewLine + eval.Person.FirstName + " " + eval.Person.LastName;
                         var totalSignOffs = await _empSignOffService.GetTaskReQualificationsEmp_SignOffByTQId(tq.Id, evalId);
-                        if (totalSignOffs.Count > 0)
-                        {
-                            completedSignOffsCount = completedSignOffsCount + 1;
-                        }
 
-                        var tQEvalSignOffModel = new TQEvalSignOffModel(evalId, eval.Person.FirstName + " " + eval.Person.LastName, totalSignOffs.FirstOrDefault()?.SignOffDate);
+                        if (totalSignOffs.Count > 0)
+                            completedSignOffsCount++;
+
+                        var tQEvalSignOffModel = new TQEvalSignOffModel(evalId, eval.Person.FirstName + " " + eval.Person.LastName,totalSignOffs.FirstOrDefault()?.SignOffDate);
                         tQEvalSignOffModels.Add(tQEvalSignOffModel);
                     }
                 }
 
                 var position = string.Join(",", tq.Task.Position_Tasks.Select(r => r.Position.PositionAbbreviation).Distinct());
-                
+
                 var recentTQ = new TQEmpWithPosAndTaskVM(
-                        tq.Id,
-                        tq.TaskId,
-                        tq.EmpId,
-                        number.Letter + number.DANumber + "." + number.SDANumber + "." + number.TaskNumber,
-                        tq.Task.Description,
-                        tq.DueDate,
-                        tQEvalSignOffModels,
-                        empReleaseDate,
-                        position,
-                        totalRequiredSignOffsCount,
-                        evaluators,null);
+                    tq.Id,
+                    tq.TaskId,
+                    tq.EmpId,
+                    number.Letter + number.DANumber + "." + number.SDANumber + "." + number.TaskNumber,
+                    tq.Task.Description,
+                    tq.DueDate,
+                    tQEvalSignOffModels,
+                    empReleaseDate,
+                    position,
+                    totalRequiredSignOffsCount,
+                    evaluators,
+                    "TQ", 
+                    null,
+                    null,
+                    null);
 
                 recentTQ.SetCompletedSignOffCount(completedSignOffsCount);
-                taskQualifications.Add(recentTQ);
+                qualifications.Add(recentTQ);
             }
-            return taskQualifications.OrderBy(str => str.Number, new AlphaNumericSortHelper()).ToList();
+
+            var sqs = await _skillQualificationService.GetPendingSkillQualificationsListAsTraineeByEmpId(employeeId);
+            foreach (var sq in sqs)
+            {
+                var setting = await _skillQualificationEmpSettingService.GetSQSettingBySkillQualificationIdAsync(sq.Id);
+                DateTime? empReleaseDate = setting?.ReleaseDate;
+
+                if (empReleaseDate.HasValue && empReleaseDate.Value > DateTime.UtcNow)
+                    continue;
+
+                sq.EnablingObjective = (await _eoService.GetEOByIdAsync(sq.EnablingObjectiveId)).FirstOrDefault();
+
+                var totalRequiredSignOffsCount = setting?.MultipleSignOffDisplay ?? 1;
+                List<TQEvalSignOffModel> sqEvalSignOffModels = new List<TQEvalSignOffModel>();
+                var completedSignOffsCount = 0;
+                string evaluators = "";
+
+                foreach (var evalId in sq.SkillQualification_Evaluator_Links.Select(s => s.EvaluatorId))
+                {
+                    var eval = await _empService.GetWithPersonAsync(evalId);
+                    if (eval != null)
+                    {
+                        evaluators += string.IsNullOrEmpty(evaluators) ? eval.Person.FirstName + " " + eval.Person.LastName : Environment.NewLine + eval.Person.FirstName + " " + eval.Person.LastName;
+
+                        var totalSignOffs = await _skillQualificationEmp_SignOffService.GetSkillReQualificationsEmp_SignOffBySQId(sq.Id, evalId);
+                        if (totalSignOffs.Count > 0)
+                            completedSignOffsCount++;
+
+                        var sqEvalSignOffModel = new TQEvalSignOffModel(evalId, eval.Person.FirstName + " " + eval.Person.LastName,totalSignOffs.FirstOrDefault()?.SignOffDate);
+                        sqEvalSignOffModels.Add(sqEvalSignOffModel);
+                    }
+                }
+
+                var position = string.Join(",", sq.EnablingObjective.Position_SQs.Select(r => r.Position?.PositionAbbreviation).Distinct());
+
+                var recentSQ = new TQEmpWithPosAndTaskVM(
+                    sq.Id,
+                    null,
+                    sq.EmployeeId,
+                    null,
+                    null,
+                    sq.DueDate,
+                    sqEvalSignOffModels,
+                    empReleaseDate,
+                    position,
+                    totalRequiredSignOffsCount,
+                    evaluators,
+                    "SQ", 
+                    sq.EnablingObjectiveId, 
+                    sq.EnablingObjective.Description, 
+                    sq.EnablingObjective.FullNumber);
+
+                recentSQ.SetCompletedSignOffCount(completedSignOffsCount);
+                qualifications.Add(recentSQ);
+            }
+
+            return qualifications.OrderBy(str => str.Number, new AlphaNumericSortHelper()).ToList();
         }
+
 
         public async Task<List<TQEmpWithPosAndTaskVM>> GetCompletedTaskQualificationsAsTraineeAsync(int employeeId)
         {
@@ -2557,6 +2832,7 @@ namespace QTD2.Application.Services.Shared
                 throw new BadHttpRequestException(message: _localizer["Employee Not Found"]);
             }
             var tqs = await _taskQualificationService.GetCompletedTaskQualificationsListAsTraineeByEmpId(employeeId);
+            var sqs = await _skillQualificationService.GetCompletedSkillQualificationsListAsTraineeByEmpId(employeeId);
             foreach (var tq in tqs)
             {
                 tq.Task = await _taskService.GetTaskByIdAsync(tq.TaskId);
@@ -2585,7 +2861,7 @@ namespace QTD2.Application.Services.Shared
                         }
                     }
                 }
-                var position = string.Join(",", tq.Task.Position_Tasks.Select(r => r.Position.PositionAbbreviation).Distinct());
+                var position = string.Join(",", tq.Task.Position_Tasks.Select(r => r.Position?.PositionAbbreviation).Distinct());
                 var setting = await _tqEmpSettingService.GetTQEmpSettingByTQId(tq.Id);
                 DateTime? empReleaseDate = null;
                 if (setting != null)
@@ -2604,9 +2880,62 @@ namespace QTD2.Application.Services.Shared
                         position,
                         totalSignOffsCount,
                         evaluators,
-                        tq.Comments);
+                        tq.Comments, null,null,null);
                 recentTQ.TaskQualificationDate = tq.TaskQualificationDate;
                 recentTQ.CriteriaMet = tq.CriteriaMet;
+                taskQualifications.Add(recentTQ);
+            }
+            foreach (var sq in sqs)
+            {
+                sq.EnablingObjective = await _eoService.GetEnablingObjectiveByIdAsync(sq.EnablingObjectiveId);
+                sq.SkillQualification_Evaluator_Links = await _skillQualification_Evaluator_LinkService.GetSkillQualificationEvaluatorLinkByIdAsync(sq.Id);
+                List<TQEvalSignOffModel> tQEvalSignOffModels = new List<TQEvalSignOffModel>();
+                var totalSignOffsCount = 0;
+                string evaluators = "";
+                foreach (var evalId in sq.SkillQualification_Evaluator_Links.Select(s => s.EvaluatorId))
+                {
+                    var eval = await _empService.GetWithPersonAsync(evalId);
+                    if (eval != null)
+                    {
+                        //test this line
+                        if (eval.Person != null)
+                        {
+                            evaluators += String.IsNullOrEmpty(evaluators) ? eval.Person.FirstName + " " + eval.Person.LastName : Environment.NewLine + eval.Person.FirstName + " " + eval.Person.LastName;
+
+                            var totalSignOffs = await _skillQualificationEmp_SignOffService.GetSkillReQualificationsEmp_SignOffBySQId(sq.Id, evalId);
+                            totalSignOffsCount = totalSignOffs.Count();
+                            foreach (var signOffDate in totalSignOffs.Select(s => s.SignOffDate))
+                            {
+                                var tQEvalSignOffModel = new TQEvalSignOffModel(evalId, eval.Person.FirstName + " " + eval.Person.LastName, signOffDate);
+                                tQEvalSignOffModels.Add(tQEvalSignOffModel);
+                            }
+                        }
+                    }
+                }
+                var position = string.Join(",", sq.EnablingObjective.Position_SQs.Select(r => r.Position?.PositionAbbreviation).Distinct());
+                var setting = await _skillQualificationEmpSettingService.GetSQSettingBySkillQualificationIdAsync(sq.Id);
+                DateTime? empReleaseDate = null;
+                if (setting != null)
+                {
+                    empReleaseDate = setting.ReleaseDate;
+                }
+
+                var recentTQ = new TQEmpWithPosAndTaskVM
+                {
+                    SkillQualificationId = sq.Id,
+                    EmpId = sq.EmployeeId,
+                    EnablingObjectiveNumber = sq.EnablingObjective.FullNumber,
+                    EnablingObjectiveDescription = sq.EnablingObjective.Description,
+                    SQDueDate = sq.DueDate,
+                    TQEvalSignOffModels = tQEvalSignOffModels,
+                    EmpReleaseDate = empReleaseDate,
+                    PosNames = position,
+                    TotalCompletedSignOffs = totalSignOffsCount,
+                    EvaluatorNames = evaluators,
+                    Comment = sq.Comments,
+                    SkillQualificationDate = sq.SkillQualificationDate,
+                    CriteriaMet = sq.CriteriaMet
+                };
                 taskQualifications.Add(recentTQ);
             }
             return taskQualifications;
@@ -2621,6 +2950,7 @@ namespace QTD2.Application.Services.Shared
                 throw new BadHttpRequestException(message: _localizer["Employee Not Found"]);
             }
             var tqs = await _taskQualificationService.GetCompletedTaskQualificationsListAsEvalByEmpId(employeeId);
+            var sqs = await _skillQualificationService.GetCompletedSkillQualificationsListAsEvalByEmpId(employeeId);
             foreach (var tq in tqs)
             {
                 tq.Task = await _taskService.GetTaskByIdAsync(tq.TaskId);
@@ -2632,12 +2962,41 @@ namespace QTD2.Application.Services.Shared
                 {
                     empReleaseDate = setting.ReleaseDate;
                 }
-                var recentTQ = new TQEmpWithPosAndTaskVM(tq.Id, tq.TaskId, number.Letter + number.DANumber + "." + number.SDANumber + "." + number.TaskNumber, tq.Task.Description, tq.DueDate, empReleaseDate, tq.EmpId, tq.Employee.Person.FirstName + " " + tq.Employee.Person.LastName,tq.TaskQualificationDate,tq.CriteriaMet);
+                var recentTQ = new TQEmpWithPosAndTaskVM(tq.Id, tq.TaskId, number.Letter + number.DANumber + "." + number.SDANumber + "." + number.TaskNumber, tq.Task.Description, tq.DueDate, empReleaseDate, tq.EmpId, tq.Employee.Person.FirstName + " " + tq.Employee.Person.LastName, tq.TaskQualificationDate, tq.CriteriaMet);
                 taskQualifications.Add(recentTQ);
             }
+
+            foreach (var sq in sqs)
+            {
+                sq.EnablingObjective = await _eoService.GetEnablingObjectiveByIdAsync(sq.EnablingObjectiveId);
+                sq.Employee = await _empService.GetWithPersonAsync(sq.EmployeeId);
+                var setting = await _skillQualificationEmpSettingService.GetSQSettingBySkillQualificationIdAsync(sq.Id);
+                DateTime? empReleaseDate = null;
+                if (setting != null)
+                {
+                    empReleaseDate = setting.ReleaseDate;
+                }
+                var recentTQ = new TQEmpWithPosAndTaskVM
+                {
+                    SkillQualificationId = sq.Id,
+                    EnablingObjectiveId = sq.EnablingObjectiveId,
+                    EnablingObjectiveNumber = sq.EnablingObjective.FullNumber,
+                    EnablingObjectiveDescription = sq.EnablingObjective.Description,
+                    EmpId = sq.Id,
+                    EmployeeName = sq.Employee.Person.FirstName + " " + sq.Employee.Person.LastName,
+                    SQDueDate = sq.DueDate,
+                    SkillQualificationDate = sq.SkillQualificationDate,
+                    EmpReleaseDate = empReleaseDate,
+                    CriteriaMet = sq.CriteriaMet
+
+                };
+                taskQualifications.Add(recentTQ);
+            }
+
             return taskQualifications;
         }
-        
+
+
         public async Task<bool> GetTQEvaluatorBitAsync(int employeeId)
         {
             return (await _empService.GetAsync(employeeId))?.TQEqulator ?? false;

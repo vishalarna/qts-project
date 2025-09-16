@@ -1,0 +1,28 @@
+app-label.hover-label:hover{
+    color: #30c553 !important;
+}
+
+.button-group-container{
+    overflow: hidden;
+    border: 1px solid rgb(222, 226, 230);
+    border-radius: 4px;
+}
+
+:host::ng-deep .button-group-container app-button{
+    padding: 0rem 1rem;
+    height: 100%;
+    border-radius: 4px;
+    button.btn{
+        height: 100%;
+        &:focus{
+            box-shadow: none;
+        }
+    }
+    &.selected {
+        background-color: #33a8521a; 
+        border: 1px solid #5C9B31;    
+        .btn{
+            color: #5C9B31;           
+        }
+    }
+}

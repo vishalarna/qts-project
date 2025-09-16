@@ -50,14 +50,15 @@ export class FlyPanelAddProceduresLinkagesComponent implements OnInit {
     this.filterProcString = "";
     this.filterProcedure();
   }
-  filterProcedure(){
-    this.toFilter = [
-      ...this.myData.map((n) => {
+  filterProcedure(){ 
+    const search = this.filterProcString.trim().toLowerCase();
+    this.toFilter = [...this.myData.map((n) => {
         return {
           ...n,
           children: n.children?.filter((c) =>
-            c.description.trim().toLowerCase().includes(this.filterProcString.trim().toLowerCase()),
-          ),
+            c.description.trim().toLowerCase().includes(search) ||
+            c.number?.toString().trim().toLowerCase().includes(search)
+         ),
         };
       }),
     ];

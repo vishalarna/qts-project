@@ -106,9 +106,9 @@ export class qualification implements OnInit {
     'evaluatorName',
     'feedbackAndComments',
   ];
-  displayedPendingColumns: string[] = [
-    'number',
-    'taskDescription',
+   displayedPendingColumns: string[] = [
+    'taskSkillNumber',
+    'taskSkillDescription',
     'posNames',
     'empReleaseDate',
     'dueDate',
@@ -127,7 +127,7 @@ export class qualification implements OnInit {
     'criteriaMet',
     'feedbackAndComments',
   ];
-  columnsToDisplayEval = ['expand', 'taskNumber', 'taskDescription'];
+  columnsToDisplayEval = ['expand', 'taskSkillNumber', 'taskSkillDescription'];
 
   columnsToDisplayEMP = ['expand', 'empFName', 'positions'];
 
@@ -203,16 +203,18 @@ export class qualification implements OnInit {
     this.completedDataSourceTrainee.filter = filter.trim().toLowerCase();
   }
 
-  filterPendingEvalTasks(e: Event) {
-    let filter = (e.target as HTMLInputElement).value;
-    var filteredList: any[] = [];
-    filteredList = [
-      ...this.pendingDataSourceEval.data.filter((x) =>
-        x.taskDescription.toLowerCase().includes(String(filter).toLowerCase())
-      ),
-    ];
-    this.dataSourceEvalPending.data = filteredList;
-  }
+ filterPendingEvalTasks(e: Event) {
+  let filter = (e.target as HTMLInputElement).value.toLowerCase();
+  var filteredList: any[] = [];
+
+  filteredList = this.pendingDataSourceEval.data.filter(
+    (x) =>(x.taskDescription && x.taskDescription.toLowerCase().includes(filter)) ||
+      (x.skillDescription && x.skillDescription.toLowerCase().includes(filter))
+  );
+
+  this.dataSourceEvalPending.data = filteredList;
+ }
+
 
   sortTraineeCompletedQualifiactions(sort: Sort) {
     this.completedDataSourceTrainee.data = this.completedDataSourceTrainee.data.sort((a, b) => {
@@ -312,26 +314,62 @@ export class qualification implements OnInit {
     }
   }
 
-  goToTaskDetail(row) {
-    const taskLetterRegx: RegExpMatchArray | null = row.number.match(/^[^\d]*/);
-    const taskLetter: string = taskLetterRegx ? taskLetterRegx[0] : '';
-    const splitValues: string[] = row.number.split(new RegExp(`^${taskLetter}`));
-    this.store.dispatch(sideBarClose());
-    this._router.navigate([
-      'emp/task-re-qualification/view-task',
-      row.taskId + '-' + taskLetter + '_' + splitValues[1] + '-' + row.id,
-    ]);
+ goToTaskDetail(row: any) {
+  let id: number | null = null;
+  let type: string = '';
+  let routeSegment: string = '';
+
+  if (row.taskId) {
+    id = row.taskId;
+    type = 'task';
+
+    if (row.number) {
+      const taskLetterRegx: RegExpMatchArray | null = row.number.match(/^[^\d]*/);
+      const taskLetter: string = taskLetterRegx ? taskLetterRegx[0] : '';
+      const splitValues: string[] = row.number.split(new RegExp(`^${taskLetter}`));
+
+      routeSegment = `${id}-${taskLetter}_${splitValues[1]}-${row.id}-${type}`;
+    } else {
+      routeSegment = `${id}-${row.id}-${type}`;
+    }
+  } else if (row.enablingObjectiveId) {
+    id = row.enablingObjectiveId;
+    type = 'eo';
+
+    if (row.enablingObjectiveNumber) {
+      routeSegment = `${id}-${row.enablingObjectiveNumber}-${row.id}-${type}`;
+    } else {
+      routeSegment = `${id}-${row.id}-${type}`;
+    }
   }
+
+  this.store.dispatch(sideBarClose());
+
+  this._router.navigate([ 'emp/task-re-qualification/view-task', routeSegment, ]);
+}
 
   startTask(row, parentRow) {
     const taskNumber = row.taskNumber;
-    this._router.navigate(['emp/task-re-qualification/task-suggestions', row.tqId + '-' + '§' + '_' + row.taskId + '.' + parentRow.empId + '.' + taskNumber]);
+    const skillNumber = row.skillNumber;
+    if(row.taskId != null){
+      this._router.navigate(['emp/task-re-qualification/task-suggestions', row.tqId + '-' + '§' + '_' + row.taskId + '.' + parentRow.empId + '.' + taskNumber + '.task']);
+    }
+     if (row.skillId != null) {
+      this._router.navigate(['emp/task-re-qualification/task-suggestions', row.skillQualificationId + '-' + '§' + '_' + row.skillId + '.' + parentRow.empId + '.' + skillNumber + '.eo']);
+    }
   }
 
   startTaskEvalPending(row, parentRow) {
     this.store.dispatch(sideBarClose());
     const taskNumber = parentRow.taskNumber;
-    this._router.navigate(['emp/task-re-qualification/task-suggestions', row.tqId + '-' + '§' + '_' + parentRow.taskId + '.' + row.empId + '.' + taskNumber]);
+    const skillNumber = parentRow.skillFullNumber;
+    if (parentRow.taskId != null) {
+     this._router.navigate(['emp/task-re-qualification/task-suggestions',row.tqId + '-' + '§' + '_' + parentRow.taskId + '.' + row.empId + '.' + taskNumber + '.task']);
+    }
+
+    if (parentRow.skillId != null) {
+      this._router.navigate(['emp/task-re-qualification/task-suggestions',row.skillQualificationId + '-' + '§' + '_' + parentRow.skillId + '.' + row.empId + '.' + skillNumber + '.eo']);
+    }
   }
 
   async getEMPTasksTraineeCompletedAsync() {
@@ -343,8 +381,14 @@ export class qualification implements OnInit {
         this.taskQualificationTraineeCompletedList = res;
         this.completedDataSourceTrainee.data =
           this.taskQualificationTraineeCompletedList.map((item)=>{
-            var taskQualDate = new Date(item.taskQualificationDate + "Z").toLocaleString();
-            return {...item,taskQualificationDate:taskQualDate}
+            let taskQualDate = item.taskQualificationDate
+          ? new Date(item.taskQualificationDate + "Z").toLocaleString()
+          : null;
+
+            let sqDate = item.skillQualificationDate
+            ? new Date(item.skillQualificationDate + "Z").toLocaleString()
+            : null;
+            return {...item,taskQualificationDate:taskQualDate, skillQualificationDate:sqDate}
           });
         this.CompleteCount = this.completedDataSourceTrainee.data.length;
       })
@@ -378,8 +422,14 @@ export class qualification implements OnInit {
         this.taskQualificationEvalCompletedList = res;
         this.completedDataSourceEval.data =
           this.taskQualificationEvalCompletedList.map((item)=>{
-            var taskQualDate = new Date(item.taskQualificationDate + "Z").toLocaleString();
-            return {...item,taskQualificationDate:taskQualDate}
+            let taskQualDate = item.taskQualificationDate
+          ? new Date(item.taskQualificationDate + "Z").toLocaleString()
+          : null;
+
+            let sqDate = item.skillQualificationDate
+            ? new Date(item.skillQualificationDate + "Z").toLocaleString()
+            : null;
+            return {...item,taskQualificationDate:taskQualDate, skillQualificationDate:sqDate}
           });
         this.CompleteCount = this.completedDataSourceEval.data.length;
       })
@@ -454,6 +504,11 @@ export class qualification implements OnInit {
           tqByEmpVM.releaseDate = taskQual.empReleaseDate;
           tqByEmpVM.requiredRequals= taskQual.requiredRequals;
           tqByEmpVM.canStart = taskQual.canStart;
+          tqByEmpVM.skillId = taskQual.skillId;
+          tqByEmpVM.skillNumber = taskQual.skillFullNumber;
+          tqByEmpVM.skillDescription = taskQual.skillDescription;
+          tqByEmpVM.sqDueDate = taskQual.sqDueDate;
+          tqByEmpVM.skillQualificationId =taskQual.skillQualificationId;
           tqByEmpVMs.push(tqByEmpVM);
         }
         tqEmpVm.taskQualsByEmpVMs = new MatTableDataSource(tqByEmpVMs);
@@ -464,7 +519,8 @@ export class qualification implements OnInit {
   }
 
   setEvalPendingTaskView(taskQualsVMs:TaskQualificationPengingEvaluatorVM[]):TQTaskViewVM[]{
-    var taskIds = Array.from(new Set(taskQualsVMs.map(item => item.taskId)));
+    var taskIds = Array.from(new Set(taskQualsVMs.map(item => item.taskId))).filter(item => item != null);
+    var skillIds = Array.from(new Set(taskQualsVMs.map(item => item.skillId))).filter(item => item != null);
     var tQTaskViewVMs :TQTaskViewVM[] = [];
     for(var taskId of taskIds){
       var taskQualsByTask = taskQualsVMs.filter(x=>x.taskId == taskId);
@@ -498,19 +554,61 @@ export class qualification implements OnInit {
         tQTaskViewVMs.push(tqTaskVm);
       }
     }
+
+    for(var skillId of skillIds){
+      var taskQualsByTask = taskQualsVMs.filter(x=>x.skillId == skillId);
+      if(taskQualsByTask.length>0){
+        var task = taskQualsByTask[0];
+        var tqTaskVm : TQTaskViewVM = new TQTaskViewVM();
+        tqTaskVm.skillId=task.skillId;
+        tqTaskVm.skillFullNumber = task.skillFullNumber;
+        tqTaskVm.skillDescription = task.skillDescription;
+        var tqByTaskVMs : TaskQualsByTaskVM[] = []; 
+        for(var taskQual of taskQualsByTask){
+          var tqByTaskVM : TaskQualsByTaskVM = new TaskQualsByTaskVM();
+          tqByTaskVM.empId=taskQual.empId;
+          tqByTaskVM.empImage = taskQual.empImage;
+          tqByTaskVM.empName = taskQual.empFName + " " + taskQual.empLastName;
+          tqByTaskVM.positions = taskQual.empPositions;
+          tqByTaskVM.releaseDate= taskQual.empReleaseDate;
+          tqByTaskVM.dueDate=taskQual.dueDate;
+          tqByTaskVM.requiredRequals= taskQual.requiredRequals;
+          tqByTaskVM.tqId = taskQual.id;
+          tqByTaskVM.tqStatus = taskQual.status;
+          tqByTaskVM.evaluatorListWithStatus=taskQual.evaluatorListWithStatus;
+          tqByTaskVM.releaseToAllSingleSignOff=taskQual.releaseToAllSingleSignOff;
+          tqByTaskVM.signOffOrderEnabled=taskQual.signOffOrderEnabled;
+          tqByTaskVM.canStart=taskQual.canStart;
+          tqByTaskVM.skillQualificationId=taskQual.skillQualificationId;
+          tqByTaskVMs.push(tqByTaskVM);
+        }
+        tqTaskVm.taskQualsByTaskVMs = new MatTableDataSource(tqByTaskVMs);
+        tQTaskViewVMs.push(tqTaskVm);
+      }
+    }
     return tQTaskViewVMs;
   }
 
   goToTaskFeedback(row) {
     this.store.dispatch(sideBarClose());
-    this._router.navigate([
-      'emp/task-re-qualification/view-feedback',
+    if(row.id != null){
+    this._router.navigate(['emp/task-re-qualification/view-feedback',
       row.id +
         '-' +
         '§' +
         '_' +
-        row.empId,
+        row.empId + '.task',
     ]);
+   }
+   if(row.skillQualificationId != null){
+   this._router.navigate(['emp/task-re-qualification/view-feedback',
+      row.skillQualificationId +
+        '-' +
+        '§' +
+        '_' +
+        row.empId + '.eo',
+    ]);
+   }
   }
 
   sortEvaluatorPendingQualificationsEmpView(sort: Sort, index: number) {

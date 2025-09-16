@@ -492,7 +492,7 @@ namespace QTD2.Domain.Services.Core
         {
             List<Expression<Func<Employee, bool>>> predicates = new List<Expression<Func<Employee, bool>>>();
             predicates.Add(p => empId == p.Id);
-            var employees = (await FindWithIncludeAsync(predicates, new string[] { "EmployeePositions.Position.Position_Tasks", "Person", "EmployeePositions.Position.TaskListReviews" }, true)).ToList();
+            var employees = (await FindWithIncludeAsync(predicates, new string[] { "EmployeePositions.Position.Position_Tasks", "Person", "EmployeePositions.Position.TaskListReview_PositionLinks.TaskListReview" }, true)).ToList();
             List<Employee> filteredEmployees = new List<Employee>();
             foreach (var employee in employees)
             {
@@ -567,5 +567,18 @@ namespace QTD2.Domain.Services.Core
             return (await FindWithIncludeAsync(predicates, new string[] { "EmployeePositions","Person", "EmployeeCertifications.Certification" }, true)).ToList();
         }
 
+        public async Task<Employee> GetEmployeeByPersonId(int personId)
+        {
+            List<Expression<Func<Employee, bool>>> predicates = new List<Expression<Func<Employee, bool>>>();
+            predicates.Add(p => p.PersonId == personId);
+            return (await FindWithIncludeAsync(predicates, new string[] { "Person"})).FirstOrDefault();
+        }
+
+        public async Task<Employee> GetEmployeeByIdAsync(int id)
+        {
+            List<Expression<Func<Employee, bool>>> predicates = new List<Expression<Func<Employee, bool>>>();
+            predicates.Add(p => p.Id == id);
+            return (await FindWithIncludeAsync(predicates, new string[] { "Person" })).FirstOrDefault();
+        }
     }
 }

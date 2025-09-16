@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy-table';
 import { FlyPanelCreateQtdUserModule } from '../fly-panel-create-qtd-user/fly-panel-create-qtd-user.module';
+import { FormsModule } from '@angular/forms'; 
 
 
 
@@ -19,6 +20,7 @@ import { FlyPanelCreateQtdUserModule } from '../fly-panel-create-qtd-user/fly-pa
   imports: [
     CommonModule,
     BaseModule,
+    FormsModule, 
     LayoutModule,
     MatSelectModule,
     MatExpansionModule,

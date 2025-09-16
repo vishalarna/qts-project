@@ -23,7 +23,8 @@ namespace QTD2.Infrastructure.Model.TaskReQualificationEmp
         public bool? IsFormSubmitted { get; set; }
         public bool? IsTraineeSignOff { get; set; }
         public bool? IsEvaluatorSignOff { get; set; }
-
+        public int SkillQualificationId { get; set; }
+        public DateTime? SkillQualificationDate { get; set; }
     }
 
     public class TQEvaluatorDate {

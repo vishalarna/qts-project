@@ -66,7 +66,7 @@ namespace QTD2.Domain.Services.Core
             List<Expression<Func<DIFSurvey, bool>>> predicates = new List<Expression<Func<DIFSurvey, bool>>>();
             predicates.Add(r => difSurveyId.Contains(r.Id));
 
-            var difSurveyList = (await FindWithIncludeAsync(predicates, new string[] { "Position", "Tasks.Task.SubdutyArea.DutyArea", "Tasks.DIFSurvey_Task_TrainingFrequency", "Tasks.TrainingStatus_Calculated", "Tasks.TrainingStatus_Override", "Employees" })).ToList();
+            var difSurveyList = (await FindWithIncludeAsync(predicates, new string[] { "Position", "Tasks.Task.SubdutyArea.DutyArea", "Tasks.DIFSurvey_Task_TrainingFrequency", "Tasks.TrainingStatus_Calculated", "Tasks.TrainingStatus_Override", "Employees", "Tasks.Responses" })).ToList();
             foreach (var survey in difSurveyList)
             {
                 if (activeStatus == "Active Only")

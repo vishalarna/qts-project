@@ -213,6 +213,26 @@ namespace QTD2.Domain.Entities.Core
             IsOptional = true;
             IsProgramManual = false;
         }
+        public ILA(string name, string number, double? totalHours, int providerId, int? deliveryMethodId, bool isSelfPaced, bool isPublished, string createdBy)
+        {
+            Name = name;
+            Number = number;
+            TotalTrainingHours = totalHours;
+            ProviderId = providerId;
+            DeliveryMethodId = deliveryMethodId;
+            IsSelfPaced = isSelfPaced;
+            IsPublished = isPublished;
+            CBTRequiredForCourse = false;
+            Deleted = false;
+            Active = true;
+            UseForEMP = false;
+            IsOptional = true;
+            IsProgramManual = false;
+            CreatedDate = DateTime.Now;
+            CreatedBy = createdBy;
+            PublishDate = isPublished ? DateTime.Now : null;
+            Description = "";
+        }
 
         public ILA()
         {

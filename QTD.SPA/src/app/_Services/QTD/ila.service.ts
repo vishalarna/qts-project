@@ -88,6 +88,7 @@ import { ILAStatsDataVM } from '@models/ILA/ILAStatsDataVM';
 import { ReportExportOptions } from '@models/Report/ReportExportOptions';
 import { EmployeeIdsModel } from '@models/Employee/EmployeeIdsModel';
 import { firstValueFrom } from 'rxjs';
+import { ILABasicCreateOptions } from '@models/ILA/ILABasicCreateOptions';
 
 
 @Injectable({
@@ -1401,4 +1402,15 @@ export class IlaService {
       )
       );
   }
+  
+  createBasicILA(option: ILABasicCreateOptions) {
+    return firstValueFrom(
+      this.http.post<any>(`${this.baseUrl}/basic`, option).pipe(
+        map((res: any) => {
+          return res;
+        })
+      )
+    );
+  }
+
 }

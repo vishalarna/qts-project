@@ -200,7 +200,7 @@ export class ProcedureReviewOverviewComponent implements OnInit {
 
         this.isLoading = false;
         this.employeeTestList = res;
-        this.pendingDataSource.data = this.employeeTestList.filter(x => x.status !== 'Completed' && this.today >= this.convertUtcToLocalDate(x.startDateTime) && this.today <=this.convertUtcToLocalDate(x.endDateTime));
+        this.pendingDataSource.data = this.employeeTestList.filter(x => x.status !== 'Completed' && this.today >= this.convertUtcToLocalDate(x.startDateTime) && this.today <=this.convertUtcToLocalDate(x.procedureReviewDueDate));
         this.completedDataSource.data = this.employeeTestList.filter(x => x.status === 'Completed');
         this.CompleteCount=this.completedDataSource.data.length;
         this.PendingCount=this.pendingDataSource.data.length;

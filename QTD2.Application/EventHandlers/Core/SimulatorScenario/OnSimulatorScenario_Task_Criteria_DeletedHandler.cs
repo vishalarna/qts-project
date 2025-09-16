@@ -14,29 +14,29 @@ namespace QTD2.Application.EventHandlers.Core
     {
         private readonly Domain.Interfaces.Service.Core.INotificationService _notificationService;
         private readonly IClientSettings_NotificationService _clientSettings_NotificationService;
-        private readonly ISimulatorScenario_EventAndScript_CriteriaService _simulatorScenarioEventAndScriptCriteraService;
+        private readonly ISimulatorScenario_Script_CriteriaService _simulatorScenarioScriptCriteraService;
         private readonly IPositionService _positionService;
 
         public OnSimulatorScenario_Task_Criteria_DeletedHandler(Domain.Interfaces.Service.Core.INotificationService notificationService,
             IClientSettings_NotificationService clientSettings_NotificationService,
-            ISimulatorScenario_EventAndScript_CriteriaService simulatorScenarioEventAndScriptCriteraService,
+            ISimulatorScenario_Script_CriteriaService simulatorScenarioScriptCriteraService,
             IPositionService positionService
             )
         {
             _notificationService = notificationService;
             _clientSettings_NotificationService = clientSettings_NotificationService;
-            _simulatorScenarioEventAndScriptCriteraService = simulatorScenarioEventAndScriptCriteraService;
+            _simulatorScenarioScriptCriteraService = simulatorScenarioScriptCriteraService;
         }
 
         public async Task Handle(OnSimulatorScenario_Task_Criteria_Deleted notification, CancellationToken cancellationToken)
         {
-            var eventCriterias = (await _simulatorScenarioEventAndScriptCriteraService.FindAsync(k => k.CriteriaId == notification.SimulatorScenario_Task_Criteria.Id)).ToList();
-            if (eventCriterias.Count != 0 && eventCriterias != null)
+            var scriptCriterias = (await _simulatorScenarioScriptCriteraService.FindAsync(k => k.CriteriaId == notification.SimulatorScenario_Task_Criteria.Id)).ToList();
+            if (scriptCriterias.Count != 0 && scriptCriterias != null)
             {
-                foreach (var eventCriteria in eventCriterias)
+                foreach (var script_Criteria in scriptCriterias)
                 {
-                    eventCriteria.Delete();
-                    await _simulatorScenarioEventAndScriptCriteraService.UpdateAsync(eventCriteria);
+                    script_Criteria.Delete();
+                    await _simulatorScenarioScriptCriteraService.UpdateAsync(script_Criteria);
                 }
             }
         }

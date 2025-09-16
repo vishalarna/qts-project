@@ -470,8 +470,6 @@ namespace QTD2.Data
             modelBuilder.ApplyConfiguration(new SimulatorScenario_EnablingObjectiveMap());
             modelBuilder.ApplyConfiguration(new SimulatorScenario_ProcedureMap());
             modelBuilder.ApplyConfiguration(new SimulatorScenario_Task_CriteriaMap());
-            modelBuilder.ApplyConfiguration(new SimulatorScenario_EventAndScriptMap());
-            modelBuilder.ApplyConfiguration(new SimulatorScenario_EventAndScript_CriteriaMap());
             modelBuilder.ApplyConfiguration(new SimulatorScenario_ILAMap());
             modelBuilder.ApplyConfiguration(new SimulatorScenario_PrerequisiteMap());
             modelBuilder.ApplyConfiguration(new SimulatorScenario_CollaboratorMap());
@@ -500,7 +498,7 @@ namespace QTD2.Data
             modelBuilder.ApplyConfiguration(new CBT_ScormUpload_QuestionMap());
             modelBuilder.ApplyConfiguration(new CBT_ScormUpload_Question_ChoiceMap());
             modelBuilder.ApplyConfiguration(new CBT_ScormUpload_Question_ChoiceMap());
-            
+
             modelBuilder.ApplyConfiguration(new PersonActivityNotificationMap());
 
             modelBuilder.ApplyConfiguration(new TrainingProgramReview_TrainingIssue_LinkMap());
@@ -509,7 +507,7 @@ namespace QTD2.Data
             modelBuilder.ApplyConfiguration(new AdminMessage_QTDUsersMap());
             modelBuilder.ApplyConfiguration(new PublicClassScheduleRequestNotificationMap());
             modelBuilder.ApplyConfiguration(new PublicClassScheduleRequestAcceptedNotificationMap());
-            
+
             modelBuilder.ApplyConfiguration(new ClassScheduleEmployee_ILACertificationLink_PartialCreditMap());
             modelBuilder.ApplyConfiguration(new ClassScheduleEmployee_ILACertificationLink_SubRequirement_PartialCreditMap());
 
@@ -519,6 +517,14 @@ namespace QTD2.Data
             modelBuilder.ApplyConfiguration(new SkillQualificationStatusMap());
             modelBuilder.ApplyConfiguration(new SkillQualification_Evaluator_LinkMap());
             modelBuilder.ApplyConfiguration(new SkillQualificationEmpSettingMap());
+            modelBuilder.ApplyConfiguration(new SkillQualificationEmp_SignOffMap());
+            modelBuilder.ApplyConfiguration(new SkillReQualificationEmp_QuestionAnswerMap());
+            modelBuilder.ApplyConfiguration(new SkillReQualificationEmp_SuggestionMap());
+            modelBuilder.ApplyConfiguration(new SkillReQualificationEmp_StepMap());
+
+            modelBuilder.ApplyConfiguration(new SimulatorScenario_ScriptMap());
+            modelBuilder.ApplyConfiguration(new SimulatorScenario_EventMap());
+            modelBuilder.ApplyConfiguration(new SimulatorScenario_Script_CriteriaMap());
         }
 
         //Add DBSet
@@ -1116,8 +1122,6 @@ namespace QTD2.Data
         public DbSet<SimulatorScenario_EnablingObjective> SimulatorScenario_EnablingObjectives { get; set; }
         public DbSet<SimulatorScenario_Procedure> SimulatorScenario_Procedures { get; set; }
         public DbSet<SimulatorScenario_Task_Criteria> SimulatorScenario_Task_Criterias { get; set; }
-        public DbSet<SimulatorScenario_EventAndScript> SimulatorScenario_EventAndScripts { get; set; }
-        public DbSet<SimulatorScenario_EventAndScript_Criteria> SimulatorScenario_EventAndScript_Criterias { get; set; }
         public DbSet<SimulatorScenario_ILA> SimulatorScenario_ILAs { get; set; }
         public DbSet<SimulatorScenario_Prerequisite> SimulatorScenario_Prerequisites { get; set; }
         public DbSet<SimulatorScenario_Collaborator> SimulatorScenario_Collaborators { get; set; }
@@ -1127,7 +1131,7 @@ namespace QTD2.Data
         public DbSet<TrainingIssue_ActionItem> TrainingIssueActionItems { get; set; }
         public DbSet<TrainingIssue_ActionItemPriority> TrainingIssueActionItemPriorities { get; set; }
         public DbSet<TrainingIssue_ActionItemStatus> TrainingIssueActionItemStatuses { get; set; }
-        public DbSet<TrainingIssue_DriverSubType> TrainingIssueDriverSubTypes{ get; set; }
+        public DbSet<TrainingIssue_DriverSubType> TrainingIssueDriverSubTypes { get; set; }
         public DbSet<TrainingIssue_DriverType> TrainingIssueDriverTypes { get; set; }
         public DbSet<TrainingIssue_Severity> TrainingIssueSeverities { get; set; }
         public DbSet<TrainingIssue_Status> TrainingIssueStatuses { get; set; }
@@ -1139,18 +1143,25 @@ namespace QTD2.Data
         public DbSet<ClassSchedule_Evaluator_Link> ClassSchedule_Evaluator_Links { get; set; }
         public DbSet<CBT_ScormRegistration_Response> CBT_ScormRegistration_Responses { get; set; }
         public DbSet<CBT_ScormUpload_Question> CBT_ScormUpload_Questions { get; set; }
-        public DbSet<CBT_ScormUpload_Question_Choice> cBT_ScormUpload_Question_Choices { get; set; } 
+        public DbSet<CBT_ScormUpload_Question_Choice> cBT_ScormUpload_Question_Choices { get; set; }
         public DbSet<PersonActivityNotification> PersonActivityNotifications { get; set; }
         public DbSet<TrainingProgramReview_TrainingIssue_Link> TrainingProgramReview_TrainingIssue_Links { get; set; }
         public DbSet<PublicClassScheduleRequest> PublicClassScheduleRequests { get; set; }
-        public DbSet<AdminMessage> AdminMessages  { get; set; }
-        public DbSet<AdminMessage_QTDUser> AdminMessage_QTDUsers { get; set; } 
-        public DbSet<ClassScheduleEmployee_ILACertificationLink_PartialCredit> ClassScheduleEmployee_ILACertificationLink_PartialCredits { get; set; } 
-        public DbSet<ClassScheduleEmployee_ILACertificationLink_SubRequirement_PartialCredit> ClassScheduleEmployee_ILACertificationLink_SubRequirement_PartialCredits { get; set; } 
+        public DbSet<AdminMessage> AdminMessages { get; set; }
+        public DbSet<AdminMessage_QTDUser> AdminMessage_QTDUsers { get; set; }
+        public DbSet<ClassScheduleEmployee_ILACertificationLink_PartialCredit> ClassScheduleEmployee_ILACertificationLink_PartialCredits { get; set; }
+        public DbSet<ClassScheduleEmployee_ILACertificationLink_SubRequirement_PartialCredit> ClassScheduleEmployee_ILACertificationLink_SubRequirement_PartialCredits { get; set; }
         public DbSet<TaskListReview_PositionLink> TaskListReview_PositionLinks { get; set; }
         public DbSet<SkillQualification> SkillQualifications { get; set; }
         public DbSet<SkillQualificationStatus> SkillQualificationStatus { get; set; }
         public DbSet<SkillQualification_Evaluator_Link> SkillQualification_Evaluator_Links { get; set; }
         public DbSet<SkillQualificationEmpSetting> SkillQualificationEmpSettings { get; set; }
+        public DbSet<SkillQualificationEmp_SignOff> SkillQualificationEmp_SignOffs { get; set; }
+        public DbSet<SkillReQualificationEmp_QuestionAnswer> SkillReQualificationEmp_QuestionAnswers { get; set; }
+        public DbSet<SkillReQualificationEmp_Suggestion> SkillReQualificationEmp_Suggestions { get; set; }
+        public DbSet<SkillReQualificationEmp_Step> SkillReQualificationEmp_Steps { get; set; }
+        public DbSet<SimulatorScenario_Script> SimulatorScenario_Scripts { get; set; }
+        public DbSet<SimulatorScenario_Event> SimulatorScenario_Events { get; set; }
+        public DbSet<SimulatorScenario_Script_Criteria> SimulatorScenario_Script_Criterias { get; set; }
     }
 }

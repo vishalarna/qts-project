@@ -1549,15 +1549,6 @@ namespace QTD2.Application.Services.Shared
 
             foreach (var ila in ilas)
             {
-                if (ila.ILA_SelfRegistrationOption?.LimitForLinkedPositions == true)
-                {
-                    var linkedPositions = ila.ILA_Position_Links?.Select(p => p.PositionId).ToList();
-
-                    if (linkedPositions == null || !linkedPositions.Intersect(employeePositionIds).Any())
-                    {
-                        continue;
-                    }
-                }
 
                 if (!ilaGroups.TryGetValue(ila.Id, out var ilaClassSchedules)) continue;
 
@@ -1579,6 +1570,16 @@ namespace QTD2.Application.Services.Shared
                     var classScheduleEmployee = classScheduleEmployees.FirstOrDefault(x => x.ClassScheduleId == cls.Id && x.EmployeeId == employee.Id);
                     var classRoster = classRosters.FirstOrDefault(x => x.ClassScheduleId == cls.Id);
                     var selfRegistrationOptions = selfRegOptions.FirstOrDefault(x => x.ClassScheduleId == cls.Id);
+
+                    if (selfRegistrationOptions?.LimitForLinkedPositions == true)
+                    {
+                        var linkedPositions = ila.ILA_Position_Links?.Select(p => p.PositionId).ToList();
+
+                        if (linkedPositions == null || !linkedPositions.Intersect(employeePositionIds).Any())
+                        {
+                            continue;
+                        }
+                    }
 
                     if (classScheduleEmployee == null || (classScheduleEmployee.IsEnrolled != true && classScheduleEmployee.IsDenied != true && classScheduleEmployee.IsDropped != true))
                     {

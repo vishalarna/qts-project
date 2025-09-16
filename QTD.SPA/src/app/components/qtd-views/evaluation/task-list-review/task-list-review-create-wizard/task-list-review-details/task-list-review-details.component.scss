@@ -75,3 +75,10 @@
   align-items: center;
   justify-content: center;
 }
+
+::ng-deep .mat-select-trigger{
+  height: unset;
+  align-items: baseline !important;
+  max-height: 160px;
+  overflow: auto;
+}

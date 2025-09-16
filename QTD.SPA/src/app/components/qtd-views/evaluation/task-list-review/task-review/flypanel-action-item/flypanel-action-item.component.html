@@ -680,7 +680,7 @@
 
 <ng-container *ngIf="!this.openOperationFlyIn">
   <div class="flex justify-end mt-3 m-2 pr-4">
-    <app-button text="Save" size="sm" type="submit" (clicked) = "onActionItemSave()"  [disabled]="actionItemForm.invalid || actionItemType === 'PrepareForTaskRequalification' || actionItemType === 'MakeTaskInactive'"></app-button>
+    <app-button text="Save" size="sm" type="submit" (clicked) = "onActionItemSave()"  [disabled]="actionItemForm.invalid"></app-button>
   </div>
 </ng-container>
 

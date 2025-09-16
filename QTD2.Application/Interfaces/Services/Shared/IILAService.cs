@@ -320,5 +320,6 @@ namespace QTD2.Application.Interfaces.Services.Shared
         public Task<List<ILACertificationLink_SubRequirementVM>> GetILANERCCertificationSubRequirementNamesForPartialCreditAsync(int ilaId);
         public Task<bool> IsILACreatedFromInstructorWorkbook(int ilaId);
         public System.Threading.Tasks.Task<ILADetailsVM> UpdateIspubliclyAvailableIla(int id, ILAUpdateOptions options);
+        public Task<ILA> CreateBasicAsync(ILABasicCreateOptions options);
     }
 }

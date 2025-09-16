@@ -8,8 +8,8 @@
         </div>
         <div class="step-control">
             <div>
-                <mat-select placeholder="Select {{('Position' | labelReplacement)| async}}" (selectionChange)="onSelectionChange($event)"
-                    formControlName="positionId"
+                <mat-select placeholder="Select {{('Position' | labelReplacement)| async}}"
+                    (selectionChange)="onSelectionChange($event)" formControlName="positionId"
                     class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white">
                     <mat-option value="All">All</mat-option>
                     <mat-option *ngFor="let p of positionsList" [value]="p.id">{{p.positionTitle}} </mat-option>
@@ -21,72 +21,73 @@
 <section class="bg-white section p-4 mt-10">
     <div class="flex flex-row justify-between w-full space-x-4 text-sm mb-3">
         <div>
-            <p class="font-bold text-lg">{{("Task" | labelReplacement)| async}} Linked To {{("Position" | labelReplacement)| async}} : {{selectedPosition}} </p>
+            <p class="font-bold text-lg">{{("Task" | labelReplacement)| async}} Linked To {{("Position" |
+                labelReplacement)| async}} : {{selectedPosition}} </p>
         </div>
     </div>
     <ng-container>
         <div class="table-list">
-            <mat-table mat-table [dataSource]="tasksDataSource">
+            <mat-table mat-table [dataSource]="tasksDataSource" matSort #taskSort="matSort">
                 <ng-container matColumnDef="positionAbbreviation">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef>Position</mat-header-cell>
+                    <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header>Position</mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"> {{row.positionAbbreviation}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="completeTaskNumber">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef>Task</mat-header-cell>
+                    <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header>Task</mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"> {{row.completeTaskNumber}}</mat-cell>
                 </ng-container>
                 <ng-container matColumnDef="description">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef>Task Statement</mat-header-cell>
+                    <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header>Task Statement</mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row"> {{row.description}}</mat-cell>
                 </ng-container>
-
+ 
+                <ng-container matColumnDef="taskCriteria">
+                    <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header>Task Performance Criteria</mat-header-cell>
+                    <mat-cell mat-cell *matCellDef="let row">
+                        <div class="rich-html" [innerHTML]="row.taskCriteria"></div>
+                    </mat-cell>
+                </ng-container>
                 <ng-container matColumnDef="criteria">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef>Task Performance Criteria</mat-header-cell>
+                    <mat-header-cell mat-header-cell *matHeaderCellDef mat-sort-header>Simulator Performance Criteria</mat-header-cell>
                     <mat-cell mat-cell *matCellDef="let row">
-                            <div class="rich-html" [innerHTML]="row.criteria"></div>                            
-                    </mat-cell>
-                </ng-container>
-                <ng-container matColumnDef="actions">
-                    <mat-header-cell mat-header-cell *matHeaderCellDef>Simulator Performance Criteria</mat-header-cell>
-                    <mat-cell mat-cell *matCellDef="let row">
-                        <div>
-                            <div>
-                                <app-button *ngIf="row.id || mode === 'edit'" variant="text" text="Performance Criteria" icon="edit" iconPosition="left"
-                                (click)="openFlypanel(editCriteria, row)">
+                            <div *ngIf="row.id == null" class="w-100">
+                                <app-button variant="text" text="Simulator Performance Criteria"
+                                    icon="edit" iconPosition="left" (click)="openFlypanel(editCriteria, row)">
                                 </app-button>
                             </div>
-                            <div>
-                                <app-button *ngIf="row.id && mode === 'edit'" variant="text" text="Reset" icon="delete" iconPosition="left"
-                                (click)="resetCriteria(deleteCriteria, row)">
-                                </app-button>
+                            <div *ngIf="row.id" class="flex flex-row w-full">
+                                <div class="rich-html" [innerHTML]="row.criteria"></div>
+                                <div class="flex flex-row space-x-2 ml-auto">
+                                    <app-button *ngIf="row.id && mode === 'edit'" variant="text" icon="edit"
+                                        iconPosition="left" (click)="openFlypanel(editCriteria, row)">
+                                    </app-button>
+                               
+                                    <app-button *ngIf="row.id && mode === 'edit'" variant="text" icon="delete"
+                                        iconPosition="left" (click)="resetCriteria(deleteCriteria, row)">
+                                    </app-button>
+                                </div>
                             </div>
-                        </div>
                     </mat-cell>
                 </ng-container>
-
+ 
                 <mat-header-row mat-header-row *matHeaderRowDef="displayTasksColumns"></mat-header-row>
                 <mat-row mat-row *matRowDef="let row; columns: displayTasksColumns;"></mat-row>
             </mat-table>
         </div>
     </ng-container>
-
+ 
 </section>
-
+ 
 <ng-template #editCriteria>
-    <app-fly-panel-edit-performance-criteria (closed)="flyPanelService.close()" (saveTaskCriteria)="saveTaskCriteriaValue($event)" [taskCriteriaVM]="taskSelected" [mode]="mode">
+    <app-fly-panel-edit-performance-criteria (closed)="flyPanelService.close()"
+        (saveTaskCriteria)="saveTaskCriteriaValue($event)" [taskCriteriaVM]="taskSelected" [mode]="mode">
     </app-fly-panel-edit-performance-criteria>
 </ng-template>
-
+ 
 <ng-template #deleteCriteria>
-    <app-qtd-dialogue
-      header="Delete"
-      [isHTML]="true"
-      [isQuestion]="true"
-      [description]="deleteDescription"
-      cancelText="No"
-      confirmText="Yes"
-      (canceled)="dialog.closeAll()"
-      (confirmed)="deleteSimulatorScenarioTaskCrteria(this.deletesimulatorTaskCriteriaId)"
-    >
+    <app-qtd-dialogue header="Delete" [isHTML]="true" [isQuestion]="true" [description]="deleteDescription"
+        cancelText="No" confirmText="Yes" (canceled)="dialog.closeAll()"
+        (confirmed)="deleteSimulatorScenarioTaskCrteria(this.deletesimulatorTaskCriteriaId)">
     </app-qtd-dialogue>
-    </ng-template>
+</ng-template>
+ 

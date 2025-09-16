@@ -23,7 +23,11 @@ using IPersonDomainService = QTD2.Domain.Interfaces.Service.Core.IPersonService;
 using ITaskReQualificationEmp_SuggestionDomainService = QTD2.Domain.Interfaces.Service.Core.ITaskReQualificationEmp_SuggestionService;
 using ITask_SuggestionDomainService = QTD2.Domain.Interfaces.Service.Core.ITask_SuggestionService;
 using ITaskReQualificationEmp_SignOffDomainService = QTD2.Domain.Interfaces.Service.Core.ITaskReQualificationEmp_SignOffService;
+using ISkillQualificationEmpSettingDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillQualificationEmpSettingService;
 using QTD2.Infrastructure.Model.TaskReQualificationEmp;
+using ISkillReQualificationEmp_SuggestionDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillReQualificationEmp_SuggestionService;
+using IEnablingObjectiveDomainService = QTD2.Domain.Interfaces.Service.Core.IEnablingObjectiveService;
+using ISkillQualificationEmp_SignOffDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillQualificationEmp_SignOffService;
 
 namespace QTD2.Application.Services.Shared
 {
@@ -45,6 +49,10 @@ namespace QTD2.Application.Services.Shared
         private readonly ITaskReQualificationEmp_SuggestionDomainService _empSuggestionsDomainService;
         private readonly ITask_SuggestionDomainService _taskSuggestionService;
         private readonly ITaskReQualificationEmp_SignOffDomainService _signOffDomainService;
+        private readonly ISkillQualificationEmpSettingDomainService _skillQualificationEmpSettingService;
+        private readonly ISkillReQualificationEmp_SuggestionDomainService _skillReQualificationEmp_SuggestionService;
+        private readonly IEnablingObjectiveDomainService _enablingObjectiveService;
+        private readonly ISkillQualificationEmp_SignOffDomainService _skillQualificationEmp_SignOffService;
 
         public TaskReQualificationEmp_SuggestionService(
            IStringLocalizer<Domain.Entities.Core.TaskReQualificationEmp_Suggestion> localizer,
@@ -59,7 +67,9 @@ namespace QTD2.Application.Services.Shared
            ITaskService task_AppService,
            ITaskQualificationStatusDomainService tqStatusService,
            ITQEmpSettingDomainService tqEmpSettingService,
-           ITaskQualEvalLinkDomainService tq_evalService, IPersonDomainService personService, ITaskReQualificationEmp_SuggestionDomainService empSuggestionsDomainService, ITask_SuggestionDomainService taskSuggestionService, ITaskReQualificationEmp_SignOffDomainService signOffDomainService)
+           ITaskQualEvalLinkDomainService tq_evalService, IPersonDomainService personService, ITaskReQualificationEmp_SuggestionDomainService empSuggestionsDomainService, ITask_SuggestionDomainService taskSuggestionService,
+           ITaskReQualificationEmp_SignOffDomainService signOffDomainService, ISkillQualificationEmpSettingDomainService skillQualificationEmpSettingService, ISkillReQualificationEmp_SuggestionDomainService skillReQualificationEmp_SuggestionService, IEnablingObjectiveDomainService enablingObjectiveService, ISkillQualificationEmp_SignOffDomainService skillQualificationEmp_SignOffService)
+
         {
             _localizer = localizer;
             _httpContextAccessor = httpContextAccessor;
@@ -77,6 +87,10 @@ namespace QTD2.Application.Services.Shared
             _empSuggestionsDomainService = empSuggestionsDomainService;
             _taskSuggestionService = taskSuggestionService;
             _signOffDomainService = signOffDomainService;
+            _skillQualificationEmpSettingService = skillQualificationEmpSettingService;
+            _skillReQualificationEmp_SuggestionService = skillReQualificationEmp_SuggestionService;
+            _enablingObjectiveService = enablingObjectiveService;
+            _skillQualificationEmp_SignOffService = skillQualificationEmp_SignOffService;
         }
 
         public async Task<bool> GetShowSuggestionBit(int qualificationId)
@@ -85,10 +99,21 @@ namespace QTD2.Application.Services.Shared
             return tqEMPSettingData.ShowTaskSuggestions;
         }
 
+        public async Task<bool> IsShowSuggestionSQBit(int skillqualificationId)
+        {
+            var tqEMPSettingData = await _skillQualificationEmpSettingService.GetSQSettingBySkillQualificationIdAsync(skillqualificationId);
+            return tqEMPSettingData.ShowSkillSuggestions;
+        }
         public async Task<bool> GeQuestionAnswerBit(int qualificationId)
         {
             var tqEMPSettingData = await _tqEmpSettingService.FindQuery(x => x.TaskQualificationId == qualificationId).FirstOrDefaultAsync();
             return tqEMPSettingData.ShowTaskQuestions;
+        }
+
+        public async Task<bool> IsShowQuestionSQBit(int skillqualificationId)
+        {
+            var tqEMPSettingData = await _skillQualificationEmpSettingService.GetSQSettingBySkillQualificationIdAsync(skillqualificationId);
+            return tqEMPSettingData.ShowSkillQuestions;
         }
 
         public async Task<TaskReQualificationEmpSuggestionVM> GetSuggestionData(int qualificationId, int taskId, int employeeId)
@@ -103,29 +128,29 @@ namespace QTD2.Application.Services.Shared
             {
                 var employee = await _empService.FindQueryWithIncludeAsync(x => x.PersonId == person.Id, new string[] { "Person" }).FirstOrDefaultAsync();
                 var qualificationEmp = await _empSuggestionsDomainService.FindQueryWithIncludeAsync(x => x.TaskQualificationId == qualificationId && x.TraineeId == employeeId && x.EvaluatorId == employee.Id, new string[] { "TaskQualification.Task.Task_Suggestions" }).ToListAsync();
-                
+
                 var suggestionVM = new Suggestion();
                 var suggestionListVM = new List<Suggestion>();
                 if (qualificationEmp.Count == 0)
                 {
                     var task = await _taskService.GetAsync(taskId);
                     //check sugegstions in tasks
-                    var sugegstions =(await _taskService.GetAllSuggestionsAsync(taskId)).ToList();
-                    if (sugegstions != null && sugegstions.Count > 0) 
+                    var sugegstions = (await _taskService.GetAllSuggestionsAsync(taskId)).ToList();
+                    if (sugegstions != null && sugegstions.Count > 0)
                     {
-                        foreach(var suggestion in sugegstions)
+                        foreach (var suggestion in sugegstions)
                         {
                             qualWithSuggestions.SuggestionList.Add(new Suggestion()
                             {
                                 SuggestionId = suggestion.Id,
                                 SuggesntionDescription = suggestion.Description,
                                 Comments = string.Empty,
-                                IsCompleted= false,
-                                
+                                IsCompleted = false,
 
-                            }) ;
+
+                            });
                         }
-                      
+
                     }
                     else
                     {
@@ -160,8 +185,8 @@ namespace QTD2.Application.Services.Shared
                     //get a list of suggestions
                     var task = await _taskService.GetAsync(taskId);
 
-                    var suggestions = ( await _taskService.GetAllSuggestionsAsync(taskId)).ToList();
-                    foreach(var suggestion in suggestions)
+                    var suggestions = (await _taskService.GetAllSuggestionsAsync(taskId)).ToList();
+                    foreach (var suggestion in suggestions)
                     {
                         var qual = qualificationEmp.FirstOrDefault(x => x.TaskSuggestionId == suggestion.Id);
                         qualWithSuggestions.SuggestionList.Add(new Suggestion()
@@ -174,7 +199,7 @@ namespace QTD2.Application.Services.Shared
                     }
                     if (task.IsMeta)
                     {
-                        foreach(var mt in task.Task_MetaTask_Links)
+                        foreach (var mt in task.Task_MetaTask_Links)
                         {
                             var metaSuggestions = (await _taskService.GetAllSuggestionsAsync(mt.TaskId)).ToList();
                             foreach (var suggestion in metaSuggestions)
@@ -190,7 +215,7 @@ namespace QTD2.Application.Services.Shared
                             }
                         }
                     }
-                    
+
                     var number = await _taskService.GetTaskNumberWithLetter(task.SubdutyAreaId, task.Id);
                     var concatenatedNumber = number.Letter + number.DANumber + "." + number.SDANumber + "." + number.TaskNumber;
                     qualWithSuggestions.concateNatedTaskNumber = concatenatedNumber;
@@ -201,53 +226,150 @@ namespace QTD2.Application.Services.Shared
                 }
 
                 //Make an entry in sign off Table
-                var signOffObj = new TaskReQualificationEmp_SignOff(qualificationId, null, null, employee.Id, null, null, employeeId, null, true, false,null,false,false);
+                var signOffObj = new TaskReQualificationEmp_SignOff(qualificationId, null, null, employee.Id, null, null, employeeId, null, true, false, null, false, false);
                 var result = await _signOffDomainService.AddAsync(signOffObj);
 
             }
             return qualWithSuggestions;
         }
 
+        public async Task<TaskReQualificationEmpSuggestionVM> GetSuggestionSQData(int skillQualificationId, int skillId, int employeeId)
+        {
+            //Get Current Evaluator 
+            var qualWithSuggestions = new TaskReQualificationEmpSuggestionVM();
+            var userName = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Email;
+
+            var person = await _personService.GetPersonByUserName(userName);
+
+            if (person != null)
+            {
+                var employee = await _empService.GetEmployeeByPersonId(person.Id);
+                var qualificationEmp = await _skillReQualificationEmp_SuggestionService.GetBySkillQualificationId(skillQualificationId, employeeId, employee.Id);
+
+                var suggestionVM = new Suggestion();
+                var suggestionListVM = new List<Suggestion>();
+                if (qualificationEmp.Count == 0)
+                {
+                    var enablingObjective = await _enablingObjectiveService.GetAsync(skillId);
+                    //check suggestions in eo
+                    var suggestions = (await _enablingObjectiveService.GetAllSuggestionByIdAsync(skillId)).ToList();
+                    if (suggestions != null && suggestions.Count > 0)
+                    {
+                        foreach (var suggestion in suggestions)
+                        {
+                            qualWithSuggestions.SuggestionList.Add(new Suggestion()
+                            {
+                                SuggestionId = suggestion.Id,
+                                SuggesntionDescription = suggestion.Description,
+                                Comments = string.Empty,
+                                IsCompleted = false,
+                            });
+                        }
+
+                    }
+                    else
+                    {
+                        qualWithSuggestions.SuggestionList = new List<Suggestion>();
+                    }
+                    var skillQualificationEo = (await _enablingObjectiveService.GetEOByIdAsync(enablingObjective.Id)).FirstOrDefault();
+                    var concatenatedNumber = skillQualificationEo.FullNumber;
+                    qualWithSuggestions.concateNatedSkillNumber = concatenatedNumber;
+                    qualWithSuggestions.SkillDescription = enablingObjective.Description;
+                    qualWithSuggestions.SkillQualificationId = skillQualificationId;
+                    qualWithSuggestions.SkillId = enablingObjective.Id;
+                }
+                else
+                {
+                    //get a list of suggestions
+                    var enablingObjective = await _enablingObjectiveService.GetAsync(skillId);
+                    var suggestions = (await _enablingObjectiveService.GetAllSuggestionByIdAsync(skillId)).ToList();
+
+                    foreach (var suggestion in suggestions)
+                    {
+                        var qual = qualificationEmp.FirstOrDefault(x => x.SkillSuggestionId == suggestion.Id);
+                        qualWithSuggestions.SuggestionList.Add(new Suggestion()
+                        {
+                            SuggestionId = suggestion.Id,
+                            SuggesntionDescription = suggestion.Description,
+                            Comments = qual == null ? string.Empty : qual.Comments,
+                            IsCompleted = qual == null ? false : qual.IsCompleted,
+                        });
+                    }
+
+                    var skillQualificationEo = (await _enablingObjectiveService.GetEOByIdAsync(enablingObjective.Id)).FirstOrDefault();
+                    var concatenatedNumber = skillQualificationEo.FullNumber;
+                    qualWithSuggestions.concateNatedSkillNumber = concatenatedNumber;
+                    qualWithSuggestions.SkillDescription = enablingObjective.Description;
+                    qualWithSuggestions.SkillQualificationId = skillQualificationId;
+                    qualWithSuggestions.SkillId = enablingObjective.Id;
+                }
+
+                //Make an entry in sign off Table
+                var signOffObj = new SkillQualificationEmp_SignOff(skillQualificationId, null, null, employee.Id, null, null, employeeId, null, true, false, null, false, false);
+                var result = await _skillQualificationEmp_SignOffService.AddAsync(signOffObj);
+            }
+            return qualWithSuggestions;
+        }
 
         public async System.Threading.Tasks.Task CreateOrUpdateSuggestionsAsync(TaskReQualificationEmpSuggestionVM options)
         {
-                var userName = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Email;
+            var userName = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Email;
 
             var person = await _personService.FindQuery(x => x.Username == userName).FirstOrDefaultAsync();
 
             if (person != null)
             {
                 var employee = await _empService.FindQueryWithIncludeAsync(x => x.PersonId == person.Id, new string[] { "Person" }).FirstOrDefaultAsync();
-                if(options.SuggestionList != null && options.SuggestionList.Count > 0)
+                if (options.SuggestionList != null && options.SuggestionList.Count > 0)
                 {
-                    foreach(var suggestion in options.SuggestionList)
+                    foreach (var suggestion in options.SuggestionList)
                     {
-                        var qualificationEmp = await _empSuggestionsDomainService.FindQuery(x => x.TaskQualificationId == options.TaskQualificationId && x.TraineeId == options.TraineeId && x.EvaluatorId == employee.Id && x.TaskSuggestionId == suggestion.SuggestionId).FirstOrDefaultAsync();
-
-                        if(qualificationEmp == null)
+                        if (options.TaskId > 0)
                         {
-                            //add case
-                            var requalification = new TaskReQualificationEmp_Suggestion(options.TaskQualificationId, suggestion.SuggestionId, suggestion.Comments, employee.Id, DateTime.UtcNow, options.TraineeId, suggestion.IsCompleted);
-                            var validationResult = await _empSuggestionsDomainService.AddAsync(requalification);
+                            var qualificationEmp = await _empSuggestionsDomainService.FindQuery(x => x.TaskQualificationId == options.TaskQualificationId && x.TraineeId == options.TraineeId && x.EvaluatorId == employee.Id && x.TaskSuggestionId == suggestion.SuggestionId).FirstOrDefaultAsync();
 
+                            if (qualificationEmp == null)
+                            {
+                                var requalification = new TaskReQualificationEmp_Suggestion(options.TaskQualificationId, suggestion.SuggestionId, suggestion.Comments, employee.Id, DateTime.UtcNow, options.TraineeId, suggestion.IsCompleted);
+                                var validationResult = await _empSuggestionsDomainService.AddAsync(requalification);
+
+                            }
+                            else
+                            {
+                                qualificationEmp.TaskQualificationId = options.TaskQualificationId;
+                                qualificationEmp.TaskSuggestionId = suggestion.SuggestionId;
+                                qualificationEmp.Comments = suggestion.Comments;
+                                qualificationEmp.TraineeId = options.TraineeId;
+                                qualificationEmp.IsCompleted = suggestion.IsCompleted;
+                                qualificationEmp.CommentDate = DateTime.UtcNow;
+                                qualificationEmp.EvaluatorId = employee.Id;
+                                var validationResult = await _empSuggestionsDomainService.UpdateAsync(qualificationEmp);
+                            }
                         }
                         else
                         {
-                            qualificationEmp.TaskQualificationId = options.TaskQualificationId;
-                            qualificationEmp.TaskSuggestionId = suggestion.SuggestionId;
-                            qualificationEmp.Comments = suggestion.Comments;
-                            qualificationEmp.TraineeId = options.TraineeId;
-                            qualificationEmp.IsCompleted = suggestion.IsCompleted;
-                            qualificationEmp.CommentDate = DateTime.UtcNow;
-                            qualificationEmp.EvaluatorId = employee.Id;
-                            var validationResult = await _empSuggestionsDomainService.UpdateAsync(qualificationEmp);
+                            var qualificationEmp = (await _skillReQualificationEmp_SuggestionService.FindAsync(x => x.SkillQualificationId == options.SkillQualificationId && x.TraineeId == options.TraineeId && x.EvaluatorId == employee.Id && x.SkillSuggestionId == suggestion.SuggestionId)).FirstOrDefault();
+                            if (qualificationEmp == null)
+                            {
+                                var requalification = new SkillReQualificationEmp_Suggestion(options.SkillQualificationId, suggestion.SuggestionId, suggestion.Comments, employee.Id, DateTime.UtcNow, options.TraineeId, suggestion.IsCompleted);
+                                var validationResult = await _skillReQualificationEmp_SuggestionService.AddAsync(requalification);
+
+                            }
+                            else
+                            {
+                                qualificationEmp.SkillQualificationId = options.SkillQualificationId;
+                                qualificationEmp.SkillSuggestionId = suggestion.SuggestionId;
+                                qualificationEmp.Comments = suggestion.Comments;
+                                qualificationEmp.TraineeId = options.TraineeId;
+                                qualificationEmp.IsCompleted = suggestion.IsCompleted;
+                                qualificationEmp.CommentDate = DateTime.UtcNow;
+                                qualificationEmp.EvaluatorId = employee.Id;
+                                var validationResult = await _skillReQualificationEmp_SuggestionService.UpdateAsync(qualificationEmp);
+                            }
                         }
-                    }    
-                   
+                    }
 
                 }
-              
-
             }
         }
     }

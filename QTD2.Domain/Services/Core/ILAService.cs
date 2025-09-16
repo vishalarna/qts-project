@@ -728,6 +728,10 @@ namespace QTD2.Domain.Services.Core
             var ilaRequirement = await FindWithIncludeAsync(predicates, new string[] { "ILA_TaskObjective_Links", "ILATraineeEvaluations.TestType", "ILA_StudentEvaluation_Links", "SimulatorScenario_ILAs", "ClassSchedules.ClassSchedule_Employee" });
             return ilaRequirement.FirstOrDefault();
         }
+        public async Task<ILA> GetILAByNameOrNumberAsync(string name, string number)
+        {
+            return (await FindAsync(x => x.Name == name && x.Number == number)).FirstOrDefault();
+        }
     }
 }
 

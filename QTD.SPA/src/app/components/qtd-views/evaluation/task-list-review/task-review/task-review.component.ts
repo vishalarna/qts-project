@@ -254,10 +254,8 @@ export class TaskReviewComponent implements OnInit {
 
   async getTrainingIssueAsync() {
      const res = await this.trainingIssuesService.getTrainingIssueByTaskReviewIdAsync(this.inputTaskReviewId);
-     if (res) {
      this.trainingIssue_VM = res;
      this.updateTrainingIssueFormValues();
-    }
   }
 
   async getAllWithSubTypesAsync() {

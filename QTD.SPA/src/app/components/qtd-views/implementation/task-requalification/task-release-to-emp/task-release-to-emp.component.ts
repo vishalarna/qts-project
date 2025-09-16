@@ -91,10 +91,16 @@ export class TaskReleaseToEmpComponent implements OnInit {
   }
 
   inputChange() {
-    this.dataSource.data = this.originalData.data.filter((item)=>{
-      return item.empCommaSepName.trim().toLowerCase().includes(this.filterString.trim().toLowerCase())
-    })
-  }
+  var filter = this.filterString.trim().toLowerCase();
+
+  this.dataSource.data = this.originalData.data.filter((item) => {
+    return (
+      item.empCommaSepName?.trim().toLowerCase().includes(filter) ||
+      item.evaluatorName?.trim().toLowerCase().includes(filter) ||
+      item.taskNumber?.toString().toLowerCase().includes(filter)
+    );
+  });
+}
 
   async transformTitle(title: string) {
     const labelName = await this.labelPipe.transform(title);

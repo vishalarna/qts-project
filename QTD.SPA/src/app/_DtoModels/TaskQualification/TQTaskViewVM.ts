@@ -8,4 +8,8 @@ export class TQTaskViewVM {
   taskNumber!:string;
   taskDescription!: string;
   taskQualsByTaskVMs:TaskQualsByTaskVM[] | MatTableDataSource<TaskQualsByTaskVM>;
+  enablingObjectiveId!: string;
+  skillFullNumber!: string;
+  skillDescription!: string;
+  skillId!:string;
 }

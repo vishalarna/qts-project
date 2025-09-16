@@ -1,3 +1,5 @@
+import { ProcedureReviewExtensionType } from "./ProcedureReviewExtensionType"
+
 export interface CreateProcedureReview {
   procedureId: number
   procedureReviewTitle: string
@@ -6,6 +8,8 @@ export interface CreateProcedureReview {
   procedureReviewInstructions: string
   isEmployeeShowResponses: boolean
   procedureReviewAcknowledgement: string
+  extensionType?: ProcedureReviewExtensionType; 
+  extensionAmount?: number;
 }
 
 export class ProcedureReviewDeleteOptions {

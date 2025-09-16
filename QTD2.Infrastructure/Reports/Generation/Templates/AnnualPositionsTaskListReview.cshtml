@@ -152,8 +152,8 @@
                                                     }
                                                     else
                                                     {
-                                                        var recentTaskHistoryDate = task.Task_Histories?.OrderByDescending(h => h.ChangeEffectiveDate).FirstOrDefault()?.ChangeEffectiveDate;
-                                                        recentHistoryDateText = recentTaskHistoryDate?.ConvertToDefaultTimeZone(Model.DefaultTimeZone).ToString(Model.DefaultDateFormat);
+                                                        var recentVersionTaskDate = task.Version_Tasks?.FirstOrDefault()?.EffectiveDate;
+                                                        recentHistoryDateText = recentVersionTaskDate?.ToString(Model.DefaultDateFormat);
                                                     }
                                                 }
                                                 @recentHistoryDateText

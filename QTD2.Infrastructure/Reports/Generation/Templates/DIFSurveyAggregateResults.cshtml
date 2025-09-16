@@ -236,7 +236,12 @@
                                         }
                                         @if (Model.DisplayColumns.Where(r => r == "Task Comments").Count() > 0)
                                         {
-                                            <td style="text-align: left; border-left: 0; border-top: 0; border-bottom: 0; vertical-align: top; border-right: 0px; "> @difSurveyTask.Comments </td>
+                                            <td style="text-align: left; border-left: 0; border-top: 0; border-bottom: 0; vertical-align: top; border-right: 0px; ">
+                                                @foreach (var responses in difSurveyTask.Responses.Where(r => r.DIFSurvey_TaskId == difSurveyTask.Id))
+                                                {
+                                                    <div>@responses.Comments</div>
+                                                }
+                                            </td>
                                         }
                                     </tr>
                                 }
@@ -253,10 +258,10 @@
                                           if(difSurveyEmployee.Comments != null && difSurveyEmployee.Comments != String.Empty)
                                           {
                                             <tr><td style="border:0;padding-bottom:0;padding-top:0" colspan="12" class="fix-comment"> @(new RawString(@difSurveyEmployee.Comments))</td></tr>
-                                          }
-                                      }
-                                 }
-                                 <tr></tr>
+                                        }
+                                    }
+                                }
+                                <tr></tr>
                             </tbody>
                         </table>
                     </div>

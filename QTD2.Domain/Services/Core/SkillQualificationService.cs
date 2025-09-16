@@ -1,4 +1,5 @@
-﻿using QTD2.Domain.Entities.Core;
+﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using QTD2.Domain.Entities.Core;
 using QTD2.Domain.Interfaces.Repository.Core;
 using QTD2.Domain.Interfaces.Service.Core;
 using QTD2.Domain.Interfaces.Validation.Core;
@@ -33,6 +34,26 @@ namespace QTD2.Domain.Services.Core
         {
             var skillQualification = await FindAsync(r => r.EmployeeId == employeeId);
             return skillQualification.ToList();
+        }
+
+        public async Task<List<SkillQualification>> GetPendingSkillQualificationsListAsTraineeByEmpId(int employeeId)
+        {
+            var pendingTQ = (await FindWithIncludeAsync(x => x.EmployeeId == employeeId && x.Active && x.IsReleasedToEMP && !x.IsRecalled, new string[] { "SkillQualification_Evaluator_Links" }));
+            return pendingTQ.Where(x => x.IsPending).ToList();
+        }
+        public async Task<List<SkillQualification>> GetCompletedSkillQualificationsListAsEvalByEmpId(int employeeId)
+        {
+            return (await FindWithIncludeAsync(x => x.SkillQualification_Evaluator_Links.Any(y => y.EvaluatorId == employeeId), new string[] { "EnablingObjective", "EnablingObjective.EnablingObjective_Topic", "EnablingObjective.EnablingObjective_Category", "EnablingObjective.EnablingObjective_SubCategory" })).Where(x => x.IsComplete).ToList();
+        }
+
+        public async Task<List<SkillQualification>> GetCompletedSkillQualificationsListAsTraineeByEmpId(int employeeId)
+        {
+            return (await FindWithIncludeAsync(x => x.EmployeeId == employeeId, new string[] { "EnablingObjective.EnablingObjective_Topic", "EnablingObjective.EnablingObjective_Category", "EnablingObjective.EnablingObjective_SubCategory", "EnablingObjective.Position_SQs" })).Where(x => x.IsComplete).ToList();
+        }
+
+        public async Task<List<SkillQualification>> GetBySkillQualificationIDAsync(int id)
+        {
+            return (await FindWithIncludeAsync(x => x.Id == id, new string[] { "EnablingObjective" })).ToList();
         }
     }
 }

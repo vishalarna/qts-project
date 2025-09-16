@@ -41,6 +41,7 @@ import { SweetAlertService } from 'src/app/_Shared/services/sweetalert.service';
 import { SubSink } from 'subsink';
 import { FlyInPanelService } from 'src/app/_Shared/services/flyInPanel.service';
 import { LabelReplacementPipe } from 'src/app/_Pipes/label-replacement.pipe';
+import { TaskCopyOptions } from 'src/app/_DtoModels/Task/TaskCopyOptions';
 
 @Component({
   selector: 'app-flypanel-add-task',
@@ -364,9 +365,10 @@ export class FlypanelAddTaskComponent
 
   copyTask() {
     this.showSpinner = true;
-    var options = new TaskCreateOptions();
+    var options = new TaskCopyOptions();
     
     options.subdutyAreaId = this.step1Form.get('subdutyAreaId')?.value;
+    options.positionIds = (this.positionsControl.value || []).map((p: any) => p.id);
     if (
       this.isCopy &&
       this.step2Form.get('taskDesc')?.value == this.oldTask.description
@@ -376,12 +378,8 @@ export class FlypanelAddTaskComponent
       options.description = this.step2Form.get('taskDesc')?.value;
     }
     options.number = this.step2Form.get('taskNumber')?.value;
-    options.references = '';
-    options.standards = '';
-    options.taskCriteriaUpload = '';
     options.changeNotes = this.step3Form.get('reason')?.value;
     options.effectiveDate = this.step3Form.get('effectiveDate')?.value;
-    options.isMeta = this.step2Form.get('isMeta')?.value;
     options.isReliability = this.step2Form.get('isReliability')?.value;
 
 

@@ -23,6 +23,9 @@ using IPersonDomainService = QTD2.Domain.Interfaces.Service.Core.IPersonService;
 using ITaskReQualificationEmp_QuestionAnswerDomainService = QTD2.Domain.Interfaces.Service.Core.ITaskReQualificationEmp_QuestionAnswerService;
 using ITask_QuestionDomainService = QTD2.Domain.Interfaces.Service.Core.ITask_QuestionService;
 using QTD2.Infrastructure.Model.TaskReQualificationEmp;
+using ISkillReQualificationEmp_QuestionAnswerDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillReQualificationEmp_QuestionAnswerService;
+using IEnablingObjectiveDomainService = QTD2.Domain.Interfaces.Service.Core.IEnablingObjectiveService;
+
 
 namespace QTD2.Application.Services.Shared
 {
@@ -43,6 +46,8 @@ namespace QTD2.Application.Services.Shared
         private readonly IPersonDomainService _personService;
         private readonly ITaskReQualificationEmp_QuestionAnswerDomainService _empQuestionsDomainService;
         private readonly ITask_QuestionDomainService _taskQuestionDomainService;
+        private readonly ISkillReQualificationEmp_QuestionAnswerDomainService _skillReQualificationEmp_QuestionAnswerService;
+        private readonly IEnablingObjectiveDomainService _enablingObjectiveService;
 
         public TaskReQualificationEmp_QuestionAnswerService(
            IStringLocalizer<Domain.Entities.Core.TaskReQualificationEmp_Steps> localizer,
@@ -57,7 +62,7 @@ namespace QTD2.Application.Services.Shared
            ITaskService task_AppService,
            ITaskQualificationStatusDomainService tqStatusService,
            ITQEmpSettingDomainService tqEmpSettingService,
-           ITaskQualEvalLinkDomainService tq_evalService, IPersonDomainService personService, ITaskReQualificationEmp_QuestionAnswerDomainService empQuestionsDomainService, ITask_QuestionDomainService taskQuestionDomainService)
+           ITaskQualEvalLinkDomainService tq_evalService, IPersonDomainService personService, ITaskReQualificationEmp_QuestionAnswerDomainService empQuestionsDomainService, ITask_QuestionDomainService taskQuestionDomainService, ISkillReQualificationEmp_QuestionAnswerDomainService skillReQualificationEmp_QuestionAnswerService, IEnablingObjectiveDomainService enablingObjectiveService)
         {
             _localizer = localizer;
             _httpContextAccessor = httpContextAccessor;
@@ -74,6 +79,8 @@ namespace QTD2.Application.Services.Shared
             _personService = personService;
             _empQuestionsDomainService = empQuestionsDomainService;
             _taskQuestionDomainService = taskQuestionDomainService;
+            _skillReQualificationEmp_QuestionAnswerService = skillReQualificationEmp_QuestionAnswerService;
+            _enablingObjectiveService = enablingObjectiveService;
         }
 
         public async Task<TaskReQualificationEmpQuestionVM> GetQuestionsData(int qualificationId, int taskId, int employeeId)
@@ -95,7 +102,7 @@ namespace QTD2.Application.Services.Shared
                 {
                     //check questions in tasks
                     var task = await _taskService.GetAsync(taskId);
-                    var questions =( await _taskService.GetTask_QuestionsAsync(taskId)).ToList();
+                    var questions = (await _taskService.GetTask_QuestionsAsync(taskId)).ToList();
                     if (questions != null && questions.Count > 0)
                     {
                         foreach (var question in questions)
@@ -142,8 +149,8 @@ namespace QTD2.Application.Services.Shared
                 {
                     //get a list of questions
                     var task = await _taskService.GetAsync(taskId);
-                    var questions =( await _taskService.GetTask_QuestionsAsync(taskId)).ToList();
-                    foreach(var question in questions)
+                    var questions = (await _taskService.GetTask_QuestionsAsync(taskId)).ToList();
+                    foreach (var question in questions)
                     {
                         var qual = qualificationEmp.FirstOrDefault(x => x.TaskQuestionId == question.Id);
                         qualWithQuestions.QuesionAnswerList.Add(new QuesionAnswer()
@@ -151,8 +158,8 @@ namespace QTD2.Application.Services.Shared
                             QuestionId = question.Id,
                             QuestionDescription = question.Question,
                             Answer = question.Answer,
-                            Comments = qual == null?string.Empty:qual.Comments,
-                            IsCompleted = qual == null ? false:qual.IsCompleted,
+                            Comments = qual == null ? string.Empty : qual.Comments,
+                            IsCompleted = qual == null ? false : qual.IsCompleted,
 
 
                         });
@@ -186,6 +193,75 @@ namespace QTD2.Application.Services.Shared
             return qualWithQuestions;
         }
 
+        public async Task<TaskReQualificationEmpQuestionVM> GetQuestionsSQData(int skillQualificationId, int skillId, int employeeId)
+        {
+            //Get Current Evaluator 
+            var qualWithQuestions = new TaskReQualificationEmpQuestionVM();
+            var userName = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Email;
+            var person = await _personService.GetPersonByUserName(userName);
+
+            if (person != null)
+            {
+                var employee = await _empService.GetEmployeeByPersonId(person.Id);
+                var qualificationEmp = await _skillReQualificationEmp_QuestionAnswerService.GetBySkillQualificationIdAsync(skillQualificationId, employeeId, employee.Id);
+
+                var questionVM = new QuesionAnswer();
+                var questionListVM = new List<QuesionAnswer>();
+                if (qualificationEmp.Count == 0)
+                {
+                    var enablingObjective = await _enablingObjectiveService.GetAsync(skillId);
+                    var questions = (await _enablingObjectiveService.GetAllQuestionByIdAsync(skillId)).ToList();
+                    if (questions != null && questions.Count > 0)
+                    {
+                        foreach (var question in questions)
+                        {
+                            qualWithQuestions.QuesionAnswerList.Add(new QuesionAnswer()
+                            {
+                                QuestionId = question.Id,
+                                QuestionDescription = question.Question,
+                                Answer = question.Answer,
+                                Comments = string.Empty,
+                                IsCompleted = false,
+                            });
+                        }
+
+                    }
+                    else
+                    {
+                        qualWithQuestions.QuesionAnswerList = new List<QuesionAnswer>();
+                    }
+
+                    qualWithQuestions.SkillDescription = enablingObjective.Description;
+                    qualWithQuestions.SkillQualificationId = skillQualificationId;
+                    qualWithQuestions.SkillId = enablingObjective.Id;
+                }
+                else
+                {
+                    //get a list of questions
+                    var enablingObjective = await _enablingObjectiveService.GetAsync(skillId);
+                    var questions = (await _enablingObjectiveService.GetAllQuestionByIdAsync(skillId)).ToList();
+                    foreach (var question in questions)
+                    {
+                        var qual = qualificationEmp.FirstOrDefault(x => x.SkillQuestionId == question.Id);
+                        qualWithQuestions.QuesionAnswerList.Add(new QuesionAnswer()
+                        {
+                            QuestionId = question.Id,
+                            QuestionDescription = question.Question,
+                            Answer = question.Answer,
+                            Comments = qual == null ? string.Empty : qual.Comments,
+                            IsCompleted = qual == null ? false : qual.IsCompleted,
+
+
+                        });
+                    }
+                    qualWithQuestions.SkillDescription = enablingObjective.Description;
+                    qualWithQuestions.SkillQualificationId = skillQualificationId;
+                    qualWithQuestions.SkillId = enablingObjective.Id;
+                }
+            }
+            return qualWithQuestions;
+        }
+
 
         public async System.Threading.Tasks.Task CreateOrUpdateQuestionsDataAsync(TaskReQualificationEmpQuestionVM options)
         {
@@ -200,32 +276,52 @@ namespace QTD2.Application.Services.Shared
                 {
                     foreach (var quesAns in options.QuesionAnswerList)
                     {
-                        var qualificationEmp = await _empQuestionsDomainService.FindQuery(x => x.TaskQualificationId == options.TaskQualificationId && x.TraineeId == options.TraineeId && x.EvaluatorId == employee.Id && x.TaskQuestionId == quesAns.QuestionId).FirstOrDefaultAsync();
-
-                        if (qualificationEmp == null)
+                        if (options.TaskId > 0)
                         {
-                            //add case
-                            var requalification = new TaskReQualificationEmp_QuestionAnswer(options.TaskQualificationId, quesAns.QuestionId, quesAns.Comments, employee.Id, DateTime.UtcNow, options.TraineeId, quesAns.IsCompleted);
-                            var validationResult = await _empQuestionsDomainService.AddAsync(requalification);
+                            var qualificationEmp = await _empQuestionsDomainService.FindQuery(x => x.TaskQualificationId == options.TaskQualificationId && x.TraineeId == options.TraineeId && x.EvaluatorId == employee.Id && x.TaskQuestionId == quesAns.QuestionId).FirstOrDefaultAsync();
 
+                            if (qualificationEmp == null)
+                            {
+                                //add case
+                                var requalification = new TaskReQualificationEmp_QuestionAnswer(options.TaskQualificationId, quesAns.QuestionId, quesAns.Comments, employee.Id, DateTime.UtcNow, options.TraineeId, quesAns.IsCompleted);
+                                var validationResult = await _empQuestionsDomainService.AddAsync(requalification);
+
+                            }
+                            else
+                            {
+                                qualificationEmp.TaskQualificationId = options.TaskQualificationId;
+                                qualificationEmp.TaskQuestionId = quesAns.QuestionId;
+                                qualificationEmp.Comments = quesAns.Comments;
+                                qualificationEmp.TraineeId = options.TraineeId;
+                                qualificationEmp.IsCompleted = quesAns.IsCompleted;
+                                qualificationEmp.CommentDate = DateTime.UtcNow;
+                                qualificationEmp.EvaluatorId = employee.Id;
+                                var validationResult = await _empQuestionsDomainService.UpdateAsync(qualificationEmp);
+                            }
                         }
                         else
                         {
-                            qualificationEmp.TaskQualificationId = options.TaskQualificationId;
-                            qualificationEmp.TaskQuestionId = quesAns.QuestionId;
-                            qualificationEmp.Comments = quesAns.Comments;
-                            qualificationEmp.TraineeId = options.TraineeId;
-                            qualificationEmp.IsCompleted = quesAns.IsCompleted;
-                            qualificationEmp.CommentDate = DateTime.UtcNow;
-                            qualificationEmp.EvaluatorId = employee.Id;
-                            var validationResult = await _empQuestionsDomainService.UpdateAsync(qualificationEmp);
+                            var qualificationEmp = (await _skillReQualificationEmp_QuestionAnswerService.GetBySkillQualificationAndQuestionIdIdAsync(options.SkillQualificationId, options.TraineeId, employee.Id, quesAns.QuestionId)).FirstOrDefault();
+
+                            if (qualificationEmp == null)
+                            {
+                                var requalification = new SkillReQualificationEmp_QuestionAnswer(options.SkillQualificationId, quesAns.QuestionId, quesAns.Comments, employee.Id, DateTime.UtcNow, options.TraineeId, quesAns.IsCompleted);
+                                var validationResult = await _skillReQualificationEmp_QuestionAnswerService.AddAsync(requalification);
+                            }
+                            else
+                            {
+                                qualificationEmp.SkillQualificationId = options.SkillQualificationId;
+                                qualificationEmp.SkillQuestionId = quesAns.QuestionId;
+                                qualificationEmp.Comments = quesAns.Comments;
+                                qualificationEmp.TraineeId = options.TraineeId;
+                                qualificationEmp.IsCompleted = quesAns.IsCompleted;
+                                qualificationEmp.CommentDate = DateTime.UtcNow;
+                                qualificationEmp.EvaluatorId = employee.Id;
+                                var validationResult = await _skillReQualificationEmp_QuestionAnswerService.UpdateAsync(qualificationEmp);
+                            }
                         }
                     }
-
-
                 }
-
-
             }
         }
     }

@@ -32,7 +32,7 @@ import {
   startOfWeek,
   subDays,
 } from 'date-fns';
-import { Subject } from 'rxjs';
+import { Subject, Subscription } from 'rxjs';
 import {
   sideBarBackDrop,
   sideBarClose,
@@ -150,6 +150,7 @@ export class SchedulingClassesOverviewComponent implements OnInit, OnDestroy {
   startDateTime: string;
   endDateTime: string;
   isLoading: boolean = true;
+  isDownloadingReport: boolean = false;
   isIncludeInactiveILAs : boolean = false;
   url: string = 'Implementation / Scheduling Classes and Roster';
   dataSource = new MatTableDataSource<any>();
@@ -236,6 +237,8 @@ export class SchedulingClassesOverviewComponent implements OnInit, OnDestroy {
     localStorage.removeItem("Topic");
     localStorage.removeItem("Location");
     localStorage.removeItem("ILA");
+    if (this.rosterSubscription) this.rosterSubscription.unsubscribe();
+    if (this.signInSubscription) this.signInSubscription.unsubscribe();
   }
 
   ngOnInit(): void {
@@ -1403,18 +1406,6 @@ export class SchedulingClassesOverviewComponent implements OnInit, OnDestroy {
     this.displayColumns =  Object.assign(this.reportSkeleton?.displayColumns);
   }
 
-  public async downloadClassRosterReport(classId:any){
-      this.reportSkeletonName = "Class Roster";
-      await this.getReportSkeletonData();
-      this.getClassReportsCreateUpdateOptions(classId);
-      var reportExportOption = new ReportExportOptions();
-      reportExportOption.exportType = ReportExportType.Pdf;
-      reportExportOption.options = this.reportCreateorUpdate;
-      await this.trainingSevc.generateClassRosterReportAsync(reportExportOption).then((res) => {
-            this.handleFileDownload(res);
-      });
-    }
-
   private handleFileDownload(response: HttpResponse<Blob>) {
       const contentDispositionHeader = response.headers.get('content-disposition');
   
@@ -1448,18 +1439,58 @@ export class SchedulingClassesOverviewComponent implements OnInit, OnDestroy {
       this.reportCreateorUpdate = reportCreateOptions;
     }
 
-  async downloadClassSignInSheetReport(classId:any){
-    this.reportSkeletonName = "Class Sign In Sheet";
-      await this.getReportSkeletonData();
+  private rosterSubscription?: Subscription;
+  private signInSubscription?: Subscription;
+
+  public downloadClassRosterReport(classId: any) {
+    this.isDownloadingReport = true;
+    this.reportSkeletonName = "Class Roster";
+
+    this.getReportSkeletonData().then(() => {
       this.getClassReportsCreateUpdateOptions(classId);
-      var reportExportOption = new ReportExportOptions();
-      reportExportOption.exportType = ReportExportType.Pdf;
-      reportExportOption.options = this.reportCreateorUpdate;
-      await this.trainingSevc.generateClassInSheetReportAsync(reportExportOption).then((res) => {
-            this.handleFileDownload(res);
-      });
+
+      var options = new ReportExportOptions();
+      options.exportType = ReportExportType.Pdf;
+      options.options = this.reportCreateorUpdate;
+
+      if (this.rosterSubscription) this.rosterSubscription.unsubscribe();
+
+      this.rosterSubscription = this.trainingSevc.generateClassRosterReport(options)
+        .subscribe({
+          next: (res) => this.handleFileDownload(res),
+          error: (err) => {
+            this.alert.errorToast("Download failed. Please try again.");
+            this.isDownloadingReport = false;
+          },
+          complete: () => this.isDownloadingReport = false
+        });
+    });
   }
 
+  public downloadClassSignInSheetReport(classId: any) {
+    this.isDownloadingReport = true;
+    this.reportSkeletonName = "Class Sign In Sheet";
+
+    this.getReportSkeletonData().then(() => {
+      this.getClassReportsCreateUpdateOptions(classId);
+
+      var options = new ReportExportOptions();
+      options.exportType = ReportExportType.Pdf;
+      options.options = this.reportCreateorUpdate;
+
+      if (this.signInSubscription) this.signInSubscription.unsubscribe();
+
+      this.signInSubscription = this.trainingSevc.generateClassInSheetReport(options)
+        .subscribe({
+          next: (res) => this.handleFileDownload(res),
+          error: (err) => {
+            this.alert.errorToast("Download failed. Please try again.");
+            this.isDownloadingReport = false;
+          },
+          complete: () => this.isDownloadingReport = false
+        });
+    });
+  }
 }
 
 

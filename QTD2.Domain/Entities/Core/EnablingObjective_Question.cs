@@ -20,6 +20,7 @@ namespace QTD2.Domain.Entities.Core
         public virtual EnablingObjective EnablingObjective { get; set; }
 
         public virtual ICollection<Version_EnablingObjective_Question> Version_EnablingObjective_Questions { get; set; } = new List<Version_EnablingObjective_Question>();
+        public virtual ICollection<SkillReQualificationEmp_QuestionAnswer> SkillReQualificationEmp_QuestionAnswers { get; set; } = new List<SkillReQualificationEmp_QuestionAnswer>();
 
         public EnablingObjective_Question()
         {

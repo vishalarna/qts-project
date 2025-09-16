@@ -24,6 +24,9 @@ import { LabelReplacementPipe } from 'src/app/_Pipes/label-replacement.pipe';
 import { SimulatorScenariosService } from 'src/app/_Services/QTD/SimulatorScenarios/simulator-scenarios.service';
 import { FlyInPanelService } from 'src/app/_Shared/services/flyInPanel.service';
 import { SweetAlertService } from 'src/app/_Shared/services/sweetalert.service';
+import { MatStepper } from '@angular/material/stepper';
+import { StepperSelectionEvent } from '@angular/cdk/stepper';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-sim-scenarios-wizard-linkages',
@@ -34,6 +37,7 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
   @Input() inputSimulatorScenario_VM: SimulatorScenario_VM ;
   @Input() inputSimScenariosId: string;
   @Input() mode: string;
+  @Input() stepper!: MatStepper;
   @ViewChild(MatSort) sort: MatSort;
   @ViewChild('procedureSort') procedureSort: MatSort;
   @ViewChild('objectiveSort') objectiveSort: MatSort;
@@ -83,6 +87,7 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
   isProcedureLinkUnlink : boolean = false;
   isProcedureUnlink : boolean = false;
   isObjectiveUnlink : boolean = false;
+  private stepperSub!: Subscription;
   get selectedTasks() {
     return this.objectiveSelection.selected.filter((x) => x.type == 'Task');
   }
@@ -112,6 +117,20 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
     this.positionsUpdateOptions = new SimulatorScenario_UpdatePositions_VM();
     this.procedureUpdateOptions = new SimulatorScenario_UpdateProcedures_VM();
     await this.loadAsync();
+    this.stepperSub = this.stepper.selectionChange.subscribe((event: StepperSelectionEvent) => {
+      const activeIndex = event.selectedIndex;
+      if (activeIndex === 1) {
+        this.reload();
+      }
+    });
+  }
+
+  reload(): void {
+    this.linkedPositionsList = this.inputSimulatorScenario_VM?.positions;
+    this.linkedPositionIds =
+      this.inputSimulatorScenario_VM?.positions?.map(
+        (position) => position?.positionId
+      ) ?? [];
   }
 
   async loadAsync() {
@@ -136,6 +155,12 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
       this.inputSimulatorScenario_VM?.procedures?.map(
         (procedure) => procedure?.procedureId
       ) ?? [];
+  }
+
+  ngOnDestroy(): void {
+    if (this.stepperSub) {
+      this.stepperSub.unsubscribe();
+    }
   }
 
   setObjAndTaskvalues() {
@@ -293,7 +318,6 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
           ...this.inputSimulatorScenario_VM.enablingObjectives,
         ];
         this.objAndTasksDataSource.data = this.eoTaskList;
-
       });
   }
 
@@ -379,12 +403,11 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
         this.procedureSelection.clear();
         this.inputSimulatorScenario_VM.procedures = res;
         this.linkedProceduresIds =
-          this.inputSimulatorScenario_VM.procedures.map((k) => k.procedureId);
-        this.proceduresDataSource.data =
-          this.inputSimulatorScenario_VM.procedures;
-          setTimeout(() => {
-      this.proceduresDataSource.sort = this.procedureSort;
-    }, 1);
+        this.inputSimulatorScenario_VM.procedures.map((k) => k.procedureId);
+        this.proceduresDataSource.data = this.inputSimulatorScenario_VM.procedures;
+        setTimeout(() => {
+              this.proceduresDataSource.sort = this.procedureSort;
+        }, 1);
         this.alert.successToast('Simulator Scenario ' +
           (await this.labelPipe.transform('Procedure')) +
             's Updated Successfully'
@@ -528,7 +551,7 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
     this.alert.successToast('Simulator Scenario ' + (await this.labelPipe.transform('Enabling Objective')) + 's Updated Successfully' );
   }
   this.isObjectiveLinkUnlink = false;
-   setTimeout(() => {
+  setTimeout(() => {
       this.objAndTasksDataSource.sort = this.objectiveSort;
     }, 1);
   }

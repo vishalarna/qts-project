@@ -11,7 +11,9 @@ namespace QTD2.Infrastructure.Model.Task_Requalification
 
         public int? Id { get; set; }
         public int EmpId { get; set; }
-        public int TaskId { get; set; }
+        public int? TaskId { get; set; }
+        public int? SkillId { get; set; }
+        public int? SkillQualificationId { get; set; }
         public string EmpFName { get; set; }
         public string EmpLastName { get; set; }
         public string EmpImage { get; set; }
@@ -19,9 +21,12 @@ namespace QTD2.Infrastructure.Model.Task_Requalification
         public string EmpNumber { get; set; }
         public string EmpPositions { get; set; }
         public string TaskFullNumber { get; set; }
-        public int TaskNumber { get; set; }
+        public string SkillFullNumber { get; set; }
+        public int? TaskNumber { get; set; }
+        public string SkillNumber { get; set; }
         public string TaskLetter { get; set; }
         public string TaskDescription { get; set; }
+        public string SkillDescription { get; set; }
         public DateTime? DueDate { get; set; }
         public DateTime? EmpReleaseDate { get; set; }
         public string RequiredRequals { get; set; }

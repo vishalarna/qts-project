@@ -1,9 +1,16 @@
 <ng-container>
     <div class="flex flex-row justify-between items-center px-12 mt-5">
-        <p class="text-xl font-bold text-gray-900">{{ mode === 'view' ? 'View Criteria' : 'Edit Criteria'}}</p>
+        <p class="text-xl font-bold text-gray-900">Simulator Scenario Performance Criteria</p>
         <app-button (click)="flyPanelService.close()" ButtonType='icon' icon="close"></app-button>
     </div>
     <div class="flex flex-col pb-0 mt-4 px-5">
+      <div class="mt-3 mb-3 text-danger">
+        <p class="text-sm "><strong>Note:</strong> The Simulator Scenario Performance Criteria for this Task is only applicable within the context of this specific Simulator Scenario.</p>
+        <p class="text-sm mt-2">If any part of this scenario’s criteria should be reflected in the <strong>overall Task Performance Criteria</strong>, please follow your Training Department’s policies and procedures to request an update.</p>
+      </div>
+      <div class="mt-2 mb-2">
+        <p class="text-xl font-bold text-gray-900" *ngIf="mode ==='edit'">{{ taskCriteriaVM.criteria == null ? ' Add Simulator Performance Criteria' : 'Edit Simulator Performance Criteria'}}</p>
+      </div>
         <form [formGroup]="editCriteriaForm">
             <ckeditor
             [disabled]="mode === 'view'"
@@ -14,12 +21,13 @@
         </form>
     </div>
     <div class="px-12 mt-8 float-right" *ngIf="mode ==='edit'">
-        <app-button type="button" size="sm"
+        <app-button type="button" size="sm" [disabled]="editCriteriaForm.invalid"
           (clicked)="saveTaskCriteriaAsync(saveDescription)" color="primary" text="Save">
         </app-button>
       </div>
 </ng-container>
-
+ 
  <ng-template #saveDescription>
    <app-edit-criteria-modal  [taskCriteriaVM]="taskCriteriaVM"></app-edit-criteria-modal>
-</ng-template> 
+</ng-template>
+ 

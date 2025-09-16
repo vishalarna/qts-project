@@ -36,7 +36,7 @@
       (clicked)="publishWizard(publishSimulatorScenario)"
     >
     </app-button>
-    <app-button
+    <!-- <app-button
       class="ml-2"
       *ngIf="currentIndex == 6 && mode != 'view'"
       type="button"
@@ -45,7 +45,7 @@
       color="secondary"
       (clicked)="openCollaborator(collaboratorSimulatorScenario)"
     >
-    </app-button>
+    </app-button> -->
     <app-button
       *ngIf="currentIndex == 6 && mode == 'view'"
       type="button"
@@ -88,6 +88,7 @@
       <ng-template matStepContent>
         <app-sim-scenarios-wizard-linkages
           #simScenariosLinkages
+          [stepper]="stepper"
           [inputSimulatorScenario_VM]="simulatorScenario_VM"
           [inputSimScenariosId]="simScenariosId"
           [mode]="mode"
@@ -110,6 +111,7 @@
       <ng-template matStepContent>
         <app-sim-scenarios-wizard-specifications
           #simScenariosSpecifications
+          [stepper]="stepper"
           [inputSimulatorScenario_VM]="simulatorScenario_VM"
           [inputSimScenariosId]="simScenariosId"
           [mode]="mode"
@@ -175,8 +177,8 @@
   ></app-publish-simulator-scenario-modal>
 </ng-template>
 
-<ng-template #collaboratorSimulatorScenario>
+<!-- <ng-template #collaboratorSimulatorScenario>
   <app-colloborator-simulator-scenario-modal
     [inputSimulatorScenario_VM]="simulatorScenario_VM"
   ></app-colloborator-simulator-scenario-modal>
-</ng-template>
+</ng-template> -->

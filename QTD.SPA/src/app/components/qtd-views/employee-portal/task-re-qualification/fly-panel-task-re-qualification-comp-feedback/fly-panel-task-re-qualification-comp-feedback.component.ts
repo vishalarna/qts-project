@@ -19,8 +19,13 @@ export class FlyPanelTaskReQualificationCompFeedbackComponent implements OnInit 
   datePipe = new DatePipe('en-us');
   taskStepList:number;
   taskQuestionAnswer:number;
-
+  checkType:string;
+  skillQualificationId: string = '';
   taskFeedbackData:any={};
+  skillFeedackData:any={};
+  skillStepList:number;
+  skillQuestionAnswer:number;
+
   constructor(
     private _router: Router,
     private store: Store<{ toggle: string }>,
@@ -32,30 +37,44 @@ export class FlyPanelTaskReQualificationCompFeedbackComponent implements OnInit 
     this.route.params.subscribe((params: any) => {
       if (params.hasOwnProperty('id')) {
         this.tempIds = params['id'];
-        this.qualificationId = String(this.tempIds).split('-')[0];
-        this.traineeId = String(this.tempIds).split('-')[1].replace('§_', '').split('.')[0];
-        this.getTaskFeedback();
+        const idParts = String(this.tempIds).split('-');
+        const empAndType = idParts[1].replace('§_', '');
+        this.traineeId = empAndType.split('.')[0];
+        this.checkType = empAndType.split('.')[1]; 
+
+        if(this.checkType == 'eo'){
+           this.skillQualificationId = idParts[0];
+           this.getSQFeedback();
+        }
+        if(this.checkType == 'task'){
+             this.qualificationId = idParts[0];
+             this.getTaskFeedback();
+        }
       }
     });
   }
 
-
-
   getTaskFeedback() {
-    
     this.taskService.getTaskFeedback(this.qualificationId,this.traineeId).then((res) => {
-     
       this.taskFeedbackData = res;
       this.taskStepList = this.taskFeedbackData.stepsList.length;
       this.taskQuestionAnswer = this.taskFeedbackData.quesionAnswerList.length;
-      
-
       this.taskFeedbackData.stepsList = [... new Set(res.stepsList)]
       this.taskFeedbackData.quesionAnswerList = [... new Set(res.quesionAnswerList)]
+    }).catch((res: any) => {
+    })
+  }
+
+  getSQFeedback() {
+    this.taskService.getSQFeedback(this.skillQualificationId,this.traineeId).then((res) => {
+      this.skillFeedackData = res;
+      this.skillStepList = this.skillFeedackData.stepsList.length;
+      this.skillQuestionAnswer = this.skillFeedackData.quesionAnswerList.length;
+      this.skillFeedackData.stepsList = [... new Set(res.stepsList)]
+      this.skillFeedackData.quesionAnswerList = [... new Set(res.quesionAnswerList)]
       
     }).catch((res: any) => {
-      
-      
+      console.error(res);
     })
   }
   async goBack() {

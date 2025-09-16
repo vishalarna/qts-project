@@ -24,6 +24,8 @@ using ITaskReQualificationEmp_StepsDomainService = QTD2.Domain.Interfaces.Servic
 using ITask_StepDomainService = QTD2.Domain.Interfaces.Service.Core.ITask_StepService;
 using IMetaTaskDomainService = QTD2.Domain.Interfaces.Service.Core.ITask_MetaTask_LinkService;
 using QTD2.Infrastructure.Model.TaskReQualificationEmp;
+using ISkillReQualificationEmp_StepDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillReQualificationEmp_StepService;
+using IEnablingObjectiveDomainService = QTD2.Domain.Interfaces.Service.Core.IEnablingObjectiveService;
 
 namespace QTD2.Application.Services.Shared
 {
@@ -45,6 +47,8 @@ namespace QTD2.Application.Services.Shared
         private readonly ITaskReQualificationEmp_StepsDomainService _empStepsDomainService;
         private readonly ITask_StepDomainService _taskStepService;
         private readonly IMetaTaskDomainService _metaTask_task_linkService;
+        private readonly ISkillReQualificationEmp_StepDomainService _skillReQualificationEmp_StepService;
+        private readonly IEnablingObjectiveDomainService _enablingObjectiveService;
 
         public TaskReQualificationEmp_StepService(
            IStringLocalizer<Domain.Entities.Core.TaskReQualificationEmp_Steps> localizer,
@@ -59,7 +63,8 @@ namespace QTD2.Application.Services.Shared
            ITaskService task_AppService,
            ITaskQualificationStatusDomainService tqStatusService,
            ITQEmpSettingDomainService tqEmpSettingService,
-           ITaskQualEvalLinkDomainService tq_evalService, IPersonDomainService personService, ITaskReQualificationEmp_StepsDomainService empStepsDomainService, ITask_StepDomainService taskStepService, IMetaTaskDomainService metaTask_task_linkService)
+           ITaskQualEvalLinkDomainService tq_evalService, IPersonDomainService personService, ITaskReQualificationEmp_StepsDomainService empStepsDomainService, ITask_StepDomainService taskStepService, IMetaTaskDomainService metaTask_task_linkService,
+           ISkillReQualificationEmp_StepDomainService skillReQualificationEmp_StepService, IEnablingObjectiveDomainService enablingObjectiveService)
         {
             _localizer = localizer;
             _httpContextAccessor = httpContextAccessor;
@@ -77,6 +82,8 @@ namespace QTD2.Application.Services.Shared
             _empStepsDomainService = empStepsDomainService;
             _taskStepService = taskStepService;
             _metaTask_task_linkService = metaTask_task_linkService;
+            _skillReQualificationEmp_StepService = skillReQualificationEmp_StepService;
+            _enablingObjectiveService = enablingObjectiveService;
         }
 
         public async Task<TaskReQualificationEmpStepVM> GetStepsData(int qualificationId, int taskId, int employeeId)
@@ -110,7 +117,7 @@ namespace QTD2.Application.Services.Shared
                                 Comments = string.Empty,
                                 IsCompleted = null,
                             });
-                           
+
                         }
                     }
                     else
@@ -144,8 +151,8 @@ namespace QTD2.Application.Services.Shared
                 {
                     //get a list of suggestions
                     var task = await _taskService.GetAsync(taskId);
-                    var steps =(await _taskService.GetTask_StepsAsync(taskId)).ToList();
-                    foreach(var step in steps)
+                    var steps = (await _taskService.GetTask_StepsAsync(taskId)).ToList();
+                    foreach (var step in steps)
                     {
                         var qual = qualificationEmp.FirstOrDefault(x => x.TaskStepId == step.Id);
                         qualWithSteps.StepsList.Add(new Steps()
@@ -163,12 +170,12 @@ namespace QTD2.Application.Services.Shared
                         {
                             foreach (var step in linkedTaskSteps)
                             {
-                                 var qual = qualificationEmp.FirstOrDefault(x => x.TaskStepId == step.Id);
+                                var qual = qualificationEmp.FirstOrDefault(x => x.TaskStepId == step.Id);
                                 qualWithSteps.StepsList.Add(new Steps()
                                 {
                                     StepId = step.Id,
                                     StepDescription = step.Description,
-                                    Comments =qual == null ? string.Empty : qual.Comments,
+                                    Comments = qual == null ? string.Empty : qual.Comments,
                                     IsCompleted = qual == null ? null : qual.IsCompleted,
                                 });
                             }
@@ -182,6 +189,68 @@ namespace QTD2.Application.Services.Shared
             return qualWithSteps;
         }
 
+        public async Task<TaskReQualificationEmpStepVM> GetStepsSQData(int skillQualificationId, int skillId, int employeeId)
+        {
+            var qualWithSteps = new TaskReQualificationEmpStepVM();
+            var userName = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Email;
+
+            var person = await _personService.GetPersonByUserName(userName);
+
+            if (person != null)
+            {
+                var employee = await _empService.GetEmployeeByPersonId(person.Id);
+                var qualificationEmp = await _skillReQualificationEmp_StepService.GetBySkillQualificationId(skillQualificationId, employeeId, employee.Id);
+
+                var stepsVM = new Steps();
+                var stepsListVM = new List<Steps>();
+                if (qualificationEmp.Count == 0)
+                {
+                    var steps = (await _enablingObjectiveService.GetAllStepAsync(skillId));
+                    var enablingObjective = (await _enablingObjectiveService.GetEOByIdAsync(skillId)).FirstOrDefault();
+                    if (steps != null && steps.Count > 0)
+                    {
+                        foreach (var step in steps)
+                        {
+                            qualWithSteps.StepsList.Add(new Steps()
+                            {
+                                StepId = step.Id,
+                                StepDescription = step.Description,
+                                Comments = string.Empty,
+                                IsCompleted = null,
+                            });
+                        }
+                    }
+                    else
+                    {
+                        qualWithSteps.StepsList = new List<Steps>();
+                    }
+
+                    qualWithSteps.SkillDescription = enablingObjective.Description;
+                    qualWithSteps.SkillQualificationId = skillQualificationId;
+                    qualWithSteps.SkillId = enablingObjective.Id;
+                }
+                else
+                {
+                    var enablingObjective = (await _enablingObjectiveService.GetEOByIdAsync(skillId)).FirstOrDefault();
+                    var steps = (await _enablingObjectiveService.GetAllStepAsync(skillId));
+                    foreach (var step in steps)
+                    {
+                        var qual = qualificationEmp.FirstOrDefault(x => x.SkillStepId == step.Id);
+                        qualWithSteps.StepsList.Add(new Steps()
+                        {
+                            StepId = step.Id,
+                            StepDescription = step.Description,
+                            Comments = qual == null ? string.Empty : qual.Comments,
+                            IsCompleted = qual == null ? null : qual.IsCompleted,
+                        });
+                    }
+                    qualWithSteps.SkillDescription = enablingObjective.Description;
+                    qualWithSteps.SkillQualificationId = skillQualificationId;
+                    qualWithSteps.SkillId = enablingObjective.Id;
+                }
+            }
+            return qualWithSteps;
+        }
 
         public async System.Threading.Tasks.Task CreateOrUpdateStepsAsync(TaskReQualificationEmpStepVM options)
         {
@@ -196,32 +265,55 @@ namespace QTD2.Application.Services.Shared
                 {
                     foreach (var step in options.StepsList)
                     {
-                        var qualificationEmp = await _empStepsDomainService.FindQuery(x => x.TaskQualificationId == options.TaskQualificationId && x.TraineeId == options.TraineeId && x.EvaluatorId == employee.Id && x.TaskStepId == step.StepId).FirstOrDefaultAsync();
-
-                        if (qualificationEmp == null)
+                        if (options.TaskId > 0)
                         {
-                            //add case
-                            var requalification = new TaskReQualificationEmp_Steps(options.TaskQualificationId, step.StepId, step.Comments, employee.Id, DateTime.UtcNow, options.TraineeId, step.IsCompleted??false);
-                            var validationResult = await _empStepsDomainService.AddAsync(requalification);
+                            var qualificationEmp = await _empStepsDomainService.FindQuery(x => x.TaskQualificationId == options.TaskQualificationId && x.TraineeId == options.TraineeId && x.EvaluatorId == employee.Id && x.TaskStepId == step.StepId).FirstOrDefaultAsync();
 
+                            if (qualificationEmp == null)
+                            {
+                                //add case
+                                var requalification = new TaskReQualificationEmp_Steps(options.TaskQualificationId, step.StepId, step.Comments, employee.Id, DateTime.UtcNow, options.TraineeId, step.IsCompleted ?? false);
+                                var validationResult = await _empStepsDomainService.AddAsync(requalification);
+
+                            }
+                            else
+                            {
+                                qualificationEmp.TaskQualificationId = options.TaskQualificationId;
+                                qualificationEmp.TaskStepId = step.StepId;
+                                qualificationEmp.Comments = step.Comments;
+                                qualificationEmp.TraineeId = options.TraineeId;
+                                qualificationEmp.IsCompleted = step.IsCompleted ?? false;
+                                qualificationEmp.CommentDate = DateTime.UtcNow;
+                                qualificationEmp.EvaluatorId = employee.Id;
+                                var validationResult = await _empStepsDomainService.UpdateAsync(qualificationEmp);
+                            }
                         }
                         else
                         {
-                            qualificationEmp.TaskQualificationId = options.TaskQualificationId;
-                            qualificationEmp.TaskStepId = step.StepId;
-                            qualificationEmp.Comments = step.Comments;
-                            qualificationEmp.TraineeId = options.TraineeId;
-                            qualificationEmp.IsCompleted = step.IsCompleted ?? false;
-                            qualificationEmp.CommentDate = DateTime.UtcNow;
-                            qualificationEmp.EvaluatorId = employee.Id;
-                            var validationResult = await _empStepsDomainService.UpdateAsync(qualificationEmp);
+                            var qualificationEmp = (await _skillReQualificationEmp_StepService.GetBySkillQualificationAndStepIdAsync(options.SkillQualificationId, options.TraineeId, employee.Id, step.StepId)).FirstOrDefault();
+
+                            if (qualificationEmp == null)
+                            {
+                                //add case
+                                var requalification = new SkillReQualificationEmp_Step(options.SkillQualificationId, step.StepId, step.Comments, employee.Id, DateTime.UtcNow, options.TraineeId, step.IsCompleted ?? false);
+                                var validationResult = await _skillReQualificationEmp_StepService.AddAsync(requalification);
+
+                            }
+                            else
+                            {
+                                qualificationEmp.SkillQualificationId = options.SkillQualificationId;
+                                qualificationEmp.SkillStepId = step.StepId;
+                                qualificationEmp.Comments = step.Comments;
+                                qualificationEmp.TraineeId = options.TraineeId;
+                                qualificationEmp.IsCompleted = step.IsCompleted ?? false;
+                                qualificationEmp.CommentDate = DateTime.UtcNow;
+                                qualificationEmp.EvaluatorId = employee.Id;
+                                var validationResult = await _skillReQualificationEmp_StepService.UpdateAsync(qualificationEmp);
+                            }
                         }
+
                     }
-
-
                 }
-
-
             }
         }
     }

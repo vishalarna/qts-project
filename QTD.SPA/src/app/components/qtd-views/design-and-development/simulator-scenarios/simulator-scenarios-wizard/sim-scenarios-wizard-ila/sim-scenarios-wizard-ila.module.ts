@@ -14,6 +14,7 @@ import { MatLegacyPaginatorModule as MatPaginatorModule } from '@angular/materia
 import { MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { DialogueUnlinkMultipleRecordsModule } from '../sim-scenarios-wizard-linkages/dialogue-unlink-multiple-records/dialogue-unlink-multiple-records.module';
+import { MatLegacyTooltipModule as MatTooltipModule } from '@angular/material/legacy-tooltip';
 
 
 @NgModule({
@@ -24,6 +25,7 @@ import { DialogueUnlinkMultipleRecordsModule } from '../sim-scenarios-wizard-lin
     BaseModule,
     ReactiveFormsModule,
     MatCheckboxModule,
+    MatTooltipModule,
     MatSelectModule,
     MatTableModule,
     MatIconModule,

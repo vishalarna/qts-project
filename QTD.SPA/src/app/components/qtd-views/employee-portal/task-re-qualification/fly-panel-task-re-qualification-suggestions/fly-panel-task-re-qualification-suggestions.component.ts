@@ -84,6 +84,12 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
   isOpen:boolean=false;
   allTaskStepsCompleted: boolean;
   comments:string='';
+  skillId: string;
+  skillNumberURL:any;
+  skillQualificationId:string;
+  skillNumber:string='';
+  checkType:string;
+   allSkillStepsCompleted: boolean;
   constructor(
     private store: Store<{ toggle: string }>,
     private _router: Router,
@@ -105,19 +111,34 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
   async ngOnInit(): Promise<void> {
     this.store.dispatch(sideBarClose());
     this.route.params.subscribe((params: any) => {
+    
+    if (params.hasOwnProperty('id')) {
+      this.tempIds = params['id'];
+      const parts = String(this.tempIds).split('.');
+       this.checkType = parts[parts.length - 1];
 
-      if (params.hasOwnProperty('id')) {
-        this.tempIds = params['id'];
-        this.qualificationId = String(this.tempIds).split('-')[0];
-        this.taskLetter = String(this.tempIds).split('-')[1].split('_')[0]
+      if (this.checkType == 'eo') {
+        this.skillId = String(this.tempIds).split('-')[1].replace('§_', '').split('.')[0];
+        this.empId = parts[1];
+        this.skillNumberURL = parts.slice(2, -1).join('.'); 
+
+        this.skillQualificationId = String(this.tempIds).split('-')[0];
+        this.getSuggestionSQBit();
+        this.getQuestionSQBit();
+        this.getSQSuggestion();
+      } 
+      if(this.checkType == 'task'){
+        this.taskLetter = String(this.tempIds).split('-')[1].split('_')[0];
         this.taskId = String(this.tempIds).split('-')[1].replace('§_', '').split('.')[0];
-        this.empId = String(this.tempIds).split('-')[1].replace('§_', '').split('.')[1];
-        this.taskNumberURL = String(this.tempIds).split(".").slice(2).join(".");
+        this.empId = parts[1];
+        this.taskNumberURL = parts.slice(2).join('.');
+        this.qualificationId = String(this.tempIds).split('-')[0];
         this.getSuggestionBit();
         this.getQuestionBit();
         this.getTaskSuggestion();
       }
-    });
+    }
+  });
   this.exitDescription = `You are selecting to Exit the ` + await this.transformTitle('Procedure') + ` Review without submitting your responses. Your progress will be saved.`;
   this.saveDescription = `You are choosing to submit and finalize your ` + await this.transformTitle('Procedure') + ` Review response.`;
   }
@@ -146,9 +167,19 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
     this.evalMethodService.getAll().then((res) => {
       this.evalMethodList = res;
     }).catch((res: any) => {
-
-
     })
+  }
+
+  getSuggestionSQBit(){
+    this.taskService.getSuggestionSQBit(this.skillQualificationId).then((res)=>{
+      this.answer = res;
+    });
+  }
+
+  getQuestionSQBit(){
+    this.taskService.getQuestionSQBit(this.skillQualificationId).then((res)=>{
+      this.answer1 = res;
+    });
   }
   async selectedChanged(event: any) {
     this.isLoading=true;
@@ -157,16 +188,36 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
     this.isLoading=true;
     switch(event.selectedIndex){
       case 0:
-        this.getTaskSuggestion();
+        if(this.checkType == 'task'){
+          this.getTaskSuggestion();
+        }
+        if(this.checkType == 'eo'){
+           this.getSQSuggestion();
+        }
         break;
       case 1:
-      this.getTaskSteps();
+        if(this.checkType == 'task'){
+          this.getTaskSteps();
+        }
+        if(this.checkType == 'eo'){
+          this.getSQSteps();
+        }
         break;
       case 2:
-        this.getTaskQuestions();
+         if(this.checkType == 'task'){
+          this.getTaskQuestions();
+         }
+           if(this.checkType == 'eo'){
+             this.getSQQuestions();
+           }
         break;
       case 3:
-        this.getTaskSignOff();
+        if(this.checkType == 'task'){
+          this.getTaskSignOff();
+         }
+         if(this.checkType == 'eo'){
+             this.getSQSignOff();
+          }
         this.getEvalMethod();
         //this.getTaskQualificationEmpSteps();
         break;
@@ -180,7 +231,7 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
           let updateSuggestionItem = this.taskSuggestionsObjList?.suggestionList[this.counter];
           if(updateSuggestionItem){
             this.model.suggestionList.push({ isCompleted: updateSuggestionItem.isCompleted, comments: updateSuggestionItem.comments, suggesntionDescription: updateSuggestionItem.suggesntionDescription, suggestionId: updateSuggestionItem.suggestionId })
-            this.updateTaskComments();
+            this.updateTaskandSkillComments();
           }
         }
         break;
@@ -188,7 +239,7 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
         let updateStepItem = this.taskStepsObjList?.stepsList[this.counter];
         if(updateStepItem?.isCompleted != null){
           this.modelSteps.stepsList.push({ isCompleted: updateStepItem.isCompleted, comments: updateStepItem.comments, stepDescription: updateStepItem.stepDescription, stepId: updateStepItem.stepId })
-          this.updateTaskStepsComments();
+          this.updateTaskAndSkillStepsComments();
         }
         break;
       case 2:
@@ -196,7 +247,7 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
           let updateQuestionItem = this.taskQuestionsObjList?.quesionAnswerList[this.counter];
           if(updateQuestionItem){
             this.modelQuestion.quesionAnswerList.push({ isCompleted: updateQuestionItem.isCompleted, comments: updateQuestionItem.comments, questionDescription: updateQuestionItem.stepDescription, questionId: updateQuestionItem.questionId,answer:updateQuestionItem.answer})
-            this.updateTaskQuestionsComments();
+            this.updateTaskAndSkillQuestionsComments();
           }
         }
         break;
@@ -208,12 +259,14 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
     }
   }
 
-
-  updateTaskComments() {
+  updateTaskandSkillComments() {
     this.model.taskId = this.taskSuggestionsObjList?.taskId;
     this.model.taskQualificationId = this.taskSuggestionsObjList?.taskQualificationId;
     this.model.taskDescription = this.taskSuggestionsObjList?.taskDescription;
     this.model.traineeId = this.empId;
+    this.model.skillDescription =this.taskSuggestionsObjList?.skillDescription;
+    this.model.skillId =this.taskSuggestionsObjList?.skillId;
+    this.model.skillQualificationId =this.taskSuggestionsObjList?.skillQualificationId;
     this.taskService.saveTaskSuggestionData(this.model).then((res) => {
       this.isLoading=false;
       this.model=new TaskReQualificationCreateOption();
@@ -233,6 +286,17 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
     })
   }
 
+  getSQSuggestion() {
+    this.taskService.getSuggestionSQData(this.skillQualificationId, this.skillId, this.empId).then((res) => {
+      this.taskSuggestionsObjList = res;
+      this.skillNumber=this.taskSuggestionsObjList.concateNatedSkillNumber;
+      this.isLoading=false;
+      this.counter=0;
+    }).catch((res: any) => {
+
+    })
+  }
+
   getTaskSteps() {
     this.taskService.getStepsData(this.qualificationId, this.taskId, this.empId).then((res) => {
       this.taskStepsObjList = res;
@@ -242,6 +306,17 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
     }).catch((res: any) => {
     })
   }
+
+  getSQSteps() {
+    this.taskService.getStepsSQData(this.skillQualificationId, this.skillId, this.empId).then((res) => {
+      this.taskStepsObjList = res;
+      this.isLoading=false;
+      this.counter=0;
+
+    }).catch((res: any) => {
+    })
+  }
+
   fillDataSteps(row) {
     if (this.currentIndex === 1) {
       let updateCount=this.counter
@@ -252,16 +327,19 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
       else{
         this.modelSteps.stepsList.push({ isCompleted: row.isCompleted, comments: row.comments, stepDescription: row.stepDescription, stepId: row.stepId })
         this.onNext();
-        this.updateTaskStepsComments();
+        this.updateTaskAndSkillStepsComments();
       }
     }
   }
 
-  updateTaskStepsComments() {
+  updateTaskAndSkillStepsComments() {
     this.modelSteps.taskId = this.taskStepsObjList?.taskId;
     this.modelSteps.taskQualificationId = this.taskStepsObjList?.taskQualificationId;
     this.modelSteps.taskDescription = this.taskStepsObjList?.taskDescription;
     this.modelSteps.traineeId = this.empId;
+    this.modelSteps.skillDescription = this.taskStepsObjList?.skillDescription;
+    this.modelSteps.skillId = this.taskStepsObjList?.skillId;
+    this.modelSteps.skillQualificationId =this.taskStepsObjList?.skillQualificationId;
     this.taskService.saveStepsData(this.modelSteps).then((res) => {
       this.isLoading=false;
       this.modelSteps=new TaskReQualificationStepsCreateOption();
@@ -278,8 +356,16 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
       this.isLoading=false;
 
     }).catch((res: any) => {
+    })
+  }
 
+  getSQQuestions() {
+    this.taskService.getQuestionSQData(this.skillQualificationId, this.skillId, this.empId).then((res) => {
+      this.taskQuestionsObjList = res;
+      this.counter=0;
+      this.isLoading=false;
 
+    }).catch((res: any) => {
     })
   }
 
@@ -293,17 +379,20 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
       else{
         this.modelQuestion.quesionAnswerList.push({ isCompleted: row.isCompleted, comments: row.comments, questionDescription: row.stepDescription, questionId: row.questionId,answer:row.answer})
         this.onNext();
-        this.updateTaskQuestionsComments();
+        this.updateTaskAndSkillQuestionsComments();
       }
     }
   }
   
   
-  updateTaskQuestionsComments() {
+  updateTaskAndSkillQuestionsComments() {
     this.modelQuestion.taskId = this.taskQuestionsObjList?.taskId;
     this.modelQuestion.taskQualificationId = this.taskQuestionsObjList?.taskQualificationId;
     this.modelQuestion.taskDescription = this.taskQuestionsObjList?.taskDescription;
     this.modelQuestion.traineeId = this.empId;
+    this.modelQuestion.skillQualificationId =this.taskStepsObjList?.skillQualificationId;
+    this.modelQuestion.skillId =this.taskQuestionsObjList?.skillId;
+     this.modelQuestion.skillDescription =this.taskQuestionsObjList?.skillDescription;
     this.taskService.saveQuestionData(this.modelQuestion).then((res) => {
       this.isLoading=false;
       this.modelQuestion=new TaskReQualificationQuestionsCreateOption();
@@ -311,7 +400,6 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
 
     })
   }
-
 
   getTaskSignOff() {
     const stepsList = this.taskStepsObjList?.stepsList;
@@ -330,11 +418,27 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
       this.comments = this.taskSignOffObjList?.comments ?? '';
 
     }).catch((res: any) => {
-
-
     })
   }
 
+  getSQSignOff() {
+    const stepsList = this.taskStepsObjList?.stepsList;
+    this.allSkillStepsCompleted = Array.isArray(stepsList) && stepsList.every((step: any) => step.isCompleted === true);
+    this.taskService.getSQSignOffData(this.skillQualificationId, this.skillId, this.empId).then((res) => {
+      this.taskSignOffObjList = res;
+      this.isLoading=false;
+      if(this.taskSignOffObjList!.skilQualificationDate === null)
+      {
+        this.taskSignOffObjList.skilQualificationDate = this.datePipe.transform(Date.now(), "yyyy-MM-dd");
+      }
+      else{
+        this.taskSignOffObjList.skilQualificationDate = this.datePipe.transform(this.taskSignOffObjList.skilQualificationDate, "yyyy-MM-dd");
+      }
+      this.counter=0;
+      this.comments = this.taskSignOffObjList?.comments ?? '';
+    }).catch((res: any) => {
+    })
+  }
 
   fillDataSingOff(row,isFormSubmitted:boolean) {
     if (this.currentIndex === 3) {
@@ -348,24 +452,37 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
       this.modelSingOff.isFormSubmitted= isFormSubmitted;
       this.modelSingOff.isEvaluatorSignOff= row.isEvaluatorSignOff;
       this.modelSingOff.isTraineeSignOff= row.isTraineeSignOff;
-      
-      this.updateTaskSingOff();
+      this.modelSingOff.skillQualificationDate=row.skillQualificationDate;
+      this.modelSingOff.skillQualificationId =row.skillQualificationId;
+      this.updateTaskAndSkillSignOff();
     }
-
-
   }
 
-  updateTaskSingOff() {
-    this.taskService.saveSingOffData(this.modelSingOff).then((res) => {
+  updateTaskAndSkillSignOff() {
+    if(this.checkType == 'eo'){
+        this.taskService.saveSQSignOffData(this.modelSingOff).then((res) => {
       this.isLoading=false;
       if(this.modelSingOff.isFormSubmitted){
         this.store.dispatch(sideBarOpen());
         this._router.navigate(['emp/task-re-qualification/overview'], { queryParams: { isRedirectToEval: 'true' } });
       }
       this.modelSingOff=new TaskReQualificationSignOffOption();
-    }).catch((res: any) => {
+      }).catch((res: any) => {
 
-    })
+       })
+    }
+    if(this.checkType == 'task'){
+      this.taskService.saveSingOffData(this.modelSingOff).then((res) => {
+        this.isLoading=false;
+        if(this.modelSingOff.isFormSubmitted){
+          this.store.dispatch(sideBarOpen());
+          this._router.navigate(['emp/task-re-qualification/overview'], { queryParams: { isRedirectToEval: 'true' } });
+        }
+        this.modelSingOff=new TaskReQualificationSignOffOption();
+      }).catch((res: any) => {
+
+      })
+   }
   }
   onNext() {
       this.counter++;
@@ -381,7 +498,7 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
       else{
         this.model.suggestionList.push({ isCompleted: row.isCompleted, comments: row.comments, suggesntionDescription: row.suggesntionDescription, suggestionId: row.suggestionId })
         this.onNext();
-        this.updateTaskComments();
+        this.updateTaskandSkillComments();
       }
     }
   }
@@ -393,7 +510,8 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
 
   submitDialog(templateRef,data) {
 
-    this.saveDescription= `You are selecting to submit the Task Qualification for ${this.taskSignOffObjList!.traineeName} for Task ${this.taskNumberURL}.`;
+    this.saveDescription = this.checkType?.trim().toLowerCase() == 'eo'? `You are selecting to submit the  Skill Qualification for ${this.taskSignOffObjList!.traineeName} for Skill ${this?.skillNumberURL}`
+                            : `You are selecting to submit the Task / Skill Qualification for ${this.taskSignOffObjList!.traineeName} for Task ${this?.taskNumberURL}`;
 
      const dialogRef = this.dialog.open(templateRef, {
        width: '600px',
@@ -415,7 +533,7 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
   }
 
   async goBackDialog(templateRef) {
-    this.goBackDescription='You are selecting to end the Task (Re)Qualification. All responses will be saved, and the Task (Re)Qualification will not be submitted to QTD.';
+    this.goBackDescription='You are selecting to end the Task / Skill (Re)Qualification. All responses will be saved, and the Task / Skill (Re)Qualification will not be submitted to QTD.';
     const dialogRef = this.dialog.open(templateRef, {
       width: '600px',
       height: 'auto',
@@ -426,7 +544,7 @@ export class FlyPanelTaskReQualificationSuggestionsComponent implements OnInit {
 
   async closeDialog(templateRef) {
 
-    this.closeDescription=`You are selecting to end the ` + await this.transformTitle('Task') +`  (Re)Qualification. All responses will be saved, and the ` + await this.transformTitle('Task') +`    (Re)Qualification will not be submitted to QTD.`;
+    this.closeDescription=`You are selecting to end the ` + await this.transformTitle('Task') +` / Skill  (Re)Qualification. All responses will be saved, and the ` + await this.transformTitle('Task') +` / Skill   (Re)Qualification will not be submitted to QTD.`;
      const dialogRef = this.dialog.open(templateRef, {
        width: '600px',
        height: 'auto',

@@ -27,6 +27,14 @@ namespace QTD2.API.QTD.Controllers
             return Ok( new { result });
         }
 
+        [HttpGet]
+        [Route("/qtdUsers/withEmployeeData")]
+        public async Task<IActionResult> GetAllActiveWithEmployeeData()
+        {
+            var result = await _qTDService.GetAllActiveWithEmployeeData();
+            return Ok(new { result });
+        }
+
         [HttpPost]
         [Route("/qtdUsers")]
         public async Task<IActionResult> CreateAsync(QtdUserVM qtdUserOption)

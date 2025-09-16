@@ -11,6 +11,7 @@
     <None Remove="Reports\Generation\Templates\EnablingObjectivesByTask.cshtml" />
     <None Remove="Reports\Generation\Templates\EOPHoursForDesignatedYears.cshtml" />
     <None Remove="Reports\Generation\Templates\ILAByProviders.cshtml" />
+    <None Remove="Reports\Generation\Templates\ILAsBySafetyHazard.cshtml" />
     <None Remove="Reports\Generation\Templates\JTAByTask.cshtml" />
     <None Remove="Reports\Generation\Templates\MyData\EmployeeCertificationHistory.cshtml" />
     <None Remove="Reports\Generation\Templates\NERCILAApplicationReportVersion.cshtml" />
@@ -23,6 +24,9 @@
     <None Remove="Reports\Generation\Templates\TrainingIssueDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Reports\Generation\Templates\ILAsBySafetyHazard.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Reports\Generation\Templates\TrainingIssueActionItems.cshtml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

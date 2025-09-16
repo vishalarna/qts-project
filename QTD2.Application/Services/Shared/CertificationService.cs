@@ -429,5 +429,24 @@ namespace QTD2.Application.Services.Shared
             var nercCerts = await _certificationService.GetNercCertificatesAsync();
             return nercCerts;
         }
+
+        public async Task<List<SubRequirementVM>> GetSubRequirementsByCertIdAsync(int certId)
+        {
+            var certification = (await _certificationService.GetCertificationSubRequirementByCertificationIdAsync(certId)).FirstOrDefault();
+
+            if (certification == null)
+            {
+                throw new QTDServerException(_localizer["RecordNotFound"].Value);
+            }
+
+            return certification.CertificationSubRequirements
+                .Select(sub => new SubRequirementVM
+                {
+                    SubRequirementId = sub.Id,
+                    ReqName = sub.ReqName,
+                    ReqHour = 0
+                }).ToList();
+        }
+
     }
 }

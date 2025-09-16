@@ -381,7 +381,9 @@ else
     if (this.trainingProgramId != undefined)
     {
       let startDateTIme = `${this.step1Form.get('startdate')?.value}T${this.step1Form.get('startTime')?.value}`;
-      let endDateTime = `${this.step1Form.get('endDate')?.value}T${this.step1Form.get('endTime')?.value}`;
+      let endDateValue = this.step1Form.get('endDate')?.value;
+      let endTimeValue = this.step1Form.get('endTime')?.value;
+      let endDateTime = endDateValue && endTimeValue ? `${endDateValue}T${endTimeValue}` : null;
       let createOpt: TrainingProgramCreateOptions = {
       tPVersionNo: this.step1Form.get('version')?.value,
       trainingProgramTypeId: this.step1Form.get('trainingProgtype')?.value,
@@ -416,7 +418,9 @@ else
     else
     {
       let startDateTIme = `${this.step1Form.get('startdate')?.value}T${this.step1Form.get('startTime')?.value}`;
-      let endDateTime = `${this.step1Form.get('endDate')?.value}T${this.step1Form.get('endTime')?.value}`;
+      let endDateValue = this.step1Form.get('endDate')?.value;
+      let endTimeValue = this.step1Form.get('endTime')?.value;
+      let endDateTime = endDateValue && endTimeValue ? `${endDateValue}T${endTimeValue}` : null;
       let createOpt: TrainingProgramCreateOptions = {
       tPVersionNo: this.step1Form.get('version')?.value,
       trainingProgramTypeId: this.step1Form.get('trainingProgtype')?.value,
@@ -537,8 +541,12 @@ else
       title: this.trainingProgram.programTitle,
       startdate: this.getDateStringFromUtc(this.trainingProgram.startDate),
       startTime:this.getTimeFromUtc(this.trainingProgram.startDate),
-      endDate: this.getDateStringFromUtc(this.trainingProgram.endDate),
-      endTime:this.getTimeFromUtc(this.trainingProgram.endDate),
+      endDate: this.trainingProgram.endDate 
+        ? this.getDateStringFromUtc(this.trainingProgram.endDate)
+        : null,
+      endTime: this.trainingProgram.endDate 
+        ? this.getTimeFromUtc(this.trainingProgram.endDate)
+        : null,
       description:  this.trainingProgram.description,
       version: this.trainingProgram.tpVersionNo,
       year: parseInt(this.getYearOnly(this.trainingProgram.year), 10)

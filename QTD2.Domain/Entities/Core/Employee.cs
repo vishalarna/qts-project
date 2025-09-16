@@ -102,6 +102,15 @@ namespace QTD2.Domain.Entities.Core
         public virtual ICollection<ClassSchedule_Evaluator_Link> ClassSchedule_Evaluator_Links { get; set; } = new List<ClassSchedule_Evaluator_Link>();
         public virtual ICollection<SkillQualification> SkillQualifications { get; set; } = new List<SkillQualification>();
         public virtual ICollection<SkillQualification_Evaluator_Link> SkillQualification_Evaluator_Links { get; set; } = new List<SkillQualification_Evaluator_Link>();
+        public virtual ICollection<SkillQualificationEmp_SignOff> SkillQualificationEmp_SignOffAsEvaluator { get; set; } = new List<SkillQualificationEmp_SignOff>();
+        public virtual ICollection<SkillQualificationEmp_SignOff> SkillQualificationEmp_SignOffAsTrainee { get; set; } = new List<SkillQualificationEmp_SignOff>();
+        public virtual ICollection<SkillReQualificationEmp_QuestionAnswer> SkillReQualificationEmp_QuestionAnswerAsEvaluator { get; set; } = new List<SkillReQualificationEmp_QuestionAnswer>();
+        public virtual ICollection<SkillReQualificationEmp_QuestionAnswer> SkillReQualificationEmp_QuestionAnswerAsTrainee { get; set; } = new List<SkillReQualificationEmp_QuestionAnswer>();
+        public virtual ICollection<SkillReQualificationEmp_Suggestion> SkillReQualificationEmp_SuggestionAsEvaluator { get; set; } = new List<SkillReQualificationEmp_Suggestion>();
+        public virtual ICollection<SkillReQualificationEmp_Suggestion> SkillReQualificationEmp_SuggestionAsTrainee { get; set; } = new List<SkillReQualificationEmp_Suggestion>();
+        public virtual ICollection<SkillReQualificationEmp_Step> SkillReQualificationEmp_StepAsEvaluator { get; set; } = new List<SkillReQualificationEmp_Step>();
+        public virtual ICollection<SkillReQualificationEmp_Step> SkillReQualificationEmp_StepAsTrainee { get; set; } = new List<SkillReQualificationEmp_Step>();
+
         public Employee(int personId, string employeeNumber, string address, string city, string state, string zipCode, string phoneNumber, string workLocation, string notes, bool tQEqulator, string password, DateOnly? inactiveDate, string? reason, bool publicUser)
         {
             PersonId = personId;

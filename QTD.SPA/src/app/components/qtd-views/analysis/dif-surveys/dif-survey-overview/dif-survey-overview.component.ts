@@ -1,6 +1,6 @@
 import { TemplatePortal } from '@angular/cdk/portal';
 import { DatePipe } from '@angular/common';
-import { Component, Input, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { MatSort } from '@angular/material/sort';
 import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
@@ -30,6 +30,8 @@ export class DifSurveyOverviewComponent implements OnInit {
   difSurveys:DIFSurveyOverview_DIFSurvey_VM[];
   filteredDifOverviews:DIFSurveyOverview_DIFSurvey_VM[];
   @ViewChild(MatSort) sort: MatSort;
+  selectedRow: any;
+  @ViewChild('EditPopup') EditPopup!: TemplateRef<any>;
   
   constructor(
     private vcf: ViewContainerRef,
@@ -171,5 +173,21 @@ export class DifSurveyOverviewComponent implements OnInit {
             this.alert.successToast("DIF Survey Status Successfully Updated");
           }
       })
-  }  
+  }
+  handleEditClick(row: any) {
+    if (row.editable) {
+      this.editDifSurvey(row.id);
+    } else {
+      this.openDialog(this.EditPopup, row);
+    }
+  }
+  openDialog(templateRef: any, row?: any) {
+    this.selectedRow = row; 
+    this.dialog.open(templateRef, {
+      width: '600px',
+      height: 'auto',
+      hasBackdrop: true,
+      disableClose: true,
+    });
+  }
 }

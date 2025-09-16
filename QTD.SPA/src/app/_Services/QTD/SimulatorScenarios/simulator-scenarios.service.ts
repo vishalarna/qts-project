@@ -4,13 +4,12 @@ import { SimulatorScenario_CollaboratorPermissions_VM } from '@models/SimulatorS
 import { SimulatorScenario_Collaborator_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Collaborator_VM';
 import { SimulatorScenario_Difficulty_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Difficulty_VM';
 import { SimulatorScenario_EnablingObjective_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_EnablingObjective_VM';
-import { SimulatorScenario_EventAndScript_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_EventAndScript_VM';
+import { SimulatorScenario_Event_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Event_VM';
 import { SimulatorScenario_ILA_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_ILA_VM';
 import { SimulatorScenario_Position_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Position_VM';
 import { SimulatorScenario_Prerequisite_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Prerequisite_VM';
 import { SimulatorScenario_Procedure_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Procedure_VM';
 import { SimulatorScenario_Status_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Status_VM';
-import { SimulatorScenario_Task_Criteria_By_Position_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Task_Criteria_By_Position_VM';
 import { SimulatorScenario_Task_Criteria_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Task_Criteria_VM';
 import { SimulatorScenario_TasksResponseVM } from '@models/SimulatorScenarios_New/SimulatorScenario_TasksResponseVM';
 import { SimulatorScenario_UpdateCollaborators_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_UpdateCollaborators_VM';
@@ -152,7 +151,7 @@ export class SimulatorScenariosService {
       .get(this.baseUrlWithSim + `/${id}/positions/${positionId}/taskCriterias`)
       .pipe(
         map((res: any) => {
-          return res['result'] as SimulatorScenario_Task_Criteria_By_Position_VM[];
+          return res['result'] as SimulatorScenario_Task_Criteria_VM[];
         })
       )
       );
@@ -163,21 +162,21 @@ export class SimulatorScenariosService {
       .get(this.baseUrlWithSim + `/${id}/positions/allTaskCriterias`)
       .pipe(
         map((res: any) => {
-          return res['result'] as SimulatorScenario_Task_Criteria_By_Position_VM[];
+          return res['result'] as SimulatorScenario_Task_Criteria_VM[];
         })
       )
       );
   }
 
-  createEventAndScript(
+  createEventAsync(
     id: string,
-    options: SimulatorScenario_EventAndScript_VM
+    options: SimulatorScenario_Event_VM
   ) {
     return firstValueFrom(this.http
-      .post(this.baseUrlWithSim + `/${id}/eventsAndScripts`, options)
+      .post(this.baseUrlWithSim + `/${id}/events`, options)
       .pipe(
         map((res: any) => {
-          return res['result'] as SimulatorScenario_EventAndScript_VM;
+          return res['result'] as SimulatorScenario_Event_VM;
         })
       )
       );
@@ -284,31 +283,31 @@ export class SimulatorScenariosService {
       );
   }
 
-  getEventAndScriptAsync(id: string,eventAndScriptId:string) {
+  getEventAsync(id: string,eventId:string) {
     return firstValueFrom(this.http
-      .get(this.baseUrlWithSim + `/${id}/eventsAndScripts/${eventAndScriptId}`)
+      .get(this.baseUrlWithSim + `/${id}/events/${eventId}`)
       .pipe(
         map((res: any) => {
-          return res.result as SimulatorScenario_EventAndScript_VM;
+          return res.result as SimulatorScenario_Event_VM;
         })
       )
       );
   }
 
-  updateEventAndScriptAsync(id: string,eventAndScriptId:string, option : SimulatorScenario_EventAndScript_VM) {
+  updateEventAsync(id: string,eventId:string, option : SimulatorScenario_Event_VM) {
     return firstValueFrom(this.http
-      .put(this.baseUrlWithSim + `/${id}/eventsAndScripts/${eventAndScriptId}`,option)
+      .put(this.baseUrlWithSim + `/${id}/events/${eventId}`,option)
       .pipe(
         map((res: any) => {
-          return res.result as SimulatorScenario_EventAndScript_VM;
+          return res.result as SimulatorScenario_Event_VM;
         })
       )
       );
   }
 
-  copyEventAndScriptAsync(id: string,eventAndScriptId:string) {
+  copyEventAsync(id: string,eventId:string) {
     return firstValueFrom(this.http
-      .post(this.baseUrlWithSim + `/${id}/eventsAndScripts/${eventAndScriptId}`, {})
+      .post(this.baseUrlWithSim + `/${id}/events/${eventId}`, {})
       .pipe(
         map((res: any) => {
           return res.result;
@@ -317,9 +316,9 @@ export class SimulatorScenariosService {
       );
   }
 
-  deleteEventAndScriptAsync(id: string,eventAndScriptId:string) {
+  deleteEventAsync(id: string,eventId:string) {
     return firstValueFrom(this.http
-      .delete(this.baseUrlWithSim + `/${id}/eventsAndScripts/${eventAndScriptId}`)
+      .delete(this.baseUrlWithSim + `/${id}/events/${eventId}`)
       .pipe(
         map((res: any) => {
           return res;
@@ -328,9 +327,9 @@ export class SimulatorScenariosService {
       );
   }
 
-  updateEventsAndScriptsOrderAsync(id: string, options: SimulatorScenario_UpdateEventsAndScriptsOrder_VM) {
+  updateEventsOrderAsync(id: string, options: SimulatorScenario_UpdateEventsAndScriptsOrder_VM) {
     return firstValueFrom(this.http
-      .put(this.baseUrlWithSim + `/${id}/eventsAndScripts/order`, options)
+      .put(this.baseUrlWithSim + `/${id}/events/order`, options)
       .pipe(
         map((res: any) => {
           return res;

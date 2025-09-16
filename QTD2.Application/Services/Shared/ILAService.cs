@@ -4849,5 +4849,73 @@ namespace QTD2.Application.Services.Shared
             return prospectiveILA != null;
         }
 
+        public async Task<ILA> CreateBasicAsync(ILABasicCreateOptions options)
+        {
+            var obj = await _ilaService.GetILAByNameOrNumberAsync(options.Name, options.Number);
+            if (obj != null)
+            {
+                throw new BadHttpRequestException(message: _localizer["ILANameOrNumberAlreadyExists"].Value);
+            }
+
+            var createdBy = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Id;
+            var ila = new ILA(options.Name, options.Number, options.TotalHours, options.ProviderId, options.DeliveryMethodId, options.IsSelfPacedILA ?? false, options.IsPublished ?? false, createdBy);
+
+            var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, ila, AuthorizationOperations.Create);
+
+            if (!result.Succeeded)
+            {
+                throw new UnauthorizedAccessException(message: _localizer["OperationNotAllowed"].Value);
+            }
+
+            var validationResult = await _ilaService.AddAsync(ila);
+            if (!validationResult.IsValid)
+            {
+                throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
+            }
+
+            if (options.CEHUpdates != null && options.CEHUpdates.Any())
+            {
+                foreach (var ceh in options.CEHUpdates)
+                {
+                    var ilaCert = new ILACertificationLink(
+                        ceh.CertificationId,
+                        ila.Id,
+                        ceh.IsIncludeSimulation,
+                        ceh.IsEmergencyOpHours,
+                        ceh.IsPartialCreditHours,
+                        ceh.CEHHours,
+                        createdBy
+                    );
+
+                    var certSaveResult = await _ilaCertificationLinkService.AddAsync(ilaCert);
+                    if (!certSaveResult.IsValid)
+                    {
+                        throw new System.ComponentModel.DataAnnotations.ValidationException(string.Join(',', certSaveResult.Errors));
+                    }
+
+                    if (ceh.SubRequirements != null && ceh.SubRequirements.Any())
+                    {
+                        foreach (var subReq in ceh.SubRequirements)
+                        {
+                            var subRequirementLink = new ILACertificationSubRequirementLink(
+                                ilaCert.Id,                
+                                subReq.SubRequirementId,   
+                                subReq.ReqHour            
+                            );
+
+                            var subReqResult = await _ilaCertificationSubReqLinkService.AddAsync(subRequirementLink);
+                            if (!subReqResult.IsValid)
+                            {
+                                throw new System.ComponentModel.DataAnnotations.ValidationException(string.Join(',', subReqResult.Errors));
+                            }
+                        }
+                    }
+                }
+            }
+
+            return ila;
+        }
+
+
     }
 }

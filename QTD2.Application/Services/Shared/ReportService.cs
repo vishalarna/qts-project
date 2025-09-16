@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 using QTD2.Domain.Services.Core;
 using QTD2.Infrastructure.ExtensionMethods;
 using QTD2.Infrastructure.Model.TrainingProgram;
+using System.ComponentModel.DataAnnotations;
 
 namespace QTD2.Application.Services.Shared
 {
@@ -2659,6 +2660,32 @@ namespace QTD2.Application.Services.Shared
                 filterOptions.Add(filterOption);
             }
             return filterOptions;
+        }
+        public async System.Threading.Tasks.Task DeleteReportsAsync(ReportDeleteOptions options)
+        {
+            foreach (var reportId in options.ReportIds)
+            {
+                var report = await _reportService.GetAsync(reportId);
+                if (report == null) continue; 
+
+                var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User,report,ReportOperations.Delete);
+
+                if (result.Succeeded)
+                {
+                    report.Delete();
+
+                    var validationResult = await _reportService.UpdateAsync(report);
+
+                    if (!validationResult.IsValid)
+                    {
+                        throw new ValidationException(message: string.Join(',', validationResult.Errors));
+                    }
+                }
+                else
+                {
+                    throw new UnauthorizedAccessException("OperationNotAllowed");
+                }
+            }
         }
     }
 }

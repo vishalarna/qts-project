@@ -182,7 +182,7 @@
             <label mat-menu-itemtranslate mat-menu-item translate (click)="openViewDifResultsPage(row)">
               View DIF Results
             </label>
-            <label mat-menu-itemtranslate mat-menu-item translate  [disabled]="!row.editable" (click)="editDifSurvey(row.id)"> Edit </label>
+            <label mat-menu-itemtranslate mat-menu-item translate  (click)="handleEditClick(row)"> Edit </label>
             <label mat-menu-itemtranslate mat-menu-item translate  [disabled]="row.isEmployeeCompleted" (click)="deleteDIFSurvey(deleteDIFSurveyRow, row)"> Delete </label>
             <label *ngIf="row.isActive" mat-menu-itemtranslate mat-menu-item translate [disabled]="row.isEmployeeCompleted" (click)="editDifSurveyAsync(row.id, 'inactive')"> Make Inactive </label>
             <label *ngIf="!row.isActive" mat-menu-itemtranslate mat-menu-item translate [disabled]="row.isEmployeeCompleted" (click)="editDifSurveyAsync(row.id, 'active')"> Make Active </label>
@@ -216,6 +216,16 @@
     confirmText="Yes"
     (canceled)="dialog.closeAll()"
     (confirmed)="editDifSurveyAsync(this.deleteDIFSurveyId, 'delete')"
+  >
+  </app-qtd-dialogue>
+</ng-template>
+<ng-template #EditPopup>
+  <app-qtd-dialogue
+    header="Edit DIF Survey"
+    description="Records indicate that at least one {{('Employee' | labelReplacement)| async}} has launched the DIF Survey, click View Enrollments to view completion status. Editing DIF Survey settings could result in reporting discrepancies."
+    cancelText="No"
+    confirmText="Yes"
+    (confirmed)="editDifSurvey(selectedRow?.id)"
   >
   </app-qtd-dialogue>
 </ng-template>

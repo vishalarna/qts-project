@@ -59,13 +59,27 @@
             <mat-table #traineeCompletedSort="matSort" [dataSource]="completedDataSourceTrainee" matSort
               (matSortChange)="sortTraineeCompletedQualifiactions($event)">
               <ng-container matColumnDef="number">
-                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Task" | labelReplacement)| async}} #
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Task" | labelReplacement)| async}} / Skill #
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row; let i = index">{{row.number}} </mat-cell>
+                <mat-cell *matCellDef="let row; let i = index">
+                  <span *ngIf="row.number">
+                    {{row.number}}
+                  </span>
+                  <span *ngIf="row.enablingObjectiveNumber">
+                    {{row.enablingObjectiveNumber}}
+                  </span>
+                </mat-cell>
               </ng-container>
               <ng-container matColumnDef="taskDescription">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Task" | labelReplacement)| async}} Statement</mat-header-cell>
-                <mat-cell *matCellDef="let row"> {{row.taskDescription}} </mat-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Task" | labelReplacement)| async}} / Skill Statement</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                   <span *ngIf="row.taskDescription">
+                    {{row.taskDescription}}
+                  </span>
+                  <span *ngIf="row.enablingObjectiveDescription">
+                    {{row.enablingObjectiveDescription}}
+                  </span>
+                </mat-cell>
               </ng-container>
               <ng-container matColumnDef="posNames">
                 <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Position" | labelReplacement)| async}}</mat-header-cell>
@@ -81,14 +95,24 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Due Date
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                  {{ (row.dueDate | dateFormat | async) }}
+                  <span *ngIf="row.dueDate">
+                    {{ (row.dueDate | dateFormat | async) }}
+                  </span>
+                  <span *ngIf="row.sqDueDate">
+                    {{ (row.sqDueDate | dateFormat | async) }}
+                  </span>
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="completedDate">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Completed Date
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                  {{ (row.taskQualificationDate | dateFormat | async) }}
+                  <span *ngIf="row.taskQualificationDate">
+                    {{ (row.taskQualificationDate | dateFormat | async) }}
+                  </span>
+                  <span *ngIf="row.skillQualificationDate">
+                    {{ (row.skillQualificationDate | dateFormat | async) }}
+                  </span>
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="criteriaMet">
@@ -169,15 +193,31 @@
           <!-- table starts -->
           <div class="flex-row bg-white-one rounded-b-md m-2 ">
             <mat-table #traineePendingSort="matSort" [dataSource]="pendingDataSourceTrainee" matSort>
-              <ng-container matColumnDef="number">
-                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Task" | labelReplacement)| async}} #
+
+              <!-- Task#/Skill# Column -->
+              <ng-container matColumnDef="taskSkillNumber">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{("Task" | labelReplacement)| async}} / Skill #
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row; let i = index">{{row.number}} </mat-cell>
+                <mat-cell *matCellDef="let row">
+                  {{row.number}} {{row.enablingObjectiveNumber}}
+                </mat-cell>
               </ng-container>
-              <ng-container matColumnDef="taskDescription">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Task" | labelReplacement)| async}} Statement</mat-header-cell>
-                <mat-cell *matCellDef="let row"> {{row.taskDescription}} </mat-cell>
-              </ng-container>
+
+              <!-- Task Statement / Skill Statement Column -->
+              <ng-container matColumnDef="taskSkillDescription">
+                <mat-header-cell *matHeaderCellDef mat-sort-header>
+                  {{("Task" | labelReplacement)| async}} / Skill Statement
+                </mat-header-cell>
+                <mat-cell *matCellDef="let row; let i = index">
+                <div *ngIf="row.taskDescription">
+                  {{row.taskDescription}}
+                </div> 
+                <div *ngIf="row.enablingObjectiveDescription">
+                  {{row.enablingObjectiveDescription}}
+                </div>  
+                </mat-cell>
+              </ng-container>              
               <ng-container matColumnDef="posNames">
                 <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Position" | labelReplacement)| async}}</mat-header-cell>
                 <mat-cell *matCellDef="let row"> {{row.posNames}} </mat-cell>
@@ -216,9 +256,9 @@
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="previewTask">
-                <mat-header-cell *matHeaderCellDef mat-sort-header style="justify-content: center;"> Preview {{("Task" | labelReplacement)| async}}</mat-header-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header style="justify-content: center;"> Preview {{("Task" | labelReplacement)| async}}/ Skill</mat-header-cell>
                 <mat-cell *matCellDef="let row" style="justify-content: center;">
-                  <app-button color="blueBorder" text="Preview {{('Task' | labelReplacement)| async}}" size="sm" (clicked)="goToTaskDetail(row)"
+                  <app-button color="blueBorder" text="Preview {{('Task' | labelReplacement)| async}} / Skill" size="sm" (clicked)="goToTaskDetail(row)"
                     iconPosition="left">
                   </app-button>
                 </mat-cell>
@@ -282,13 +322,28 @@
                 <mat-cell *matCellDef="let row; let i = index">{{row.employeeName}} </mat-cell>
               </ng-container>
               <ng-container matColumnDef="number">
-                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Task" | labelReplacement)| async}} #
+                <mat-header-cell *matHeaderCellDef mat-sort-header> {{("Task" | labelReplacement)| async}} / Skill #
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row; let i = index"> {{row.number}}</mat-cell>
+                <mat-cell *matCellDef="let row; let i = index">
+                  <div *ngIf="row.number">
+                    {{row.number}}
+                  </div> 
+                  <div *ngIf="row.enablingObjectiveNumber">
+                    {{row.enablingObjectiveNumber}}
+                  </div>
+                </mat-cell>
               </ng-container>
               <ng-container matColumnDef="taskDescription">
-                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Task" | labelReplacement)| async}} Statement</mat-header-cell>
-                <mat-cell *matCellDef="let row"> {{row.taskDescription}} </mat-cell>
+                <mat-header-cell *matHeaderCellDef mat-sort-header>{{("Task" | labelReplacement)| async}} / Skill
+                  Statement</mat-header-cell>
+                <mat-cell *matCellDef="let row">
+                <div *ngIf="row.taskDescription">
+                    {{row.taskDescription}}
+                  </div> 
+                  <div *ngIf="row.enablingObjectiveDescription">
+                    {{row.enablingObjectiveDescription}}
+                  </div>  
+                </mat-cell>
               </ng-container>
 
               <ng-container matColumnDef="empReleaseDate">
@@ -301,7 +356,12 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Due Date
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                  {{ (row.dueDate | dateFormat | async) }}
+                  <div *ngIf="row.taskDescription">
+                    {{(row.dueDate | dateFormat | async)}}
+                  </div> 
+                  <div *ngIf="row.enablingObjectiveDescription">
+                    {{(row.sqDueDate | dateFormat | async)}}
+                  </div>
                 </mat-cell>
               </ng-container>
 
@@ -309,13 +369,18 @@
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Completed Date
                 </mat-header-cell>
                 <mat-cell *matCellDef="let row">
-                  {{ (row.taskQualificationDate | dateFormat | async) }}
+                  <div *ngIf="row.taskQualificationDate">
+                    {{(row.taskQualificationDate | dateFormat | async) }}
+                  </div> 
+                  <div *ngIf="row.skillQualificationDate">
+                    {{(row.skillQualificationDate | dateFormat | async)}}
+                  </div>
                 </mat-cell>
               </ng-container>
               <ng-container matColumnDef="criteriaMet">
                 <mat-header-cell *matHeaderCellDef mat-sort-header>Criteria Met
                 </mat-header-cell>
-                <mat-cell *matCellDef="let row" [ngClass] = "row.criteriaMet ? 'green' :'red'">
+                <mat-cell *matCellDef="let row" [ngClass]="row.criteriaMet ? 'green' :'red'">
                   {{(row.criteriaMet) ? "Y" : "N"}}
                 </mat-cell>
               </ng-container>
@@ -346,7 +411,7 @@
 
       </mat-tab>
       <mat-tab label="Pending {{('Procedure' | labelReplacement)| async}} Reviews">
-        <ng-template mat-tab-label >
+        <ng-template mat-tab-label>
           <span (click)="setActiveTab(1)">Pending {{("Task" | labelReplacement)| async}} & Skill Qualifications
 
           </span>
@@ -364,16 +429,19 @@
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                 d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
             </svg>
-            <input class="text-sm flex-grow focus:outline-none" placeholder="Search by date, keyword, or  {{('Location' | labelReplacement)| async}}. "
-              type="text" (keyup)="filterPendingEvalTasks($event)">
+            <input class="text-sm flex-grow focus:outline-none"
+              placeholder="Search by date, keyword, or  {{('Location' | labelReplacement)| async}}. " type="text"
+              (keyup)="filterPendingEvalTasks($event)">
             <div class="flex flex-row space-x-4 text-sm">
               <mat-button-toggle-group [(ngModel)]="fontStyle" aria-label="Font Style"
                 (change)="changePendingView($event.value)">
                 <mat-button-toggle value="taskView"
-                  style="color: #456FA5; background-color: white; border: 1px solid #E4E6E5;">{{("Task" | labelReplacement)| async}} View
+                  style="color: #456FA5; background-color: white; border: 1px solid #E4E6E5;">{{("Task" |
+                  labelReplacement)| async}} / Skill View
                 </mat-button-toggle>
                 <mat-button-toggle value="empView"
-                  style="color: #456FA5; background-color: white; border: 1px solid #E4E6E5;">{{("Employee" | labelReplacement)| async}}
+                  style="color: #456FA5; background-color: white; border: 1px solid #E4E6E5;">{{("Employee" |
+                  labelReplacement)| async}}
                   View
                 </mat-button-toggle>
               </mat-button-toggle-group>
@@ -382,18 +450,19 @@
           <!-- search and button ends -->
           <!-- table starts -->
           <div class="flex-row bg-white-one rounded-b-md m-2 " *ngIf="!isEmpView">
-            <mat-table mat-table #evalTaskSort="matSort" [dataSource]="pendingDataSourceEval"
-              multiTemplateDataRows class="w-full display-table" matSort (matSortChange)="sortEvaluatorPendingTaskQualifications($event)">          
+            <mat-table mat-table #evalTaskSort="matSort" [dataSource]="pendingDataSourceEval" multiTemplateDataRows
+              class="w-full display-table" matSort (matSortChange)="sortEvaluatorPendingTaskQualifications($event)">
               <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplayEval">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
                   <div *ngIf="column==='expand'">
                     #
                   </div>
-                  <div *ngIf="column==='taskNumber'">
-                    {{("Task" | labelReplacement)| async}} #
+                  <div *ngIf="column==='taskSkillNumber'">
+                    {{("Task" | labelReplacement)| async}} / Skill #
                   </div>
-                  <div *ngIf="column==='taskDescription'">
-                    {{("Task" | labelReplacement)| async}} Statement
+
+                  <div *ngIf="column==='taskSkillDescription'">
+                    {{("Task" | labelReplacement)| async}} / Skill Statement
                   </div>
                 </th>
                 <td mat-cell *matCellDef="let element; let i = dataIndex">
@@ -401,27 +470,29 @@
                                         element === expandedElement
                                           ? 'keyboard_arrow_up'
                                           : 'keyboard_arrow_down'
-                                      }}"
-                              *ngIf="column === 'expand'"
-                              (clicked)="getexpandedDetails(element,i)"
-                  ></app-button>
-                  <div *ngIf="column==='taskNumber'">
-                    <!-- {{ element.letter}}{{element.daNumber}}.{{element.sdaNumber}}.{{element.task.number}} -->
-                    {{element.taskNumber}}
+                                      }}" *ngIf="column === 'expand'"
+                    (clicked)="getexpandedDetails(element,i)"></app-button>
+                  <div *ngIf="column==='taskSkillNumber'">
+                    <span *ngIf="element.taskNumber">{{ element.taskNumber }}</span>
+                    <span *ngIf="element.skillFullNumber"> {{ element.skillFullNumber }}</span>
                   </div>
-                  <div *ngIf="column==='taskDescription'">
-                    {{ element.taskDescription}}
+
+                  <!-- Task Statement / Skill Statement -->
+                  <div *ngIf="column==='taskSkillDescription'">
+                    <span *ngIf="element.taskDescription">{{ element.taskDescription }}</span>
+                    <span *ngIf="element.skillDescription"> {{ element.skillDescription }}</span>
                   </div>
                 </td>
               </ng-container>
 
               <ng-container matColumnDef="expandedDetail">
                 <td mat-cell *matCellDef="let elementParent" [attr.colspan]="columnsToDisplayEval.length">
-                  <div class="example-element-detail" 
+                  <div class="example-element-detail"
                     [@detailExpand]="elementParent == expandedElement ? 'expanded' : 'collapsed'">
-                    <div class="inner-table mat-elevation-z8" *ngIf="expandedElement && elementParent == expandedElement">
-                      <table  mat-table #evalTaskInnerTables #evalTaskSortExpand="matSort" [dataSource]="elementParent.taskQualsByTaskVMs" matSort
-                        class="w-full">
+                    <div class="inner-table mat-elevation-z8"
+                      *ngIf="expandedElement && elementParent == expandedElement">
+                      <table mat-table #evalTaskInnerTables #evalTaskSortExpand="matSort"
+                        [dataSource]="elementParent.taskQualsByTaskVMs" matSort class="w-full">
                         <ng-container matColumnDef="{{innerColumn}}"
                           *ngFor="let innerColumn of innerDisplayedColumnsEval">
                           <th mat-header-cell *matHeaderCellDef mat-sort-header>
@@ -567,8 +638,9 @@
                             <div *ngIf="innerColumn==='action'">
                               <div class="flex flex-row space-x-4 text-sm">
                                 <app-button color="blueBorder"
-                                            text="Start {{('Task' | labelReplacement)| async}} Qualification" [disabled]="!element.canStart"
-                                            (clicked)="startTaskEvalPending(element,elementParent)" size="sm">
+                                  text="Start {{('Task' | labelReplacement)| async}} / Skill Qualification"
+                                  [disabled]="!element.canStart" (clicked)="startTaskEvalPending(element,elementParent)"
+                                  size="sm">
                                 </app-button>
                               </div>
                             </div>
@@ -604,8 +676,8 @@
           <!-- table ends -->
           <!-- table starts -->
           <div class="flex-row bg-white-one rounded-b-md m-2 " *ngIf="isEmpView">
-            <table mat-table #evalEmpSort="matSort" [dataSource]="pendingDataEmpView" multiTemplateDataRows class="w-full"
-              matSort (matSortChange)="sortEvaluatorPendingEmpQualifications($event)">
+            <table mat-table #evalEmpSort="matSort" [dataSource]="pendingDataEmpView" multiTemplateDataRows
+              class="w-full" matSort (matSortChange)="sortEvaluatorPendingEmpQualifications($event)">
               <ng-container matColumnDef="{{column}}" *ngFor="let column of columnsToDisplayEMP">
                 <th mat-header-cell *matHeaderCellDef mat-sort-header>
                   <div *ngIf="column==='expand'">
@@ -623,7 +695,7 @@
                                                   ? 'keyboard_arrow_up'
                                                   : 'keyboard_arrow_down'
                                               }}" *ngIf="column === 'expand'"
-                                              (click)="toggleRowEMP(element,i, element.empId)"></app-button>
+                    (click)="toggleRowEMP(element,i, element.empId)"></app-button>
 
                   <div *ngIf="column==='empFName'" class="flex flex-row" style="align-items:center;">
                     <img style="border-radius: 50%; width: 50px; height: 50px" class="img-fluid mr-2 mt-2 ml-2 mb-2"
@@ -645,21 +717,22 @@
                   [attr.colspan]="columnsToDisplayEMP.length">
                   <div class="example-element-detail"
                     [@detailExpand]="elementParent == expandedElement ? 'expanded' : 'collapsed'">
-                    <div class="inner-table mat-elevation-z8" *ngIf="expandedElement && elementParent == expandedElement">
-                      <table  mat-table
-                             [dataSource]="elementParent.taskQualsByEmpVMs" matSort (matSortChange)="sortEvaluatorPendingEmpTaskQualifications($event,elementParent)"
-                             class="w-full">
+                    <div class="inner-table mat-elevation-z8"
+                      *ngIf="expandedElement && elementParent == expandedElement">
+                      <table mat-table [dataSource]="elementParent.taskQualsByEmpVMs" matSort
+                        (matSortChange)="sortEvaluatorPendingEmpTaskQualifications($event,elementParent)"
+                        class="w-full">
                         <ng-container matColumnDef="{{innerColumn}}"
                           *ngFor="let innerColumn of innerDisplayedColumnsEMP">
                           <th mat-header-cell *matHeaderCellDef mat-sort-header
                             [ngClass]="{'taskStatementWidth' : innerColumn === 'taskStatement'}">
 
-                            <div *ngIf="innerColumn === 'taskNumber'">
-                              {{("Task" | labelReplacement)| async}} #
+                            <div *ngIf="innerColumn === 'taskSkillNumber'">
+                              {{("Task" | labelReplacement)| async}} / Skill #
 
                             </div>
-                            <div *ngIf="innerColumn === 'taskDescription'">
-                              {{("Task" | labelReplacement)| async}} Statement
+                            <div *ngIf="innerColumn === 'taskSkillDescription'">
+                              {{("Task" | labelReplacement)| async}} / Skill Statement
 
                             </div>
                             <div *ngIf="innerColumn === 'releaseDate'">
@@ -667,7 +740,7 @@
 
                             </div>
                             <div *ngIf="innerColumn === 'dueDate'">
-                              Due Date
+                             TQ/SQ Due Date
 
                             </div>
                             <div *ngIf="innerColumn === 'requiredRequals'">
@@ -681,11 +754,13 @@
                           </th>
 
                           <td mat-cell *matCellDef="let element">
-                            <div *ngIf="innerColumn==='taskNumber'">
-                              {{element.taskNumber}}
+                            <div *ngIf="innerColumn==='taskSkillNumber'">
+                              <span *ngIf="element.taskNumber">{{ element.taskNumber }}</span>
+                              <span *ngIf="element.skillNumber"> {{ element.skillNumber }}</span>
                             </div>
-                            <div *ngIf="innerColumn==='taskDescription'">
-                              {{element.taskDescription}}
+                            <div *ngIf="innerColumn==='taskSkillDescription'">
+                              <span *ngIf="element.taskDescription">{{ element.taskDescription }}</span>
+                              <span *ngIf="element.skillDescription"> {{ element.skillDescription }}</span>
                             </div>
                             <div *ngIf="innerColumn==='releaseDate'">
                               {{ (element.releaseDate | dateFormat | async) }}
@@ -698,7 +773,8 @@
                             </div>
                             <div *ngIf="innerColumn==='action'">
                               <div class="flex flex-row space-x-4 text-sm">
-                                <app-button color="blueBorder" text="Start {{('Task' | labelReplacement)| async}} Qualification"
+                                <app-button color="blueBorder"
+                                  text="Start {{('Task' | labelReplacement)| async}} / Skill Qualification"
                                   [disabled]="!element.canStart" (clicked)="startTask(element,elementParent)" size="sm">
                                 </app-button>
 

@@ -24,5 +24,10 @@ namespace QTD2.Domain.Services.Core
             return simulatorScenario_Prerequisite.ToList();
         }
 
+        public async Task<List<SimulatorScenario_Prerequisite>> GetPrerequisiteByILAIdAsync(int iLAId)
+        {
+            var simulatorScenario_Prerequisite = await FindAsync(x => x.PrerequisiteId == iLAId);
+            return simulatorScenario_Prerequisite.ToList();
+        }
     }
 }

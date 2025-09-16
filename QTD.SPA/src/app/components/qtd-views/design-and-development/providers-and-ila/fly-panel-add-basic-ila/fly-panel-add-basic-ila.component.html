@@ -1,0 +1,446 @@
+<div class="flex flex-col px-12 py-12">
+  <div class="flex flex-row justify-between items-center ">
+    <p class="text-xl font-bold text-gray-900">
+      Add Quick {{ "ILA" | labelReplacement | async }}
+    </p>
+    <app-button
+      (clicked)="closed.emit('fp-add-ila-closed')"
+      ButtonType="icon"
+      icon="close"
+    >
+    </app-button>
+  </div>
+
+  <form class="flex flex-col mt-4 space-y-4" [formGroup]="basicIlaForm">
+    <div class="flex items-center gap-4 w-full">
+      <app-label
+        for="providerId"
+        text="Provider: "
+        class="label-fixed required font-semibold text-lg"
+      ></app-label>
+      <div class="input-container">
+        <mat-select
+          formControlName="providerId"
+          placeholder="Select Provider"
+          class="appearance-none rounded border w-full px-4 py-2.5 mt-2"
+        >
+          <app-data-loader *ngIf="providerLoader"></app-data-loader>
+          <mat-option *ngFor="let p of providers" [value]="p.id">
+            {{ p.name }}
+          </mat-option>
+        </mat-select>
+        <app-input-error *ngIf="basicIlaForm.get('providerId')?.invalid" text="Provider is required"></app-input-error>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 w-full">
+      <app-label
+        for="name"
+        text="{{ 'ILA' | labelReplacement | async }} Name: "
+        class="label-fixed required font-semibold text-lg"
+      ></app-label>
+      <div class="input-container">
+        <app-textbox
+          formControlName="name"
+          placeholder="Enter {{ 'ILA' | labelReplacement | async }} Name"
+        ></app-textbox>
+        <app-input-error *ngIf="basicIlaForm.get('name')?.invalid" text="ILA Name is required"></app-input-error>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 w-full">
+      <app-label
+        for="number"
+        text="{{ 'ILA' | labelReplacement | async }} Number: "
+        class="label-fixed required font-semibold text-lg"
+      ></app-label>
+      <div class="input-container">
+        <app-textbox
+          type="text"
+          formControlName="number"
+          placeholder="Enter {{ 'ILA' | labelReplacement | async }} Number"
+        ></app-textbox>
+        <app-input-error *ngIf="basicIlaForm.get('number')?.invalid" text="ILA Number is required"></app-input-error>
+      </div>
+    </div>
+    <div class="flex items-center gap-4 w-full">
+      <app-label
+        for="totalHours"
+        text="Total Training Hours:"
+        class="label-fixed font-semibold text-lg"
+      ></app-label>
+      <div>
+        <app-textbox
+          type="text"
+          formControlName="totalHours"
+          placeholder="Enter total hours"
+          (keypress)="keyPressNumbers($event)"
+          class="w-32"
+        ></app-textbox>
+      </div>
+    </div>
+    <div class="flex items-center w-full">
+      <div class="flex flex-row items-center mb-4">
+        <p class="text-lg font-semibold mr-3">Credit Hours:</p>
+      </div>
+    </div>
+    <div class="flex flex-col ">
+      <div class=" border-0.5 rounded mat-elevation-z2 h-auto px-4 py-3 bg-white-one">
+        <div class="flex flex-row justify-end">
+          <div class="flex flex-row space-x-4 text-sm">
+            <mat-button-toggle-group [value]="creditHoursView" aria-label="Font Style" (change)="changeCreditHoursView($event.value)">
+              <mat-button-toggle
+                value="ByCertification" style=" color: #456fa5; background-color: white; border: 1px solid #e4e6e5;">By {{ "Certification" | labelReplacement | async }}
+              </mat-button-toggle>
+              <mat-button-toggle
+                value="ByCertifyingBody" style=" color: #456fa5; background-color: white; border: 1px solid #e4e6e5;">By Certifying Body
+              </mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+        </div>
+        <div *ngIf="creditHoursView == 'ByCertification'">
+          <app-spinner *ngIf="certificationLoader"></app-spinner>
+          <div *ngIf="!certificationLoader">
+            <mat-form-field appearance="outline" class="dropdown w-full">
+              <mat-select
+                formControlName="certificationSelected"
+                (selectionChange)="certificationSelectionChange($event)"
+                placeholder="Select {{('Certification' | labelReplacement)| async}}">
+                <mat-option
+                  *ngFor="let d of CertificatesList"
+                  [value]="d.certificationId">
+                  {{ d.certificationName }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <form
+            class="flex flex-row justify-between w-full mt-4"
+            *ngIf="certificationSelected && !certificationLoader"
+            [formGroup]="basicIlaForm">
+            <table class="table-auto">
+              <tbody>
+                <tr>
+                  <td>
+                    <app-label
+                      class="table-column font-normal pb-6 label required"
+                      [for]="'cehHours'"
+                      [text]="'CEH Hours'"
+                    >
+                    </app-label>
+                  </td>
+                  <td>
+                    <input
+                      class="mb-3 border mx-4 py-1 w-20 rounded"
+                      [formControlName]="'cehHours'"
+                      type="number"
+                      [name]="'CEH HOURS'"
+                    />
+                  </td>
+                </tr>
+                <tr *ngIf="certifyingBodySubRequirements && certifyingBodySubRequirements.length > 0">
+                  <td colspan="2">
+                    <p class="text-green-800 font-semibold">Sub Requirement Details</p>
+                  </td>
+                </tr>
+                
+                <tr *ngFor="let data of certifyingBodySubRequirements">
+                  <td>
+                    <app-label
+                      class="table-column font-normal pb-6 label required"
+                      [for]="data.subRequirementId"
+                      [text]="data.reqName">
+                    </app-label>
+                  </td>
+                  <td>
+                    <app-input-error
+                      *ngIf="basicIlaForm.get(data.subRequirementId)?.errors?.['required'] 
+                             && basicIlaForm.get(data.subRequirementId)?.dirty"
+                      class="mx-4 text-sm"
+                      text="Required">
+                    </app-input-error>
+                
+                    <app-input-error
+                      *ngIf="basicIlaForm.get(data.subRequirementId)?.errors?.['pattern']"
+                      class="mx-4 text-sm"
+                      text="Number is Required">
+                    </app-input-error>
+                
+                    <input
+                      class="mb-3 border mx-4 py-1 w-20 rounded"
+                      type="number"
+                      [formControlName]="data.subRequirementId"
+                      [name]="data.subRequirementId" />
+                  </td>
+                </tr>                
+              </tbody>
+            </table>
+            <div class="pr-4">
+              <div
+                class="flex flex-row"
+                *ngIf="certificationSelected"
+              >
+                <mat-checkbox formControlName="includeSimulation"
+                  >Includes Simulations</mat-checkbox
+                >
+              </div>
+              <div
+                class="flex flex-row"
+                *ngIf="certificationSelected"
+              >
+                <mat-checkbox formControlName="emergencyOPHours"
+                  >Count toward Emergency Operating training</mat-checkbox
+                >
+              </div>
+              <div class="flex flex-row" *ngIf="certificationSelected">
+                <mat-checkbox formControlName="partialCredit"
+                  >Partial Credit allowed</mat-checkbox
+                >
+              </div>
+
+              <div class="flex flex-row justify-end py-8">
+                <app-button
+                [disabled]="!isSelectedAndSaved()"
+                  (click)="deleteLinksByCertifications()"
+                  type="button"
+                  color="secondary"
+                  size="sm"
+                  text="Delete"
+                  style="margin-right: 4px"
+                >
+                </app-button>
+                <app-button
+                  (click)="saveByCertifications()"
+                  type="button"
+                  color="secondary"
+                  size="sm"
+                  text="Save"
+                >
+                </app-button>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div *ngIf="creditHoursView == 'ByCertifyingBody'">
+          <app-spinner *ngIf="certificationLoader"></app-spinner>
+          <div *ngIf="!certificationLoader">
+            <mat-form-field appearance="outline" class="dropdown w-full">
+              <mat-select
+                formControlName="certifyingBodySelected"
+                (selectionChange)="certifyingBodySelectionChange($event)"
+                placeholder="Select Certifying Body">
+                <mat-option *ngFor="let body of certifyingBodiesList" [value]="body.certifyingBody?.name">
+                  {{ body.certifyingBody.name }}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
+          </div>
+          <form
+            class="flex flex-row justify-between w-full mt-4"
+            *ngIf="certifyingBodySelected && !certificationLoader"
+            [formGroup]="basicIlaForm">
+            <table class="table-auto">
+              <!--Div for textboxes-->
+              <tbody>
+                <tr>
+                  <td>
+                    <app-label
+                      class="table-column font-normal pb-6 label required"
+                      [for]="'cehHours'"
+                      [text]="'CEH Hours'"
+                    >
+                    </app-label>
+                  </td>
+                  <td>
+                    <input
+                      class="mb-3 border mx-4 py-1 w-20 rounded"
+                      [formControlName]="'cehHours'"
+                      type="number"
+                      [name]="'CEH HOURS'"
+                    />
+                  </td>
+                </tr>
+                <tr *ngIf="subrequirements && subrequirements.length > 0">
+                  <td>
+                    <p class="text-green-800">Sub Requirement Details</p>
+                  </td>
+                </tr>
+                <tr *ngFor="let subReq of subrequirements">
+                  <td>
+                    <app-label
+                      class="table-column font-normal pb-6 label required"
+                      [for]="subReq.subRequirementId"
+                      [text]="subReq.reqName">
+                    </app-label>
+                  </td>
+                  <td>
+                    <app-input-error
+                      *ngIf="basicIlaForm.get(subReq.subRequirementId.toString())?.errors?.['required'] &&
+                             basicIlaForm.get(subReq.subRequirementId.toString())?.dirty"
+                      class="mx-4 text-sm"
+                      text="Required">
+                    </app-input-error>
+        
+                    <app-input-error
+                      *ngIf="basicIlaForm.get(subReq.subRequirementId.toString())?.errors?.['pattern']"
+                      class="mx-4 text-sm"
+                      [text]="'Number is Required'">
+                    </app-input-error>
+        
+                    <input
+                      class="mb-3 border mx-4 py-1 w-20 rounded"
+                      [formControlName]="subReq.subRequirementId.toString()"
+                      type="number"
+                      [name]="subReq.reqName" />
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+            <!--Div for checkboxes-->
+            <div class="pr-4">
+              <div
+                class="flex flex-row"
+                *ngIf="certifyingBodySelected"
+              >
+                <mat-checkbox formControlName="includeSimulation"
+                  >Includes Simulations</mat-checkbox
+                >
+              </div>
+              <div
+                class="flex flex-row"
+                *ngIf="certifyingBodySelected"
+              >
+                <mat-checkbox formControlName="emergencyOPHours"
+                  >Count toward Emergency Operating training</mat-checkbox
+                >
+              </div>
+              <div class="flex flex-row" *ngIf="certifyingBodySelected">
+                <mat-checkbox formControlName="partialCredit"
+                  >Partial Credit allowed</mat-checkbox
+                >
+              </div>
+
+              <div class="flex flex-row justify-end py-8">
+                <app-button
+                [disabled]="!isSelectedAndSaved()"
+                  (click)="deleteLinksByCertifyingBody()"
+                  type="button"
+                  color="secondary"
+                  size="sm"
+                  text="Delete"
+                  style="margin-right: 4px"
+                >
+                </app-button>
+                <app-button
+                  (click)="saveByCertifyingBody()"
+                  type="button"
+                  color="secondary"
+                  size="sm"
+                  text="Save"
+                >
+                </app-button>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div>
+          <p class="text-sm font-semibold">
+            Linked {{ ("Certification" | labelReplacement) | async }}s
+          </p>
+          <p class="text-sm" style="margin-left: 10px" *ngIf="savedCertifications.length < 1">
+            No {{ ("Certification" | labelReplacement) | async }}s Linked
+          </p>
+        
+          <ul style="margin-left: 10px">
+            <li *ngFor="let cert of savedCertifications" class="text-sm mr-2" style="color: green">
+              {{ cert.certificationName }}
+            </li>
+          </ul>
+        </div>
+      </div>       
+    </div>
+    <div class="mt-4">
+      <mat-checkbox
+        formControlName="IsSelfPacedILA"
+        name="selfPaced"
+      >
+        Self Paced
+      </mat-checkbox>
+    </div>
+    <app-label
+        for="deliveryMethodId"
+        text="Delivery Method:"
+        class="font-semibold text-lg"
+      ></app-label>
+    <div class="border-0.5 rounded h-auto w-full bg-white-one px-8 mb-3">
+      <mat-radio-group formControlName="deliveryMethodId" class="w-full">
+        <ng-container *ngIf="!providerSelected">
+          <mat-radio-button
+            *ngFor="let d of deliveryMethods"
+            [value]="d.id"
+            [disabled]="true"
+            class="p-2"
+          >
+            {{ d.name }}
+          </mat-radio-button>
+        </ng-container>
+    
+        <mat-tab-group mat-align-tabs="start" *ngIf="providerSelected">
+          <mat-tab label="NERC" *ngIf="isNercBit">
+            <br />
+            <div class="flex flex-row flex-wrap mt-4">
+              <mat-radio-button
+                *ngFor="let d of deliveryMethods"
+                [value]="d.id"
+                class="p-3"
+                (click)="toggleSelection($event, d.id)"
+              >
+                {{ d.name }}
+              </mat-radio-button>
+            </div>
+          </mat-tab>
+          <mat-tab label="GENERAL" *ngIf="!isNercBit">
+            <br />
+            <div class="flex flex-row flex-wrap mt-4">
+              <mat-radio-button
+                *ngFor="let d of deliveryMethods"
+                [value]="d.id"
+                class="p-3 break-all"
+                (click)="toggleSelection($event, d.id)"
+              >
+                {{ d.name }}
+              </mat-radio-button>
+            </div>
+          </mat-tab>
+    
+        </mat-tab-group>
+      </mat-radio-group>
+    </div>    
+
+    <div class="flex items-center mt-3">
+      <mat-checkbox class="flex items-center" formControlName="addAnother">
+        <span class="ml-1">Add Another</span>
+      </mat-checkbox>
+    </div>    
+
+    <div class="flex flex-row justify-end space-x-4 mt-6">
+      <app-button
+        color="secondary"
+        variant="outlined"
+        size="sm"
+        text="Save as Draft"
+        (clicked)="saveILA('Draft')"
+        [disabled]="!basicIlaForm.valid"
+      >
+      </app-button>
+      <app-button
+        color="primary"
+        variant="contained"
+        size="sm"
+        text="Save as Published"
+        (clicked)="saveILA('Published')"
+        [disabled]="!basicIlaForm.valid"
+      >
+      </app-button>
+    </div>
+  </form>
+</div>

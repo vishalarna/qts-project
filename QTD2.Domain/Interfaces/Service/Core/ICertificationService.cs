@@ -14,5 +14,6 @@ namespace QTD2.Domain.Interfaces.Service.Core
         Task<List<Certification>> GetCertificationsByIdAsync(List<int> certificationIds);
         Task<List<Certification>> GetWithCertifyingBodyAndReqsByIdAsync(List<int> certificationIds);
         Task<List<Certification>> GetNercCertificatesAsync();
+        public Task<List<Certification>> GetCertificationSubRequirementByCertificationIdAsync(int certificationId);
     }
 }

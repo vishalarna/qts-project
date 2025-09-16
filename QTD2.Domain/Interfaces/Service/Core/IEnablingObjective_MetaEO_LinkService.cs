@@ -11,6 +11,5 @@ namespace QTD2.Domain.Interfaces.Service.Core
     {
         Task<List<EnablingObjective_MetaEO_Link>> GetMetaEnablingObjectivesByEoIdAsync(List<int> eoIds, bool includeInactiveEnablingObjectives);
 
-        Task<List<EnablingObjective_MetaEO_Link>> GetMetaEOByEoIdAsync(int eoId);
     }
 }

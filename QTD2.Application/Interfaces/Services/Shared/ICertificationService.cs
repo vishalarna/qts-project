@@ -39,5 +39,6 @@ namespace QTD2.Application.Interfaces.Services.Shared
 
         public Task<List<CertifyingBody>> GetCatActiveInactive(string option);
         public Task<List<Certification>> GetNercCertificatesAsync();
+        public Task<List<SubRequirementVM>> GetSubRequirementsByCertIdAsync(int certId);
     }
 }

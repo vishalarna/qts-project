@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using QTD2.Domain.Entities.Core;
+using QTD2.Infrastructure.Model.DutyArea;
 using QTD2.Infrastructure.Model.FilterOptions;
 using QTD2.Infrastructure.Model.Task;
 using QTD2.Infrastructure.Model.Task_Requalification;
@@ -56,7 +57,7 @@ namespace QTD2.Application.Interfaces.Services.Shared
 
         public Task<List<TQReleasedToEMPVM>> GetTQReleasedToEMP();
 
-        public Task<List<DutyArea>> GetTaskTreeDataWithPositionIdsAsync(EMPFilterOptions option);
+        public Task<List<DutyAreaVm>> GetTaskTreeDataWithPositionIdsAsync(EMPFilterOptions option);
         public Task<List<EnablingObjective>> GetEoTreeWithPositionIds(EMPFilterOptions option);
 
         public Task<List<Employee>> GetEmpDataForPositionsAsync(EMPFilterOptions options);

@@ -17,6 +17,6 @@ namespace QTD2.Infrastructure.Model.Task
 
         public DateTime EffectiveDate { get; set; }
 
-        public List<int> Positions { get; set; }
+        public List<int> PositionIds { get; set; } = new List<int>();
     }
 }

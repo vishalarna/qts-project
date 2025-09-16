@@ -2,6 +2,7 @@
 @using QTD2.Infrastructure.Reports.Generation
 @using QTD2.Infrastructure.ExtensionMethods
 @using System.Text.RegularExpressions
+@using QTD2.Domain.Helpers;
 <style>
     a.pagerNumber {
         text-decoration: none;
@@ -147,7 +148,11 @@
                                             }
                                             @if (Model.DisplayColumns.Where(r => r == "Review Date").Count() > 0)
                                             {
-                                                var reviewDate = @employeePosition.Position.TaskListReviews.OrderByDescending(tlr => tlr.ApprovalDate).FirstOrDefault()?.ApprovalDate;
+                                                var reviewDate = employeePosition.Position.TaskListReview_PositionLinks
+                                                    .Select(link => link.TaskListReview)
+                                                    .OrderByDescending(tlr => tlr.ApprovalDate)
+                                                    .FirstOrDefault()
+                                                    ?.ApprovalDate;
                                                 <div style="display: -webkit-box;display:flex; padding-left:10px; width:50%">
                                                     <span style="width:20%;"><b>Review Date:</b></span>
                                                     <span><b>@(reviewDate != null ? ((DateTime)reviewDate).ToShortDateString() : "")</b> </span>
@@ -159,7 +164,7 @@
                                 <tr>
                                     <td style="border: none; padding-right: 0px; padding-left: 0px;" class="strip-container" colspan="12">
                                         @{
-                                            var validPositionTasks = employeePosition.Position.Position_Tasks.Where(pt => pt.Task != null).ToList();
+                                            var validPositionTasks = employeePosition.Position.Position_Tasks.Where(pt => pt.Task != null).OrderBy(pt => pt.Task?.FullNumber, new AlphaNumericSortHelper()).ToList();
                                         }
                                         @if (validPositionTasks.Any())
                                         {

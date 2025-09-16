@@ -9,6 +9,7 @@ import { ReportExportOptions, ReportExportType } from 'src/app/_DtoModels/Report
 import { ReportSendOptions } from 'src/app/_DtoModels/Report/ReportSendOptions';
 import { ReportFilterOption } from 'src/app/_DtoModels/Report/ReportFilterOption';
 import { firstValueFrom, Observable } from 'rxjs';
+import { ReportsDeleteOptions } from '@models/Report/ReportsDeleteOption';
 
 @Injectable({
   providedIn: 'root',
@@ -180,4 +181,15 @@ export class ApiReportsService implements IReportsService {
       )
       );
   }
+
+  deleteReportsAsync = (options: ReportsDeleteOptions) => {
+    return firstValueFrom(
+      this.http.delete(this.baseUrl + 'reports', {
+        body: options
+      }).pipe(
+        map((res: any) => res)
+      )
+    );
+  }
+  
 }

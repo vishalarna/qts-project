@@ -22,7 +22,7 @@ using ISimulatorScenarioTaskDomainService = QTD2.Domain.Interfaces.Service.Core.
 using ISimulatorScenarioEnablingObjectiveDomainService = QTD2.Domain.Interfaces.Service.Core.ISimulatorScenario_EnablingObjectiveService;
 using ISimulatorScenarioProcedureDomainService = QTD2.Domain.Interfaces.Service.Core.ISimulatorScenario_ProcedureService;
 using ISimulatorScenarioTaskCriteriaDomainService = QTD2.Domain.Interfaces.Service.Core.ISimulatorScenario_Task_CriteriaService;
-using ISimulatorScenarioEventAndScriptDomainService = QTD2.Domain.Interfaces.Service.Core.ISimulatorScenario_EventAndScriptService;
+using ISimulatorScenarioEventDomainService = QTD2.Domain.Interfaces.Service.Core.ISimulatorScenario_EventService;
 using ISimulatorScenarioILADomainService = QTD2.Domain.Interfaces.Service.Core.ISimulatorScenario_ILAService;
 using ISimulatorScenarioPrerequisiteDomainService = QTD2.Domain.Interfaces.Service.Core.ISimulatorScenario_PrerequisiteService;
 using ISimulatorScenarioCollaboratorDomainService = QTD2.Domain.Interfaces.Service.Core.ISimulatorScenario_CollaboratorService;
@@ -34,6 +34,8 @@ using ISimulatorScenarioCollaboratorPermissionDomainService = QTD2.Domain.Interf
 using IPersonDomainService = QTD2.Domain.Interfaces.Service.Core.IPersonService;
 using QTD2.Infrastructure.Model.SimulatorScenario_CollaboratorPermission;
 using QTD2.Domain.Exceptions;
+using ISimulatorScenario_ScriptDomainService = QTD2.Domain.Interfaces.Service.Core.ISimulatorScenario_ScriptService;
+using Microsoft.Extensions.Logging;
 
 namespace QTD2.Application.Services.Shared
 {
@@ -57,7 +59,7 @@ namespace QTD2.Application.Services.Shared
         private readonly IProcedureService _procedureService;
         private readonly ISimulatorScenarioProcedureDomainService _simulatorScenarioProcedureDomainService;
         private readonly ISimulatorScenarioTaskCriteriaDomainService _simulatorScenarioTaskCriteriaDomainService;
-        private readonly ISimulatorScenarioEventAndScriptDomainService _simulatorScenarioEventAndScriptDomainService;
+        private readonly ISimulatorScenarioEventDomainService _simulatorScenarioEventDomainService;
         private readonly ISimulatorScenarioILADomainService _simulatorScenarioILADomainService;
         private readonly ISimulatorScenarioPrerequisiteDomainService _simulatorScenarioPrerequisiteDomainService;
         private readonly ISimulatorScenario_CollaboratorService _simulatorScenario_CollaboratorService;
@@ -65,6 +67,7 @@ namespace QTD2.Application.Services.Shared
         private readonly IQTDUserDomainService _qtdUserDomainService;
         private readonly ISimulatorScenarioCollaboratorPermissionDomainService _simulatorScenarioCollaboratorPermissionDomainService;
         private readonly IPersonDomainService _personDomainService;
+        private readonly ISimulatorScenario_ScriptDomainService _simulatorScenario_ScriptDomainService;
 
         public SimulatorScenarioService(IHttpContextAccessor httpContextAccessor, IAuthorizationService authorizationService, IStringLocalizer<SimulatorScenarioService> localizer,
             ISimulatorScenarioDomainService simulatorScenarioService, UserManager<AppUser> userManager, IILAService ilaService, IPositionService positionService,
@@ -72,12 +75,12 @@ namespace QTD2.Application.Services.Shared
             ISimulatorScenarioPositionDomainService simulatorScenarioPositionDomainService, ISimulatorScenarioTaskDomainService simulatorScenarioTaskDomainService,
             ISimulatorScenarioEnablingObjectiveDomainService simulatorScenarioEnablingObjectiveDomainService, ISimulatorScenarioProcedureDomainService simulatorScenarioProcedureDomainService,
             IProcedureService procedureService, ISimulatorScenarioTaskCriteriaDomainService simulatorScenarioTaskCriteriaDomainService,
-            ISimulatorScenarioEventAndScriptDomainService simulatorScenarioEventAndScriptDomainService, ISimulatorScenarioILADomainService simulatorScenarioILADomainService,
+            ISimulatorScenarioEventDomainService simulatorScenarioEventDomainService, ISimulatorScenarioILADomainService simulatorScenarioILADomainService,
             ISimulatorScenarioPrerequisiteDomainService simulatorScenarioPrerequisiteDomainService, ISimulatorScenario_CollaboratorService simulatorScenario_CollaboratorService,
             ISimulatorScenarioCollaboratorDomainService simulatorScenarioCollaboratorDomainService,
              IPositionDomainService positionDomainService, ITaskDomainService taskDomainService,
              IEnablingObjectiveDomainService enablingObjectiveDomainService, IQTDUserDomainService qtdUserDomainService, ISimulatorScenarioCollaboratorPermissionDomainService simulatorScenarioCollaboratorPermissionDomainService,
-             IPersonDomainService personDomainService)
+             IPersonDomainService personDomainService, ISimulatorScenario_ScriptDomainService simulatorScenario_ScriptDomainService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -91,7 +94,7 @@ namespace QTD2.Application.Services.Shared
             _procedureService = procedureService;
             _simulatorScenarioProcedureDomainService = simulatorScenarioProcedureDomainService;
             _simulatorScenarioTaskCriteriaDomainService = simulatorScenarioTaskCriteriaDomainService;
-            _simulatorScenarioEventAndScriptDomainService = simulatorScenarioEventAndScriptDomainService;
+            _simulatorScenarioEventDomainService = simulatorScenarioEventDomainService;
             _simulatorScenarioILADomainService = simulatorScenarioILADomainService;
             _simulatorScenarioPrerequisiteDomainService = simulatorScenarioPrerequisiteDomainService;
             _simulatorScenario_CollaboratorService = simulatorScenario_CollaboratorService;
@@ -105,6 +108,7 @@ namespace QTD2.Application.Services.Shared
             _qtdUserDomainService = qtdUserDomainService;
             _simulatorScenarioCollaboratorPermissionDomainService = simulatorScenarioCollaboratorPermissionDomainService;
             _personDomainService = personDomainService;
+            _simulatorScenario_ScriptDomainService = simulatorScenario_ScriptDomainService;
         }
 
 
@@ -137,15 +141,15 @@ namespace QTD2.Application.Services.Shared
             else
             {
                 var person = await _personDomainService.GetPersonByUserName(_httpContextAccessor.HttpContext?.User.Identity?.Name);
-                var qtduser = (await _qtdUserDomainService.FindAsync(r=>r.PersonId == person.Id)).FirstOrDefault();
-                var collabPermission = (await _simulatorScenarioCollaboratorPermissionDomainService.FindAsync(r=>r.Permission == "Editor")).FirstOrDefault();
-                var simScenario = new QTD2.Domain.Entities.Core.SimulatorScenario(options.DifficultyId, options.Title, options.Description, options.DurationHours, options.DurationMinutes,1);
+                var qtduser = (await _qtdUserDomainService.FindAsync(r => r.PersonId == person.Id)).FirstOrDefault();
+                var collabPermission = (await _simulatorScenarioCollaboratorPermissionDomainService.FindAsync(r => r.Permission == "Editor")).FirstOrDefault();
+                var simScenario = new QTD2.Domain.Entities.Core.SimulatorScenario(options.DifficultyId, options.Title, options.Description, options.DurationHours, options.DurationMinutes, 1);
                 var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simScenario, AuthorizationOperations.Create);
                 if (result.Succeeded)
                 {
                     var userName = await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
                     simScenario.Create(userName.Id);
-                    if(qtduser != null && collabPermission != null)
+                    if (qtduser != null && collabPermission != null)
                     {
                         simScenario.UpdateCollaborators(qtduser, collabPermission);
                     }
@@ -201,11 +205,26 @@ namespace QTD2.Application.Services.Shared
                     var simulatorScenario_Task_Criteria_VM = new SimulatorScenario_Task_Criteria_VM(simScenario_TaskCriteria.Id, simScenario_TaskCriteria.TaskId, simScenario_TaskCriteria.Task.FullNumber, simScenario_TaskCriteria.Task.Description, simScenario_TaskCriteria.Criteria);
                     simScenarioVM.TaskCriterias.Add(simulatorScenario_Task_Criteria_VM);
                 }
-                foreach (var simScenario_EventsAndScript in simScenario.EventsAndScritps)
+                foreach (var simScenario_Event in simScenario.Events)
                 {
-                    var simulatorScenario_SimulatorScenarioEventAndScript_VM = new SimulatorScenario_SimulatorScenarioEventAndScript_VM(simScenario_EventsAndScript.Id, simScenario_EventsAndScript.Order, simScenario_EventsAndScript.Title, simScenario_EventsAndScript.Description);
-                    simScenarioVM.EventsAndScripts.Add(simulatorScenario_SimulatorScenarioEventAndScript_VM);
+                    var eventVm = new SimulatorScenario_SimulatorScenarioEventAndScript_VM(simScenario_Event.Id, simScenario_Event.Order, simScenario_Event.Title, simScenario_Event.Description);
+
+                    foreach (var script in simScenario_Event.Scripts)
+                    {
+                        var scriptVm = new SimulatorScenario_Script_VM(script.Id, script.Title, script.Description, script.InitiatorId, script.Time, simScenario_Event.Id);
+                        foreach (var criteria in script.Criterias)
+                        {
+                            scriptVm.Criterias.Add(new SimulatorScenario_Script_Criteria_VM
+                            {
+                                Id = criteria.Id,
+                                CriteriaId = criteria.CriteriaId,
+                            });
+                        }
+                        eventVm.SimulatorScenario_Script_VMs.Add(scriptVm);
+                    }
+                    simScenarioVM.EventsAndScripts.Add(eventVm);
                 }
+
                 foreach (var simScenario_ILA in simScenario.ILAs)
                 {
                     var simulatorScenario_ILA_VM = new SimulatorScenario_ILA_VM(simScenario_ILA.Id, simScenario_ILA.ILAID, simScenario_ILA.ILA.Number, simScenario_ILA.ILA.Description);
@@ -218,7 +237,7 @@ namespace QTD2.Application.Services.Shared
                 }
                 foreach (var simScenario_Collaborator in simScenario.Collaborators)
                 {
-                    var simulatorScenario_Collaborator_VM = new SimulatorScenario_Collaborator_VM(simScenario_Collaborator.Id,simScenario_Collaborator.UserId, $"{simScenario_Collaborator.User.Person.FirstName} {simScenario_Collaborator.User.Person.LastName}", simScenario_Collaborator.User.Person.Username, simScenario_Collaborator.PermissionId);
+                    var simulatorScenario_Collaborator_VM = new SimulatorScenario_Collaborator_VM(simScenario_Collaborator.Id, simScenario_Collaborator.UserId, $"{simScenario_Collaborator.User.Person.FirstName} {simScenario_Collaborator.User.Person.LastName}", simScenario_Collaborator.User.Person.Username, simScenario_Collaborator.PermissionId);
                     simScenarioVM.Collaborators.Add(simulatorScenario_Collaborator_VM);
                 }
                 var currentUser = simScenario.Collaborators.FirstOrDefault(x => x.User.PersonId == person.Id);
@@ -292,10 +311,6 @@ namespace QTD2.Application.Services.Shared
             {
                 throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', result.Errors));
             }
-            foreach(var eventScript in obj.EventsAndScritps)
-            {
-                eventScript.Criterias.ForEach(x => x.CriteriaId = obj.TaskCriterias.FirstOrDefault(y => y.TaskId == x.Criteria.TaskId)?.Id ?? 0);
-            }
             result = await _simulatorScenarioService.UpdateAsync(obj);
             if (!result.IsValid)
             {
@@ -357,7 +372,7 @@ namespace QTD2.Application.Services.Shared
             string[] includes = new string[] { "Tasks" };
             includes = options.IncludeEnablingObjectives ? includes.Append("EnablingObjectives").ToArray() : includes;
             includes = options.IncludeProcedures ? includes.Append("Procedures").ToArray() : includes;
-            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id,includes);
+            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, includes);
             var currentTasksLinks = simScenario.Tasks.ToList();
             var simulatorScenario_TasksResponseVM = new SimulatorScenario_TasksResponseVM();
             var optionTasks = options.Tasks.ToList();
@@ -539,7 +554,6 @@ namespace QTD2.Application.Services.Shared
             }
 
         }
-
         public async Task<List<SimulatorScenario_Task_Criteria_By_Position_VM>> GetTaskCriteriasForPositionAsync(int id, int positionId)
         {
             var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Tasks", "TaskCriterias.Task" });
@@ -558,9 +572,16 @@ namespace QTD2.Application.Services.Shared
             var taskCriteriasForPosition = new List<SimulatorScenario_Task_Criteria_By_Position_VM>();
             foreach (var task in simLinkTasks)
             {
-                var taskCriteriaVM = new SimulatorScenario_Task_Criteria_By_Position_VM(
-                    null, task.Id,position.PositionAbbreviation, task.getFullNumber(), task.Description, task.Criteria
-                );
+                var taskCriteriaVM = new SimulatorScenario_Task_Criteria_By_Position_VM()
+                {
+                    Id = null,
+                    TaskId = task.Id,
+                    PositionAbbreviation = position.PositionAbbreviation,
+                    CompleteTaskNumber = task.getFullNumber(),
+                    Description = task.Description,
+                    TaskCriteria = task.Criteria,
+                    Criteria = null
+                };
                 taskCriteriasForPosition.Add(taskCriteriaVM);
             }
             if (simScenario.TaskCriterias != null)
@@ -581,7 +602,7 @@ namespace QTD2.Application.Services.Shared
 
         public async Task<List<SimulatorScenario_Task_Criteria_By_Position_VM>> GetAllTaskCriteriasForPositionAsync(int id)
         {
-            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Tasks","TaskCriterias.Task.SubdutyArea.DutyArea", "Positions" });
+            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Tasks", "TaskCriterias.Task.SubdutyArea.DutyArea", "Positions" });
 
             var taskCriteriaList = new List<SimulatorScenario_Task_Criteria_By_Position_VM>();
             if (simScenario != null)
@@ -591,9 +612,16 @@ namespace QTD2.Application.Services.Shared
                 var simLinkTasks = distinctTasks.Where(x => scenarioTaskIds.Contains(x.Id)).ToList();
                 foreach (var distinctTask in simLinkTasks)
                 {
-                    var taskCriteriaVM = new SimulatorScenario_Task_Criteria_By_Position_VM(
-                        null, distinctTask.Id,distinctTask.Position_Tasks.Select(x => x.Position.PositionAbbreviation).FirstOrDefault(), distinctTask.getFullNumber(), distinctTask.Description, distinctTask.Criteria
-                    );
+                    var taskCriteriaVM = new SimulatorScenario_Task_Criteria_By_Position_VM()
+                    {
+                        Id = null,
+                        TaskId = distinctTask.Id,
+                        PositionAbbreviation = distinctTask.Position_Tasks.Select(x => x.Position.PositionAbbreviation).FirstOrDefault(),
+                        CompleteTaskNumber = distinctTask.getFullNumber(),
+                        Description = distinctTask.Description,
+                        TaskCriteria = distinctTask.Criteria,
+                        Criteria = null
+                    };
                     taskCriteriaList.Add(taskCriteriaVM);
                 }
                 foreach (var taskCriteria in simScenario.TaskCriterias)
@@ -612,6 +640,8 @@ namespace QTD2.Application.Services.Shared
                 throw new QTDServerException(_localizer["RecordNotFound"].Value);
             }
         }
+
+
 
         public SimulatorScenario_Position_VM MapSimulatorScenarioToSimulatorScenario_Position_VM(SimulatorScenario_Position simulatorScenario_Position)
         {
@@ -773,43 +803,39 @@ namespace QTD2.Application.Services.Shared
 
         }
 
-        public async Task<SimulatorScenario_EventAndScript_VM> CreateEventAndScriptAsync(int id, SimulatorScenario_EventAndScript_VM options)
+        public async Task<SimulatorScenario_Event_VM> CreateEventAsync(int id, SimulatorScenario_Event_VM options)
         {
-            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "EventsAndScritps" });
+            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Events" });
             if (simScenario == null || options == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
             else
             {
-                if (simScenario.EventsAndScritps.Count() == 0)
+                if (simScenario.Events.Count() == 0)
                 {
                     options.Order = 1;
                 }
                 else
                 {
-                    var maxOrder = (await _simulatorScenarioEventAndScriptDomainService.FindAsync(r => r.SimulatorScenarioId == id)).Max(s => s.Order);
+                    var maxOrder = (await _simulatorScenarioEventDomainService.FindAsync(r => r.SimulatorScenarioId == id)).Max(s => s.Order);
                     options.Order = maxOrder + 1;
                 }
-                var simulatorScenario_EventAndScript = new QTD2.Domain.Entities.Core.SimulatorScenario_EventAndScript(id, options.Order, options.Title, options.Description, options.InitiatorId, options.Time);
-                var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simulatorScenario_EventAndScript, AuthorizationOperations.Create);
+                var simulatorScenario_Event = new QTD2.Domain.Entities.Core.SimulatorScenario_Event(id, options.Order, options.Title, options.Description);
+                var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simulatorScenario_Event, AuthorizationOperations.Create);
                 if (result.Succeeded)
                 {
                     var userName = await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
-                    simulatorScenario_EventAndScript.Create(userName.Id);
-                    foreach (var value in options.Criterias)
-                    {
-                        var eventAndScriptCriteria = new SimulatorScenario_EventAndScript_Criteria(value.Id, value.CriteriaId);
-                        simulatorScenario_EventAndScript.SetCriterias(eventAndScriptCriteria);
-                    }
-                    var validationResult = await _simulatorScenarioEventAndScriptDomainService.AddAsync(simulatorScenario_EventAndScript);
+                    simulatorScenario_Event.Create(userName.Id);
+
+                    var validationResult = await _simulatorScenarioEventDomainService.AddAsync(simulatorScenario_Event);
                     if (!validationResult.IsValid)
                     {
                         throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
                     }
                     else
                     {
-                        options.Id = simulatorScenario_EventAndScript.Id;
+                        options.Id = simulatorScenario_Event.Id;
                         return options;
                     }
                 }
@@ -821,9 +847,9 @@ namespace QTD2.Application.Services.Shared
             }
         }
 
-        public async Task<SimulatorScenario_EventAndScript_VM> GetEventAndScriptAsync(int id, int EventAndScriptId)
+        public async Task<SimulatorScenario_Event_VM> GetEventAsync(int id, int EventId)
         {
-            var simScenarios = await _simulatorScenarioService.GetWithIncludeAsync(id, new string[] { "EventsAndScritps.Criterias" });
+            var simScenarios = await _simulatorScenarioService.GetWithIncludeAsync(id, new string[] { "Events" });
 
             if (simScenarios == null)
             {
@@ -831,16 +857,10 @@ namespace QTD2.Application.Services.Shared
             }
             else
             {
-                var eventAndScripts = simScenarios.EventsAndScritps.Where(k => k.Id == EventAndScriptId).FirstOrDefault();
-                if (eventAndScripts != null)
+                var events = simScenarios.Events.Where(k => k.Id == EventId).FirstOrDefault();
+                if (events != null)
                 {
-                    var simScenarioEventandScript_VM = new SimulatorScenario_EventAndScript_VM(eventAndScripts.Id, eventAndScripts.Order, eventAndScripts.Title, eventAndScripts.Description, eventAndScripts.InitiatorId, eventAndScripts.Time);
-
-                    foreach (var criteria in eventAndScripts.Criterias)
-                    {
-                        var simulatorScenario_EventAndScript_Criteria_VM = new SimulatorScenario_EventAndScript_Criteria_VM(criteria.Id, criteria.CriteriaId);
-                        simScenarioEventandScript_VM.Criterias.Add(simulatorScenario_EventAndScript_Criteria_VM);
-                    }
+                    var simScenarioEventandScript_VM = new SimulatorScenario_Event_VM(events.Id, events.Order, events.Title, events.Description);
                     return simScenarioEventandScript_VM;
                 }
                 else
@@ -849,7 +869,7 @@ namespace QTD2.Application.Services.Shared
                 }
             }
         }
-        public async System.Threading.Tasks.Task<SimulatorScenario_EventAndScript_VM> CopyEventAndScriptAsync(int id, int eventAndScriptId)
+        public async System.Threading.Tasks.Task<SimulatorScenario_Event_VM> CopyEventAsync(int id, int eventId)
         {
             var createdBy = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Id;
             var obj = await _simulatorScenarioService.GetSimulatorScenarioWithEventsAndScriptsAsync(id);
@@ -860,17 +880,17 @@ namespace QTD2.Application.Services.Shared
             }
             else
             {
-                if (obj.EventsAndScritps == null)
+                if (obj.Events == null)
                 {
                     throw new ArgumentNullException();
                 }
                 else
                 {
-                    var eventAndScripts = obj.EventsAndScritps.Where(k => k.Id == eventAndScriptId).FirstOrDefault();
-                    var maxOrder = obj.EventsAndScritps.Max(x => x.Order);
-                    var copiedEvent = eventAndScripts.Copy<SimulatorScenario_EventAndScript>(createdBy);
+                    var eventAndScripts = obj.Events.Where(k => k.Id == eventId).FirstOrDefault();
+                    var maxOrder = obj.Events.Max(x => x.Order);
+                    var copiedEvent = eventAndScripts.Copy<SimulatorScenario_Event>(createdBy);
                     copiedEvent.Order = maxOrder + 1;
-                    var result = await _simulatorScenarioEventAndScriptDomainService.AddAsync(copiedEvent);
+                    var result = await _simulatorScenarioEventDomainService.AddAsync(copiedEvent);
 
                     if (!result.IsValid)
                     {
@@ -878,16 +898,16 @@ namespace QTD2.Application.Services.Shared
                     }
                     else
                     {
-                        var simScenarioEventAndScriptVM = await GetEventAndScriptAsync(id, copiedEvent.Id);
+                        var simScenarioEventAndScriptVM = await GetEventAsync(id, copiedEvent.Id);
                         return simScenarioEventAndScriptVM;
                     }
                 }
             }
         }
 
-        public async System.Threading.Tasks.Task DeleteEventAndScriptAsync(int id, int EventAndScriptId)
+        public async System.Threading.Tasks.Task DeleteEventAsync(int id, int EventId)
         {
-            var simulatorScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "EventsAndScritps" });
+            var simulatorScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Events" });
             if (simulatorScenario == null)
             {
                 throw new ArgumentNullException();
@@ -895,9 +915,9 @@ namespace QTD2.Application.Services.Shared
             var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simulatorScenario, AuthorizationOperations.Delete);
             if (result.Succeeded)
             {
-                var simScenarioEventandScript = simulatorScenario.EventsAndScritps.FirstOrDefault(k => k.Id == EventAndScriptId);
-                simScenarioEventandScript.Delete();
-                var validationResult = await _simulatorScenarioEventAndScriptDomainService.UpdateAsync(simScenarioEventandScript);
+                var simScenarioEvent = simulatorScenario.Events.FirstOrDefault(k => k.Id == EventId);
+                simScenarioEvent.Delete();
+                var validationResult = await _simulatorScenarioEventDomainService.UpdateAsync(simScenarioEvent);
                 if (!validationResult.IsValid)
                 {
                     throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
@@ -909,51 +929,29 @@ namespace QTD2.Application.Services.Shared
             }
         }
 
-        public async Task<SimulatorScenario_EventAndScript_VM> UpdateEventAndScriptAsync(int id, int EventAndScriptId, SimulatorScenario_EventAndScript_VM options)
+        public async Task<SimulatorScenario_Event_VM> UpdateEventAsync(int id, int EventId, SimulatorScenario_Event_VM options)
         {
-            var simScenario = (await _simulatorScenarioService.FindWithIncludeAsync(r => r.Id == id, new[] { "EventsAndScritps.Criterias" })).FirstOrDefault();
+            var simScenario = (await _simulatorScenarioService.FindWithIncludeAsync(r => r.Id == id, new[] { "Events" })).FirstOrDefault();
             if (simScenario == null)
             {
                 throw new ArgumentNullException(nameof(options));
             }
             else
             {
-                var simScenarioEventAndScript = simScenario.EventsAndScritps.FirstOrDefault(k => k.Id == EventAndScriptId);
-                if (simScenarioEventAndScript != null)
+                var simScenarioEvent = simScenario.Events.FirstOrDefault(k => k.Id == EventId);
+                if (simScenarioEvent != null)
                 {
                     var userName = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Id;
-                    simScenarioEventAndScript.SetDescription(options.Description);
-                    simScenarioEventAndScript.SetOrder(options.Order);
-                    simScenarioEventAndScript.SetTitle(options.Title);
-                    simScenarioEventAndScript.SetTime(options.Time);
-                    simScenarioEventAndScript.SetInitiatorId(options.InitiatorId);
-                    
-                    foreach (var currentCriteria in simScenarioEventAndScript.Criterias)
-                    {
-                        var criteria = options.Criterias.FirstOrDefault(x => x.Id == currentCriteria.Id);
+                    simScenarioEvent.SetDescription(options.Description);
+                    simScenarioEvent.SetOrder(options.Order);
+                    simScenarioEvent.SetTitle(options.Title);
 
-                        if (criteria == null)
-                        {
-                            currentCriteria.Delete();
-                            currentCriteria.Modify(userName);
-                        }
-                    }
-                    foreach (var newCriteria in options.Criterias)
-                    {
-                        var criteria = simScenarioEventAndScript.Criterias.FirstOrDefault(x => x.CriteriaId == newCriteria.CriteriaId);
-                        if (criteria == null)
-                        {
-                            var eventAndScriptCriteria = new SimulatorScenario_EventAndScript_Criteria(simScenarioEventAndScript.Id, newCriteria.CriteriaId);
-                            eventAndScriptCriteria.Create(userName);
-                            simScenarioEventAndScript.SetCriterias(eventAndScriptCriteria);
-                        }
-                    }
-                    var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simScenarioEventAndScript, AuthorizationOperations.Update);
+                    var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simScenarioEvent, AuthorizationOperations.Update);
                     if (result.Succeeded)
                     {
-                       
-                        simScenarioEventAndScript.Modify(userName);
-                        var validationResult = await _simulatorScenarioEventAndScriptDomainService.UpdateAsync(simScenarioEventAndScript);
+
+                        simScenarioEvent.Modify(userName);
+                        var validationResult = await _simulatorScenarioEventDomainService.UpdateAsync(simScenarioEvent);
                         if (!validationResult.IsValid)
                         {
                             throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
@@ -975,9 +973,9 @@ namespace QTD2.Application.Services.Shared
             }
         }
 
-        public async System.Threading.Tasks.Task UpdateEventsAndScriptsOrderAsync(int id, SimulatorScenario_UpdateEventsAndScriptsOrder_VM options)
+        public async System.Threading.Tasks.Task UpdateEventsOrderAsync(int id, SimulatorScenario_UpdateEventsAndScriptsOrder_VM options)
         {
-            var simScenario = (await _simulatorScenarioService.FindWithIncludeAsync(r => r.Id == id, new[] { "EventsAndScritps" })).FirstOrDefault();
+            var simScenario = (await _simulatorScenarioService.FindWithIncludeAsync(r => r.Id == id, new[] { "Events" })).FirstOrDefault();
             if (simScenario == null)
             {
                 throw new ArgumentNullException(nameof(options));
@@ -985,16 +983,16 @@ namespace QTD2.Application.Services.Shared
 
             foreach (var eventAndScriptOrder in options.EventsAndScripts)
             {
-                var simScenarioEventAndScript = simScenario.EventsAndScritps.FirstOrDefault(k => k.Id == eventAndScriptOrder.EventAndScriptId);
-                if (simScenarioEventAndScript != null)
+                var simScenarioEvent = simScenario.Events.FirstOrDefault(k => k.Id == eventAndScriptOrder.EventAndScriptId);
+                if (simScenarioEvent != null)
                 {
-                    simScenarioEventAndScript.SetOrder(eventAndScriptOrder.Order);
-                    var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simScenarioEventAndScript, AuthorizationOperations.Update);
+                    simScenarioEvent.SetOrder(eventAndScriptOrder.Order);
+                    var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simScenarioEvent, AuthorizationOperations.Update);
                     if (result.Succeeded)
                     {
                         var userName = await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
-                        simScenarioEventAndScript.Modify(userName.Id);
-                        var validationResult = await _simulatorScenarioEventAndScriptDomainService.UpdateAsync(simScenarioEventAndScript);
+                        simScenarioEvent.Modify(userName.Id);
+                        var validationResult = await _simulatorScenarioEventDomainService.UpdateAsync(simScenarioEvent);
                         if (!validationResult.IsValid)
                         {
                             throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
@@ -1007,7 +1005,7 @@ namespace QTD2.Application.Services.Shared
                 }
                 else
                 {
-                    throw new InvalidOperationException("SimulatorScenarioEventandScript not found.");
+                    throw new InvalidOperationException("SimulatorScenarioEvent not found.");
                 }
             }
         }
@@ -1143,7 +1141,7 @@ namespace QTD2.Application.Services.Shared
                 {
                     var user = await _qtdUserDomainService.GetAsync(item.UserId);
                     var permission = await _simulatorScenarioCollaboratorPermissionDomainService.GetAsync(item.CollaboratorPermissionId);
-                    var scenaior = simScenario.UpdateCollaborators(user,permission);
+                    var scenaior = simScenario.UpdateCollaborators(user, permission);
                     scenaior.Create(userName);
                 }
                 else
@@ -1165,7 +1163,7 @@ namespace QTD2.Application.Services.Shared
 
         public SimulatorScenario_Collaborator_VM MapSimulatorScenarioToSimulatorScenario_Collaborator_VM(SimulatorScenario_Collaborator simulatorScenario_Collaborator)
         {
-            var simulatorScenario_Collaborator_VM = new SimulatorScenario_Collaborator_VM(simulatorScenario_Collaborator.Id,simulatorScenario_Collaborator.UserId, $"{simulatorScenario_Collaborator.User.Person.FirstName} {simulatorScenario_Collaborator.User.Person.LastName}", simulatorScenario_Collaborator.User.Person.Username, simulatorScenario_Collaborator.PermissionId);
+            var simulatorScenario_Collaborator_VM = new SimulatorScenario_Collaborator_VM(simulatorScenario_Collaborator.Id, simulatorScenario_Collaborator.UserId, $"{simulatorScenario_Collaborator.User.Person.FirstName} {simulatorScenario_Collaborator.User.Person.LastName}", simulatorScenario_Collaborator.User.Person.Username, simulatorScenario_Collaborator.PermissionId);
             return simulatorScenario_Collaborator_VM;
         }
 
@@ -1484,6 +1482,196 @@ namespace QTD2.Application.Services.Shared
             if (!validationResult.IsValid)
             {
                 throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
+            }
+        }
+
+        public async Task<SimulatorScenario_Script_VM> CreateScriptAsync(SimulatorScenario_Script_VM options)
+        {
+            var simScenario_Event = await _simulatorScenarioEventDomainService.GetEventByIdAsync(options.EventId);
+            if (simScenario_Event == null || options == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+            else
+            {
+                var simulatorScenario_Script = new QTD2.Domain.Entities.Core.SimulatorScenario_Script(options.Title, options.Description, options.InitiatorId, options.Time, options.EventId);
+                var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simulatorScenario_Script, AuthorizationOperations.Create);
+                if (result.Succeeded)
+                {
+                    var userName = await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name);
+                    simulatorScenario_Script.Create(userName.Id);
+                    foreach (var value in options.Criterias)
+                    {
+                        var ScriptCriteria = new SimulatorScenario_Script_Criteria(value.Id, value.CriteriaId);
+                        simulatorScenario_Script.SetCriterias(ScriptCriteria);
+                    }
+                    var validationResult = await _simulatorScenario_ScriptDomainService.AddAsync(simulatorScenario_Script);
+                    if (!validationResult.IsValid)
+                    {
+                        throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
+                    }
+                    else
+                    {
+                        options.Id = simulatorScenario_Script.Id;
+                        return options;
+                    }
+                }
+                else
+                {
+                    throw new UnauthorizedAccessException(message: _localizer["OperationNotAllowed"].Value);
+                }
+            }
+        }
+
+        public async Task<SimulatorScenario_Script_VM> GetScriptAsync(int scriptId, int eventId)
+        {
+            var simScenario_Event = await _simulatorScenarioEventDomainService.GetScriptByIdAsync(eventId);
+
+            if (simScenario_Event == null)
+            {
+                throw new QTDServerException(_localizer["RecordNotFound"].Value);
+            }
+            else
+            {
+                var scripts = simScenario_Event.Scripts.Where(k => k.Id == scriptId).FirstOrDefault();
+                if (scripts != null)
+                {
+                    var simScenario_Script_VM = new SimulatorScenario_Script_VM(scripts.Id, scripts.Title, scripts.Description, scripts.InitiatorId, scripts.Time, scripts.EventId);
+
+                    foreach (var criteria in scripts.Criterias)
+                    {
+                        var simulatorScenario_Script_Criteria_VM = new SimulatorScenario_Script_Criteria_VM(criteria.Id, criteria.CriteriaId);
+                        simScenario_Script_VM.Criterias.Add(simulatorScenario_Script_Criteria_VM);
+                    }
+                    return simScenario_Script_VM;
+                }
+                else
+                {
+                    throw new QTDServerException(_localizer["RecordNotFound"].Value);
+                }
+            }
+        }
+
+        public async Task<SimulatorScenario_Script_VM> CopyScriptAsync(int scriptId, int eventId)
+        {
+            var createdBy = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Id;
+            var obj = await _simulatorScenarioEventDomainService.GetScriptByIdAsync(eventId);
+
+            if (obj == null)
+            {
+                throw new ArgumentNullException();
+            }
+            else
+            {
+                if (obj.Scripts == null)
+                {
+                    throw new ArgumentNullException();
+                }
+                else
+                {
+                    var scripts = obj.Scripts.Where(k => k.Id == scriptId).FirstOrDefault();
+                    var copiedEvent = scripts.Copy<SimulatorScenario_Script>(createdBy);
+                    var result = await _simulatorScenario_ScriptDomainService.AddAsync(copiedEvent);
+
+                    if (!result.IsValid)
+                    {
+                        throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', result.Errors));
+                    }
+                    else
+                    {
+                        var simScenarioEventAndScriptVM = await GetScriptAsync(copiedEvent.Id, copiedEvent.EventId);
+                        return simScenarioEventAndScriptVM;
+                    }
+                }
+            }
+        }
+        public async System.Threading.Tasks.Task DeleteScriptAsync(int scriptId)
+        {
+            var simulatorScenario_Scripts = await _simulatorScenario_ScriptDomainService.GetAsync(scriptId);
+            if (simulatorScenario_Scripts == null)
+            {
+                throw new ArgumentNullException();
+            }
+            var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simulatorScenario_Scripts, AuthorizationOperations.Delete);
+            if (result.Succeeded)
+            {
+                simulatorScenario_Scripts.Delete();
+                var validationResult = await _simulatorScenario_ScriptDomainService.UpdateAsync(simulatorScenario_Scripts);
+                if (!validationResult.IsValid)
+                {
+                    throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
+                }
+            }
+            else
+            {
+                throw new UnauthorizedAccessException();
+            }
+        }
+
+        public async Task<SimulatorScenario_Script_VM> UpdateScriptAsync(int scriptId, int eventId, SimulatorScenario_Script_VM options)
+        {
+            var simScenario_Event = (await _simulatorScenarioEventDomainService.GetScriptByIdAsync(eventId));
+            if (simScenario_Event == null)
+            {
+                throw new ArgumentNullException(nameof(options));
+            }
+            else
+            {
+                var simScenarioScript = simScenario_Event.Scripts.FirstOrDefault(k => k.Id == scriptId);
+                if (simScenarioScript != null)
+                {
+                    var userName = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Id;
+                    simScenarioScript.SetDescription(options.Description);
+                    simScenarioScript.SetTitle(options.Title);
+                    simScenarioScript.SetTime(options.Time);
+                    simScenarioScript.SetInitiatorId(options.InitiatorId);
+                    simScenarioScript.SetEventId(options.EventId);
+
+                    foreach (var currentCriteria in simScenarioScript.Criterias)
+                    {
+                        var criteria = options.Criterias.FirstOrDefault(x => x.Id == currentCriteria.Id);
+
+                        if (criteria == null)
+                        {
+                            currentCriteria.Delete();
+                            currentCriteria.Modify(userName);
+                        }
+                    }
+                    foreach (var newCriteria in options.Criterias)
+                    {
+                        var criteria = simScenarioScript.Criterias.FirstOrDefault(x => x.CriteriaId == newCriteria.CriteriaId);
+                        if (criteria == null)
+                        {
+                            var scriptCriteria = new SimulatorScenario_Script_Criteria(simScenarioScript.Id, newCriteria.CriteriaId);
+                            scriptCriteria.Create(userName);
+                            simScenarioScript.SetCriterias(scriptCriteria);
+                        }
+                    }
+                    var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simScenarioScript, AuthorizationOperations.Update);
+                    if (result.Succeeded)
+                    {
+
+                        simScenarioScript.Modify(userName);
+                        var validationResult = await _simulatorScenario_ScriptDomainService.UpdateAsync(simScenarioScript);
+                        if (!validationResult.IsValid)
+                        {
+                            throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
+                        }
+                        else
+                        {
+                            options.Id = simScenarioScript.Id;
+                            return options;
+                        }
+                    }
+                    else
+                    {
+                        throw new UnauthorizedAccessException(message: _localizer["OperationNotAllowed"].Value);
+                    }
+                }
+                else
+                {
+                    throw new InvalidOperationException("SimulatorScenarioScript not found.");
+                }
             }
         }
     }

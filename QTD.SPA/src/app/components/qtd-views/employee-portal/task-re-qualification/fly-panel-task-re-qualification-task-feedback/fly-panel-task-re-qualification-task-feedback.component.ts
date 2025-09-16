@@ -14,6 +14,9 @@ import jsPDF from 'jspdf';
 import { asBlob } from 'html-docx-js-typescript';
 import saveAs from 'file-saver';
 import { LabelReplacementPipe } from 'src/app/_Pipes/label-replacement.pipe';
+import { EnablingObjective } from '@models/EnablingObjective/EnablingObjective';
+import { EnablingObjectivesService } from 'src/app/_Services/QTD/enabling-objectives.service';
+import { EOWithAllDataVM } from '@models/EnablingObjective/EOWithAllDataVM';
 
 @Component({
   selector: 'app-fly-panel-task-re-qualification-task-feedback',
@@ -23,6 +26,8 @@ import { LabelReplacementPipe } from 'src/app/_Pipes/label-replacement.pipe';
 export class FlyPanelTaskReQualificationTaskFeedbackComponent implements OnInit {
   @Input() isOpenInFlyPanel:boolean=false;
   @Input() passedTempTaskUrl:string='';
+  @Input() checkType:string='';
+  @Input() inputId:string='';
   @Output() closed = new EventEmitter<any>();
   task: Task;
   number: any;
@@ -31,6 +36,7 @@ export class FlyPanelTaskReQualificationTaskFeedbackComponent implements OnInit 
   subDutyAreaDisable:boolean;
   taskId = '';
   tempTaskId:string='';
+  tempSkillId:string='';
   tqId:string='';
   stats: TaskStatsCount = new TaskStatsCount();
   hasLinks = 0;
@@ -44,6 +50,9 @@ export class FlyPanelTaskReQualificationTaskFeedbackComponent implements OnInit 
   isSuggestionsVisible:boolean=false;
   isQuestionsVisible:boolean=false;
   allTaskDataLoader:boolean = false;
+  enablingObjective:EnablingObjective
+  eoAllData:EOWithAllDataVM = new EOWithAllDataVM();
+  showTaskDetails:boolean = false;
   
   constructor(
     private alert: SweetAlertService,
@@ -52,6 +61,7 @@ export class FlyPanelTaskReQualificationTaskFeedbackComponent implements OnInit 
     private route: ActivatedRoute,
     public dialog: MatDialog,
     private taskService: TasksService,
+    private eoService: EnablingObjectivesService,
     public dataBroadcastService: DataBroadcastService,
     private labelPipe: LabelReplacementPipe
 
@@ -60,15 +70,31 @@ export class FlyPanelTaskReQualificationTaskFeedbackComponent implements OnInit 
   async ngOnInit() {
     if(this.isOpenInFlyPanel){
       this.showMeta = false;
-      this.tempTaskId =this.passedTempTaskUrl;
-      await this.loadTaskData();      
+      if(this.checkType == 'task'){
+        this.tempTaskId =this.passedTempTaskUrl;
+        await this.loadTaskData();
+        this.showTaskDetails = true;      
+      }else{
+        this.showTaskDetails = false;
+        this.loadEoData(this.inputId);
+      }
     }
     else{
       this.route.params.subscribe(async (params: any) => {
         if (params.hasOwnProperty('id')) {
+          const fullParam = params['id']; 
+          const parts = fullParam.split('-');
+          const type = parts[3]; 
           this.showMeta = false;
           this.tempTaskId = params['id'];
-          await this.loadTaskData();
+          var eoId = parts[0];
+          if(type == 'task'){
+            this.showTaskDetails = true;
+            await this.loadTaskData();
+          }else{
+            this.showTaskDetails = false;
+            this.loadEoData(eoId);
+          }
         }
       });
     }   
@@ -92,6 +118,14 @@ export class FlyPanelTaskReQualificationTaskFeedbackComponent implements OnInit 
       this.showMeta=true;
     });
   }
+
+  async loadEoData(id:string){
+    this.allTaskDataLoader = true;
+    this.enablingObjective = await this.eoService.getWithCatSubCatAndtopic(id);
+    this.eoAllData = await this.eoService.getAllEOData(id);
+    this.allTaskDataLoader = false;
+  }
+
 
   async getTaskData() {
     this.task = await this.taskService.get(this.taskId);

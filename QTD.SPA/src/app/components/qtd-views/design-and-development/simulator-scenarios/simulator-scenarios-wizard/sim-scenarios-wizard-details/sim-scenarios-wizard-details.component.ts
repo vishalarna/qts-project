@@ -15,6 +15,7 @@ export class SimScenariosWizardDetailsComponent implements OnInit {
   @Input() mode: string;
   scenarioDetailsForm: UntypedFormGroup;
   editor = ckcustomBuild;
+
   constructor(
     private formBuilder: UntypedFormBuilder
   ) { }

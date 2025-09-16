@@ -9,6 +9,7 @@ import { SimScenariosWizardCriteriaComponent } from './sim-scenarios-wizard-crit
 import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy-table';
 import { MatIconModule } from '@angular/material/icon';
 import { FlyPanelEditPerformanceCriteriaModule } from './fly-panel-edit-performance-criteria/fly-panel-edit-performance-criteria.module';
+import { MatSortModule } from '@angular/material/sort';
 
 const routes: Routes = [
   {
@@ -30,7 +31,8 @@ const routes: Routes = [
     MatSelectModule,
     MatTableModule,
     MatIconModule,
-    FlyPanelEditPerformanceCriteriaModule
+    FlyPanelEditPerformanceCriteriaModule,
+    MatSortModule
 
   ],
   exports :[SimScenariosWizardCriteriaComponent]

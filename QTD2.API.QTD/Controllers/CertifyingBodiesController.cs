@@ -123,5 +123,14 @@ namespace QTD2.API.QTD.Controllers
             var result = await _certifyingBodiesService.GetCertifyingBodiesByLevelEditingAsync(isLevelEditing, ilaId);
             return Ok( new { result });
         }
+
+        [HttpGet]
+        [Route("/certifyingBodies/subrequirements/{isLevelEditing}")]
+        public async Task<IActionResult> GetCertifyingBodiesWithSubRequirementsAsync(bool isLevelEditing = true)
+        {
+            var result = await _certifyingBodiesService.GetCertifyingBodiesWithSubRequirementsAsync(isLevelEditing);
+            return Ok(new { subReqs = result });
+        }
+
     }
 }

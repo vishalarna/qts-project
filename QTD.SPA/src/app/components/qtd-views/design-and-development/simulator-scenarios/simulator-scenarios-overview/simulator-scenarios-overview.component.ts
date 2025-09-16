@@ -79,15 +79,14 @@ export class SimulatorScenariosOverviewComponent implements OnInit {
     await this.simScenariosService.getOverviewAsync().then(res=>{
       this.isOverviewLoading = false;
       this.simulatorScenario_VM = res;
-      this.dataSource = new MatTableDataSource<SimulatorScenarioOverview_SimulatorScenario_VM>(
-        this.simulatorScenario_VM?.simulatorScenarios
-        );
+      this.dataSource = new MatTableDataSource<SimulatorScenarioOverview_SimulatorScenario_VM>(this.simulatorScenario_VM?.simulatorScenarios);
         setTimeout(() => {this.dataSource.sort = this.sort;}, 1);
       });
     this.collaborationSimScenario = await this.simScenariosService.getAllCollaboratorPermissionsAsync();
     this.editorPermissionId = this.collaborationSimScenario.find(x=>x.name == "Editor")?.id;
     this.viewerPermissionId = this.collaborationSimScenario.find(x=>x.name == "Viewer")?.id;
-
+    this.filterValues.activeStatus ='Active';
+    this.getSimScenariosFilterValues(this.filterValues);
   }
 
   openScenirosWizard() {
@@ -96,9 +95,19 @@ export class SimulatorScenariosOverviewComponent implements OnInit {
 
   searchUpdate(event: any) {
     const searchText = event.target.value.trim().toLowerCase();
-    this.searchText = searchText;
-    this.getSimScenariosFilterValues(this.searchText);
-  }
+    this.searchText = searchText; 
+    const baseData = this.filterValues?.activeStatus ? this.simulatorScenario_VM.simulatorScenarios.filter(x => x.active) : this.simulatorScenario_VM.simulatorScenarios;
+    this.filteredSimScenario = baseData.filter(item => {
+      return (item?.title?.trim().toLowerCase().includes(this.searchText) ||item?.ilAs?.trim().toLowerCase().includes(this.searchText));
+    });
+    if (!this.searchText) {
+      this.filteredSimScenario = [...baseData];
+    }
+    this.dataSource = new MatTableDataSource(this.filteredSimScenario);
+    setTimeout(() => {
+      this.dataSource.sort = this.sort;
+    }, 1);
+ }
 
   openFlyInPanel(templateRef: any) {
     const portal = new TemplatePortal(templateRef, this.vcf, {
@@ -219,12 +228,6 @@ export class SimulatorScenariosOverviewComponent implements OnInit {
   getSimScenariosFilterValues(value:any){
     this.filterValues = value;
     this.filteredSimScenario = this.simulatorScenario_VM.simulatorScenarios;
-    if (this.searchText) {
-      this.filteredSimScenario = this.filteredSimScenario.filter(item => {
-      return item?.title?.trim().toLowerCase().includes(this.searchText) || 
-             item?.ilAs?.trim().toLowerCase().includes(this.searchText);
-    });
-  }
 
     if(this.filterValues?.position){
       this.applyPositionFilter();

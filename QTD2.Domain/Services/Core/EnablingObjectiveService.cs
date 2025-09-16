@@ -8,6 +8,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using QTD2.Domain.Exceptions;
+using System.Collections;
 
 namespace QTD2.Domain.Services.Core
 {
@@ -226,7 +228,7 @@ namespace QTD2.Domain.Services.Core
                 predicates.Add(r => !r.IsSkillQualification);
             }
 
-            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Topic","EnablingObjective_SubCategory","EnablingObjective_Category" }); 
+            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Topic", "EnablingObjective_SubCategory", "EnablingObjective_Category" });
 
             return enablingObjectives.ToList();
         }
@@ -256,7 +258,7 @@ namespace QTD2.Domain.Services.Core
                 predicates.Add(r => !r.IsSkillQualification);
             }
 
-            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Topic","EnablingObjective_SubCategory","EnablingObjective_Category" });
+            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Topic", "EnablingObjective_SubCategory", "EnablingObjective_Category" });
 
             return enablingObjectives.ToList();
         }
@@ -286,7 +288,7 @@ namespace QTD2.Domain.Services.Core
                 predicates.Add(r => r.IsSkillQualification);
             }
 
-            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Topic","EnablingObjective_SubCategory","EnablingObjective_Category", "EnablingObjective_MetaEO_Links.EnablingObjective.EnablingObjective_Topic.EnablingObjectives_SubCategory.EnablingObjectives_Category" });
+            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Topic", "EnablingObjective_SubCategory", "EnablingObjective_Category", "EnablingObjective_MetaEO_Links.EnablingObjective.EnablingObjective_Topic.EnablingObjectives_SubCategory.EnablingObjectives_Category" });
 
             return enablingObjectives.ToList();
         }
@@ -297,7 +299,7 @@ namespace QTD2.Domain.Services.Core
 
             predicates.Add(r => enablingObjectiveIds.Contains(r.Id));
 
-            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Topic.EnablingObjectives_SubCategory.EnablingObjectives_Category","Task_EnablingObjective_Links", "EnablingObjective_MetaEO_Links.EnablingObjective.Task_EnablingObjective_Links", "EnablingObjective_MetaEO_Links.EnablingObjective.EnablingObjective_Topic.EnablingObjectives_SubCategory.EnablingObjectives_Category" });
+            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Topic.EnablingObjectives_SubCategory.EnablingObjectives_Category", "Task_EnablingObjective_Links", "EnablingObjective_MetaEO_Links.EnablingObjective.Task_EnablingObjective_Links", "EnablingObjective_MetaEO_Links.EnablingObjective.EnablingObjective_Topic.EnablingObjectives_SubCategory.EnablingObjectives_Category" });
 
             return enablingObjectives.ToList();
         }
@@ -321,7 +323,7 @@ namespace QTD2.Domain.Services.Core
                 predicates.Add(r => !r.Active);
             }
 
-            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "Position_SQs" } );
+            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "Position_SQs" });
 
             return enablingObjectives.ToList();
         }
@@ -368,25 +370,25 @@ namespace QTD2.Domain.Services.Core
                 predicates.Add(r => r.ILA_EnablingObjective_Links.Count() > 0);
             }
 
-            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "ILA_EnablingObjective_Links.ILA.Provider", "EnablingObjective_Topic","EnablingObjective_SubCategory","EnablingObjective_Category" });
+            var enablingObjectives = await FindWithIncludeAsync(predicates, new[] { "ILA_EnablingObjective_Links.ILA.Provider", "EnablingObjective_Topic", "EnablingObjective_SubCategory", "EnablingObjective_Category" });
 
             return enablingObjectives.ToList();
         }
 
         public async System.Threading.Tasks.Task<List<EnablingObjective>> GetEnablingObjectivesAsync()
         {
-            return (await AllWithIncludeAsync(new string[] { "EnablingObjective_Topic","EnablingObjective_SubCategory","EnablingObjective_Category" })).ToList();
+            return (await AllWithIncludeAsync(new string[] { "EnablingObjective_Topic", "EnablingObjective_SubCategory", "EnablingObjective_Category" })).ToList();
         }
         public async System.Threading.Tasks.Task<List<EnablingObjective>> GetSQEnablingObjectivesAsync()
         {
-            return (await FindWithIncludeAsync((r=>r.IsSkillQualification),new string[] { "EnablingObjective_Topic","EnablingObjective_SubCategory","EnablingObjective_Category" })).ToList();
+            return (await FindWithIncludeAsync((r => r.IsSkillQualification), new string[] { "EnablingObjective_Topic", "EnablingObjective_SubCategory", "EnablingObjective_Category" })).ToList();
         }
 
         public async Task<List<EnablingObjective>> GetEnablingObjectivesAllDataByEoIdAsync(List<int> eoIds)
         {
             List<Expression<Func<Domain.Entities.Core.EnablingObjective, bool>>> predicates = new List<Expression<Func<Domain.Entities.Core.EnablingObjective, bool>>>();
             predicates.Add(eo => eoIds.Contains(eo.Id));
-            var enablingObjectives = (await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Topic", "EnablingObjective_SubCategory", "EnablingObjective_Category" } )).ToList();
+            var enablingObjectives = (await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Topic", "EnablingObjective_SubCategory", "EnablingObjective_Category" })).ToList();
             var eoWithPositions = (await FindWithIncludeAsync(predicates, new[] { "Position_SQs.Position" })).ToList();
             var eoWithTools = (await FindWithIncludeAsync(predicates, new[] { "EnablingObjective_Tools.Tool" }, true)).ToList();
             var eoWithProcedures = (await FindWithIncludeAsync(predicates, new[] { "Procedure_EnablingObjective_Links.Procedure" })).ToList();
@@ -486,6 +488,42 @@ namespace QTD2.Domain.Services.Core
         {
             var sqs = (await FindWithIncludeAsync(x => x.IsSkillQualification, new[] { "EnablingObjective_Topic", "EnablingObjective_Category", "EnablingObjective_SubCategory", "Position_SQs" })).ToList();
             return sqs;
+        }
+
+        public async Task<List<EnablingObjective>> GetEOByIdAsync(int eoId)
+        {
+            var sqs = (await FindWithIncludeAsync(x => x.IsSkillQualification && x.Id == eoId, new[] { "EnablingObjective_Topic", "EnablingObjective_Category", "EnablingObjective_SubCategory", "Position_SQs" })).ToList();
+            return sqs;
+        }
+
+        public async Task<List<EnablingObjective_Suggestion>> GetAllSuggestionByIdAsync(int eoId)
+        {
+            var enablingObjective = (await FindWithIncludeAsync(x => x.Id == eoId, new string[] { "EnablingObjective_Suggestions" })).FirstOrDefault();
+            if (enablingObjective == null)
+            {
+                throw new QTDServerException("Eo Not Found", false);
+            }
+            else
+            {
+                return enablingObjective.EnablingObjective_Suggestions.OrderBy(x => x.Number).ToList();
+            }
+        }
+
+        public async Task<List<EnablingObjective_Step>> GetAllStepAsync(int eoId)
+        {
+            var enablingObjective = (await FindWithIncludeAsync(x => x.Id == eoId, new string[] { "EnablingObjective_Steps" })).FirstOrDefault();
+            var eo_steps = enablingObjective.EnablingObjective_Steps.ToList();
+            return eo_steps.OrderBy(x => x.Number).ToList();
+        }
+        public async Task<List<EnablingObjective_Question>> GetAllQuestionByIdAsync(int eoId)
+        {
+            var enablingObjective = (await FindWithIncludeAsync(x => x.Id == eoId, new string[] { "EnablingObjective_Questions" })).FirstOrDefault();
+            var eoQuestion = enablingObjective?.EnablingObjective_Questions.OrderBy(x => x.QuestionNumber).ToList();
+            return eoQuestion;
+        }
+        public async Task<EnablingObjective> GetEnablingObjectiveByIdAsync(int eoId)
+        {
+            return (await FindAsync(x => x.Id == eoId)).FirstOrDefault();
         }
     }
 }

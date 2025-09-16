@@ -13,6 +13,8 @@ import { ReportSkeleton_Subcategories } from 'src/app/_DtoModels/ReportSkeleton_
 import { NestedTreeControl } from '@angular/cdk/tree';
 import { MatTreeNestedDataSource } from '@angular/material/tree';
 import { ReportTreeControl } from 'src/app/_DtoModels/Report/ReportTreeControl';
+import { SelectionModel } from '@angular/cdk/collections';
+import { ReportsDeleteOptions } from '@models/Report/ReportsDeleteOption';
 
 @Component({
   selector: 'app-reports-view',
@@ -21,7 +23,7 @@ import { ReportTreeControl } from 'src/app/_DtoModels/Report/ReportTreeControl';
 })
 export class ReportsViewComponent implements OnInit {
 
-  displayedColumns: string[] = ['Official Report Title', 'Internal Report Title', 'Category', 'Last Run'];
+  displayedColumns: string[] = ['select','Official Report Title', 'Internal Report Title', 'Category', 'Last Run'];
   public isPanelOpen: boolean = false;
   public reportSkeletonData;
   public reportsList;
@@ -38,6 +40,7 @@ export class ReportsViewComponent implements OnInit {
   reportSkeleton_Subcategories: ReportSkeleton_Subcategories[];
   selectedId: any;
   selectedItem: ReportTreeControl;
+  reportSelection = new SelectionModel<any>(true, []);
 
   @ViewChild(MatSort) set tblSort(sort: MatSort) {
     if (sort) this.reportDetails.sort = sort;
@@ -128,7 +131,8 @@ export class ReportsViewComponent implements OnInit {
   public getSelectedReportSkeletonReports(item){
     this.reportSkeletonId = item.id;
     this.isCreateVisible = true;
-    this.reportDetails = this.reportsList.filter(r => r.reportSkeletonId == item.id);
+    const filter= this.reportsList.filter(r => r.reportSkeletonId == item.id) 
+    this.reportDetails = new MatTableDataSource(filter)
   }
 
   public getCategoryReportSkeletons(name: string){
@@ -152,4 +156,36 @@ export class ReportsViewComponent implements OnInit {
     let filter = (event.target as HTMLInputElement).value;
     this.reportDetails.filter = filter;
   }
+  
+  onReportChange(event: any, id: any) {
+    if (event.checked) {
+      this.reportSelection.select(id);
+    } else {
+      this.reportSelection.deselect(id);
+    }
+  }
+
+  masterToggle() {
+    if (this.isAllSelected()) {
+      this.reportSelection.clear();
+    } else {
+      this.reportSelection.select(...this.reportDetails.data.map(row => row.id));
+    }
+  }
+
+  isAllSelected() {
+    const data = this.reportDetails.data;  
+    const numSelected = this.reportSelection.selected.length;
+    const numRows = data.length;
+    return numSelected > 0 && numSelected === numRows;
+  }
+
+  async deleteReports() {
+    const selectedIds: string[] = this.reportSelection.selected;
+    const options: ReportsDeleteOptions = { reportIds: selectedIds };
+    await this.reportService.deleteReportsAsync(options);
+    this.reportSelection.clear();
+    this.reportDetails.data = this.reportDetails.data.filter(r=>!selectedIds.includes(r.id));
+  }
+
 }

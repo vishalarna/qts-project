@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
+using QTD2.Domain.Entities.Core;
 using QTD2.Infrastructure.Model.TaskReQualificationEmp;
 
 namespace QTD2.API.QTD.Controllers
@@ -92,6 +93,53 @@ namespace QTD2.API.QTD.Controllers
             var result = await _empSignOffService.GetFeedBackData(qualificationId,traineeId);
             return Ok( new { result });
         }
-        
+
+        [HttpGet]
+        [Route("/empTaskQualification/suggestions/{skillqualificationId}/skill/{skillId}/emp/{employeeId}")]
+        public async Task<IActionResult> GetSuggestionSQData(int skillqualificationId, int skillId, int employeeId)
+        {
+           var result = await _taskRequalempSuggestionService.GetSuggestionSQData(skillqualificationId, skillId, employeeId);
+           return Ok(new { result });
+        }
+
+        [HttpGet]
+        [Route("/empTaskQualification/steps/{skillqualificationId}/skill/{skillId}/emp/{employeeId}")]
+        public async Task<IActionResult> GetStepsSQData(int skillqualificationId, int skillId, int employeeId)
+        {
+            var result = await _taskRequalempStepService.GetStepsSQData(skillqualificationId, skillId, employeeId);
+            return Ok(new { result });
+        }
+
+        [HttpGet]
+        [Route("/empTaskQualification/questions/{skillqualificationId}/skill/{skillId}/emp/{employeeId}")]
+        public async Task<IActionResult> GetQuestionsSQData(int skillqualificationId, int skillId, int employeeId)
+        {
+            var result = await _taskRequalempquestionService.GetQuestionsSQData(skillqualificationId, skillId, employeeId);
+            return Ok(new { result });
+        }
+
+        [HttpGet]
+        [Route("/empTaskQualification/signoff/{skillqualificationId}/emp/{employeeId}/skill")]
+        public async Task<IActionResult> GetSQEvaluatorSignOffData(int skillqualificationId, int employeeId)
+        {
+            var result = await _empSignOffService.GetSQEvaluatorSignOffDataAsync(skillqualificationId, employeeId);
+            return Ok(new { result });
+        }
+
+        [HttpPost]
+        [Route("/empTaskQualification/signOff/skill")]
+        public async Task<IActionResult> CreateOrUpdateSQSignOffAsync(TaskReQualificationEmpSignOffVM options)
+        {
+            await _empSignOffService.CreateOrUpdateSQSignOffAsync(options);
+            return Ok(new { message = _localizer["SignOffCreated"] });
+        }
+
+        [HttpGet]
+        [Route("/empTaskQualification/feedback/skillqualification/{skillqualificationId}/trainee/{traineeId}")]
+        public async Task<IActionResult> GetFeedBackSQData(int skillqualificationId, int traineeId)
+        {
+            var result = await _empSignOffService.GetFeedBackSQData(skillqualificationId, traineeId);
+            return Ok(new { result });
+        }
     }
 }

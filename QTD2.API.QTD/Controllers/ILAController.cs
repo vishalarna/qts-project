@@ -590,5 +590,14 @@ namespace QTD2.API.QTD.Controllers
             var result = await _ilaService.UpdateIspubliclyAvailableIla(id, options);
             return Ok(new {result });
         }
+
+        [HttpPost]
+        [Route("/ila/basic")]
+        public async Task<IActionResult> CreateBasicILAAsync(ILABasicCreateOptions options)
+        {
+            var result = await _ilaService.CreateBasicAsync(options);
+            await _versioningService.VersionILAAsync(result, "New Basic ILA Created", DateTime.Now, 1);
+            return Ok(new { message = _localizer["ILACreated"].Value });
+        }
     }
 }

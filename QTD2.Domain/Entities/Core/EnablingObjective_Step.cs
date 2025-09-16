@@ -20,6 +20,7 @@ namespace QTD2.Domain.Entities.Core
         public virtual EnablingObjective EnablingObjective { get; set; }
 
         public virtual ICollection<Version_EnablingObjective_Step> Version_EnablingObjective_Steps { get; set; } = new List<Version_EnablingObjective_Step>();
+        public virtual ICollection<SkillReQualificationEmp_Step> SkillReQualificationEmp_Steps { get; set; } = new List<SkillReQualificationEmp_Step>();
 
 
         public EnablingObjective_Step()

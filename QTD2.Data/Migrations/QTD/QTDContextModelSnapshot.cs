@@ -10936,6 +10936,12 @@ namespace QTD2.Data.Migrations.QTD
                     b.Property<DateTime>("EndDateTime")
                         .HasColumnType("datetime2");
 
+                    b.Property<int?>("ExtensionAmount")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("ExtensionType")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsEmployeeShowResponses")
                         .HasColumnType("bit");
 
@@ -13868,7 +13874,7 @@ namespace QTD2.Data.Migrations.QTD
                     b.ToTable("SimulatorScenario_EnablingObjectives_Links_Old");
                 });
 
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_EventAndScript", b =>
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Event", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -13893,9 +13899,6 @@ namespace QTD2.Data.Migrations.QTD
                     b.Property<string>("Description")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("InitiatorId")
-                        .HasColumnType("int");
-
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
@@ -13908,64 +13911,15 @@ namespace QTD2.Data.Migrations.QTD
                     b.Property<int>("SimulatorScenarioId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("Time")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("InitiatorId");
-
                     b.HasIndex("SimulatorScenarioId");
 
-                    b.ToTable("SimulatorScenario_EventAndScripts");
-                });
-
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_EventAndScript_Criteria", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("CriteriaId")
-                        .HasColumnType("int");
-
-                    b.Property<bool>("Deleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int?>("EventAndScriptId")
-                        .IsRequired()
-                        .HasColumnType("int");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CriteriaId");
-
-                    b.HasIndex("EventAndScriptId");
-
-                    b.ToTable("SimulatorScenario_EventAndScript_Criterias");
+                    b.ToTable("SimulatorScenario_Events");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_ILA", b =>
@@ -14199,6 +14153,102 @@ namespace QTD2.Data.Migrations.QTD
                     b.HasIndex("SimulatorScenarioId");
 
                     b.ToTable("SimulatorScenario_Procedures");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Script", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("EventId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("InitiatorId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("Time")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EventId");
+
+                    b.HasIndex("InitiatorId");
+
+                    b.ToTable("SimulatorScenario_Scripts");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Script_Criteria", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("CriteriaId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("ScriptId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CriteriaId");
+
+                    b.HasIndex("ScriptId");
+
+                    b.ToTable("SimulatorScenario_Script_Criterias");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Status", b =>
@@ -14469,6 +14519,86 @@ namespace QTD2.Data.Migrations.QTD
                     b.ToTable("SkillQualificationEmpSettings");
                 });
 
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillQualificationEmp_SignOff", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int?>("EvaluationMethodId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("EvaluatorId")
+                        .HasColumnType("int");
+
+                    b.Property<bool?>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsCriteriaMet")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsEvaluatorSignOff")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsLocked")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsStarted")
+                        .HasColumnType("bit");
+
+                    b.Property<bool?>("IsTraineeSignOff")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("SignOffDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("SkillQualificationDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SkillQualificationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TraineeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvaluationMethodId");
+
+                    b.HasIndex("EvaluatorId");
+
+                    b.HasIndex("SkillQualificationId");
+
+                    b.HasIndex("TraineeId");
+
+                    b.ToTable("SkillQualificationEmp_SignOffs");
+                });
+
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillQualificationStatus", b =>
                 {
                     b.Property<int>("Id")
@@ -14552,6 +14682,192 @@ namespace QTD2.Data.Migrations.QTD
                     b.HasIndex("SkillQualificationId");
 
                     b.ToTable("SkillQualification_Evaluator_Links");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillReQualificationEmp_QuestionAnswer", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CommentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("EvaluatorId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SkillQualificationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SkillQuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TraineeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvaluatorId");
+
+                    b.HasIndex("SkillQualificationId");
+
+                    b.HasIndex("SkillQuestionId");
+
+                    b.HasIndex("TraineeId");
+
+                    b.ToTable("SkillReQualificationEmp_QuestionAnswers");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillReQualificationEmp_Step", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CommentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("EvaluatorId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SkillQualificationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SkillStepId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TraineeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvaluatorId");
+
+                    b.HasIndex("SkillQualificationId");
+
+                    b.HasIndex("SkillStepId");
+
+                    b.HasIndex("TraineeId");
+
+                    b.ToTable("SkillReQualificationEmp_Steps");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillReQualificationEmp_Suggestion", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Active")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime>("CommentDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Comments")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CreatedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("CreatedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Deleted")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bit")
+                        .HasDefaultValue(false);
+
+                    b.Property<int>("EvaluatorId")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCompleted")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("ModifiedBy")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime?>("ModifiedDate")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("SkillQualificationId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SkillSuggestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TraineeId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("EvaluatorId");
+
+                    b.HasIndex("SkillQualificationId");
+
+                    b.HasIndex("SkillSuggestionId");
+
+                    b.HasIndex("TraineeId");
+
+                    b.ToTable("SkillReQualificationEmp_Suggestions");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.StudentEvaluation", b =>
@@ -25911,42 +26227,15 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("SimulatorScenario");
                 });
 
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_EventAndScript", b =>
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Event", b =>
                 {
-                    b.HasOne("QTD2.Domain.Entities.Core.Position", "Initiator")
-                        .WithMany("SimulatorScenario_EventAndScripts")
-                        .HasForeignKey("InitiatorId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
                     b.HasOne("QTD2.Domain.Entities.Core.SimulatorScenario", "SimulatorScenario")
-                        .WithMany("EventsAndScritps")
+                        .WithMany("Events")
                         .HasForeignKey("SimulatorScenarioId")
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.Navigation("Initiator");
-
                     b.Navigation("SimulatorScenario");
-                });
-
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_EventAndScript_Criteria", b =>
-                {
-                    b.HasOne("QTD2.Domain.Entities.Core.SimulatorScenario_Task_Criteria", "Criteria")
-                        .WithMany()
-                        .HasForeignKey("CriteriaId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.HasOne("QTD2.Domain.Entities.Core.SimulatorScenario_EventAndScript", "EventAndScript")
-                        .WithMany("Criterias")
-                        .HasForeignKey("EventAndScriptId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("Criteria");
-
-                    b.Navigation("EventAndScript");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_ILA", b =>
@@ -26036,6 +26325,43 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("SimulatorScenario");
                 });
 
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Script", b =>
+                {
+                    b.HasOne("QTD2.Domain.Entities.Core.SimulatorScenario_Event", "SimulatorScenario_Event")
+                        .WithMany("Scripts")
+                        .HasForeignKey("EventId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.Position", "Initiator")
+                        .WithMany("SimulatorScenario_Scripts")
+                        .HasForeignKey("InitiatorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("Initiator");
+
+                    b.Navigation("SimulatorScenario_Event");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Script_Criteria", b =>
+                {
+                    b.HasOne("QTD2.Domain.Entities.Core.SimulatorScenario_Task_Criteria", "Criteria")
+                        .WithMany()
+                        .HasForeignKey("CriteriaId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.SimulatorScenario_Script", "Script")
+                        .WithMany("Criterias")
+                        .HasForeignKey("ScriptId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.Navigation("Criteria");
+
+                    b.Navigation("Script");
+                });
+
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Task", b =>
                 {
                     b.HasOne("QTD2.Domain.Entities.Core.SimulatorScenario", "SimulatorScenario")
@@ -26123,6 +26449,40 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("SkillQualification");
                 });
 
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillQualificationEmp_SignOff", b =>
+                {
+                    b.HasOne("QTD2.Domain.Entities.Core.EvaluationMethod", "EvaluationMethod")
+                        .WithMany("SkillQualificationEmp_SignOff")
+                        .HasForeignKey("EvaluationMethodId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
+                    b.HasOne("QTD2.Domain.Entities.Core.Employee", "Evaluator")
+                        .WithMany("SkillQualificationEmp_SignOffAsEvaluator")
+                        .HasForeignKey("EvaluatorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.SkillQualification", "SkillQualification")
+                        .WithMany("SkillQualificationEmp_SignOff")
+                        .HasForeignKey("SkillQualificationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.Employee", "Trainee")
+                        .WithMany("SkillQualificationEmp_SignOffAsTrainee")
+                        .HasForeignKey("TraineeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("EvaluationMethod");
+
+                    b.Navigation("Evaluator");
+
+                    b.Navigation("SkillQualification");
+
+                    b.Navigation("Trainee");
+                });
+
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillQualification_Evaluator_Link", b =>
                 {
                     b.HasOne("QTD2.Domain.Entities.Core.Employee", "Evaluator")
@@ -26140,6 +26500,111 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("Evaluator");
 
                     b.Navigation("SkillQualification");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillReQualificationEmp_QuestionAnswer", b =>
+                {
+                    b.HasOne("QTD2.Domain.Entities.Core.Employee", "Evaluator")
+                        .WithMany("SkillReQualificationEmp_QuestionAnswerAsEvaluator")
+                        .HasForeignKey("EvaluatorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.SkillQualification", "SkillQualification")
+                        .WithMany("SkillReQualificationEmp_QuestionAnswer")
+                        .HasForeignKey("SkillQualificationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.EnablingObjective_Question", "EnablingObjective_Question")
+                        .WithMany("SkillReQualificationEmp_QuestionAnswers")
+                        .HasForeignKey("SkillQuestionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.Employee", "Trainee")
+                        .WithMany("SkillReQualificationEmp_QuestionAnswerAsTrainee")
+                        .HasForeignKey("TraineeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("EnablingObjective_Question");
+
+                    b.Navigation("Evaluator");
+
+                    b.Navigation("SkillQualification");
+
+                    b.Navigation("Trainee");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillReQualificationEmp_Step", b =>
+                {
+                    b.HasOne("QTD2.Domain.Entities.Core.Employee", "Evaluator")
+                        .WithMany("SkillReQualificationEmp_StepAsEvaluator")
+                        .HasForeignKey("EvaluatorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.SkillQualification", "SkillQualification")
+                        .WithMany("SkillReQualificationEmp_Step")
+                        .HasForeignKey("SkillQualificationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.EnablingObjective_Step", "EnablingObjective_Step")
+                        .WithMany("SkillReQualificationEmp_Steps")
+                        .HasForeignKey("SkillStepId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.Employee", "Trainee")
+                        .WithMany("SkillReQualificationEmp_StepAsTrainee")
+                        .HasForeignKey("TraineeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("EnablingObjective_Step");
+
+                    b.Navigation("Evaluator");
+
+                    b.Navigation("SkillQualification");
+
+                    b.Navigation("Trainee");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillReQualificationEmp_Suggestion", b =>
+                {
+                    b.HasOne("QTD2.Domain.Entities.Core.Employee", "Evaluator")
+                        .WithMany("SkillReQualificationEmp_SuggestionAsEvaluator")
+                        .HasForeignKey("EvaluatorId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.SkillQualification", "SkillQualification")
+                        .WithMany("SkillReQualificationEmp_Suggestion")
+                        .HasForeignKey("SkillQualificationId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.EnablingObjective_Suggestion", "EnablingObjective_Suggestion")
+                        .WithMany("SkillReQualificationEmp_Suggestions")
+                        .HasForeignKey("SkillSuggestionId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.HasOne("QTD2.Domain.Entities.Core.Employee", "Trainee")
+                        .WithMany("SkillReQualificationEmp_SuggestionAsTrainee")
+                        .HasForeignKey("TraineeId")
+                        .OnDelete(DeleteBehavior.NoAction)
+                        .IsRequired();
+
+                    b.Navigation("EnablingObjective_Suggestion");
+
+                    b.Navigation("Evaluator");
+
+                    b.Navigation("SkillQualification");
+
+                    b.Navigation("Trainee");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.StudentEvaluation", b =>
@@ -28813,9 +29278,25 @@ namespace QTD2.Data.Migrations.QTD
 
                     b.Navigation("ProcedureReview_Employee");
 
+                    b.Navigation("SkillQualificationEmp_SignOffAsEvaluator");
+
+                    b.Navigation("SkillQualificationEmp_SignOffAsTrainee");
+
                     b.Navigation("SkillQualification_Evaluator_Links");
 
                     b.Navigation("SkillQualifications");
+
+                    b.Navigation("SkillReQualificationEmp_QuestionAnswerAsEvaluator");
+
+                    b.Navigation("SkillReQualificationEmp_QuestionAnswerAsTrainee");
+
+                    b.Navigation("SkillReQualificationEmp_StepAsEvaluator");
+
+                    b.Navigation("SkillReQualificationEmp_StepAsTrainee");
+
+                    b.Navigation("SkillReQualificationEmp_SuggestionAsEvaluator");
+
+                    b.Navigation("SkillReQualificationEmp_SuggestionAsTrainee");
 
                     b.Navigation("StudentEvaluationWithoutEmps");
 
@@ -28906,11 +29387,15 @@ namespace QTD2.Data.Migrations.QTD
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.EnablingObjective_Question", b =>
                 {
+                    b.Navigation("SkillReQualificationEmp_QuestionAnswers");
+
                     b.Navigation("Version_EnablingObjective_Questions");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.EnablingObjective_Step", b =>
                 {
+                    b.Navigation("SkillReQualificationEmp_Steps");
+
                     b.Navigation("Version_EnablingObjective_Steps");
                 });
 
@@ -28927,6 +29412,8 @@ namespace QTD2.Data.Migrations.QTD
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.EnablingObjective_Suggestion", b =>
                 {
+                    b.Navigation("SkillReQualificationEmp_Suggestions");
+
                     b.Navigation("Version_EnablingObjective_Suggestions");
                 });
 
@@ -28941,6 +29428,8 @@ namespace QTD2.Data.Migrations.QTD
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.EvaluationMethod", b =>
                 {
+                    b.Navigation("SkillQualificationEmp_SignOff");
+
                     b.Navigation("TaskQualifications");
 
                     b.Navigation("TaskReQualificationEmp_SignOff");
@@ -29227,7 +29716,7 @@ namespace QTD2.Data.Migrations.QTD
 
                     b.Navigation("SimulatorScenarioPositon_Links");
 
-                    b.Navigation("SimulatorScenario_EventAndScripts");
+                    b.Navigation("SimulatorScenario_Scripts");
 
                     b.Navigation("TaskListReview_PositionLinks");
 
@@ -29425,7 +29914,7 @@ namespace QTD2.Data.Migrations.QTD
 
                     b.Navigation("EnablingObjectives");
 
-                    b.Navigation("EventsAndScritps");
+                    b.Navigation("Events");
 
                     b.Navigation("ILAs");
 
@@ -29450,9 +29939,9 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("SimulatorScenario_Collaborators");
                 });
 
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_EventAndScript", b =>
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Event", b =>
                 {
-                    b.Navigation("Criterias");
+                    b.Navigation("Scripts");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Old", b =>
@@ -29466,11 +29955,24 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("SimulatorScenario_EnablingObjectives_Links");
                 });
 
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Script", b =>
+                {
+                    b.Navigation("Criterias");
+                });
+
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SkillQualification", b =>
                 {
                     b.Navigation("SkillQualificationEmpSetting");
 
+                    b.Navigation("SkillQualificationEmp_SignOff");
+
                     b.Navigation("SkillQualification_Evaluator_Links");
+
+                    b.Navigation("SkillReQualificationEmp_QuestionAnswer");
+
+                    b.Navigation("SkillReQualificationEmp_Step");
+
+                    b.Navigation("SkillReQualificationEmp_Suggestion");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.StudentEvaluation", b =>

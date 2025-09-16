@@ -13,7 +13,7 @@ namespace QTD2.Infrastructure.Model.Task_Requalification
 
         public int EmpId { get; set; }
 
-        public int TaskId { get; set; }
+        public int? TaskId { get; set; }
 
         public string EmpName { get; set; }
 
@@ -56,15 +56,17 @@ namespace QTD2.Infrastructure.Model.Task_Requalification
         public bool? IsReliability { get; set; }
         public bool? Active { get; set; }
         public bool? IsRecalled { get; set; }
-
+        public int? EnablingObjectiveId { get; set; }
+        public string? EnablingObjectiveDescription { get; set; }
+        public int? SkillQualificationId { get; set; }
         public TaskQualificationEmpVM()
         {
 
         }
 
-        public TaskQualificationEmpVM(string status, string toolTip, int taskId, int empId, string empEmail, string empImage, string empName, 
+        public TaskQualificationEmpVM(string status, string toolTip, int? taskId, int empId, string empEmail, string empImage, string empName, 
             DateTime? qualificationDate, string comments, string taskDescription, bool criteriaMet, DateTime? createdDate, DateTime? dueDate, DateTime? modifiedDate, int? id, 
-            string taskNumber, string taskLetter,string evaluatorName, DateTime? empReleaseDate, string requiredRequals, bool isReliability, bool active, bool isRecalled)
+            string taskNumber, string taskLetter,string evaluatorName, DateTime? empReleaseDate, string requiredRequals, bool isReliability, bool active, bool isRecalled, int? enablingObjectiveId, string? enablingObjectiveDescription, int? skillQualificationId)
         {
             Status = status;
             ToolTip = toolTip;
@@ -91,6 +93,9 @@ namespace QTD2.Infrastructure.Model.Task_Requalification
             IsReliability = isReliability;
             Active = active;
             IsRecalled = isRecalled;
+            EnablingObjectiveId = enablingObjectiveId;
+            EnablingObjectiveDescription = enablingObjectiveDescription;
+            SkillQualificationId = skillQualificationId;
         }
     }
 }

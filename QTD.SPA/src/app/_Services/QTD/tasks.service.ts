@@ -56,6 +56,7 @@ import { TaskWithPositionCompactVM } from '@models/Task/TaskWithPositionCompactV
 import { ReportExportOptions } from '@models/Report/ReportExportOptions';
 import { firstValueFrom } from 'rxjs';
 import { VersionTaskModel } from '@models/Version_Task/VersionTaskModel';
+import { TaskCopyOptions } from '@models/Task/TaskCopyOptions';
 
 @Injectable({
   providedIn: 'root',
@@ -110,7 +111,7 @@ export class TasksService {
       );
   }
 
-  createCopy(id: any, options: TaskCreateOptions) {
+  createCopy(id: any, options: TaskCopyOptions) {
     return firstValueFrom(this.http
       .post(this.baseUrl + `/${id}/copy`, options)
       .pipe(
@@ -1166,6 +1167,15 @@ export class TasksService {
     ));
   }
 
+  getSuggestionSQData(skillqualificationId:any,skillId:any,employeeId:any){
+    return firstValueFrom( this.http.get(this.baseUrl1 + `empTaskQualification/suggestions/${skillqualificationId}/skill/${skillId}/emp/${employeeId}`).pipe(
+      map((res:any)=>{
+
+        return res['result'] as any[]
+      })
+    ));
+  } 
+
   getSuggestionBit(qualificationId:any){
     return firstValueFrom(this.http.get(this.baseUrl1 + `taskQualification/showTaskSuggestion/${qualificationId}`).pipe(
       map((res:any)=>{
@@ -1174,8 +1184,25 @@ export class TasksService {
     ));
   }
 
+  getSuggestionSQBit(skillqualificationId:any){
+    return firstValueFrom(this.http.get(this.baseUrl1 + `taskQualification/showSkillSuggestion/${skillqualificationId}`).pipe(
+      map((res:any)=>{
+        return res['result'] as boolean
+      })
+    ));
+  }
+
+
   getQuestionBit(qualificationId:any){
-    return firstValueFrom(this.http.get(this.baseUrl1 + `taskQualification/showTaskQuestions/${qualificationId}`).pipe(
+    return firstValueFrom(this.http.get(this.baseUrl1 + `taskQualification/showTaskSuggestion/${qualificationId}`).pipe(
+      map((res:any)=>{
+        return res['result'] as boolean
+      })
+    ));
+  }
+
+  getQuestionSQBit(skillqualificationId:any){
+    return firstValueFrom(this.http.get(this.baseUrl1 + `taskQualification/showSkillQuestion/${skillqualificationId}`).pipe(
       map((res:any)=>{
         return res['result'] as boolean
       })
@@ -1201,6 +1228,15 @@ export class TasksService {
     ));
   }
 
+   getStepsSQData(skillqualificationId:any,skillId:any,employeeId:any){
+    return  firstValueFrom(this.http.get(this.baseUrl1 + `empTaskQualification/steps/${skillqualificationId}/skill/${skillId}/emp/${employeeId}`).pipe(
+      map((res:any)=>{
+        return res['result'] as any
+      })
+    ));
+  }
+
+
   saveStepsData(options: TaskReQualificationStepsCreateOption) {
     return firstValueFrom(this.http.post(this.baseUrl1 + `empTaskQualification/steps`, options).pipe(
       map((res: any) => {
@@ -1217,6 +1253,16 @@ export class TasksService {
       })
     ));
   }
+
+  getQuestionSQData(skillQualificationId:any,skillId:any,employeeId:any){
+    return firstValueFrom(this.http.get(this.baseUrl1 + `empTaskQualification/questions/${skillQualificationId}/skill/${skillId}/emp/${employeeId}`).pipe(
+      map((res:any)=>{
+
+        return res['result'] as any[]
+      })
+    ));
+  }
+
   saveQuestionData(options: TaskReQualificationQuestionsCreateOption) {
     return firstValueFrom(this.http.post(this.baseUrl1 + `empTaskQualification/questions`, options).pipe(
       map((res: any) => {
@@ -1232,6 +1278,15 @@ export class TasksService {
       })
     ));
   }
+
+  getSQSignOffData(skillQualificationId:any,taskId:any,employeeId:any){
+    return firstValueFrom(this.http.get(this.baseUrl1 + `empTaskQualification/signoff/${skillQualificationId}/emp/${employeeId}/skill`).pipe(
+      map((res:any)=>{
+
+        return res['result'] as any
+      })
+    ));
+  }
   saveSingOffData(options: TaskReQualificationSignOffOption) {
     return firstValueFrom(this.http.post(this.baseUrl1 + `empTaskQualification/signOff`, options).pipe(
       map((res: any) => {
@@ -1239,6 +1294,14 @@ export class TasksService {
       })
     ));
   }
+
+ saveSQSignOffData(options: TaskReQualificationSignOffOption){
+   return firstValueFrom(this.http.post(this.baseUrl1 + `empTaskQualification/signOff/skill`, options).pipe(
+      map((res: any) => {
+        return res['message'];
+      })
+    ));
+ }
 
   getCompletedTaskInEval(isEvaluator:boolean){
     return firstValueFrom(this.http.get(this.baseUrl1 + `empTaskQualification/completed/isEvaluator/${isEvaluator}`).pipe(
@@ -1256,6 +1319,15 @@ export class TasksService {
       })
     ));
   }
+
+   getSQFeedback(skillQualificationId:any,traineeId:any){
+    return firstValueFrom(this.http.get(this.baseUrl1 + `empTaskQualification/feedback/skillqualification/${skillQualificationId}/trainee/${traineeId}`).pipe(
+      map((res:any)=>{
+        return res['result']
+      })
+    ));
+  }
+  
   getRequalInfo(id:any){
     return firstValueFrom(this.http.get(this.baseUrl + `/${id}/requal`).pipe(
       map((res:any)=>{

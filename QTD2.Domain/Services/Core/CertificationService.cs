@@ -51,5 +51,12 @@ namespace QTD2.Domain.Services.Core
             predicates.Add(r => r.CertifyingBody.Name.ToUpper() == "NERC");
             return (await FindAsync(predicates)).ToList();
         }
+
+        public async Task<List<Certification>> GetCertificationSubRequirementByCertificationIdAsync(int certificationId)
+        {
+            List<Expression<Func<Certification, bool>>> predicates = new List<Expression<Func<Certification, bool>>>();
+            predicates.Add(r => r.Id == certificationId);
+            return (await FindWithIncludeAsync(predicates, new string[] { "CertificationSubRequirements"})).ToList();
+        }
     }
 }

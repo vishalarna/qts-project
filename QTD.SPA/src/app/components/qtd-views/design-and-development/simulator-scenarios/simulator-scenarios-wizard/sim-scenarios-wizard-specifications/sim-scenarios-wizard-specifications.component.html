@@ -1,7 +1,7 @@
 <div class="d-flex justify-content-between">
     <div class="w-70">
         <form [formGroup]="specificationsForm">
-            <section class="bg-white section p-4 mt-4">
+         <section class="bg-white section p-4 mt-4">
                 <div class="flex flex-row justify-between w-full space-x-4 text-sm mb-3">
                     <div>
                         <p class="font-bold text-lg">Scenario Specifications</p>
@@ -17,7 +17,7 @@
                         <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="loadingConditions" (change)="onLoadingConditionsInput()"></ckeditor>
                     </div>
                     <div class="mb-4">
-                        <app-label for="'generations'" text="Generations"></app-label>                        
+                        <app-label for="'generations'" text="Generation"></app-label>                        
                         <ckeditor [editor]="editor" [disabled]="mode === 'view'" formControlName="generations" (change)="onGenerationInput()"></ckeditor>
                     </div>
                     <div class="mb-4">
@@ -68,8 +68,12 @@
         </section>
         <section class="bg-white section p-4 mt-4">
             <div class="justify-between w-full space-x-4 text-sm mb-3">
-                <div class="ml-2">
+                <div class="flex flex-row justify-between w-full ml-2">
                     <p class="font-bold text-lg">Linked Positions</p>
+                    <div class="add-position-button" (click)="openFlypanel(linkagesPositions)"  *ngIf="mode !== 'view'">
+                        <img src="./assets/icons/icon-link-item.svg" alt="icon_link_svg" style="margin-right: 10px" />
+                        <span style="cursor: pointer">Link {{("Position" | labelReplacement)| async}}s</span>
+                    </div>
                 </div>
                 <ng-container>
                     <div class="table-list">
@@ -86,3 +90,10 @@
         </section>
     </div>
 </div>
+
+<ng-template #linkagesPositions>
+    <app-fly-panel-add-positions-linkages (closed)="flyPanelService.close()"
+        (newPositionLinked)="handleNewPositionsLinked($event)" [inputSimScenariosId]="inputSimScenariosId"
+        [linkedPositionIds]="linkedPositionIds">
+    </app-fly-panel-add-positions-linkages>
+</ng-template>

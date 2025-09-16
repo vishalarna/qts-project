@@ -41,5 +41,6 @@ namespace QTD2.Application.Interfaces.Services.Shared
         public Task<bool> IsEmployeeCertification(int id);
 
         public Task<List<CertifyingBodyWithSubRequirementsVM>> GetCertifyingBodiesByLevelEditingAsync(bool isLevelEditing, int ilaId);
+        public Task<List<SubRequirementVM>> GetCertifyingBodiesWithSubRequirementsAsync(bool isLevelEditing);
     }
 }

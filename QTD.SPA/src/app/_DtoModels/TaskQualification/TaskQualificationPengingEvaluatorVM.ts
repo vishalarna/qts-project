@@ -4,6 +4,8 @@ export class TaskQualificationPengingEvaluatorVM {
   id: string;
   empId: string;
   taskId: string;
+  skillId: string;
+  skillQualificationId: string;
   empFName: string;
   empLastName: string;
   empImage: string;
@@ -11,9 +13,11 @@ export class TaskQualificationPengingEvaluatorVM {
   empNumber: string;
   empPositions: string;
   taskFullNumber: string;
+  skillFullNumber: string;
   taskNumber: number;
   taskLetter: string;
   taskDescription: string;
+  skillDescription: string;
   dueDate?: Date;
   empReleaseDate?: Date;
   requiredRequals: string;
@@ -26,4 +30,5 @@ export class TaskQualificationPengingEvaluatorVM {
   signOffOrderEnabled!: boolean;
   evaluatorListWithStatus!: EvaluatorNameWithStatus[];
   canStart!:boolean;
+  sqDueDate: Date;
 }

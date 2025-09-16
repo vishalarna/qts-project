@@ -120,3 +120,13 @@ button:focus-visible {
   font-size: 16px;
   margin-bottom: 0.5rem;
 }
+::ng-deep .mat-column-select {
+  max-width: 65px;
+  padding-left: 10px !important;
+}
+
+:host ::ng-deep .mdc-checkbox__native-control:enabled:checked ~ .mdc-checkbox__background,
+:host ::ng-deep .mdc-checkbox__native-control:enabled:indeterminate ~ .mdc-checkbox__background {
+  background-color: rgb(92, 155, 49) !important;
+  border-color: rgb(92, 155, 49) !important;
+}

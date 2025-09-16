@@ -28,6 +28,13 @@ using ITaskReQualificationEmp_StepDomainService = QTD2.Domain.Interfaces.Service
 using ITaskReQualificationEmp_QuestionAnswerDomainService = QTD2.Domain.Interfaces.Service.Core.ITaskReQualificationEmp_QuestionAnswerService;
 using IPositionTask_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.IPosition_TaskService;
 using QTD2.Infrastructure.Model.TaskReQualificationEmp;
+using ISkillQualificationEmp_SignOffDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillQualificationEmp_SignOffService;
+using ISkillQualificationEmpSettingDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillQualificationEmpSettingService;
+using ISkillQualificationStatusDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillQualificationStatusService;
+using ISkillQualificationDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillQualificationService;
+using ISkillReQualificationEmp_StepDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillReQualificationEmp_StepService;
+using ISkillReQualificationEmp_QuestionAnswerDomainService = QTD2.Domain.Interfaces.Service.Core.ISkillReQualificationEmp_QuestionAnswerService;
+using IEnablingObjectiveDomainService = QTD2.Domain.Interfaces.Service.Core.IEnablingObjectiveService;
 
 namespace QTD2.Application.Services.Shared
 {
@@ -53,6 +60,13 @@ namespace QTD2.Application.Services.Shared
         private readonly ITaskReQualificationEmp_StepDomainService _empStepsService;
         private readonly ITaskReQualificationEmp_QuestionAnswerDomainService _empQuestionAnswerService;
         private readonly IPositionTask_LinkDomainService _position_TaskService;
+        private readonly ISkillQualificationEmp_SignOffDomainService _skillQualificationEmp_SignOffService;
+        private readonly ISkillQualificationEmpSettingDomainService _skillQualificationEmpSettingService;
+        private readonly ISkillQualificationStatusDomainService _skillQualificationStatusService;
+        private readonly ISkillQualificationDomainService _skillQualificationDomainService;
+        private readonly ISkillReQualificationEmp_StepDomainService _skillReQualificationEmp_StepService;
+        private readonly ISkillReQualificationEmp_QuestionAnswerDomainService _skillReQualificationEmp_QuestionAnswerService;
+        private readonly IEnablingObjectiveDomainService _enablingObjectiveService;
 
         public TaskReQualificationEmp_SignOffService(
            IStringLocalizer<Domain.Entities.Core.TaskReQualificationEmp_SignOff> localizer,
@@ -67,7 +81,8 @@ namespace QTD2.Application.Services.Shared
            ITaskService task_AppService,
            ITaskQualificationStatusDomainService tqStatusService,
            ITQEmpSettingDomainService tqEmpSettingService,
-           ITaskQualEvalLinkDomainService tq_evalService, IPersonDomainService personService, ITaskReQualificationEmp_SignOffDomainService empSignOffDomainService, IEmployee_PositionDomainService emp_positionService, ITaskQualification_Evaluator_LinkDomainService evaluatorLinkService, ITaskQualificationDomainService taskQualificationDomainService, ITaskReQualificationEmp_StepDomainService empStepsService, ITaskReQualificationEmp_QuestionAnswerDomainService empQuestionAnswerService, IPositionTask_LinkDomainService position_TaskService)
+           ITaskQualEvalLinkDomainService tq_evalService, IPersonDomainService personService, ITaskReQualificationEmp_SignOffDomainService empSignOffDomainService, IEmployee_PositionDomainService emp_positionService, ITaskQualification_Evaluator_LinkDomainService evaluatorLinkService, ITaskQualificationDomainService taskQualificationDomainService, ITaskReQualificationEmp_StepDomainService empStepsService, ITaskReQualificationEmp_QuestionAnswerDomainService empQuestionAnswerService,
+           IPositionTask_LinkDomainService position_TaskService, ISkillQualificationEmp_SignOffDomainService skillQualificationEmp_SignOffService, ISkillQualificationEmpSettingDomainService skillQualificationEmpSettingService, ISkillQualificationStatusDomainService skillQualificationStatusService, ISkillQualificationDomainService skillQualificationDomainService, ISkillReQualificationEmp_StepDomainService skillReQualificationEmp_StepService, ISkillReQualificationEmp_QuestionAnswerDomainService skillReQualificationEmp_QuestionAnswerService, IEnablingObjectiveDomainService enablingObjectiveService)
         {
             _localizer = localizer;
             _httpContextAccessor = httpContextAccessor;
@@ -89,6 +104,13 @@ namespace QTD2.Application.Services.Shared
             _empStepsService = empStepsService;
             _empQuestionAnswerService = empQuestionAnswerService;
             _position_TaskService = position_TaskService;
+            _skillQualificationEmp_SignOffService = skillQualificationEmp_SignOffService;
+            _skillQualificationEmpSettingService = skillQualificationEmpSettingService;
+            _skillQualificationStatusService = skillQualificationStatusService;
+            _skillQualificationDomainService = skillQualificationDomainService;
+            _skillReQualificationEmp_StepService = skillReQualificationEmp_StepService;
+            _skillReQualificationEmp_QuestionAnswerService = skillReQualificationEmp_QuestionAnswerService;
+            _enablingObjectiveService = enablingObjectiveService;
         }
 
         public async Task<TaskReQualificationEmpSignOffVM> GetSignOffData(int qualificationId, int employeeId)
@@ -140,6 +162,62 @@ namespace QTD2.Application.Services.Shared
             signOffVm.EvaluatorId = qualificationEmp.EvaluatorId;
             signOffVm.EvaluationMethodId = qualificationEmp.EvaluationMethodId;
             signOffVm.TaskQualificationDate = qualificationEmp.TaskQualificationDate;
+            signOffVm.SignOffDate = qualificationEmp.SignOffDate;
+            signOffVm.TraineeName = traineeName;
+            signOffVm.EvaluatorName = evaluatorName;
+            signOffVm.IsTraineeSignOff = qualificationEmp.IsTraineeSignOff;
+            signOffVm.IsEvaluatorSignOff = qualificationEmp.IsEvaluatorSignOff;
+            return signOffVm;
+        }
+
+
+        public async Task<TaskReQualificationEmpSignOffVM> GetSQEvaluatorSignOffDataAsync(int skillqualificationId, int employeeId)
+        {
+            //Get Current Evaluator 
+            var signOffVm = new TaskReQualificationEmpSignOffVM();
+            var userName = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Email;
+            var person = (await _personService.FindAsync(x => x.Username == userName)).FirstOrDefault();
+
+            var employee = (await _empService.FindWithIncludeAsync(x => x.PersonId == person.Id, new string[] { "Person" })).FirstOrDefault();
+            var qualificationEmp =( await _skillQualificationEmp_SignOffService.FindWithIncludeAsync(x => x.SkillQualificationId == skillqualificationId && x.TraineeId == employeeId && x.EvaluatorId == employee.Id, new string[] { "SkillQualification.SkillQualification_Evaluator_Links.Evaluator" })).FirstOrDefault();
+            var trainee = (await _empService.FindWithIncludeAsync(x => x.Id == employeeId, new string[] { "Person" })).FirstOrDefault();
+            var traineeName = trainee.Person.FirstName + " " + trainee.Person.LastName;
+            var evaluator = (await _empService.FindWithIncludeAsync(x => x.Id == employee.Id, new string[] { "Person" })).FirstOrDefault();
+            var evaluatorName = evaluator.Person.FirstName + " " + evaluator.Person.LastName;
+
+            if (qualificationEmp == null)
+            {
+                //make an entry in signoff
+
+                qualificationEmp = new SkillQualificationEmp_SignOff(skillqualificationId, null, null, employee.Id, null, null, employeeId, null, true, false, null, false, false);
+                var result = await _skillQualificationEmp_SignOffService.AddAsync(qualificationEmp);
+                if (result.IsValid)
+                {
+                    signOffVm.SkillQualificationId = qualificationEmp.SkillQualificationId;
+                    signOffVm.IsCriteriaMet = qualificationEmp.IsCriteriaMet;
+                    signOffVm.Comments = qualificationEmp.Comments;
+                    signOffVm.EvaluatorId = qualificationEmp.EvaluatorId;
+                    signOffVm.EvaluationMethodId = qualificationEmp.EvaluationMethodId;
+                    signOffVm.SkillQualificationDate = qualificationEmp.SkillQualificationDate;
+                    signOffVm.SignOffDate = qualificationEmp.SignOffDate;
+                    signOffVm.TraineeName = traineeName;
+                    signOffVm.EvaluatorName = evaluatorName;
+                    signOffVm.IsTraineeSignOff = qualificationEmp.IsTraineeSignOff;
+                    signOffVm.IsEvaluatorSignOff = qualificationEmp.IsEvaluatorSignOff;
+                    return signOffVm;
+                }
+                else
+                {
+                    throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', result.Errors));
+                }
+
+            }
+            signOffVm.SkillQualificationId = qualificationEmp.SkillQualificationId;
+            signOffVm.IsCriteriaMet = qualificationEmp.IsCriteriaMet;
+            signOffVm.Comments = qualificationEmp.Comments;
+            signOffVm.EvaluatorId = qualificationEmp.EvaluatorId;
+            signOffVm.EvaluationMethodId = qualificationEmp.EvaluationMethodId;
+            signOffVm.SkillQualificationDate = qualificationEmp.SkillQualificationDate;
             signOffVm.SignOffDate = qualificationEmp.SignOffDate;
             signOffVm.TraineeName = traineeName;
             signOffVm.EvaluatorName = evaluatorName;
@@ -222,6 +300,82 @@ namespace QTD2.Application.Services.Shared
                             taskQual.CriteriaMet = options.IsCriteriaMet ?? false;
                             taskQual.Completed();
                             await _taskQualificationDomainService.UpdateAsync(taskQual);
+                        }
+                    }
+
+                }
+                else
+                {
+                    throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
+                }
+
+            }
+            return qualificationEmp;
+        }
+
+        public async Task<SkillQualificationEmp_SignOff> CreateOrUpdateSQSignOffAsync(TaskReQualificationEmpSignOffVM options)
+        {
+            var userName = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Email;
+
+            var person = (await _personService.FindAsync(x => x.Username == userName)).FirstOrDefault();
+            var employee = (await _empService.FindWithIncludeAsync(x => x.PersonId == person.Id, new string[] { "Person" })).FirstOrDefault();
+
+            var qualificationEmp = (await _skillQualificationEmp_SignOffService.FindAsync(x => x.SkillQualificationId == options.SkillQualificationId && x.TraineeId == options.TraineeId && x.EvaluatorId == employee.Id)).FirstOrDefault();
+
+            qualificationEmp.SkillQualificationId = options.SkillQualificationId;
+            qualificationEmp.SkillQualificationDate = options.SkillQualificationDate;
+            qualificationEmp.Comments = options.Comments;
+            qualificationEmp.TraineeId = options.TraineeId;
+            qualificationEmp.EvaluatorId = employee.Id;
+            qualificationEmp.EvaluationMethodId = options.EvaluationMethodId;
+            qualificationEmp.IsCriteriaMet = options.IsCriteriaMet;
+            qualificationEmp.IsTraineeSignOff = options.IsTraineeSignOff;
+            qualificationEmp.IsEvaluatorSignOff = options.IsEvaluatorSignOff;
+            if (options.IsFormSubmitted.GetValueOrDefault())
+            {
+                qualificationEmp.SignOffDate = DateTime.UtcNow;
+                qualificationEmp.IsCompleted = true;
+            }
+            else
+            {
+                qualificationEmp.SignOffDate = null;
+                qualificationEmp.IsCompleted = null;
+            }
+            var validationResult = await _skillQualificationEmp_SignOffService.UpdateAsync(qualificationEmp);
+            if (options.IsFormSubmitted.GetValueOrDefault() && validationResult.IsValid)
+            {
+                var listEvaluators = new List<string>();
+                string RequiredRequals = string.Empty;
+                var setting = (await _skillQualificationEmpSettingService.FindAsync(x => x.SkillQualificationId == options.SkillQualificationId)).FirstOrDefault();
+                //recentTQ.EmpReleaseDate = setting.ReleaseDate;
+                if (setting != null)
+                {
+                    var checkSignOffs = (await _skillQualificationEmp_SignOffService.FindWithIncludeAsync(x => x.SkillQualificationId == options.SkillQualificationId && x.IsCompleted == true, new string[] { "Evaluator.Person" })).ToList();
+
+                    //var listEvaluators = new List<string>();
+                    if ((setting.MultipleSignOffDisplay == 1 || setting.ReleaseToAllSingleSignOff) && checkSignOffs.Count > 0)
+                    {
+                        var skillQualStatus = (await _skillQualificationStatusService.FindAsync(x => x.Name == "Completed")).Select(x => x.Id).FirstOrDefault();
+                        var skillQual = (await _skillQualificationDomainService.FindAsync(x => x.Id == options.SkillQualificationId)).FirstOrDefault();
+                        skillQual.SkillQualificationStatusId = skillQualStatus;
+                        skillQual.SkillQualificationDate = options.SkillQualificationDate?.ToUniversalTime();
+                        skillQual.CriteriaMet = options.IsCriteriaMet ?? false;
+                        skillQual.Completed();
+                        await _skillQualificationDomainService.UpdateAsync(skillQual);
+
+                    }
+                    else
+                    {
+                        var requiredSignOff = setting.MultipleSignOffDisplay;
+                        if (checkSignOffs.Count >= requiredSignOff)
+                        {
+                            var skillQualStatus = (await _skillQualificationStatusService.FindAsync(x => x.Name == "Completed")).Select(x => x.Id).FirstOrDefault();
+                            var skillQual = (await _skillQualificationDomainService.FindAsync(x => x.Id == options.SkillQualificationId)).FirstOrDefault();
+                            skillQual.SkillQualificationStatusId = skillQualStatus;
+                            skillQual.SkillQualificationDate = options.SkillQualificationDate?.ToUniversalTime();
+                            skillQual.CriteriaMet = options.IsCriteriaMet ?? false;
+                            skillQual.Completed();
+                            await _skillQualificationDomainService.UpdateAsync(skillQual);
                         }
                     }
 
@@ -471,6 +625,77 @@ namespace QTD2.Application.Services.Shared
             var concatenatedNumber = number.Letter + number.DANumber + "." + number.SDANumber + "." + number.TaskNumber;
             feedBackVM.TaskDescription = taskQual.Task.Description;
             feedBackVM.concatednatedTaskNumber = concatenatedNumber;
+            return feedBackVM;
+        }
+
+        public async Task<TaskReQualificatioFeedBackVM> GetFeedBackSQData(int skillQualificationId, int traineeId)
+        {
+            var feedBackVM = new TaskReQualificatioFeedBackVM();
+            var steps = await _skillReQualificationEmp_StepService.GetStepsBySkillQualificationAndTraineeIdAsync(skillQualificationId, traineeId);
+
+            if (steps.Count > 0)
+            {
+                foreach (var step in steps)
+                {
+                    var stepCommentsVM = new List<StepCommentsVM>();
+                    var commentsOfEmployees = await _skillReQualificationEmp_StepService.GetByStepIdAsync(step.SkillStepId);
+                    foreach (var commentWithEmployee in commentsOfEmployees)
+                    {
+                        var evaluator = await _empService.GetEmployeeByIdAsync(commentWithEmployee.EvaluatorId);
+                        var evaluatorName = evaluator.Person.FirstName + " " + evaluator.Person.LastName;
+                        stepCommentsVM.Add(new StepCommentsVM()
+                        {
+                            EmployeeName = evaluatorName,
+                            Comment = commentWithEmployee.Comments,
+                            CommentDate = commentWithEmployee.CommentDate,
+                            Image = evaluator.Person.Image,
+
+                        });
+                    }
+                    feedBackVM.StepsList.Add(new Steps()
+                    {
+                        StepId = step.SkillStepId,
+                        StepDescription = step.EnablingObjective_Step.Description,
+                        EvaluatorsStepComments = stepCommentsVM,
+                    });
+                }
+            }
+
+            var questionAnswers = await _skillReQualificationEmp_QuestionAnswerService.GetBySkillQualificationAndTraineeIdAsync(skillQualificationId, traineeId);
+            if (questionAnswers.Count > 0)
+            {
+                foreach (var questionAnswer in questionAnswers)
+                {
+                    var questionAnswerCommentsVM = new List<QuestionAnswerCommentsVM>();
+                    var questioncommentsOfEmployees = await _skillReQualificationEmp_QuestionAnswerService.GetByQuestionIdAsync(questionAnswer.SkillQuestionId);
+                    foreach (var questioncommentsOfEmployee in questioncommentsOfEmployees)
+                    {
+                        var evaluatorQA = await _empService.GetEmployeeByIdAsync(questioncommentsOfEmployee.EvaluatorId);
+                        var evaluatorQAName = evaluatorQA.Person.FirstName + " " + evaluatorQA.Person.LastName;
+                        questionAnswerCommentsVM.Add(new QuestionAnswerCommentsVM()
+                        {
+                            EmployeeName = evaluatorQAName,
+                            Comment = questioncommentsOfEmployee.Comments,
+                            CommentDate = questioncommentsOfEmployee.CommentDate,
+                            Image = evaluatorQA.Person.Image,
+
+                        });
+                    }
+                    feedBackVM.QuesionAnswerList.Add(new QuesionAnswer()
+                    {
+                        QuestionId = questionAnswer.SkillQuestionId,
+                        QuestionDescription = questionAnswer.EnablingObjective_Question.Question,
+                        Answer = questionAnswer.EnablingObjective_Question.Answer,
+                        EvaluatorsQuestionAnswerComments = questionAnswerCommentsVM,
+                    });
+                }
+            }
+
+            var skillQual = (await _skillQualificationDomainService.GetBySkillQualificationIDAsync(skillQualificationId)).FirstOrDefault();
+            var number = (await _enablingObjectiveService.GetEOByIdAsync(skillQual.EnablingObjective.Id)).FirstOrDefault();
+            var concatenatedNumber = number.FullNumber;
+            feedBackVM.SkillDescription = skillQual.EnablingObjective.Description;
+            feedBackVM.concatednatedSkillNumber = concatenatedNumber;
             return feedBackVM;
         }
 

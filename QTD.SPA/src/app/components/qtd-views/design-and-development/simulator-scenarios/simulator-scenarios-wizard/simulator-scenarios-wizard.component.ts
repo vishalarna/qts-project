@@ -75,18 +75,27 @@ export class SimulatorScenariosWizardComponent implements OnInit, AfterViewInit 
   }
 
   ngAfterViewInit(): void {
-    var checkRedirect:any = this.location.getState();
-    if(checkRedirect?.goToNext && this.simScenariosId){
-      this.simulatorScenario_VM = checkRedirect?.data;
-      this.goToNext = checkRedirect.goToNext;
-      this.patchReviewDetails();
-      if(this.stepper){
-         setTimeout(() => this.stepper.next(), 1);
-      }
-    }else if (this.simScenariosId){
-      this.loadAsync();
+  const state: any = this.location.getState();
+  if (state?.goToNext && this.simScenariosId) {
+    this.simulatorScenario_VM = state.data;
+    this.goToNext = true;
+    this.patchReviewDetails();
+
+    if (this.stepper) {
+      setTimeout(() => {
+        this.stepper.selectedIndex = 1;
+        history.replaceState({}, '', this.router.url);
+      }, 1);
+    }
+  } else if (this.simScenariosId) {
+    this.loadAsync();
+  } else {
+    if (this.stepper) {
+      setTimeout(() => this.stepper.selectedIndex = 0, 1);
     }
   }
+ }
+
   async loadAsync() {
     this.scrollToTop();
     await this.getSimScenariosAsync();
@@ -106,10 +115,7 @@ export class SimulatorScenariosWizardComponent implements OnInit, AfterViewInit 
 
     }
     this.currentIndex = event.selectedIndex;
-    if (this.mode == 'create') {
-       this.createScenarioAsync();
-    }
-    else if (this.mode == 'edit') {
+     if (this.mode == 'edit') {
       if ((event.previouslySelectedIndex == 0 && !this.goToNext) || event.previouslySelectedIndex == 3 || event.previouslySelectedIndex == 5) {
          this.updateScenarioAsync(false,event.previouslySelectedIndex);
       }
@@ -122,9 +128,13 @@ export class SimulatorScenariosWizardComponent implements OnInit, AfterViewInit 
     this.goToNext = false;
   }
 
-  async continueClick() {
+ async continueClick() {
+  if (this.mode === 'create' && this.currentIndex === 0) {
+    await this.createScenarioAsync();
+  } else {
     this.stepper.next();
   }
+ }
 
   exitWizard(templateRef: any) {
     if (this.mode != 'view' && this.isStep1FormValid ) {

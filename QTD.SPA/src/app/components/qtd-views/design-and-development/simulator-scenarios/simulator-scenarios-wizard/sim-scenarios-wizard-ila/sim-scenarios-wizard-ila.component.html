@@ -14,6 +14,14 @@
     <div class="mt-4 ml-4">
       <mat-checkbox formControlName="isAvailableForAll" [disabled]="mode === 'view'" >
         Make Available For All {{ "ILA" | labelReplacement | async }}s
+        <app-icon
+          icon="help_outline"
+          [matTooltip]="'Selecting this option indicates that the scenario will not be linked to a given ' 
+            + ('ILA' | labelReplacement | async) 
+            + '. You will be able to use this simulator scenario for any trainee assessment and link to any ' 
+            + ('ILA' | labelReplacement | async)"
+        >
+        </app-icon>
       </mat-checkbox>
     </div>
     <div class="rounded-t-md py-2 space-x-2" *ngIf="ilaSelection.hasValue() && !isILAUnlink">

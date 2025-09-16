@@ -22,6 +22,16 @@ export class QTDService {
       ));
   }
 
+  getAllActiveWithEmployeeDataAsync() {
+    return firstValueFrom(this.http
+      .get(this.baseUrl + '/withEmployeeData')
+      .pipe(
+        map((res: any) => {
+          return res.result as QtdUserVM[];
+        })
+      ));
+  }
+
   createAsync(qtdUserOption:QtdUserVM){
     return firstValueFrom(this.http
       .post(this.baseUrl, qtdUserOption)

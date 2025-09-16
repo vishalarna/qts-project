@@ -23,6 +23,9 @@ namespace QTD2.Domain.Entities.Core
         public bool IsEmployeeShowResponses { get; set; }
 
         public bool IsPublished { get; set; }
+        public ProcedureReviewExtensionType? ExtensionType { get; set; }
+        public int? ExtensionAmount { get; set; }
+
         public virtual Procedure Procedure { get; set; }
 
         public virtual ICollection<ProcedureReview_Employee> ProcedureReview_Employee { get; set; } = new List<ProcedureReview_Employee>();
@@ -31,7 +34,7 @@ namespace QTD2.Domain.Entities.Core
         {
 
         }
-        public ProcedureReview(int procedureId, string procedureReviewTitle, DateTime startDateTime, DateTime endDateTime, string procedureReviewInstructions, bool isEmployeeShowResponses, bool isPublished,string procedureReviewAcknowledgement)
+        public ProcedureReview(int procedureId, string procedureReviewTitle, DateTime startDateTime, DateTime endDateTime, string procedureReviewInstructions, bool isEmployeeShowResponses, bool isPublished,string procedureReviewAcknowledgement, ProcedureReviewExtensionType? extensionType, int? extensionAmount)
         {
             ProcedureId = procedureId;
             ProcedureReviewTitle = procedureReviewTitle;
@@ -41,6 +44,8 @@ namespace QTD2.Domain.Entities.Core
             IsEmployeeShowResponses = isEmployeeShowResponses;
             IsPublished = isPublished;
             ProcedureReviewAcknowledgement = procedureReviewAcknowledgement;
+            ExtensionType = extensionType;
+            ExtensionAmount = extensionAmount;
         }
 
         public ProcedureReview_Employee LinkEmployee(Employee employee)
@@ -74,5 +79,24 @@ namespace QTD2.Domain.Entities.Core
 
             AddDomainEvent(new Domain.Events.Core.OnProcedureReviewPublished(this));
         }
+        public DateTime EffectiveDueDate
+        {
+            get
+            {
+                if (ExtensionType.HasValue && ExtensionAmount.HasValue)
+                {
+                    return ExtensionType switch
+                    {
+                        ProcedureReviewExtensionType.Day => EndDateTime.AddDays(ExtensionAmount.Value),
+                        ProcedureReviewExtensionType.Month => EndDateTime.AddMonths(ExtensionAmount.Value),
+                        ProcedureReviewExtensionType.Year => EndDateTime.AddYears(ExtensionAmount.Value),
+                        _ => EndDateTime
+                    };
+                }
+
+                return EndDateTime;
+            }
+        }
+
     }
 }

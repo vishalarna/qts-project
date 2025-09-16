@@ -262,5 +262,14 @@ namespace QTD2.API.QTD.Controllers
             var result = await _certificationService.GetNercCertificatesAsync();
             return Ok(new { result });
         }
+
+        [HttpGet]
+        [Route("/certifications/{certId}/subrequirements")]
+        public async Task<IActionResult> GetSubRequirementsByCertIdAsync(int certId)
+        {
+            var subReqs = await _certificationService.GetSubRequirementsByCertIdAsync(certId);
+            return Ok(new { subReqs });
+        }
+
     }
 }

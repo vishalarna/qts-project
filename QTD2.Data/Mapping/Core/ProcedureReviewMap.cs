@@ -13,6 +13,8 @@ namespace QTD2.Data.Mapping.Core
         public override void Configure(EntityTypeBuilder<ProcedureReview> builder)
         {
             base.Configure(builder);
+            builder.Property(x => x.ExtensionType);
+            builder.Property(x => x.ExtensionAmount);
             builder.HasOne(x => x.Procedure).WithMany(m => m.ProcedureReviews).HasForeignKey(y => y.ProcedureId);
 
         }

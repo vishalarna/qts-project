@@ -8,7 +8,7 @@
     <ng-template matStepperIcon="edit">
       <app-icon icon="done"></app-icon>
     </ng-template>
-    <mat-step [completed]="hasAnySelection" label="Select {{('Task' | labelReplacement)| async}}s & SKILLS">
+    <mat-step [completed]="hasAnySelection" label="Select {{('Task' | labelReplacement)| async}}s & Skills">
       <mat-tab-group (selectedTabChange)="onTabChange($event)">
         <mat-tab label="Tasks">
           <app-data-loader *ngIf="loadingTasks"></app-data-loader>

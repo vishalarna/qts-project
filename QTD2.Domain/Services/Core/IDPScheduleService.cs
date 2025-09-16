@@ -100,18 +100,13 @@ namespace QTD2.Domain.Services.Core
 
         public async Task<List<IDPSchedule>> GetIDPSchedulesForEmployeeIDPCompletionStatusReportFulfillments(int year, List<int> employeeIds)
         {
-            var predicates = new List<Expression<Func<IDPSchedule, bool>>>
-            {
-                p => p.IDP.IDPYear.HasValue && p.IDP.IDPYear.Value.Year == year,
-                p => employeeIds.Contains(p.IDP.EmployeeId),
-                p => !p.Deleted
-            };
+            List<Expression<Func<IDPSchedule, bool>>> predicates = new List<Expression<Func<IDPSchedule, bool>>>();
 
-            var schedulesWithIdp = await FindWithIncludeAsync(predicates, new[] { "IDP", "IDP.ILA" });
-            var schedulesWithClass = await FindWithIncludeAsync(predicates, new[] { "ClassSchedule", "ClassSchedule.ClassSchedule_Employee" });
+            predicates.Add(p => p.IDP.IDPYear.HasValue && p.IDP.IDPYear.Value.Year == year);
 
-            var idpSchedules = schedulesWithIdp.Union(schedulesWithClass).Distinct().ToList();
-            return idpSchedules;
+            var idpSchedules = (await FindWithIncludeAsync(predicates, new[] { "IDP.ILA", "ClassSchedule.ClassSchedule_Employee" } )).ToList();
+
+            return idpSchedules.Where(idp => employeeIds.Contains(idp.IDP.EmployeeId) && !idp.Deleted).ToList();
         }
 
         public async System.Threading.Tasks.Task<IDPSchedule> GetIDPSchedulesByClassIdAndEmpIdAsync(int classId, int empId)

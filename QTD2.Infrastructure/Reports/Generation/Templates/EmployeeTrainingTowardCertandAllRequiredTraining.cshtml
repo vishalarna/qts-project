@@ -229,13 +229,26 @@
                                 var regCEHAwardedComp = new List<double>();
                                 var reg2CEHAwardedComp = new List<double>();
                                 var otherCEHAwardedComp = new List<double>();
+                                var filteredFulfillments = allFulfillments
+                                    .GroupBy(fr => new { fr.ILAId, fr.ClassCompletionDate })
+                                    .Select(g => g.First())
+                                    .Where(fr => fr.IsComplete
+                                    && fr.ClassCompletionDate.HasValue
+                                    && certStatus.RenewalDate.HasValue
+                                    && certStatus.ExpirationDate.HasValue
+                                    && DateOnly.FromDateTime(fr.ClassCompletionDate.Value) >= certStatus.RenewalDate.Value
+                                    && DateOnly.FromDateTime(fr.ClassCompletionDate.Value) <= certStatus.ExpirationDate.Value)
+                                    .ToList();
+
+                                var remainingEopHrs = Model.CertificationFulfillmentStatuses
+                                    .Where(record => record.CertificationId == Model.EmergencyResponseCertificationId
+                                    && record.EmployeeId == certStatus.EmployeeId)
+                                    .SelectMany(record => record.FulfillmentRecords)
+                                    .Where(fr => fr.CEHAwarded > 0
+                                    && !filteredFulfillments.Any(f => f.ILAId == fr.ILAId))
+                                    .ToList();
                             }
-                            @foreach (var fulfillRecord in allFulfillments.GroupBy(fr => new { fr.ILAId, fr.ClassCompletionDate }).Select(g => g.First()).Where(fr => fr.IsComplete
-                                && fr.ClassCompletionDate.HasValue
-                                && certStatus.RenewalDate.HasValue
-                                && certStatus.ExpirationDate.HasValue
-                                && DateOnly.FromDateTime(fr.ClassCompletionDate.Value) >= certStatus.RenewalDate.Value
-                                && DateOnly.FromDateTime(fr.ClassCompletionDate.Value) <= certStatus.ExpirationDate.Value).ToList())
+                            @foreach (var fulfillRecord in filteredFulfillments)
                             {
                                 <tr style="border-bottom: 1px solid #000">
                                     @if (Model.DisplayColumns.Where(r => r == "ILA #").Count() > 0)
@@ -313,6 +326,61 @@
                                     </td>
                                     <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
                                         @otherCEHAwarded
+                                    </td>
+                                </tr>
+                            }
+
+                            @foreach (var eopRecord in remainingEopHrs)
+                            {
+                                <tr style="border-bottom: 1px solid #000">
+                                    @if (Model.DisplayColumns.Where(r => r == "ILA #").Count() > 0)
+                                    {
+                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                            @($"{eopRecord?.ILAProviderNumber} / {eopRecord?.ILANumber}")
+                                        </td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "ILA Title").Count() > 0)
+                                    {
+                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: left;">
+                                            @eopRecord?.ILAName
+                                        </td>
+                                    }
+                                    @if (Model.DisplayColumns.Where(r => r == "Completed Date").Count() > 0)
+                                    {
+                                        <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                            @eopRecord?.ClassCompletionDate?.ToShortDateString()
+                                        </td>
+                                    }
+
+                                    @{
+                                        var eopHrs = eopRecord.CEHAwarded;
+
+                                        if (eopHrs > 0) eopHoursComp.Add(eopHrs);
+                                    }
+
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        N/A
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        N/A
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        N/A
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        @eopHrs
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        N/A
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        N/A
+                                    </td>
+                                    <td style="border: none; padding: 5px; vertical-align: top; text-align: center;">
+                                        N/A
                                     </td>
                                 </tr>
                             }

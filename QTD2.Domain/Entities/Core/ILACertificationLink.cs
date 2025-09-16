@@ -34,6 +34,18 @@ namespace QTD2.Domain.Entities.Core
             IsPartialCreditHours = isPartialCreditHours;
             CEHHours = cehHours;
         }
+        public ILACertificationLink(int certificationId, int ilaId, bool isIncludeSimulation, bool isEmergencyOpHours, bool isPartialCreditHours, double? cehHours, string createdBy)
+        {
+            CertificationId = certificationId;
+            ILAId = ilaId;
+            IsIncludeSimulation = isIncludeSimulation;
+            IsEmergencyOpHours = isEmergencyOpHours;
+            IsPartialCreditHours = isPartialCreditHours;
+            CEHHours = cehHours;
+            CreatedDate = DateTime.Now;
+            CreatedBy = createdBy;
+        }
+
         public ILACertificationLink()
         {
 

@@ -45,7 +45,13 @@ namespace QTD2.Application.Services.Shared
             return qtdUsers.OrderBy(x => x.Person?.FirstName).ToList();
         }
 
-
+        public async Task<List<QtdUserVM>> GetAllActiveWithEmployeeData()
+        {
+            var allQtdUsers = await _qTDUserService.GetAllActiveWithEmployeeData();
+            var qtdUsers = allQtdUsers.Select(x => new QtdUserVM(x.Id, x.Person));
+            return qtdUsers.OrderBy(x => x.Person?.FirstName).ToList();
+        }
+        
         public async Task<QtdUserVM> CreateAsync(QtdUserVM qtdUserOption, bool isReturnConflictExp = false)
         {
             if (qtdUserOption == null || qtdUserOption.Person == null)

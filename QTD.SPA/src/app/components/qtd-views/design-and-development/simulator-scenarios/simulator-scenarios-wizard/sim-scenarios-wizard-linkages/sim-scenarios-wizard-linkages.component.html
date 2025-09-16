@@ -51,7 +51,7 @@
     </div>
     <ng-container *ngIf="!isObjectiveLinkUnlink">
         <div class="objectives-table-list">
-            <mat-table [dataSource]="objAndTasksDataSource" matSort #objectiveSort="matSort">
+            <mat-table [dataSource]="objAndTasksDataSource" #objectiveSort="matSort" matSort>
                 <ng-container matColumnDef="id">
                     <mat-header-cell *matHeaderCellDef>
                         <mat-checkbox
@@ -87,7 +87,7 @@
                 </ng-container>
                 <ng-container matColumnDef="action">
                     <mat-header-cell *matHeaderCellDef> </mat-header-cell>
-                    <mat-cell *matCellDef="let row">
+                    <mat-cell *matCellDef="let row" class="pl-6">
                         <button mat-icon-button  *ngIf="mode !== 'view'" (click)="unlinkTaskModal(unlinkTask, row)">
                             <mat-icon>link_off</mat-icon>
                         </button>

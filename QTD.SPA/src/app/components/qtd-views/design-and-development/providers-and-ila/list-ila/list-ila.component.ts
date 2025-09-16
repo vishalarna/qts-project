@@ -202,6 +202,7 @@ export class ListIlaComponent implements OnInit, OnDestroy {
   currentIlaCount:number;
   filteredILAData:any[] = [];
   delayedFilterDataSource: () => void;
+  basicIla = false;
 
   constructor(
     public flyPanelSrvc: FlyInPanelService,
@@ -1292,4 +1293,10 @@ export class ListIlaComponent implements OnInit, OnDestroy {
       link.click();
       document.body.removeChild(link);
     }
+
+    openBasicILAPanel(templateRef: any) {
+      const portal = new TemplatePortal(templateRef, this.vcr);
+      this.flyPanelSrvc.open(portal);
+    }  
+
 }

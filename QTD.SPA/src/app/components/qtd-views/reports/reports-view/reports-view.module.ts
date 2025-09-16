@@ -9,6 +9,7 @@ import { LayoutModule } from '../../layout/layout.module';
 import { LocalizeModule } from 'src/app/_Shared/modules/localize.module';
 import { MatTreeModule } from '@angular/material/tree';
 import { MatLegacyListModule as MatListModule } from '@angular/material/legacy-list';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 
 
@@ -25,7 +26,8 @@ import { MatLegacyListModule as MatListModule } from '@angular/material/legacy-l
     LayoutModule,
     LocalizeModule,
     MatTreeModule,
-    MatListModule
+    MatListModule,
+    MatCheckboxModule
   ],
   exports: [
     ReportsViewComponent

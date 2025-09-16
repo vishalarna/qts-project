@@ -7,6 +7,7 @@ import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy
 import { MatIconModule } from '@angular/material/icon';
 import { SimScenariosWizardSpecificationsComponent } from './sim-scenarios-wizard-specifications.component';
 import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
+import { FlyPanelAddPositionsLinkagesModule } from "../sim-scenarios-wizard-linkages/fly-panel-add-positions-linkages/fly-panel-add-positions.module";
 
 @NgModule({
   declarations: [SimScenariosWizardSpecificationsComponent],
@@ -18,8 +19,9 @@ import { CKEditorModule } from '@ckeditor/ckeditor5-angular';
     MatCheckboxModule,
     MatTableModule,
     MatIconModule,
-    CKEditorModule
-  ],
+    CKEditorModule,
+    FlyPanelAddPositionsLinkagesModule
+],
   exports: [SimScenariosWizardSpecificationsComponent]
 })
 export class SimScenariosWizardSpecificationsModule { }

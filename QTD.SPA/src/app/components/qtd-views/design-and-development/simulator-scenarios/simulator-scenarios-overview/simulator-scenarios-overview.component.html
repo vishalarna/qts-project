@@ -244,10 +244,11 @@
                 </button>
                 <mat-menu #menu="matMenu">
                   <label
+                    [disabled]="!row.active"
                     mat-menu-itemtranslate
                     mat-menu-item
                     translate
-                    (click)="editSimulatorScenarios(row.id)"
+                    (click)="row.active && editSimulatorScenarios(row.id)"
                   >
                     Edit
                   </label>
@@ -260,18 +261,20 @@
                     View
                   </label>
                   <label
+                    [disabled]="!row.active"
                     mat-menu-itemtranslate
                     mat-menu-item
                     translate
-                    (click)="copySimulatorScenarios(row.id)"
+                    (click)="row.active && copySimulatorScenarios(row.id)"
                   >
                     Copy
                   </label>
                   <label
+                    [disabled]="!row.active"
                     mat-menu-itemtranslate
                     mat-menu-item
                     translate
-                    (click)="
+                    (click)="row.active && 
                       deleteSimulatorScenarios(deleteSimScenarioRow, row)
                     "
                   >

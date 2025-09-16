@@ -1309,6 +1309,22 @@ namespace QTD2.Data.Initialization.QTDContext
         {
             callMethod(prefix + "AddSkillQualificationStatusTable");
         }
+        public void UpdateClassRoasterReportSkeletonColumn()
+        {
+            callMethod(prefix + "UpdateClassRoasterReportSkeletonColumn");
+        }
+        public void AddReport_ILAsBySafetyHazard()
+        {
+            callMethod(prefix + "AddReport_ILAsBySafetyHazard");
+        }
+        public void SeedSimulatorScenarioEventsAsync()
+        {
+            callMethod(prefix + "SeedSimulatorScenarioEventsAsync");
+        }
+        public void UpdateSimulatorScenarioILAsAndPrerequisitesForDeletedILAs()
+        {
+            callMethod(prefix + "UpdateSimulatorScenarioILAsAndPrerequisitesForDeletedILAs");
+        }
         protected void callMethod(string method)
         {
             Type thisType = GetType();

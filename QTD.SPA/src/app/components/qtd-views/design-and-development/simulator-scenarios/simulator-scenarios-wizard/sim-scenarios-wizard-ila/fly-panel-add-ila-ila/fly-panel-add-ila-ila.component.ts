@@ -109,7 +109,11 @@ export class FlyPanelAddIlaComponent implements OnInit {
           checkbox: true,
         };
 
-        res[data].ilAs.forEach(element => {
+        var sortedIlas = res[data].ilAs.sort((a, b) => 
+          a.number.localeCompare(b.number, undefined, { numeric: true, sensitivity: 'base' })
+        );
+
+        sortedIlas.forEach(element => {
           treeData[data]['children'].push({
             id: element.id,
             description: element.number + " - " + element.name,

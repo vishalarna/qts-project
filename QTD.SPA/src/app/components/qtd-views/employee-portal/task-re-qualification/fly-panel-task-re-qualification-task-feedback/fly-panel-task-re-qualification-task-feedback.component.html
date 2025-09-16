@@ -2,7 +2,7 @@
     <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBack()">
     </app-button>
     <div class="flex flex-row items-center space-x-4 w-full justify-between">
-        <h1>{{('Task' | labelReplacement)| async}} Re-Qualifications</h1>
+        <h1>{{('Task' | labelReplacement)| async}} / Skill Re-Qualifications</h1>
         <div class="justify-between">
             <app-button color="blue" type="button" text="Close" (clicked)="goBack()" style="margin-left: 10px;">
             </app-button>
@@ -15,8 +15,8 @@
       <app-button (click)="closed.emit()" ButtonType="icon" icon="close"></app-button>
   </div>
 </div>
-<app-data-loader *ngIf="!this.task || allTaskDataLoader"></app-data-loader>  
-<div class="flex justify-center" *ngIf="this.task && !allTaskDataLoader" [ngClass]="{'mt-5':!isOpenInFlyPanel}" style="align-items:center;">
+<app-data-loader *ngIf="(!this.task || allTaskDataLoader) && showTaskDetails"></app-data-loader>  
+<div class="flex justify-center" *ngIf="this.task && !allTaskDataLoader && showTaskDetails" [ngClass]="{'mt-5':!isOpenInFlyPanel}" style="align-items:center;">
     <div style="width:80%;" [ngClass]="{'w-100':isOpenInFlyPanel}">
       <div class="flex justify-end">
         <div class="w-30 px-12 py-2">
@@ -149,6 +149,140 @@
                 <li *ngFor="let step of allTaskData.task_Steps">
                   <div class="flex flex-row justify-between w-full">
                     <div [innerHTML]="step.description.split(regex)[0]" class="letter-spacing"></div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </section>
+  </div>
+</div>
+
+<div class="flex justify-center" *ngIf="this.enablingObjective && !allTaskDataLoader && !showTaskDetails" [ngClass]="{'mt-5':!isOpenInFlyPanel}" style="align-items:center;">
+    <div style="width:80%;" [ngClass]="{'w-100':isOpenInFlyPanel}">
+      <div class="flex justify-end">
+        <div class="w-30 px-12 py-2">
+          <app-button size = "sm" (clicked) = "downloadPdf()"  text = "Download Skill Qualification Sheet"></app-button>
+        </div>
+      </div>
+        <!-- Top Header Section -->
+      <section class="flex flex-col p-4 rounded-sm" [ngClass]="{'mt-4' :!isOpenInFlyPanel}">         
+        <div  #pdf class="bg-white m-4 shadow-sm p-4 flex flex-col task-box-shadow" >
+
+          <div *ngIf="eoAllData.positionsWithCount.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2> {{("Position" | labelReplacement)| async}}s</h2>
+            </div>
+            <div class="ml-4">
+              <ul >
+                <li *ngFor="let pos of eoAllData.positionsWithCount">
+                  <div class="flex flex-row w-full">
+                    <div class="item-number">{{pos.position.positionNumber}}</div>
+                    <div class="item-dash">-</div>
+                    <div class="item-description">{{pos.position.positionTitle}}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div class="ml-2 pb-4" *ngIf="this.enablingObjective">
+            <div class="flex flex-row justify-between">
+              <h2>Skill</h2>
+            </div>
+              <div class="flex flex-row w-full ml-4">
+                <div class="item-number">{{enablingObjective.fullNumber}}</div>
+                <div class="item-dash">-</div>
+                <div class="item-description">{{this.enablingObjective?.description}}</div>
+              </div>
+          </div>
+
+          <div *ngIf="enablingObjective?.conditions" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>Conditions</h2>
+            </div>
+            <div [innerHTML]="enablingObjective.conditions" class="ml-4 letter-spacing"></div>
+          </div>
+
+
+          <div *ngIf="enablingObjective?.references" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>References</h2>
+            </div>
+            <div [innerHTML]="enablingObjective.references" class="ml-4 letter-spacing"></div>
+          </div>
+
+          <div *ngIf="enablingObjective?.criteria" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>Criteria</h2>
+            </div>
+            <div [innerHTML]="enablingObjective.criteria" class="ml-4 letter-spacing"></div>
+          </div>
+
+          <div *ngIf="eoAllData.proceduresWithCount.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2> {{("Procedure" | labelReplacement)| async}}s</h2>
+            </div>
+            <div class="ml-4">
+              <ul>
+                <li *ngFor="let proc of eoAllData.proceduresWithCount">
+                  <div class="flex flex-row w-full">
+                    <div class="item-number">{{proc.number}}</div>
+                    <div class="item-dash">-</div>
+                    <div class="item-description">{{proc.description}}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div *ngIf="eoAllData.sHsWithCount.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>{{("Safety Hazard" | labelReplacement)| async}}s</h2>
+            </div>
+            <div class="ml-4">
+              <ul>
+                <li *ngFor="let sh of eoAllData.sHsWithCount">
+                  <div class="flex flex-row w-full">
+                    <div class="item-number">{{sh.number}}</div>
+                    <div class="item-dash">-</div>
+                    <div class="item-description">{{sh.title}}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div *ngIf="allTaskData.enablingObjectiveWithCountOptions.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>{{("Enabling Objective" | labelReplacement)| async}}</h2>
+            </div>
+            <div class="ml-4">
+              <ul>
+                <li *ngFor="let eo of allTaskData.enablingObjectiveWithCountOptions">
+                  <div class="flex flex-row justify-between w-full">
+                    <div class="item-number">{{eo.number}}</div>
+                    <div class="item-dash">-</div>
+                    <div class="item-description">{{eo.description}}</div>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+           <div *ngIf="eoAllData.ilasWithCount.length > 0" class="ml-2 pb-4">
+            <div class="flex flex-row justify-between">
+              <h2>{{("ILA" | labelReplacement)| async}}s</h2>
+            </div>
+            <div class="ml-4">
+              <ul>
+                <li *ngFor="let ila of eoAllData.ilasWithCount">
+                  <div class="flex flex-row w-full">
+                    <div class="item-number">{{ila.number}}</div>
+                    <div class="item-dash">-</div>
+                    <div class="item-description">{{ila.description}}</div>
                   </div>
                 </li>
               </ul>

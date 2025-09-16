@@ -2,7 +2,7 @@
   <app-button type="button" ButtonType="icon" icon="keyboard_arrow_left" (clicked)="goBackDialog(goBackDialogDesc)">
   </app-button>
   <div class="flex flex-row items-center space-x-4 w-full justify-between">
-    <h1>{{("Task" | labelReplacement)| async}} Re-Qualifications</h1>
+    <h1>{{("Task" | labelReplacement)| async}} / Skill Re-Qualifications</h1>
     <div class="justify-between">
       <app-button color="blue" *ngIf="currentIndex==3" type="button" text="Close" (clicked)="closeDialog(closeDialogDesc)">
       </app-button>
@@ -18,7 +18,7 @@
     <app-icon icon="done"></app-icon>
   </ng-template>
 
-  <mat-step label="Task Specific Suggestions">
+  <mat-step label="Task Specific Suggestions" *ngIf="taskId">
     <div class="flex w-full" style="justify-content: center" *ngIf="!isLoading">
       <div style="width: 70%" class="flex flex-col">
         <p class="ml-2 text-lg break-all font-normal"><strong>{{taskNumber}}</strong>&nbsp;&nbsp;<span
@@ -63,7 +63,52 @@
     </div>
   </mat-step>
 
-  <mat-step label="TQ Steps">
+  <mat-step label="Skill Specific Suggestions" *ngIf="!taskId">
+    <div class="flex w-full" style="justify-content: center" *ngIf="!isLoading">
+      <div style="width: 70%" class="flex flex-col">
+        <p class="ml-2 text-lg break-all font-normal"><strong> {{skillNumber}}</strong>&nbsp;&nbsp;<span
+            class="text-gray-500">{{this.taskSuggestionsObjList?.skillDescription}}</span></p>
+        <div class=" mb-4 ml-1 w-fit">
+          <app-button [text]="'Show Skill Details'" (clicked)="goToTaskDetail()" variant="text" [icon]="'expand_more'"></app-button>
+        </div>
+        <h2>Skill Specific Suggestions</h2>
+        <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm" [@animSlider]="counter">
+          <div *ngIf="answer">
+            <ng-container *ngFor="let item of this.taskSuggestionsObjList?.suggestionList,index as i">
+              <div *ngIf="i===counter">
+                  <p style="font-weight: 700;">
+                    Suggestions {{counter+1}}
+                    <span style="color: #a1b2ad;">of
+                      {{this.taskSuggestionsObjList?.suggestionList.length}}
+                    </span>
+                  </p>
+                  <p [innerHtml]="item.suggesntionDescription"></p>
+                  <section class="flex flex-col p-4 bg-light-orange  mt-2 rounded-sm">
+                    <div class="flex flex-row" style="align-items:center;">
+                      <div class="flex flex-col w-full">
+                        <ckeditor name="instructions" [(ngModel)]="item.comments" [editor]="editor">
+                        </ckeditor>
+                      </div>
+                    </div>
+                  </section>
+                  <div class="flex flex-row mt-3 justify-between">
+                    <app-button type="button" color="blueBorder" size="sm" class="mr-5" text="Back" (click)="onPrevious()"
+                    [disabled]="counter===0">
+                  </app-button>
+                  <app-button color="blue" type="button" size="sm" text="Next" (clicked)="fillData(item)">
+                  </app-button>
+                </div>
+              </div>
+            </ng-container>
+            <div *ngIf = "this.taskSuggestionsObjList?.suggestionList.length==0" class="text-center">No Skill Suggestions linked to this Skill </div>
+          </div>
+          <div *ngIf="!answer" class="text-center">Skill Suggestions turned off in Skill Qualification Settings.</div>
+        </section>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step label="TQ Steps"  *ngIf="taskId">
     <div class="flex w-full" style="justify-content: center" *ngIf="!isLoading">
       <div style="width: 70%" class="flex flex-col">
         <p class="ml-2 text-lg break-all font-normal"><strong>{{taskNumber}}</strong>&nbsp;&nbsp;<span
@@ -107,7 +152,51 @@
     </div>
   </mat-step>
 
-  <mat-step label="Question and Answers">
+  <mat-step label="SQ Steps"  *ngIf="!taskId">
+    <div class="flex w-full" style="justify-content: center" *ngIf="!isLoading">
+      <div style="width: 70%" class="flex flex-col">
+        <p class="ml-2 text-lg break-all font-normal"><strong>{{skillNumber}}</strong>&nbsp;&nbsp;<span
+            class="text-gray-500">{{this.taskStepsObjList?.skillNumber}}</span></p>
+        <div class=" mb-4 ml-1 w-fit">
+          <app-button [text]="'Show Skill Details'" (clicked)="goToTaskDetail()" variant="text" [icon]="'expand_more'"></app-button>
+        </div>
+        <h2>Steps</h2>
+        <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm" [@animSlider]="counter">
+          <ng-container *ngFor="let item of this.taskStepsObjList?.stepsList,index as i">
+            <div *ngIf="i===counter" style="transition:3s ease-in-out;">
+              <p style="font-weight: 700;">Steps {{counter+1}} <span style="color: #a1b2ad;">of
+                  {{this.taskStepsObjList?.stepsList.length}}</span></p>
+              <p [innerHtml]="item.stepDescription"></p>
+              <section class="flex flex-col p-4 bg-light-orange  mt-2 rounded-sm" [ngClass]="{'bg-light-orange': !item.isCompleted, 'bg-light-green': item.isCompleted,'bg-gray':item.isCompleted==null}">
+                <div class="flex flex-row" style="align-items:center;">
+                  <div class="flex flex-col w-full">
+                    <span class="left pt-4 pb-4 pr-4" style="font-weight: 500;">Mark as Completed :
+                      <mat-radio-group aria-label="Select an option" [(ngModel)]="item.isCompleted">
+                        <mat-radio-button [value]="true" class="mr-2 ml-3">Yes</mat-radio-button>
+                        <mat-radio-button [value]="false">No</mat-radio-button>
+                      </mat-radio-group>
+                    </span>
+                    <ckeditor  name="instructions" [(ngModel)]="item.comments" [editor]="editor">
+                    </ckeditor>
+                  </div>
+                </div>
+              </section>
+              <div class="flex flex-row mt-3 justify-between">
+                <app-button type="button" color="blueBorder" size="sm" class="mr-5" text="Back" (click)="onPrevious()"
+                  [disabled]="counter===0">
+                </app-button>
+                <app-button color="blue" type="button" size="sm" text="Next" [disabled] = "item.isCompleted==null" (clicked)="fillDataSteps(item)">
+                </app-button>
+              </div>
+            </div>
+          </ng-container>
+          <div *ngIf = "this.taskStepsObjList?.stepsList.length==0" class="text-center">No Skill Steps linked to this Skill </div>
+        </section>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step label="Question and Answers" *ngIf="taskId">
     <div class="flex w-full" style="justify-content: center" *ngIf="!isLoading">
       <div style="width: 70%" class="flex flex-col">
         <p class="ml-2 text-lg break-all font-normal"><strong>{{taskNumber}}</strong>&nbsp;&nbsp;<span
@@ -155,7 +244,55 @@
     </div>
   </mat-step>
 
-  <mat-step label="Signatures">
+   <mat-step label="Question and Answers" *ngIf="!taskId">
+    <div class="flex w-full" style="justify-content: center" *ngIf="!isLoading">
+      <div style="width: 70%" class="flex flex-col">
+        <p class="ml-2 text-lg break-all font-normal"><strong>{{skillNumber}}</strong>&nbsp;&nbsp;<span
+            class="text-gray-500">{{this.taskQuestionsObjList?.skillDescription}}</span></p>
+        <div class=" mb-4 ml-1 w-fit">
+          <app-button text="Show Skill Details"  (clicked)="goToTaskDetail()" variant="text" [icon]="'expand_more'"></app-button>
+        </div>
+        <h2>Question and Answers</h2>
+        <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm" [@animSlider]="counter">
+          <div *ngIf="answer1">
+            <ng-container *ngFor="let item of this.taskQuestionsObjList?.quesionAnswerList,index as i">
+              <div *ngIf="i===counter">
+                <p style="font-weight: 700;">Question {{counter+1}} <span style="color: #a1b2ad;">of {{this.taskQuestionsObjList?.quesionAnswerList.length}}</span></p>
+                <p [innerHtml]="item.questionDescription"></p>
+                <h2>Answers</h2>
+                <p [innerHtml]="item.answer"></p>
+                <section class="flex flex-col p-4 bg-light-orange  mt-2 rounded-sm" [ngClass]="{'bg-light-orange': !item.isCompleted, 'bg-light-green': item.isCompleted}">
+                  <div class="flex flex-row" style="align-items:center;">
+                    <div class="flex flex-col w-full">
+                      <span class="left pt-4 pb-4 pr-4" style="font-weight: 500;">Mark as Completed :
+                        <mat-radio-group aria-label="Select an option" [(ngModel)]="item.isCompleted">
+                          <mat-radio-button [value]="true" class="mr-2 ml-3">Yes</mat-radio-button>
+                          <mat-radio-button [value]="false">No</mat-radio-button>
+                        </mat-radio-group>
+                      </span>
+                      <ckeditor  name="instructions" [(ngModel)]="item.comments" [editor]="editor">
+                      </ckeditor>
+                    </div>
+                  </div>
+                </section>
+                <div class="flex flex-row mt-3 justify-between">
+                  <app-button type="button" color="blueBorder" size="sm" class="mr-5" text="Back" (click)="onPrevious()"
+                  [disabled]="counter===0">
+                  </app-button>
+                  <app-button color="blue" type="button" size="sm" text="Next" (clicked)="fillDataQuestion(item)">
+                  </app-button>
+                </div>
+              </div>
+            </ng-container>
+            <div *ngIf = "this.taskQuestionsObjList?.quesionAnswerList.length==0" class="text-center">No Skill Question and Answers linked to this Skill </div>
+          </div>
+          <div *ngIf="!answer1" class="text-center">Question and Answers turned off in Skill Qualification Settings.</div>
+        </section>
+      </div>
+    </div>
+  </mat-step>
+
+  <mat-step label="Signatures" *ngIf="taskId">
     <div class="flex w-full pt-4" style="justify-content: center" *ngIf="!isLoading">
       <div style="width: 70%" class="flex flex-col">
         <p class="ml-2 text-lg break-all font-normal"><strong>{{taskNumber}}</strong>&nbsp;&nbsp;<span
@@ -233,29 +370,107 @@
       </div>
     </div>
   </mat-step>
+  <mat-step label="Signatures" *ngIf="!taskId">
+    <div class="flex w-full pt-4" style="justify-content: center" *ngIf="!isLoading">
+      <div style="width: 70%" class="flex flex-col">
+        <p class="ml-2 text-lg break-all font-normal"><strong>{{skillNumber}}</strong>&nbsp;&nbsp;<span
+          class="text-gray-500">{{this.taskSuggestionsObjList?.skillDescription}}</span></p>
+        <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm">
+          <div class="flex flex-col float-left mb-6 m-2 w-100 radio-group-div">
+            <app-label [for]="'startDate'" [text]="'Final Results'" class="label required"></app-label>
+            <div class="final-qualification-results">
+              <div class="result green-result" *ngIf="allSkillStepsCompleted">
+                <i class="fa-regular  fa-circle-check"></i>
+                <span>All Skill Steps marked as Completed/Yes</span>
+              </div>
+              <div class="result red-result" *ngIf="!allSkillStepsCompleted">
+                <i class="material-icons-outlined">
+                  error_outline
+                </i>
+                <span>One or more Skill Steps marked as Not Completed/No</span>
+              </div>
+            </div>
+            <mat-radio-group aria-label="Select an option" [(ngModel)]="taskSignOffObjList!.isCriteriaMet" >
+              <mat-radio-button value="1" [value]="true" class="mr-2 ml-3">Criteria Met</mat-radio-button>
+              <mat-radio-button value="2" [value]="false">Criteria Not Met</mat-radio-button>
+            </mat-radio-group>
+          </div>
+          <div class="flex flex-col float-left mb-6  m-2" style="width: 34%;">
+            <app-label [for]="'startDate'" [text]="'Date of Skill Qualification'" class="label required"></app-label>
+            <app-date [(ngModel)]="taskSignOffObjList!.skillQualificationDate" ></app-date>
+          </div>
+        </section>
+        <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm">
+          <div class="flex flex-col float-left mb-6 m-2 " style="width: 34%;">
+            <app-label [for]="'EvalMethod'" [text]="'Evaluation Method'" class="label"></app-label>
+              <mat-select placeholder="" [(ngModel)]="taskSignOffObjList!.evaluationMethodId" class="
+                  appearance-none
+                  rounded
+                  border
+                  w-full
+                  px-4
+                  py-2.5
+                  align-item-end
+                  bg-white
+                ">
+                <mat-option *ngFor="let d of evalMethodList" [value]="d.id">
+                  {{d.description}}
+                </mat-option>
+
+              </mat-select>
+          </div>
+          <div class="flex flex-col float-left mb-6  m-2 w-100">
+            <app-label [for]="'comment'" [text]="'Comments'" class="label"></app-label>
+             <ckeditor name="comment"  [(ngModel)]="comments" [editor]="editor" >
+            </ckeditor>
+          </div>
+        </section>
+        <section class="flex flex-col p-4 bg-white mat-elevation-z2 mt-4 rounded-sm">
+          <div class="space-x-12 d-flex align-items-center signOff-check-group">
+            <span class="left d-flex align-items-center">Eval Sign Off*:
+              <mat-checkbox  [(ngModel)]="taskSignOffObjList!.isEvaluatorSignOff">
+                {{taskSignOffObjList!.evaluatorName}}
+              </mat-checkbox>
+            </span>
+            <span class="right d-flex align-items-center">Trainee Sign Off*:
+              <mat-checkbox [(ngModel)]="taskSignOffObjList!.isTraineeSignOff">
+                {{taskSignOffObjList!.traineeName}}
+              </mat-checkbox>
+            </span>
+          </div>
+        </section>
+        <div class="flex flex-row mt-3 justify-between">
+          <app-button type="button" size="sm" color="blueBorder" text="Cancel" class="mr-5">
+          </app-button>
+          <app-button color="blue" type="submit" size="sm" text="Submit" customClasses="disabled-pointer" [disabled]="!taskSignOffObjList!.isEvaluatorSignOff|| !taskSignOffObjList!.isTraineeSignOff || taskSignOffObjList!.skillQualificationDate === null || taskSignOffObjList!.isCriteriaMet === null" (clicked)="submitDialog(saveDialog,taskSignOffObjList)">
+          </app-button>
+        </div>
+      </div>
+    </div>
+  </mat-step>
 </mat-stepper>
 
 <app-data-loader *ngIf="isLoading"></app-data-loader>
 <ng-template #saveDialog>
-  <app-qtd-dialogue header="Submit {{('Task' | labelReplacement)| async}} Qualification" [description]="saveDescription" confirmText="Yes"
+  <app-qtd-dialogue header="Submit {{('Task' | labelReplacement)| async}} / Skill Qualification" [description]="saveDescription" confirmText="Yes"
     [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()"
     (confirmed)="fillDataSingOff(taskSignOffObjList,true)">
   </app-qtd-dialogue>
 </ng-template>
 <ng-template #closeDialogDesc>
-  <app-qtd-dialogue header="Close {{('Task' | labelReplacement)| async}} Qualification" [description]="closeDescription" confirmText="Yes"
+  <app-qtd-dialogue header="Close {{('Task' | labelReplacement)| async}} / Skill Qualification" [description]="closeDescription" confirmText="Yes"
     [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()"
     (confirmed)="goBack()">
 </app-qtd-dialogue>
 </ng-template>
 <ng-template #goBackDialogDesc>
-  <app-qtd-dialogue header="Close {{('Task' | labelReplacement)| async}} Qualification" [description]="goBackDescription" confirmText="Yes"
+  <app-qtd-dialogue header="Close {{('Task' | labelReplacement)| async}}  / Skill Qualification" [description]="goBackDescription" confirmText="Yes"
   cancelText="No" [showEffectiveDateAndReason]="false" (canceled)="dialog.closeAll()"
     (confirmed)="goBack()">
 </app-qtd-dialogue>
 </ng-template>
 
 <div class="flypanel"  [ngClass]="{ 'open': isOpen }" >
-    <app-fly-panel-task-re-qualification-task-feedback *ngIf="isOpen" [isOpenInFlyPanel]="true" [passedTempTaskUrl]="tempTaskUrl" (closed)="isOpen=false" ></app-fly-panel-task-re-qualification-task-feedback>
+    <app-fly-panel-task-re-qualification-task-feedback *ngIf="isOpen" [checkType] = "checkType" [inputId] = "checkType == 'eo' ? skillId : taskId" [isOpenInFlyPanel]="true" [passedTempTaskUrl]="tempTaskUrl" (closed)="isOpen=false" ></app-fly-panel-task-re-qualification-task-feedback>
 </div>
 

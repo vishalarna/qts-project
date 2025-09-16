@@ -403,5 +403,22 @@ namespace QTD2.API.QTD.Controllers
             var result = await _taskRequalService.GetEoTreeWithPositionIds(option);
             return Ok(new { result });
         }
+
+        [HttpGet]
+        [Route("/taskQualification/showSkillSuggestion/{skillqualificationId}")]
+        public async Task<IActionResult> IsShowSuggestionSQBit(int skillqualificationId)
+        {
+            var result = await _taskRequalempSuggestionService.IsShowSuggestionSQBit(skillqualificationId);
+            return Ok(new { result });
+        }
+
+        [HttpGet]
+        [Route("/taskQualification/showSkillQuestion/{skillqualificationId}")]
+        public async Task<IActionResult> IsShowQuestionSQBit(int skillqualificationId)
+        {
+            var result = await _taskRequalempSuggestionService.IsShowQuestionSQBit(skillqualificationId);
+            return Ok(new { result });
+        }
+
     }
 }

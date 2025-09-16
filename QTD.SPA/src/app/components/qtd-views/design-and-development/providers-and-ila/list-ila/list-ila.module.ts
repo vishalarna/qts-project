@@ -28,6 +28,7 @@ import { SortPipe } from './sort.pipe';
 import { FilterPipe } from './filter.pipe';
 import { IlaFilterFlypanelModule } from './ila-filter-flypanel/ila-filter-flypanel.module';
 import { MatLegacyTooltipModule as MatTooltipModule } from '@angular/material/legacy-tooltip';
+import { FlyPanelAddBasicIlaModule } from '../fly-panel-add-basic-ila/fly-panel-add-basic-ila.module';
 
 const routes: Routes = [
   {
@@ -61,7 +62,8 @@ const routes: Routes = [
     FlyPanelVersionHistoryModule,
     FlyPanelStatisticsModule,
     IlaFilterFlypanelModule,
-    MatTooltipModule
+    MatTooltipModule,
+    FlyPanelAddBasicIlaModule
   ],
 })
 export class ListIlaModule {}

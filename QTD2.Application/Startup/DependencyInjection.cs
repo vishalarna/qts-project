@@ -1044,12 +1044,6 @@ namespace QTD2.Application.Startup
             services.AddTransient<Domain.Interfaces.Service.Core.ISimulatorScenario_Task_CriteriaService, Domain.Services.Core.SimulatorScenario_Task_CriteriaService>();
             services.AddTransient<Domain.Interfaces.Validation.Core.ISimulatorScenario_Task_CriteriaValidation, Domain.Entities.Core.Validations.SimulatorScenario_Task_CriteriaValidation>();
 
-            services.AddTransient<Domain.Interfaces.Service.Core.ISimulatorScenario_EventAndScriptService, Domain.Services.Core.SimulatorScenario_EventAndScriptService>();
-            services.AddTransient<Domain.Interfaces.Validation.Core.ISimulatorScenario_EventAndScriptValidation, Domain.Entities.Core.Validations.SimulatorScenario_EventAndScriptValidation>();
-
-            services.AddTransient<Domain.Interfaces.Service.Core.ISimulatorScenario_EventAndScript_CriteriaService, Domain.Services.Core.SimulatorScenario_EventAndScript_CriteriaService>();
-            services.AddTransient<Domain.Interfaces.Validation.Core.ISimulatorScenario_EventAndScript_CriteriaValidation, Domain.Entities.Core.Validations.SimulatorScenario_EventAndScript_CriteriaValidation>();
-
             services.AddTransient<Domain.Interfaces.Service.Core.ISimulatorScenario_PrerequisiteService, Domain.Services.Core.SimulatorScenario_PrerequisiteService>();
             services.AddTransient<Domain.Interfaces.Validation.Core.ISimulatorScenario_PrerequisiteValidation, Domain.Entities.Core.Validations.SimulatorScenario_PrerequisiteValidation>();
 
@@ -1274,6 +1268,27 @@ namespace QTD2.Application.Startup
             services.AddTransient<Domain.Interfaces.Service.Core.ISkillQualificationEmpSettingService, Domain.Services.Core.SkillQualificationEmpSettingService>();
             services.AddTransient<Domain.Interfaces.Validation.Core.ISkillQualificationEmpSettingValidation, Domain.Entities.Core.Validations.SkillQualificationEmpSettingValidation>();
 
+            services.AddTransient<Domain.Interfaces.Service.Core.ISkillQualificationEmp_SignOffService, Domain.Services.Core.SkillQualificationEmp_SignOffService>();
+            services.AddTransient<Domain.Interfaces.Validation.Core.ISkillQualificationEmp_SignOffValidation, Domain.Entities.Core.Validations.SkillQualificationEmp_SignOffValidation>();
+
+            services.AddTransient<Domain.Interfaces.Service.Core.ISkillReQualificationEmp_QuestionAnswerService, Domain.Services.Core.SkillReQualificationEmp_QuestionAnswerService>();
+            services.AddTransient<Domain.Interfaces.Validation.Core.ISkillReQualificationEmp_QuestionAnswerValidation, Domain.Entities.Core.Validations.SkillReQualificationEmp_QuestionAnswerValidation>();
+
+            services.AddTransient<Domain.Interfaces.Service.Core.ISkillReQualificationEmp_SuggestionService, Domain.Services.Core.SkillReQualificationEmp_SuggestionService>();
+            services.AddTransient<Domain.Interfaces.Validation.Core.ISkillReQualificationEmp_SuggestionValidation, Domain.Entities.Core.Validations.SkillReQualificationEmp_SuggestionValidation>();
+
+            services.AddTransient<Domain.Interfaces.Service.Core.ISkillReQualificationEmp_StepService, Domain.Services.Core.SkillReQualificationEmp_StepService>();
+            services.AddTransient<Domain.Interfaces.Validation.Core.ISkillReQualificationEmp_StepValidation, Domain.Entities.Core.Validations.SkillReQualificationEmp_StepValidation>();
+
+            services.AddTransient<Domain.Interfaces.Service.Core.ISimulatorScenario_ScriptService, Domain.Services.Core.SimulatorScenario_ScriptService>();
+            services.AddTransient<Domain.Interfaces.Validation.Core.ISimulatorScenario_ScriptValidation, Domain.Entities.Core.Validations.SimulatorScenario_ScriptValidation>();
+
+            services.AddTransient<Domain.Interfaces.Service.Core.ISimulatorScenario_EventService, Domain.Services.Core.SimulatorScenario_EventService>();
+            services.AddTransient<Domain.Interfaces.Validation.Core.ISimulatorScenario_EventValidation, Domain.Entities.Core.Validations.SimulatorScenario_EventValidation>();
+
+            services.AddTransient<Domain.Interfaces.Service.Core.ISimulatorScenario_Script_CriteriaService, Domain.Services.Core.SimulatorScenario_Script_CriteriaService>();
+            services.AddTransient<Domain.Interfaces.Validation.Core.ISimulatorScenario_Script_CriteriaValidation, Domain.Entities.Core.Validations.SimulatorScenario_Script_CriteriaValidation>();
+
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnNewEmployeeAdded>), typeof(OnEmployeeCreatedEventHandler));
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnCbtCreated>), typeof(OnCbtCreatedHandler));
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnClassSchedule_Delete>), typeof(OnClassSchedule_Delete_Handler));
@@ -1346,6 +1361,8 @@ namespace QTD2.Application.Startup
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnILA_Activated>), typeof(OnILA_ActivatedHandler));
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnTaskReview_Deleted>), typeof(OnTaskReviewDeletedHandler));
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSkillQualificationCompleted>), typeof(OnSkillQualificationCompletedHandler));
+            services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSimulatorScenario_Script_Deleted>), typeof(OnSimulatorScenario_Script_DeletedHandler));
+            services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSimulatorScenario_Event_Deleted>), typeof(OnSimulatorScenario_Event_DeletedHandler));
             // ------------------ Domain Service and Validations DI End --------------------- //
 
 
@@ -1776,8 +1793,6 @@ namespace QTD2.Application.Startup
             services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_ProcedureRepository, Data.Repository.Core.SimulatorScenario_ProcedureRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_Task_CriteriaRepository, Data.Repository.Core.SimulatorScenario_Task_CriteriaRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_ILARepository, Data.Repository.Core.SimulatorScenario_ILARepository>();
-            services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_EventAndScriptRepository, Data.Repository.Core.SimulatorScenario_EventAndScriptRepository>();
-            services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_EventAndScript_CriteriaRepository, Data.Repository.Core.SimulatorScenario_EventAndScript_CriteriaRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_CollaboratorRepository, Data.Repository.Core.SimulatorScenario_CollaboratorRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_CollaboratorPermissionRepository, Data.Repository.Core.SimulatorScenario_CollaboratorPermissionRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_PrerequisiteRepository, Data.Repository.Core.SimulatorScenario_PrerequisiteRepository>();
@@ -1818,6 +1833,14 @@ namespace QTD2.Application.Startup
             services.AddTransient<Domain.Interfaces.Repository.Core.ISkillQualificationStatusRepository, Data.Repository.Core.SkillQualificationStatusRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.ISkillQualification_Evaluator_LinkRepository, Data.Repository.Core.SkillQualification_Evaluator_LinkRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.ISkillQualificationEmpSettingRepository, Data.Repository.Core.SkillQualificationEmpSettingRepository>();
+            services.AddTransient<Domain.Interfaces.Repository.Core.ISkillQualificationEmp_SignOffRepository, Data.Repository.Core.SkillQualificationEmp_SignOffRepository>();
+            services.AddTransient<Domain.Interfaces.Repository.Core.ISkillReQualificationEmp_QuestionAnswerRepository, Data.Repository.Core.SkillReQualificationEmp_QuestionAnswerRepository>();
+            services.AddTransient<Domain.Interfaces.Repository.Core.ISkillReQualificationEmp_SuggestionRepository, Data.Repository.Core.SkillReQualificationEmp_SuggestionRepository>();
+            services.AddTransient<Domain.Interfaces.Repository.Core.ISkillReQualificationEmp_StepRepository, Data.Repository.Core.SkillReQualificationEmp_StepRepository>();
+           
+            services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_ScriptRepository, Data.Repository.Core.SimulatorScenario_ScriptRepository>();
+            services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_EventRepository, Data.Repository.Core.SimulatorScenario_EventRepository>();
+            services.AddTransient<Domain.Interfaces.Repository.Core.ISimulatorScenario_Script_CriteriaRepository, Data.Repository.Core.SimulatorScenario_Script_CriteriaRepository>();
 
 
         }
@@ -1985,6 +2008,7 @@ namespace QTD2.Application.Startup
             services.AddTransient<Infrastructure.Reports.Generation.Generators.TrainingIssuesActionItemsGenerator>();
             services.AddTransient<Infrastructure.Reports.Generation.Generators.TrainingProgramQualificationCardGenerator>();
             services.AddTransient<Infrastructure.Reports.Generation.Generators.ProceduresByEnablingObjectivesGenerator>();
+            services.AddTransient<Infrastructure.Reports.Generation.Generators.ILAsBySafetyHazardGenerator>();
 
             //Add Authorization Handler
             services.AddSingleton<IAuthorizationHandler, ToolCategory_StatusHistoryAuthorizationHandler>();
@@ -2324,8 +2348,8 @@ namespace QTD2.Application.Startup
             services.AddSingleton<IAuthorizationHandler, SimulatorScenario_EnablingObjectiveAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, SimulatorScenario_ProcedureAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, SimulatorScenario_Task_CriteriaAuthorizationHandler>();
-            services.AddSingleton<IAuthorizationHandler, SimulatorScenario_EventAndScriptAuthorizationHandler>();
-            services.AddSingleton<IAuthorizationHandler, SimulatorScenario_EventAndScript_CriteriaAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, SimulatorScenario_EventAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, SimulatorScenario_Script_CriteriaAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, SimulatorScenario_ILAAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, SimulatorScenario_PrerequisiteAuthorizationHandler>();
             services.AddSingleton<IAuthorizationHandler, SimulatorScenario_CollaboratorAuthorizationHandler>();
@@ -2356,6 +2380,8 @@ namespace QTD2.Application.Startup
             services.AddSingleton<IAuthorizationHandler, SkillQualificationStatusHandler>();
             services.AddSingleton<IAuthorizationHandler, SkillQualification_Evaluator_LinkHandler>();
             services.AddSingleton<IAuthorizationHandler, SkillQualificationEmpSettingHandler>();
+
+            services.AddSingleton<IAuthorizationHandler, SimulatorScenario_ScriptAuthorizationHandler>();
         }
 
         public static void AddAuthenticationApplicationServices(this IServiceCollection services, IConfiguration configuration)

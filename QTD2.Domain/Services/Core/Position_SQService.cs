@@ -23,14 +23,5 @@ namespace QTD2.Domain.Services.Core
             var positions_SQs = await FindAsync(r => r.EOId == eoId);
             return positions_SQs.ToList();
         }
-
-        public async System.Threading.Tasks.Task<List<Positions_SQ>> GetPositionsSQByEOIAandPositionIdAsync(int eoId, List<int> positionIds)
-        {
-            List<Expression<Func<Positions_SQ, bool>>> predicates = new List<Expression<Func<Positions_SQ, bool>>>();
-            predicates.Add(r => positionIds.Contains(r.PositionId));
-            predicates.Add(r => r.EOId == eoId);
-            var positions_SQs = await FindAsync(predicates);
-            return positions_SQs.ToList();
-        }
     }
 }

@@ -23,5 +23,26 @@ namespace QTD2.Domain.Services.Core
             return skillQualification.ToList();
 
         }
+
+        public async Task<List<SkillQualification_Evaluator_Link>> GetPendingSkillQualificationsByEvaluator(int evaluatorId)
+        {
+            var sq_evals = await FindWithIncludeAsync(
+                                                    r => r.EvaluatorId == evaluatorId && r.Active
+                                                    && r.SkillQualification.IsReleasedToEMP && !r.SkillQualification.IsRecalled
+                                                    && !r.SkillQualification.CriteriaMet
+                                                    && !(r.SkillQualification.SkillQualificationEmp_SignOff.Where(s => s.EvaluatorId == evaluatorId && (s.IsCompleted ?? false)).Any())
+                                                    && r.SkillQualification.SkillQualificationDate == null && r.SkillQualification.DueDate > DateTime.Now
+                                                    ,
+                                                new[] {
+                                                "Evaluator.Person"
+                                                , "SkillQualification.Employee.Person"
+                                                , "SkillQualification.Employee.EmployeePositions.Position"
+                                                , "SkillQualification.SkillQualificationEmpSetting"
+                                                , "SkillQualification.SkillQualificationEmp_SignOff"
+                                                , "SkillQualification.SkillQualificationStatus"
+                                                });
+
+            return sq_evals.Where(r => r.SkillQualification.IsPending).ToList();
+        }
     }
 }

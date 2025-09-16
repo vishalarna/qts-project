@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { firstValueFrom } from 'rxjs';
 import { EnablingObjective } from '@models/EnablingObjective/EnablingObjective';
+import { DutyAreaVm } from '@models/DutyArea/DutyAreaVm';
 import { ReleasedTQAndSQUpdateOptions } from '@models/TaskQualification/TQAndSQReleasedUpdateOptions';
 import { TQReleaseByTaskAndSkillOptions } from '@models/TaskQualification/TQReleaseByTaskAndSkillOptions';
 import { map } from 'rxjs/operators';
@@ -232,7 +233,7 @@ export class TaskRequalificationService {
   getTaskTreeDataForPosition(option:EMPFilterOptions){
     return firstValueFrom(this.http.post(this.baseUrl + `/task/posFilter`,option).pipe(
       map((res:any)=>{
-        return res['result'] as DutyArea[];
+        return res['result'] as DutyAreaVm[];
       })
     ));
   }

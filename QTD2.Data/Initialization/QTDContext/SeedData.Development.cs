@@ -6844,7 +6844,7 @@ Thank you.", 1, false, true }
                 keyColumns: new[] { "ClientSettingsNotificationId", "Order" },
                 keyValues: new object[] { 2, 3 },
                 column: "Template",
-                value:@"@using QTD2.Infrastructure.ExtensionMethods;
+                value: @"@using QTD2.Infrastructure.ExtensionMethods;
                 <p>Hello @Model.EmployeeFirstName @Model.EmployeeLastName,</p>
                 <p>Your immediate attention is required. This is an urgent reminder from the Training Department that your @Model.CertificateName certificate @Model.CertificateNumber will expire in @Model.DaysUntilCertificationExpiration days. 
                 Your expiration date is @Model.CertificateExpirationDate.ToString(""MM/dd/yyyy""). 
@@ -6855,7 +6855,7 @@ Thank you.", 1, false, true }
                 If you have any questions, please reach out to your Training Administrator.</p>
                 <p>Thank you!</p>"
             );
-            
+
         }
 
         protected void Development_AddSkillQualificationStatusTable()
@@ -6874,6 +6874,183 @@ Thank you.", 1, false, true }
                         {"No Position Qual Date","The Employee is not flagged as a Trainee and there is no Position Qual Date in the Employee window to use to confirm the skill qual against", true },
                         {"Completed","Skill Requalification is completed on Emp side", true }
                 });
+        }
+        protected void Development_UpdateClassRoasterReportSkeletonColumn()
+        {
+            _migrationBuilder.UpdateData(
+                table: "ReportSkeletonColumns",
+                        keyColumns: new[] { "ReportSkeletonId", "ColumnName" },
+                        keyValues: new object[] { 39, "Employee Name - Details" },
+                        column: "ColumnName",
+                        value: "Employee Details"
+            );
+        }
+
+        protected void Development_AddReport_ILAsBySafetyHazard()
+        {
+            _migrationBuilder.InsertData(
+               table: "ReportSkeletons",
+               columns: new[] { "DefaultTitle", "Deleted", "Active" },
+               values: new object[,]
+                 {
+                    {"ILAs by Safety Hazard", false, true }
+                 }
+            );
+
+            _migrationBuilder.InsertData(
+                  table: "ReportSkeleton_Subcategory_Reports",
+                  columns: new[] { "ReportSkeleton_SubcategoryId", "ReportSkeletonId", "Order", "Deleted", "Active" },
+                  values: new object[,]
+                  {
+                    {50, 113, 4, false, true }
+                  }
+            );
+
+            _migrationBuilder.InsertData(
+              table: "ReportSkeletonFilters",
+              columns: new[] { "ReportSkeletonId", "Name", "PropertyType", "ValueType", "MinOption", "MaxOption", "FilterOption", "Deleted", "Active", "DefaultValue", "MaxAllowedSelections" },
+              values: new object[,]
+              {
+                {113, "Safety Hazards", "Int", "Array", DateTime.MinValue, DateTime.MinValue, "safetyhazard", false, true,null,null},
+                {113,"Include Safety Hazard Details", "Boolean", "Single", DateTime.MinValue, DateTime.MinValue, null, false, true,"false",null},
+                {113,"Include Meta ILAs", "Boolean", "Single", DateTime.MinValue, DateTime.MinValue, null, false, true,"false",null},
+                {113,"Include Inactive ILAs", "Boolean", "Single", DateTime.MinValue, DateTime.MinValue, null, false, true,"false",null}
+              }
+            );
+
+            _migrationBuilder.InsertData(
+             table: "ReportSkeletonColumns",
+             columns: new[] { "ReportSkeletonId", "ColumnName", "Deleted", "Active" },
+             values: new object[,]
+             {
+                 {113, "Category",  false, true },
+                 {113, "Safety Hazard No.",  false, true },
+                 {113, "Safety Hazard Title",  false, true },
+                 {113, "ILA No.",  false, true },
+                 {113, "ILA Title",  false, true },
+                 {113, "Show Meta ILA Label",  false, true },
+                 {113, "Shows ILAs linked to Meta ILA",  false, true },
+             }
+            );
+
+            _migrationBuilder.UpdateData(
+           table: "ReportSkeleton_Subcategory_Reports",
+           keyColumns: new[] { "ReportSkeleton_SubcategoryId", "ReportSkeletonId" },
+           keyValues: new object[] { 50, 94 },
+           column: "Order",
+           value: "5");
+        }
+
+        protected void Development_SeedSimulatorScenarioEventsAsync()
+        {
+            _migrationBuilder.Sql(@" INSERT INTO [dbo].[SimulatorScenario_Events]
+                                       ([SimulatorScenarioId]
+                                       ,[Order]
+                                       ,[Title]
+                                       ,[Description]
+                                       ,[Deleted]
+                                       ,[Active]
+                                       ,[CreatedBy]
+                                       ,[CreatedDate]
+                                       ,[ModifiedBy]
+                                       ,[ModifiedDate])
+                            SELECT     [SimulatorScenarioId]
+                                      ,[Order]
+                                      ,[Title]
+                                      ,[Description]
+                                      ,[Deleted]
+                                      ,[Active]
+                                      ,[CreatedBy]
+                                      ,[CreatedDate]
+                                      ,[ModifiedBy]
+                                      ,[ModifiedDate]
+                            FROM [dbo].[SimulatorScenario_EventAndScripts];
+                        ");
+
+            _migrationBuilder.Sql(@" 
+                        INSERT INTO [dbo].[SimulatorScenario_Scripts]
+                                  ([Title]
+                                   ,[Description]
+                                   ,[InitiatorId]
+                                   ,[Time]
+                                   ,[EventId]  
+                                   ,[Deleted]
+                                   ,[Active]
+                                   ,[CreatedBy]
+                                   ,[CreatedDate]
+                                   ,[ModifiedBy]
+                                   ,[ModifiedDate])
+                        SELECT     
+                                  es.[Title]
+                                 ,es.[Description]
+                                 ,es.[InitiatorId]
+                                 ,es.[Time]
+                                 ,ev.[Id] AS [EventId]   
+                                 ,es.[Deleted]
+                                 ,es.[Active]
+                                 ,es.[CreatedBy]
+                                 ,es.[CreatedDate]
+                                 ,es.[ModifiedBy]
+                                 ,es.[ModifiedDate]
+                        FROM [dbo].[SimulatorScenario_EventAndScripts] es
+                        INNER JOIN [dbo].[SimulatorScenario_Events] ev
+                            ON ev.[Id] = es.[Id]
+                        WHERE NOT EXISTS (
+                            SELECT 1
+                            FROM [dbo].[SimulatorScenario_Scripts] s
+                            WHERE s.[EventId] = ev.[Id]
+                        );
+                  ");
+
+            _migrationBuilder.Sql(@" 
+              INSERT INTO [dbo].[SimulatorScenario_Script_Criterias]
+                       ([ScriptId]
+                       ,[CriteriaId]
+                       ,[Deleted]
+                       ,[Active]
+                       ,[CreatedBy]
+                       ,[CreatedDate]
+                       ,[ModifiedBy]
+                       ,[ModifiedDate])
+             SELECT     sc.[Id] AS [ScriptId]
+                       ,esc.[CriteriaId]
+                       ,esc.[Deleted]
+                       ,esc.[Active]
+                       ,esc.[CreatedBy]
+                       ,esc.[CreatedDate]
+                       ,esc.[ModifiedBy]
+                       ,esc.[ModifiedDate]
+             FROM [dbo].[SimulatorScenario_EventAndScript_Criterias] esc
+             INNER JOIN [dbo].[SimulatorScenario_EventAndScripts] es
+                 ON es.[Id] = esc.[EventAndScriptId]
+             INNER JOIN [dbo].[SimulatorScenario_Scripts] sc
+                 ON sc.[EventId] = es.[Id]
+             WHERE NOT EXISTS (
+                 SELECT 1
+                 FROM [dbo].[SimulatorScenario_Script_Criterias] ssc
+                 WHERE ssc.[ScriptId] = sc.[Id]
+                   AND ssc.[CriteriaId] = esc.[CriteriaId]
+             );
+          ");
+        }
+
+        protected void Development_UpdateSimulatorScenarioILAsAndPrerequisitesForDeletedILAs()
+        {
+            _migrationBuilder.Sql(@" UPDATE ssIla
+                            SET ssIla.Deleted = 1
+                            FROM [dbo].[SimulatorScenario_ILAs] ssIla
+                            INNER JOIN [dbo].[ILAs] ila
+                                ON ssIla.ILAID = ila.Id
+                            WHERE ila.Deleted = 1 
+                            ");
+
+            _migrationBuilder.Sql(@" UPDATE ssPre
+                        SET ssPre.Deleted = 1
+                        FROM [dbo].[SimulatorScenario_Prerequisites] ssPre
+                        INNER JOIN [dbo].[ILAs] ila
+                            ON ssPre.PrerequisiteId = ila.Id
+                        WHERE ila.Deleted = 1 
+                        ");
         }
     }
 }

@@ -88,7 +88,7 @@ namespace QTD2.Application.Services.Shared
                         var dataRow = new CehUploadResultModel
                             (
                                 cse.ClassSchedule.ILA.Number,
-                                cse.ClassSchedule.ILA.IsSelfPaced ? (cse?.CompletionDate.HasValue == true ? cse.CompletionDate.Value : cse.ClassSchedule.EndDateTime) : cse.ClassSchedule.EndDateTime,
+                                cse?.CompletionDate.HasValue == true ? cse.CompletionDate.Value : cse.ClassSchedule.EndDateTime,
                                 employeeNERCCertFulfillmentStatus == null ? "NA" : employeeNERCCertFulfillmentStatus.CertificationNumber ?? "NA",
                                 cseFulfillment != null ? cseFulfillment.CEHAwarded.ToString() : "0",
                                 cseFulfillment != null ? cseFulfillment.CertificationFulfillmentSubRequirements.Where(subReq => subReq.CertificationSubRequirementName == "Standards").Sum(subReq => subReq.AwardedHours).ToString() : "0",

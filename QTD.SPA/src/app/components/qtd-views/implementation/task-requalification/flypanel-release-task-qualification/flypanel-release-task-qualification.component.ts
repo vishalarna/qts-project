@@ -192,6 +192,9 @@ export class FlypanelReleaseTaskQualificationComponent implements OnInit {
 
   async readyTasksTreeData() {
     this.loadingTasks = true;
+    if (this.selectedPos === "" || this.selectedPos === undefined) {
+      this.selectedPos = null;
+    }
     var option = new EMPFilterOptions();
     if (this.selectedPos != null) {
       option.positionIds.push(this.selectedPos);
@@ -217,7 +220,7 @@ export class FlypanelReleaseTaskQualificationComponent implements OnInit {
       treeData[data] = {
         id: res[data]['id'],
         description: res[data]['letter'] + res[data]['number'] + ' - ' + res[data]['title'],
-        children: cloneDeep(res[data]['subdutyAreas']),
+        children: cloneDeep(res[data]['subDutyArea']),
         checkbox: true,
         checked: false,
         isTask: false,
@@ -226,9 +229,9 @@ export class FlypanelReleaseTaskQualificationComponent implements OnInit {
       };
       for (var data1 in treeData[data]['children']) {
         treeData[data]['children'][data1] = {
-          id: res[data]['subdutyAreas'][data1]['id'],
-          description: res[data]['letter'] + res[data]['number'] + '.' + res[data]['subdutyAreas'][data1]['subNumber'] + ' - ' + res[data]['subdutyAreas'][data1]['title'],
-          children: res[data]['subdutyAreas'][data1]['tasks'],
+          id: res[data]['subDutyArea'][data1]['id'],
+          description: res[data]['letter'] + res[data]['number'] + '.' + res[data]['subDutyArea'][data1]['subNumber'] + ' - ' + res[data]['subDutyArea'][data1]['title'],
+          children: res[data]['subDutyArea'][data1]['task'],
           checkbox: true,
           checked: false,
           isTask: false,
@@ -239,7 +242,7 @@ export class FlypanelReleaseTaskQualificationComponent implements OnInit {
         for (var data2 in treeData[data]['children'][data1]['children']) {
           //treeData[data]['children'][data1]['children'][data2]['description'] = index + '.' + childIndex + '.' + treeData[data]['children'][data1]['children'][data2]['number']
           treeData[data]['children'][data1]['children'][data2]['checkbox'] = true;
-          treeData[data]['children'][data1]['children'][data2]['description'] = res[data]['letter'] + res[data]['number'] + '.' + res[data]['subdutyAreas'][data1]['subNumber'] + '.' + treeData[data]['children'][data1]['children'][data2]['number'] + ' - ' + treeData[data]['children'][data1]['children'][data2]['description'];
+          treeData[data]['children'][data1]['children'][data2]['description'] = res[data]['letter'] + res[data]['number'] + '.' + res[data]['subDutyArea'][data1]['subNumber'] + '.' + treeData[data]['children'][data1]['children'][data2]['number'] + ' - ' + treeData[data]['children'][data1]['children'][data2]['description'];
           treeData[data]['children'][data1]['children'][data2]['checked'] = false;
           treeData[data]['children'][data1]['children'][data2]['isTask'] = true;
           treeData[data]['children'][data1]['children'][data2]['selected'] = false;
@@ -348,8 +351,8 @@ export class FlypanelReleaseTaskQualificationComponent implements OnInit {
       if (node.selected && node.checkbox) {
         this.taskIds.push(node.id);
         this.taskSelection.select(node);
-        node.position_Tasks.forEach((data: Position_Task) => {
-          this.posIds.push(data.positionId);
+        node.positionTaskIds.forEach((data: any) => {
+          this.posIds.push(data);
         })
       }
       else {
@@ -358,7 +361,7 @@ export class FlypanelReleaseTaskQualificationComponent implements OnInit {
         if (index1 > -1) {
           this.taskIds.splice(index1, 1);
         }
-        node.position_Tasks.forEach((data: Position_Task) => {
+        node.positionTaskIds.forEach((data: any) => {
           var index2 = this.posIds.indexOf(node.id);
           if (index2 > -1) {
             this.posIds.splice(index2, 1);
@@ -624,12 +627,17 @@ export class FlypanelReleaseTaskQualificationComponent implements OnInit {
 
   async readyEnablingObjectiveTreeData() {
     this.showLoader = true;
+
+    if (this.selectedPos === "" || this.selectedPos === undefined) {
+      this.selectedPos = null;
+    }
+    
     var option = new EMPFilterOptions();
     if (this.selectedPos != null) {
       option.positionIds.push(this.selectedPos);
       option.type = "pos";
     }
-    else{
+    else{ 
       option.type = "All";
     }
     var skillData = await this.tqService.getEOTreeDataForPosition(option);

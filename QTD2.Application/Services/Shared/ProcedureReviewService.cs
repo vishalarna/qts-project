@@ -78,7 +78,9 @@ namespace QTD2.Application.Services.Shared
                 options.ProcedureReviewInstructions,
                 options.IsEmployeeShowResponses, 
                 false,
-                options.ProcedureReviewAcknowledgement);
+                options.ProcedureReviewAcknowledgement,
+                options.ExtensionType,    
+                options.ExtensionAmount);
             
             var authorizationResult = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext!.User,
                 newProcedureReview, AuthorizationOperations.Create);
@@ -131,6 +133,8 @@ namespace QTD2.Application.Services.Shared
             procedureReview.ModifiedBy = user.Id;
             procedureReview.ModifiedDate = DateTime.UtcNow;
             procedureReview.ProcedureReviewAcknowledgement = options.ProcedureReviewAcknowledgement;
+            procedureReview.ExtensionType = options.ExtensionType;
+            procedureReview.ExtensionAmount = options.ExtensionAmount;
 
             var validationResult = _validation.Valid(procedureReview);
             if (!validationResult.IsValid)

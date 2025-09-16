@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, TemplateRef, ViewContainerRef } from '@angular/core';
+import { Component, Input, OnInit, TemplateRef, ViewChild, ViewContainerRef } from '@angular/core';
 import { MatLegacySelectChange as MatSelectChange } from '@angular/material/legacy-select';
 import { MatLegacyTableDataSource as MatTableDataSource } from '@angular/material/legacy-table';
 import { TemplatePortal } from '@angular/cdk/portal';
@@ -11,6 +11,7 @@ import { SimulatorScenario_Position_VM } from '@models/SimulatorScenarios_New/Si
 import { SweetAlertService } from 'src/app/_Shared/services/sweetalert.service';
 import { MatLegacyDialog as MatDialog } from '@angular/material/legacy-dialog';
 import { LabelReplacementPipe } from 'src/app/_Pipes/label-replacement.pipe';
+import { MatSort } from '@angular/material/sort';
 
 @Component({
   selector: 'app-sim-scenarios-wizard-criteria',
@@ -21,12 +22,13 @@ export class SimScenariosWizardCriteriaComponent implements OnInit {
   @Input() inputSimScenariosId: string;
   @Input() inputSimulatorScenario_VM: SimulatorScenario_VM = new SimulatorScenario_VM();
   @Input() mode:string;
+  @ViewChild('taskSort') taskSort: MatSort;
   tasksDataSource: MatTableDataSource<SimulatorScenario_Task_Criteria_VM> = new MatTableDataSource<SimulatorScenario_Task_Criteria_VM>();
   criteriaForm: UntypedFormGroup;
   selectedPosition: string = '';
   taskSelected: SimulatorScenario_Task_Criteria_VM;
   loader: boolean = false;
-  displayTasksColumns: string[] = ['positionAbbreviation','completeTaskNumber', 'description', 'criteria', 'actions'];
+  displayTasksColumns: string[] = ['positionAbbreviation','completeTaskNumber', 'description', 'taskCriteria', 'criteria'];
   deleteDescription: string;
   deletesimulatorTaskCriteriaId: string;
   get positionsList(): SimulatorScenario_Position_VM[] {
@@ -63,7 +65,6 @@ export class SimScenariosWizardCriteriaComponent implements OnInit {
     else{
       let selectedPositionDetails = this.positionsList?.find(x => x.id == event.value);
       this.selectedPosition = selectedPositionDetails?.positionTitle;
-      console.log(this.positionsList)
       await this.getTaskCriteriaByPositionAsync(this.inputSimScenariosId, selectedPositionDetails?.positionId);
     }
   }
@@ -74,10 +75,10 @@ export class SimScenariosWizardCriteriaComponent implements OnInit {
     this.flyPanelService.open(portal);
   }
 
-  async getTaskCriteriaByPositionAsync(id: string, positionId: string) {
+ async getTaskCriteriaByPositionAsync(id: string, positionId: string) {
     await this.simSceariosService.getTaskCriteriaByPosition(id, positionId).then((res) => {
       this.tasksDataSource.data = res;
-      console.log(res);
+      this.tasksDataSource.sort = this.taskSort;
     });
   }
 
@@ -105,12 +106,12 @@ export class SimScenariosWizardCriteriaComponent implements OnInit {
   async getAllTaskCriteriasAsync() {
     await this.simSceariosService.getAllTaskCriterias(this.inputSimScenariosId).then((res) => {
       this.tasksDataSource.data = res;
-      console.log(this.tasksDataSource.data)
+      this.tasksDataSource.sort = this.taskSort
     });
   }
 
-  async resetCriteria(templateRef: any, row: any) {
-    this.deleteDescription = `You are resetting the criteria statement for <b> ${row.completeTaskNumber} </b> <b> ${row.description} </b> defined from this Simulator Scenario back to the `  + await this.labelPipe.transform('Task') +`’s original criteria.`;
+ async resetCriteria(templateRef: any, row: any) {
+    this.deleteDescription = `Are you sure you want to delete the Simulator Scenario Performance Criteria for Task <b>${row.completeTaskNumber}</b>?`;
     this.deletesimulatorTaskCriteriaId = row.id;
     const dialogRef = this.dialog.open(templateRef, {
       width: '600px',

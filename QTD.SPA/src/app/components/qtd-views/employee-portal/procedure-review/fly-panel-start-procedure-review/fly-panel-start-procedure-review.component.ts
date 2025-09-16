@@ -85,7 +85,7 @@ export class FlyPanelStartProcedureReviewComponent implements OnInit {
       this.comment=res.comments;
       
     }).catch((res: any) => {
-      
+      this._router.navigate(['/emp/dashboard']);
     })
 
   }

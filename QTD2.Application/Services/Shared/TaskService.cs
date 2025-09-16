@@ -370,7 +370,7 @@ namespace QTD2.Application.Services.Shared
             var user = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Id;
             var existingTask = await _taskService.GetForCopyAsync(taskId);
 
-            var task = existingTask.Copy(user, sda.Id, options.Description, options.EffectiveDate, options.Number, options.IsReliability, options.Positions);
+            var task = existingTask.Copy(user, sda.Id, options.Description, options.EffectiveDate, options.Number, options.IsReliability, options.PositionIds);
 
             var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, task, TaskOperations.Create);
             if (result.Succeeded)
@@ -2734,7 +2734,7 @@ namespace QTD2.Application.Services.Shared
             var sda = await _subdutyAreaService.FindQueryWithIncludeAsync(x => x.Id == sdaId, new string[] { nameof(_subDutyArea.Tasks) }).FirstOrDefaultAsync();
             foreach (var task in sda.Tasks)
             {
-                if (await TaskHasLinks(task.Id))
+                if (task.Active)
                 {
                     return true;
                 }

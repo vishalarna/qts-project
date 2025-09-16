@@ -12,6 +12,7 @@ import { SimulatorScenario_EnablingObjectives_LinkOptions } from 'src/app/_DtoMo
 import { EnablingObjective } from 'src/app/_DtoModels/EnablingObjective/EnablingObjective';
 import { SimulatorScenarioILA_LinkOptions } from 'src/app/_DtoModels/SimulatorScenarioILA_Link/SimulatorScenarioILA_LinkOptions';
 import { firstValueFrom } from 'rxjs';
+import { SimulatorScenario_Script_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Script_VM';
 
 @Injectable({
   providedIn: 'root'
@@ -103,4 +104,61 @@ export class SimulatorScenarioService {
       )
       );
   }
+  
+  createScriptAsync(options: SimulatorScenario_Script_VM) {
+    return firstValueFrom(this.http
+      .post(this.baseUrl + `/scripts`, options)
+      .pipe(
+        map((res: any) => {
+          return res['result'] as SimulatorScenario_Script_VM;
+        })
+      )
+      );
+  }
+
+  copyScriptAsync(scritpId: string,eventId:string) {
+    return firstValueFrom(this.http
+      .post(this.baseUrl + `/scripts/${scritpId}/events/${eventId}/copy`, {})
+      .pipe(
+        map((res: any) => {
+          return res.result;
+        })
+      )
+      );
+  }
+
+ getScriptAsync(scriptId: string,eventId:string) {
+    return firstValueFrom(this.http
+      .get(this.baseUrl + `/scripts/${scriptId}/events/${eventId}`)
+      .pipe(
+        map((res: any) => {
+          return res.result as SimulatorScenario_Script_VM;
+        })
+      )
+      );
+  }
+
+  updateScriptAsync(scriptId: string,eventId:string, option : SimulatorScenario_Script_VM) {
+      return firstValueFrom(this.http
+        .put(this.baseUrl + `/scripts/${scriptId}/events/${eventId}/update`,option)
+        .pipe(
+          map((res: any) => {
+            return res.result as SimulatorScenario_Script_VM;
+          })
+        )
+      );
+  }
+
+  deleteScriptAsync(scriptId: string) {
+    return firstValueFrom(this.http
+      .delete(this.baseUrl + `/scripts/events/${scriptId}/delete`)
+      .pipe(
+        map((res: any) => {
+          return res;
+        })
+      )
+      );
+  }
+
+
 }

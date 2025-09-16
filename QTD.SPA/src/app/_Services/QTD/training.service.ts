@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map, takeUntil } from 'rxjs/operators';
 import { ILA } from 'src/app/_DtoModels/ILA/ILA';
@@ -24,6 +24,7 @@ import { RosterOverviewVM } from 'src/app/_DtoModels/SchedulesClassses/Rosters/R
 import { ClassScheduleDetailVM } from '@models/SchedulesClassses/ClassScheduleDetailVM';
 import { ReportExportOptions } from '@models/Report/ReportExportOptions';
 import { firstValueFrom } from 'rxjs';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -397,26 +398,19 @@ export class TrainingService {
     ));
   }
 
-  generateClassRosterReportAsync = (options: ReportExportOptions) => {
-        return firstValueFrom(this.http
-          .post(this.baseUrl + '/generateReport/classroster', options, { observe: 'response', responseType: 'blob' })
-          .pipe(
-            map((res: any) => {
-              return res;
-            })
-          )
-          );
+  generateClassRosterReport(options: ReportExportOptions): Observable<HttpResponse<Blob>> {
+    return this.http.post<Blob>(
+      this.baseUrl + '/generateReport/classroster',
+      options,
+      { observe: 'response', responseType: 'blob' as 'json' } 
+    );
   }
 
-  generateClassInSheetReportAsync = (options: ReportExportOptions) => {
-    return firstValueFrom(this.http
-      .post(this.baseUrl + '/generateReport/classsigninsheet', options, { observe: 'response', responseType: 'blob' })
-      .pipe(
-        map((res: any) => {
-          return res;
-        })
-      )
-      );
-}
-
+  generateClassInSheetReport(options: ReportExportOptions): Observable<HttpResponse<Blob>> {
+    return this.http.post<Blob>(
+      this.baseUrl + '/generateReport/classsigninsheet',
+      options,
+      { observe: 'response', responseType: 'blob' as 'json' } 
+    );
+  }
 }

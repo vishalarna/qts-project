@@ -9,5 +9,7 @@ namespace QTD2.Domain.Interfaces.Service.Core
     {
         System.Threading.Tasks.Task<List<QTDUser>> GetAllActive();
         System.Threading.Tasks.Task<QTDUser> GetQTDUserByUsername(string username);
+        System.Threading.Tasks.Task<List<QTDUser>> GetAllActiveWithEmployeeData();
+        
     }
 }

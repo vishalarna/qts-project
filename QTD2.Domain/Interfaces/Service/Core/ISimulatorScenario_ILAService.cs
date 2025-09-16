@@ -10,5 +10,6 @@ namespace QTD2.Domain.Interfaces.Service.Core
     public interface ISimulatorScenario_ILAService : Common.IService<SimulatorScenario_ILA>
     {
         public Task<List<SimulatorScenario_ILA>> GetILABySimulatorIdAsync(int simScenarioId);
+        public Task<List<SimulatorScenario_ILA>> GetSimulatorScenarioILAByILAIdAsync(int ilaId);
     }
 }

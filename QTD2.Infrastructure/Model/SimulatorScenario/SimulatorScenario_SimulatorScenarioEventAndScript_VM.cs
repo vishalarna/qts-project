@@ -12,7 +12,8 @@ namespace QTD2.Infrastructure.Model.SimulatorScenario
         public int Order { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
-
+        public List<SimulatorScenario_Script_VM> SimulatorScenario_Script_VMs { get; set; } = new List<SimulatorScenario_Script_VM>();
+      
         public SimulatorScenario_SimulatorScenarioEventAndScript_VM(int id, int order, string title, string description)
         {
             Id = id;

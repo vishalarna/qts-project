@@ -12,6 +12,7 @@ namespace QTD2.Application.Interfaces.Services.Shared
         public Task<TaskReQualificationEmpQuestionVM> GetQuestionsData(int qualificationId, int taskId, int employeeId);
 
         public System.Threading.Tasks.Task CreateOrUpdateQuestionsDataAsync(TaskReQualificationEmpQuestionVM options);
-     
+        public Task<TaskReQualificationEmpQuestionVM> GetQuestionsSQData(int skillQualificationId, int skillId, int employeeId);
+
     }
 }

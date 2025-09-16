@@ -29,7 +29,10 @@ namespace QTD2.Domain.Entities.Core
         public virtual SkillQualificationStatus SkillQualificationStatus { get; set; }
         public virtual ICollection<SkillQualification_Evaluator_Link> SkillQualification_Evaluator_Links { get; set; } = new List<SkillQualification_Evaluator_Link>();
         public virtual SkillQualificationEmpSetting SkillQualificationEmpSetting { get; set; }
-
+        public virtual ICollection<SkillQualificationEmp_SignOff> SkillQualificationEmp_SignOff { get; set; } = new List<SkillQualificationEmp_SignOff>();
+        public virtual ICollection<SkillReQualificationEmp_QuestionAnswer> SkillReQualificationEmp_QuestionAnswer { get; set; } = new List<SkillReQualificationEmp_QuestionAnswer>();
+        public virtual ICollection<SkillReQualificationEmp_Suggestion> SkillReQualificationEmp_Suggestion { get; set; } = new List<SkillReQualificationEmp_Suggestion>();
+        public virtual ICollection<SkillReQualificationEmp_Step> SkillReQualificationEmp_Step { get; set; } = new List<SkillReQualificationEmp_Step>();
         public SkillQualification() { }
 
         public SkillQualification(int enablingObjectiveId, int employeeId, bool criteriaMet, bool isReleasedToEMP, int? classScheduleId, int? skillQualificationStatusId)
@@ -61,6 +64,11 @@ namespace QTD2.Domain.Entities.Core
         public void Release()
         {
             this.IsReleasedToEMP = true;
+        }
+
+        public void Completed()
+        {
+            AddDomainEvent(new Domain.Events.Core.OnSkillQualificationCompleted(this));
         }
     }
 }
