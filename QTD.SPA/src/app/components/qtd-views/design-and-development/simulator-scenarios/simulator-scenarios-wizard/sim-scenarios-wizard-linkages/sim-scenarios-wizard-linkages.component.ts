@@ -268,8 +268,10 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
           ...this.inputSimulatorScenario_VM.enablingObjectives,
         ];
         this.objAndTasksDataSource.data = this.eoTaskList;
-       
       });
+      setTimeout(() => {
+        this.objAndTasksDataSource.sort = this.sort;
+      }, 1);
   }
 
   async handleTasksLinked(event: any) {
@@ -319,6 +321,10 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
         ];
         this.objAndTasksDataSource.data = this.eoTaskList;
       });
+
+      setTimeout(() => {
+        this.objAndTasksDataSource.sort = this.sort;
+      }, 1);
   }
 
   async removeTasksandObjAsync() {
@@ -551,9 +557,6 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
     this.alert.successToast('Simulator Scenario ' + (await this.labelPipe.transform('Enabling Objective')) + 's Updated Successfully' );
   }
   this.isObjectiveLinkUnlink = false;
-  setTimeout(() => {
-      this.objAndTasksDataSource.sort = this.objectiveSort;
-    }, 1);
   }
 
    getUnlinkSelectedText(){
