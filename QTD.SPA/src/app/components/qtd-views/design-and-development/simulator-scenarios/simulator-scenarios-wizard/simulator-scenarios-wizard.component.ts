@@ -75,26 +75,26 @@ export class SimulatorScenariosWizardComponent implements OnInit, AfterViewInit 
   }
 
   ngAfterViewInit(): void {
-  const state: any = this.location.getState();
-  if (state?.goToNext && this.simScenariosId) {
-    this.simulatorScenario_VM = state.data;
-    this.goToNext = true;
-    this.patchReviewDetails();
-
-    if (this.stepper) {
-      setTimeout(() => {
-        this.stepper.selectedIndex = 1;
-        history.replaceState({}, '', this.router.url);
-      }, 1);
-    }
-  } else if (this.simScenariosId) {
-    this.loadAsync();
-  } else {
-    if (this.stepper) {
-      setTimeout(() => this.stepper.selectedIndex = 0, 1);
+    const state: any = this.location.getState();
+    if (state?.goToNext && this.simScenariosId) {
+      this.simulatorScenario_VM = state.data;
+      this.goToNext = true;
+      this.patchReviewDetails();
+ 
+      if (this.stepper) {
+        setTimeout(() => {
+          this.stepper.selectedIndex = 1;
+          history.replaceState({}, '');
+        }, 1);
+      }
+    } else if (this.simScenariosId) {
+      this.loadAsync();
+    } else {
+      if (this.stepper) {
+        setTimeout(() => this.stepper.selectedIndex = 0, 1);
+      }
     }
   }
- }
 
   async loadAsync() {
     this.scrollToTop();
