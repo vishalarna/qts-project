@@ -235,14 +235,17 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
     this.alert.successToast('Simulator Scenario ' + await this.labelPipe.transform('Position') + ' Unlinked Successfully');
   }
 
-  async handleObjectivesLinked(event: any) {
+  async handleObjectivesLinked(event: { selected: any[], includeMetaEO: boolean }) {
     this.isObjectiveLinkUnlink = true;
     const objectives = event;
-    objectives?.forEach((val) => {
+    const includeMetaEO = event.includeMetaEO;
+    objectives?.selected.forEach((val) => {
       var objectivesVm = new SimulatorScenario_EnablingObjective_VM(
         val.id,
-        val.description
+        val.description,
+        includeMetaEO
       );
+      
       this.objectiveUpdateOptions.setEnablingObjectives(objectivesVm);
     });
     this.inputSimulatorScenario_VM.enablingObjectives.forEach((res) => {
@@ -568,5 +571,10 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
     text += text === '' ? '' : (eoCount > 0 ? ' and ' : ' selected');
     text += eoCount > 0 ? `${eoLabel} selected` : '';
     return text;
+  }
+
+  getAlreadyLinkedIds(){
+    var taskIds = this.inputSimulatorScenario_VM?.tasks?.map(x=>x.taskId) ?? [] ;
+    return Array.from(new Set(taskIds));
   }
 }

@@ -198,7 +198,9 @@
 <ng-template #linkagesObjectives>
     <app-fly-panel-add-objectives-linkages (closed)="flyPanelService.close()"
         [inputSimScenariosId]="inputSimScenariosId" (newObjectivesLinked)="handleObjectivesLinked($event)"
-        (newTasksLinked)="handleTasksLinked($event)" [linkedObjectiveIds]="linkedObjectiveIds" [linkedTaskIds]="linkedTaskIds">
+        (newTasksLinked)="handleTasksLinked($event)" [linkedObjectiveIds]="linkedObjectiveIds" [linkedTaskIds]="linkedTaskIds"
+        [linkedPositionIds]="linkedPositionIds"
+        [alreadyLinkedTasks]="getAlreadyLinkedIds()">
     </app-fly-panel-add-objectives-linkages>
 </ng-template>
 <ng-template #linkagesProcedures>

@@ -1,15 +1,16 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using QTD2.Domain.Entities.Core;
+using QTD2.Domain.Exceptions;
 using QTD2.Domain.Interfaces.Repository.Core;
 using QTD2.Domain.Interfaces.Service.Core;
 using QTD2.Domain.Interfaces.Validation.Core;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Metrics;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
-using QTD2.Domain.Exceptions;
-using System.Collections;
 
 namespace QTD2.Domain.Services.Core
 {
@@ -524,6 +525,11 @@ namespace QTD2.Domain.Services.Core
         public async Task<EnablingObjective> GetEnablingObjectiveByIdAsync(int eoId)
         {
             return (await FindAsync(x => x.Id == eoId)).FirstOrDefault();
+        }
+
+        public async Task<EnablingObjective> GetMetaEnablingObjectiveAsync(int eoId)
+        {
+            return (await FindWithIncludeAsync(x => x.Id == eoId && x.isMetaEO, new string[] { "EnablingObjective_MetaEO_Links.EnablingObjective" })).FirstOrDefault();
         }
     }
 }

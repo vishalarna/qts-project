@@ -10,11 +10,6 @@
   padding: 1rem;
 }
 
-:host ::ng-deep .table-list .mat-header-cell:nth-child(1),
-:host ::ng-deep .table-list .mat-cell:nth-child(1) {
-  max-width: 5rem;
-  align-self: flex-start;
-}
 
 .table-list {
   margin-top: 1.125rem;
@@ -30,17 +25,17 @@
 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(1),
 :host ::ng-deep .table-list .mat-cell:nth-child(1) {
-  max-width: 5%;
+  max-width: 15%;
 }
 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(2),
 :host ::ng-deep .table-list .mat-cell:nth-child(2) {
-  max-width: 5%;
+  max-width: 10%;
 }
 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(3),
 :host ::ng-deep .table-list .mat-cell:nth-child(3) {
-  max-width: 30%;
+  max-width: 25%;
   white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
@@ -48,12 +43,12 @@
 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(4),
 :host ::ng-deep .table-list .mat-cell:nth-child(4) {
-  max-width: 30%;
+  max-width: 25%;
 }
 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(5),
 :host ::ng-deep .table-list .mat-cell:nth-child(5) {
-  max-width: 30%;
+  max-width: 25%;
 }
 :host ::ng-deep .table-list .mat-cell:nth-child(4) .rich-html ul {
   list-style-type: disc;

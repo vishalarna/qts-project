@@ -9,7 +9,7 @@
         <p class="text-sm mt-2">If any part of this scenario’s criteria should be reflected in the <strong>overall Task Performance Criteria</strong>, please follow your Training Department’s policies and procedures to request an update.</p>
       </div>
       <div class="mt-2 mb-2">
-        <p class="text-xl font-bold text-gray-900" *ngIf="mode ==='edit'">{{ taskCriteriaVM.criteria == null ? ' Add Simulator Performance Criteria' : 'Edit Simulator Performance Criteria'}}</p>
+        <p class="text-xl font-bold text-gray-900 label required" *ngIf="mode ==='edit'">{{ taskCriteriaVM.criteria == null ? ' Add Simulator Performance Criteria' : 'Edit Simulator Performance Criteria'}}</p>
       </div>
         <form [formGroup]="editCriteriaForm">
             <ckeditor

@@ -4,10 +4,12 @@ export class SimulatorScenario_EnablingObjective_VM {
     type?:string;
     number: string;
     description: string;
+    includeMetaEO: boolean; 
 
-    constructor(enablingObjectiveId: string, description: string) {
+    constructor(enablingObjectiveId: string, description: string, includeMetaEO:boolean) {
         this.enablingObjectiveId = enablingObjectiveId;
         this.description = description;
+        this.includeMetaEO = includeMetaEO;
     }
     
 }

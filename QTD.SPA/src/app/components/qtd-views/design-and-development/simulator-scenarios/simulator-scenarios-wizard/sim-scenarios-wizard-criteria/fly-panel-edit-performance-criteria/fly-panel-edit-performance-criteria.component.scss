@@ -1,0 +1,6 @@
+.label.required::after {
+  color: red;
+  content: "*";
+  font-size: 0.75rem;
+  vertical-align: super;
+}

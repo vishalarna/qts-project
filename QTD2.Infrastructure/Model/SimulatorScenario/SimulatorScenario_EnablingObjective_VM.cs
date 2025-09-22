@@ -13,6 +13,7 @@ namespace QTD2.Infrastructure.Model.SimulatorScenario
         public string Number { get; set; }
         public string Description { get; set; }
         public string Type { get; set; }
+        public bool? IncludeMetaEO { get; set; } = false;
 
         public SimulatorScenario_EnablingObjective_VM(int id, int enablingObjectiveId, string number, string description, string type)
         {

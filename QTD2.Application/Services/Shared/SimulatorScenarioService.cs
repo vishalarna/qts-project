@@ -493,12 +493,27 @@ namespace QTD2.Application.Services.Shared
             foreach (var option in optionEos)
             {
                 var eoData = currentEOsLinks.FirstOrDefault(x => x.EnablingObjectiveID == option.EnablingObjectiveId);
+                var metaEO = await _enablingObjectiveDomainService.GetMetaEnablingObjectiveAsync(option.EnablingObjectiveId);
                 if (eoData == null)
                 {
                     var data = await _enablingObjectiveDomainService.GetAsync(option.EnablingObjectiveId);
                     var scenaior = simScenario.UpdateEnablingObjectives(data);
                     scenaior.Create(userName);
+
+                    if (option.IncludeMetaEO.GetValueOrDefault())
+                    {
+                        if (metaEO != null)
+                        {
+                            foreach (var linkedEO in metaEO.EnablingObjective_MetaEO_Links.Where(x => option.EnablingObjectiveId == x.MetaEOId))
+                            {
+                                scenaior = simScenario.UpdateEnablingObjectives(linkedEO.EnablingObjective);
+                                scenaior.Create(userName);
+                            }
+                        }
+                    }
                 }
+
+                
             }
             var validationResult = await _simulatorScenarioService.UpdateAsync(simScenario);
             if (!validationResult.IsValid)
@@ -556,7 +571,7 @@ namespace QTD2.Application.Services.Shared
         }
         public async Task<List<SimulatorScenario_Task_Criteria_By_Position_VM>> GetTaskCriteriasForPositionAsync(int id, int positionId)
         {
-            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Tasks", "TaskCriterias.Task" });
+            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Tasks.Task.Position_Tasks.Position", "TaskCriterias.Task" });
             if (simScenario == null)
             {
                 throw new ArgumentNullException($"SimulatorScenario with id {id} not found.");
@@ -576,7 +591,7 @@ namespace QTD2.Application.Services.Shared
                 {
                     Id = null,
                     TaskId = task.Id,
-                    PositionAbbreviation = position.PositionAbbreviation,
+                    PositionAbbreviation = string.Join(", ", task.SimulatorScenario_Tasks.SelectMany(st => st.Task.Position_Tasks).Select(pt => pt.Position.PositionAbbreviation)),
                     CompleteTaskNumber = task.getFullNumber(),
                     Description = task.Description,
                     TaskCriteria = task.Criteria,
@@ -602,7 +617,7 @@ namespace QTD2.Application.Services.Shared
 
         public async Task<List<SimulatorScenario_Task_Criteria_By_Position_VM>> GetAllTaskCriteriasForPositionAsync(int id)
         {
-            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Tasks", "TaskCriterias.Task.SubdutyArea.DutyArea", "Positions" });
+            var simScenario = await _simulatorScenarioService.GetWithIncludeAsync(id, new[] { "Tasks.Task.Position_Tasks.Position", "TaskCriterias.Task.SubdutyArea.DutyArea", "Positions" });
 
             var taskCriteriaList = new List<SimulatorScenario_Task_Criteria_By_Position_VM>();
             if (simScenario != null)
@@ -616,7 +631,7 @@ namespace QTD2.Application.Services.Shared
                     {
                         Id = null,
                         TaskId = distinctTask.Id,
-                        PositionAbbreviation = distinctTask.Position_Tasks.Select(x => x.Position.PositionAbbreviation).FirstOrDefault(),
+                        PositionAbbreviation = string.Join(", ", distinctTask.SimulatorScenario_Tasks.SelectMany(st => st.Task.Position_Tasks).Select(pt => pt.Position.PositionAbbreviation)),
                         CompleteTaskNumber = distinctTask.getFullNumber(),
                         Description = distinctTask.Description,
                         TaskCriteria = distinctTask.Criteria,
@@ -626,11 +641,14 @@ namespace QTD2.Application.Services.Shared
                 }
                 foreach (var taskCriteria in simScenario.TaskCriterias)
                 {
-                    var taskCriteriaVM = taskCriteriaList.Where(r => r.TaskId == taskCriteria.TaskId).FirstOrDefault();
-                    if (taskCriteriaVM != null)
+                    var taskCriteriaVMs = taskCriteriaList.Where(r => r.TaskId == taskCriteria.TaskId).ToList();
+                    if (taskCriteriaVMs != null)
                     {
-                        taskCriteriaVM.Id = taskCriteria.Id;
-                        taskCriteriaVM.Criteria = taskCriteria.Criteria;
+                        foreach (var taskCriteriaVM in taskCriteriaVMs)
+                        {
+                            taskCriteriaVM.Id = taskCriteria.Id;
+                            taskCriteriaVM.Criteria = taskCriteria.Criteria;
+                        }
                     }
                 }
                 return taskCriteriaList;

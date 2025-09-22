@@ -5,56 +5,52 @@
       <h1 class="text-xl font-medium text-gray-900">
         Link Objectives to Scenarios
       </h1>
-      <app-button
-        type="button"
-        ButtonType="icon"
-        icon="close"
-        (clicked)="closed.emit($event)"
-      ></app-button>
+      <app-button type="button" ButtonType="icon" icon="close" (clicked)="closed.emit($event)"></app-button>
     </div>
 
-    <mat-tab-group
-      (selectedTabChange)="onChange($event)"
-      [dynamicHeight]="true"
-    >
+    <mat-tab-group (selectedTabChange)="onChange($event)" [dynamicHeight]="true">
       <mat-tab label="{{ 'Task' | labelReplacement | async }}s">
         <!--Heading starts-->
         <div class="flex flex-row px-12 justify-between">
-          <div class="flex flex-row border-b self-center w-100 mt-4">
-            <div class="mt-2 text-xs text-gray-400 mr-3">
-              <app-icon icon="search"></app-icon>
-            </div>
-            <div class="text-xs w-full d-flex">
-              <input
-                (input)="searchTask($event)"
-                [value]="filterTaskString"
-                placeholder="Search by keyword/phrase"
-                class="w-100 py-2"
-              />
-              <app-icon icon="close" class="cursor-pointer" *ngIf="filterTaskString" (click)="clearTaskSearchString()"></app-icon>
+          <div class="flex flex-row w-full">
+          <div class="flex flex-row items-center bg-white-one rounded-t-md py-4 w-full space-x-2 border-b-0.8 border-gray-one">
+            <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z">
+              </path>
+            </svg>
+            <input (keyup)="searchTask($event)" class="text-sm flex-grow focus:outline-none" placeholder="Search"
+              type="text" [value]="searchText" />
+            <div class="flex flex-row space-x-4 text-sm">
+              <app-button color="secondary" text="Filter" size="sm" icon="filter_alt" iconPosition="left"
+                [matMenuTriggerFor]="filterMenu">
+              </app-button>
+              <mat-menu #filterMenu="matMenu">
+                <label mat-menu-item (click)="filterTask('all')">All</label>
+                <label mat-menu-item (click)="filterTask('rr')">RRT Only</label>
+                <label mat-menu-item (click)="filterTask('non-rr')">Non-RRT Only</label>
+                <label mat-menu-item (click)="filterTask('meta')">Meta Tasks Only</label>
+              </mat-menu>
             </div>
           </div>
+        </div>
 
-          <div class="flex flex-col"></div>
+          <!-- <div class="flex flex-col"></div> -->
         </div>
         <!--Heading ends-->
 
         <div class="flex flex-row px-12 justify-between mt-4">
           <div class="flex flex-col">
-            <mat-checkbox [checked]="includeEos" (change)="toggleIncludeEos()"
-              >Include EOs linked to
-              {{ "Task" | labelReplacement | async }}s</mat-checkbox
-            >
-            <mat-checkbox
-              [checked]="includeProcedures"
-              (change)="toggleincludeProcedures()"
-              >Include {{ "Procedure" | labelReplacement | async }}s linked to
-              {{ "Task" | labelReplacement | async }}s</mat-checkbox
-            >
+            <mat-checkbox [checked]="includeEos" (change)="toggleIncludeEos()">Include EOs linked to
+              {{ "Task" | labelReplacement | async }}s</mat-checkbox>
+            <mat-checkbox [checked]="includeProcedures" (change)="toggleincludeProcedures()">Include {{ "Procedure" |
+              labelReplacement | async }}s linked to
+              {{ "Task" | labelReplacement | async }}s</mat-checkbox>
           </div>
+          
         </div>
-        <div
-          class="
+        <div class="
             flex flex-col flex-wrap
             bg-gray-one
             mb-3
@@ -62,22 +58,14 @@
             px-3
             py-3
             rounded
-          "
-          *ngIf="taskCheckListSelection.selected.length > 0"
-        >
+          " *ngIf="taskCheckListSelection.selected.length > 0">
           <div class="flex flex-row w-full justify-between mb-3">
             <p class="text-xs text-gray-four pt-2">
               {{ taskCheckListSelection.selected.length }}
               {{ "Task" | labelReplacement | async }}s selected
             </p>
-            <app-button
-              (click)="linkTasksToScenario()"
-              class="mb-2"
-              type="button"
-              color="secondary"
-              size="sm"
-              text="Link {{ 'Task' | labelReplacement | async }}s"
-            >
+            <app-button (click)="linkTasksToScenario()" class="mb-2" type="button" color="secondary" size="sm"
+              text="Link {{ 'Task' | labelReplacement | async }}s">
             </app-button>
           </div>
           <hr />
@@ -93,107 +81,84 @@
           </p>
         </div>
         <p class="text-gray-500 font-medium text-sm px-12">Duty Areas</p>
-        <app-spinner [hidden]="dataSource.data.length > 0"></app-spinner>
+        <div *ngIf="isTaskLoading" class="task-spinner">
+          <app-spinner></app-spinner>
+        </div>
+        <ng-container *ngIf="dataSource.data.length == 0 && !isTaskLoading">
+        <div class="text-center mt-5">
+            No Data Found
+        </div>
+      </ng-container>
         <ng-container *ngIf="dataSource.data.length > 0">
           <div class="flex flex-col px-12">
-            <mat-tree
-              [dataSource]="dataSource"
-              [treeControl]="treeControl"
-              class="qtd-tree"
-            >
+            <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="qtd-tree">
               <!-- This is the tree node template for leaf nodes -->
               <!-- There is inline padding applied to this node using styles.
                           This padding value depends on the mat-icon-button width. -->
-              <mat-tree-node
-                *matTreeNodeDef="let node"
-                matTreeNodeToggle
-                matTreeNodePadding
-                [hidden]="!node.active"
-              >
-                <mat-checkbox
-                  [checked]="node.selected"
-                  (change)="onTaskChange($event, node)"
-                  *ngIf="node.checkbox === undefined || !node.checkbox"
-                >
-                  {{ node.description }}</mat-checkbox
-                >
+              <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding [style.display]="showOnlySelected && !node.selected || hideLeafNode(node) ? 'none' : 'block'">
                 <ng-container *ngIf="node.checkbox">
-                  <div class="flex">
-                    <app-icon
-                      class="mr-2"
-                      style="color: rgb(92, 155, 49)"
-                      icon="link"
-                    ></app-icon
-                    >&nbsp;
-                    <span style="color: rgb(92, 155, 49)">{{
-                      node.description
-                    }}</span>
-                  </div>
-                </ng-container>
+                <mat-checkbox (change)="onTaskChange($event,node)" [checked]="node.selected">
+                   {{node.description}}</mat-checkbox>
+              </ng-container>
+              <ng-container *ngIf="!node.checkbox">
+                <app-icon style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;<span
+                  style="color: rgb(92, 155, 49);">{{node.description}}</span>
+              </ng-container>
               </mat-tree-node>
               <!-- This is the tree node template for expandable nodes -->
-              <mat-nested-tree-node
-                *matTreeNodeDef="let node; when: hasChildTask"
-              >
+              <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChildTask" [style.display]="showOnlySelected && !(node.selected || node.indeterminate) || hideParentNode(node) ? 'none' : 'block'">
                 <div class="mat-tree-node">
-                  <button
-                    mat-icon-button
-                    matTreeNodeToggle
-                    [attr.aria-label]="'Toggle ' + node.description"
-                  >
-                    <app-icon
-                      [icon]="
-                        treeControl.isExpanded(node)
-                          ? 'expand_more'
-                          : 'chevron_right'
-                      "
-                    >
-                    </app-icon>
-                  </button>
-                  <mat-checkbox
-                    [checked]="node.selected"
-                    [indeterminate]="node.indeterminate && !node.selected"
-                    (change)="itemToggle($event.checked, node)"
-                  ></mat-checkbox>
-                  <span class="ml-1 pb-1">{{ node.description }}</span>
-                </div>
-                <!-- There is inline padding applied to this div using styles.
-                                This padding value depends on the mat-icon-button width.  -->
-                <div
-                  [class.qtd-tree-invisible]="!treeControl.isExpanded(node)"
-                  role="group"
-                >
-                  <ng-container matTreeNodeOutlet></ng-container>
-                </div>
+                <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.description">
+                  <app-icon [icon]="treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'">
+                  </app-icon>
+                </button>
+
+                <mat-checkbox [checked]="node.selected" [indeterminate]="node.indeterminate && !node.selected"
+                  (change)="toggleTaskItem($event.checked,node)">{{node.description}}</mat-checkbox>
+              </div>
+
+              <div *ngIf="treeControl.isExpanded(node)" role="group">
+                <ng-container matTreeNodeOutlet></ng-container>
+              </div>
               </mat-nested-tree-node>
             </mat-tree>
+            
           </div>
         </ng-container>
       </mat-tab>
 
       <mat-tab label="{{ 'Enabling Objective' | labelReplacement | async }}s">
         <div class="flex flex-col px-12 mt-2">
-          <div class="flex flex-row justify-between mt-4 mb-4">
-            <div class="flex flex-row border-b w-100">
-              <div class="mt-2 text-xs text-gray-400 mr-3">
-                <app-icon icon="search"></app-icon>
-              </div>
-              <div class="text-xs w-100 d-flex">
-                <input
-                  [value]="filterEOString"
-                  (input)="searchEO($event)"
-                  placeholder="Search by keyword/phrase"
-                  class="w-100 py-2"
-                />
-                <app-icon icon="close" class="cursor-pointer" *ngIf="filterEOString" (click)="clearEOSearchString()"></app-icon>
-              </div>
+          <div class="flex flex-row items-center bg-white-one rounded-t-md py-4 w-full space-x-2 border-b-0.8 border-gray-one">
+            <svg class="flex-none w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z">
+              </path>
+            </svg>
+            <input (keyup)="searchEO($event)" class="text-sm flex-grow focus:outline-none" placeholder="Search"
+              type="text" [value]="searchText" />
+            <div class="flex flex-row space-x-4 text-sm">
+              <app-button color="secondary" text="Filter" size="sm" icon="filter_alt" iconPosition="left"
+                [matMenuTriggerFor]="filterEOMenu">
+              </app-button>
+              <mat-menu #filterEOMenu="matMenu">
+                <label mat-menu-item (click)="filterEO('all')">All</label>
+                <label mat-menu-item (click)="filterEO('eo')">EO</label>
+                <label mat-menu-item (click)="filterEO('sq')">SQ Only</label>
+                <label mat-menu-item (click)="filterEO('meta')">Meta Only</label>
+              </mat-menu>
             </div>
           </div>
 
           <!--Filter By ends-->
         </div>
-        <div
-          class="
+        <div class="flex flex-row px-12 justify-between my-4">
+          <div class="flex flex-col">
+            <mat-checkbox [checked]="isIncludeMetaEO" (change)="onIncludeMetaEOChange($event)">Include all {{("Enabling Objective" | labelReplacement)| async}}s linked to Meta</mat-checkbox>
+          </div>
+        </div>
+        <div class="
             flex flex-col flex-wrap
             bg-gray-one
             mb-3
@@ -201,28 +166,20 @@
             px-3
             py-3
             rounded
-          "
-          *ngIf="eoCheckListSelection.selected.length > 0"
-        >
+          " *ngIf="eoCheckListSelection.selected.length > 0">
           <div class="flex flex-row w-full justify-between mb-3">
             <p class="text-xs text-gray-four pt-2">
               {{ eoCheckListSelection.selected.length }}
               {{
-                "Enabling
-                            Objective"
-                  | labelReplacement
-                  | async
+              "Enabling
+              Objective"
+              | labelReplacement
+              | async
               }}s Selected
             </p>
-            <app-button
-              [disabled]="eoCheckListSelection.selected.length < 1"
-              class="mb-2"
-              type="button"
-              (click)="linkObjectivesToScenario()"
-              color="secondary"
-              size="sm"
-              text="Link {{ 'Enabling Objective' | labelReplacement | async }}s"
-            >
+            <app-button [disabled]="eoCheckListSelection.selected.length < 1" class="mb-2" type="button"
+              (click)="linkObjectivesToScenario()" color="secondary" size="sm"
+              text="Link {{ 'Enabling Objective' | labelReplacement | async }}s">
             </app-button>
           </div>
           <hr />
@@ -232,95 +189,56 @@
             category
           </p>
         </div>
-        <app-spinner
-          [hidden]="enablingObjectiveDataSource.data.length > 0"
-        ></app-spinner>
+        <div *ngIf="showLoader" class="task-spinner">
+          <app-spinner></app-spinner>
+        </div>
+        <ng-container *ngIf="enablingObjectiveDataSource.data.length == 0 && !showLoader">
+          <div class="text-center mt-5">
+              No Data Found
+          </div>
+      </ng-container>
         <ng-container *ngIf="enablingObjectiveDataSource.data.length > 0">
           <div class="flex flex-col px-12">
-            <mat-tree
-              [dataSource]="enablingObjectiveDataSource"
-              [treeControl]="eoTreeControl"
-              class="qtd-tree"
-            >
+            <mat-tree [dataSource]="enablingObjectiveDataSource" [treeControl]="eoTreeControl" class="qtd-tree">
               <!-- This is the tree node template for leaf nodes -->
               <!-- There is inline padding applied to this node using styles.
-                                This padding value depends on the mat-icon-button width. -->
-              <mat-tree-node
-                *matTreeNodeDef="let node"
-                matTreeNodeToggle
-                matTreeNodePadding
-              >
-                <mat-checkbox
-                  [checked]="node.selected"
-                  (change)="onEOChange($event, node)"
-                  *ngIf="node.checkbox !== undefined && node.checkbox"
-                >
-                  {{ node.description }}
-                  <span
-                    *ngIf="node.IsEO"
-                    class="ml-1 qtd-meta-box p-1 font-bold"
-                    >{{ "EO" | uppercase }}</span
-                  ></mat-checkbox
-                >
-                <ng-container
-                  *ngIf="node.checkbox !== undefined && !node.checkbox"
-                >
+                        This padding value depends on the mat-icon-button width. -->
+              <mat-tree-node *matTreeNodeDef="let node" matTreeNodeToggle matTreeNodePadding>
+                <mat-checkbox [checked]="node.selected" (change)="onEOChange($event,node)" *ngIf="node.checkbox !== undefined && node.checkbox">
+                  {{node.description}} 
+                  <span *ngIf="node.isMeta" class="ml-1 qtd-meta-box p-1 font-bold">{{'meta'|titlecase}}</span>
+                  <span *ngIf="node.IsEO && !node.isSkillQualification" class="ml-1 qtd-meta-box p-1 font-bold">{{'EO'|uppercase}}</span>
+                  <span *ngIf="node.isSkillQualification" class="ml-1 qtd-meta-box p-1 font-bold">{{'SQ'|uppercase}}</span>
+                </mat-checkbox>
+                <ng-container *ngIf="node.checkbox !== undefined && !node.checkbox">
                   <div class="flex">
-                    <app-icon
-                      class="mr-2"
-                      style="color: rgb(92, 155, 49)"
-                      icon="link"
-                    ></app-icon
-                    >&nbsp;
-                    <span style="color: rgb(92, 155, 49)"
-                      >{{ node.description }}
-                      <span
-                        *ngIf="node.IsEO"
-                        class="ml-1 qtd-meta-box p-1 font-bold"
-                        >{{ "EO" | uppercase }}</span
-                      ></span
-                    >
+                    <app-icon class="mr-2" style="color: rgb(92, 155, 49);" icon="link"></app-icon>&nbsp;
+                    <span style="color: rgb(92, 155, 49);">{{node.description}} 
+                      <span *ngIf="node.isMeta" class="ml-1 qtd-meta-box p-1 font-bold">{{'meta'|titlecase}}</span>
+                      <span *ngIf="node.IsEO && !node.isSkillQualification" class="ml-1 qtd-meta-box p-1 font-bold">{{'EO'|uppercase}}</span>
+                      <span *ngIf="node.isSkillQualification" class="ml-1 qtd-meta-box p-1 font-bold">{{'SQ'|uppercase}}</span>
+                    </span>
                   </div>
                 </ng-container>
-                <span *ngIf="node.checkbox === undefined">{{
-                  node.description
-                }}</span>
-                <span
-                  *ngIf="node.checkbox === undefined && node.IsEO"
-                  class="ml-1 qtd-meta-box p-1 font-bold"
-                  >{{ "EO" | uppercase }}</span
-                >
+                <span *ngIf="node.checkbox === undefined">{{node.description}}</span>
+                <span *ngIf="node.checkbox === undefined && node.isMeta" class="ml-1 qtd-meta-box p-1 font-bold">{{'meta'|titlecase}}</span>
+                <span *ngIf="node.checkbox === undefined && node.IsEO && !node.isSkillQualification" class="ml-1 qtd-meta-box p-1 font-bold">{{'EO'|uppercase}}</span>
+                <span *ngIf="node.checkbox === undefined && node.isSkillQualification" class="ml-1 qtd-meta-box p-1 font-bold">{{'SQ'|uppercase}}</span>
               </mat-tree-node>
               <!-- This is the tree node template for expandable nodes -->
               <mat-nested-tree-node *matTreeNodeDef="let node; when: hasChild">
                 <div class="mat-tree-node">
-                  <button
-                    mat-icon-button
-                    matTreeNodeToggle
-                    [attr.aria-label]="'Toggle ' + node.description"
-                  >
-                    <app-icon
-                      [icon]="
-                        eoTreeControl.isExpanded(node)
-                          ? 'expand_more'
-                          : 'chevron_right'
-                      "
-                    >
+                  <button mat-icon-button matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.description">
+                    <app-icon [icon]="eoTreeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'">
                     </app-icon>
                   </button>
-                  <mat-checkbox
-                    [checked]="node.selected"
-                    [indeterminate]="node.indeterminate && !node.selected"
-                    (change)="itemToggle2($event.checked, node)"
-                  ></mat-checkbox>
-                  <span class="ml-1 pb-1">{{ node.description }}</span>
+                  <mat-checkbox [checked]="node.selected" [indeterminate]="node.indeterminate && !node.selected"
+                  (change)="itemToggle2($event.checked,node)"></mat-checkbox>
+                  <span class="ml-1 pb-1">{{node.description}}</span>
                 </div>
                 <!-- There is inline padding applied to this div using styles.
-                                      This padding value depends on the mat-icon-button width.  -->
-                <div
-                  [class.qtd-tree-invisible]="!eoTreeControl.isExpanded(node)"
-                  role="group"
-                >
+                              This padding value depends on the mat-icon-button width.  -->
+                <div [class.qtd-tree-invisible]="!eoTreeControl.isExpanded(node)" role="group">
                   <ng-container matTreeNodeOutlet></ng-container>
                 </div>
               </mat-nested-tree-node>
