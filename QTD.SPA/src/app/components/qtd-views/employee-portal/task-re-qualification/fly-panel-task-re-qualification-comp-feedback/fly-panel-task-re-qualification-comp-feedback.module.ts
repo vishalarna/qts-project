@@ -17,18 +17,12 @@ import { TaskPositionsModule } from '../../../my-data/tasks/task-detail/task-pos
 import { TaskProceduresModule } from '../../../my-data/tasks/task-detail/task-procedures/task-procedures.module';
 import { TaskRegulatoryRequirementsModule } from '../../../my-data/tasks/task-detail/task-regulatory-requirements/task-regulatory-requirements.module';
 import { TaskSafetyHazardsModule } from '../../../my-data/tasks/task-detail/task-safety-hazards/task-safety-hazards.module';
+import { FlyPanelTaskReQualificationTaskFeedbackComponent } from '../fly-panel-task-re-qualification-task-feedback/fly-panel-task-re-qualification-task-feedback.component';
 
 const routes: Routes = [
-  {
-    path: '',
-    component: FlyPanelTaskReQualificationCompFeedbackComponent,
-  },
-  {
-    path: ':id',
-    component: FlyPanelTaskReQualificationCompFeedbackComponent,
-  },
+  { path: 'feedback', component: FlyPanelTaskReQualificationTaskFeedbackComponent },
+  { path: 'feedback/:id', component: FlyPanelTaskReQualificationTaskFeedbackComponent }
 ];
-
 @NgModule({
   declarations: [
     FlyPanelTaskReQualificationCompFeedbackComponent
