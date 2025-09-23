@@ -145,8 +145,8 @@ export class qualification implements OnInit {
     'action',
   ];
   innerDisplayedColumnsEMP = [
-    'taskNumber',
-    'taskDescription',
+    'taskSkillNumber',
+    'taskSkillDescription',
     'releaseDate',
     'dueDate',
     'requiredRequals',
@@ -314,11 +314,10 @@ export class qualification implements OnInit {
     }
   }
 
- goToTaskDetail(row: any) {
+goToTaskDetail(row: any) {
   let id: number | null = null;
   let type: string = '';
   let routeSegment: string = '';
-
   if (row.taskId) {
     id = row.taskId;
     type = 'task';
@@ -345,7 +344,7 @@ export class qualification implements OnInit {
 
   this.store.dispatch(sideBarClose());
 
-  this._router.navigate([ 'emp/task-re-qualification/view-task', routeSegment, ]);
+  this._router.navigate([ 'emp/task-re-qualification/view-task/feedback', routeSegment, ]);
 }
 
   startTask(row, parentRow) {
