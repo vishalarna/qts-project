@@ -75,11 +75,11 @@ ChildMenuWithChildren.args = {
       routePath: '/EMPIDPReview'
     },
     {
-      title: 'EMP Task Qualification - Trainee',
+      title: 'EMP Task And Skill Qualification - Trainee',
       routePath: '/EMPTasKQualificationTrainee'
     },
     {
-      title: 'EMP Task Qualification - Evaluator',
+      title: 'EMP Task And Skill Qualification - Evaluator',
       routePath: '/EmpTaskQualificationEvaluator'
     },
     {

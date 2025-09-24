@@ -48,8 +48,9 @@ namespace QTD2.Data.Mapping.Core
                .HasValue<AdminEMPCompletionNotification>("AdminEMPCompletionNotification")
                .HasValue<SimulatorScenarioCollaborationNotification>("SimulatorScenarioCollaborationNotification")
                .HasValue<PublicClassScheduleRequestNotification>("PublicClassScheduleRequestNotification")
-               .HasValue<PublicClassScheduleRequestAcceptedNotification>("PublicClassScheduleRequestAcceptedNotification");
-            
+               .HasValue<PublicClassScheduleRequestAcceptedNotification>("PublicClassScheduleRequestAcceptedNotification")
+               .HasValue<EMPSkillQualificationTraineeNotification>("EMPSkillQualificationTraineeNotification")
+               .HasValue<EMPSkillQualitificationEvaluatorNotification>("EMPSkillQualitificationEvaluatorNotification");
 
         }
     }

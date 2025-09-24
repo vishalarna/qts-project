@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using QTD2.Data;
 
@@ -11,9 +12,11 @@ using QTD2.Data;
 namespace QTD2.Data.Migrations.QTD
 {
     [DbContext(typeof(QTDContext))]
-    partial class QTDContextModelSnapshot : ModelSnapshot
+    [Migration("20250923064851_SkillQualificationNotification")]
+    partial class SkillQualificationNotification
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

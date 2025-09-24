@@ -369,7 +369,7 @@ namespace QTD2.Application.Services.QTD
 
         public async Task<bool> SendEmpTaskQualitificationEvaluatorNotification(int taskQualification_Evaluator_LinkId, int order, QTDContext qtdContext)
         {
-            var setting = await GetClientSettingNotificationByName("EMP Task Qualification - Evaluator", qtdContext);
+            var setting = await GetClientSettingNotificationByName("EMP Task And Skill Qualification - Evaluator", qtdContext);
             var taskQualificiation_Evaluatorn_Link = await qtdContext.TaskQualification_Evaluator_Links
                 .Include("Evaluator.Person")
                 .Include("TaskQualification.Task.SubdutyArea.DutyArea")
@@ -387,9 +387,31 @@ namespace QTD2.Application.Services.QTD
             return await sendNotificationAsync(notification);
         }
 
+        public async Task<bool> SendEmpSkillQualitificationEvaluatorNotification(int skillQualification_Evaluator_LinkId, int order, QTDContext qtdContext)
+        {
+            var setting = await GetClientSettingNotificationByName("EMP Task And Skill Qualification - Evaluator", qtdContext);
+            var skillQualificiation_Evaluatorn_Link = await qtdContext.SkillQualification_Evaluator_Links
+                .Include("Evaluator.Person")
+                .Include("SkillQualification.EnablingObjective.EnablingObjective_Category")
+                .Include("SkillQualification.EnablingObjective.EnablingObjective_SubCategory")
+                .Include("SkillQualification.EnablingObjective.EnablingObjective_Topic")
+                .Include("SkillQualification.Employee.Person")
+                .FirstOrDefaultAsync(r => r.Id == skillQualification_Evaluator_LinkId);
+
+            if (setting == null || skillQualificiation_Evaluatorn_Link == null)
+                return false;
+
+            List<string> destination = new List<string>();
+            destination.Add(skillQualificiation_Evaluatorn_Link.Evaluator.Person.Username);
+
+            var notification = _notificationFactory.CreateSkillQualitificationEvaluatorNotification(destination, order, setting, skillQualificiation_Evaluatorn_Link);
+
+            return await sendNotificationAsync(notification);
+        }
+
         public async Task<bool> SendEmpTaskQualitificationTraineeNotification(int taskQualificationId, int order, QTDContext qtdContext)
         {
-            var setting = await GetClientSettingNotificationByName("EMP Task Qualification - Trainee", qtdContext);
+            var setting = await GetClientSettingNotificationByName("EMP Task And Skill Qualification - Trainee", qtdContext);
             var taskQualification = await qtdContext.TaskQualifications
                 .Include("Employee.Person")
                 .Include("EvaluationMethod")
@@ -404,6 +426,29 @@ namespace QTD2.Application.Services.QTD
             destination.Add(taskQualification.Employee.Person.Username);
 
             var notification = _notificationFactory.CreateTaskQualitificationTraineeNotification(destination, order, setting, taskQualification);
+
+            return await sendNotificationAsync(notification);
+        }
+
+        public async Task<bool> SendEmpSkillQualitificationTraineeNotification(int skillQualificationId, int order, QTDContext qtdContext)
+        {
+            var setting = await GetClientSettingNotificationByName("EMP Task And Skill Qualification - Trainee", qtdContext);
+            var skillQualification = await qtdContext.SkillQualifications
+                .Include("Employee.Person")
+                .Include("EvaluationMethod")
+                .Include("SkillQualification_Evaluator_Links.Evaluator.Person")
+                .Include("EnablingObjective.EnablingObjective_Category")
+                .Include("EnablingObjective.EnablingObjective_SubCategory")
+                .Include("EnablingObjective.EnablingObjective_Topic")
+                .FirstOrDefaultAsync(r => r.Id == skillQualificationId);
+
+            if (setting == null || skillQualification == null)
+                return false;
+
+            List<string> destination = new List<string>();
+            destination.Add(skillQualification.Employee.Person.Username);
+
+            var notification = _notificationFactory.CreateSkillQualitificationTraineeNotification(destination, order, setting, skillQualification);
 
             return await sendNotificationAsync(notification);
         }

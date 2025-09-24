@@ -64,6 +64,12 @@ namespace QTD2.Domain.Entities.Core
         public void Release()
         {
             this.IsReleasedToEMP = true;
+            AddDomainEvent(new Domain.Events.Core.OnSkillQualificationReleased(this));
+
+            foreach (var skillQualEvaluator in this.SkillQualification_Evaluator_Links)
+            {
+                AddDomainEvent(new Domain.Events.Core.OnSkillQualification_Evalutor_LinkCreated(skillQualEvaluator));
+            }
         }
 
         public void Completed()

@@ -1363,6 +1363,9 @@ namespace QTD2.Application.Startup
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSkillQualificationCompleted>), typeof(OnSkillQualificationCompletedHandler));
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSimulatorScenario_Script_Deleted>), typeof(OnSimulatorScenario_Script_DeletedHandler));
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSimulatorScenario_Event_Deleted>), typeof(OnSimulatorScenario_Event_DeletedHandler));
+            services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSkillQualificationReleased>), typeof(OnSkillQualificationReleasedHandler));
+            services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSkillQualification_Evalutor_LinkCreated>), typeof(OnSkillQualification_Evalutor_LinkCreatedHandler));
+
             // ------------------ Domain Service and Validations DI End --------------------- //
 
 

@@ -246,6 +246,14 @@ namespace QTD2.Application.Jobs.Notifications
                 {
                     success = await _jobNotificationService.SendPublicClassScheduleRequestAcceptedNotification((notification as Domain.Entities.Core.PublicClassScheduleRequestAcceptedNotification).PublicClassScheduleRequestAcceptedNotification_PublicClassScheduleRequestId, notification.ClientSettings_Notification_Step.Order, notification.ToPersonId, qtdContext, _domainSettings.SPA);
                 }
+                else if (notification is Domain.Entities.Core.EMPSkillQualificationTraineeNotification)
+                {
+                    success = await _jobNotificationService.SendEmpSkillQualitificationTraineeNotification((notification as Domain.Entities.Core.EMPSkillQualificationTraineeNotification).SkillQualificationId, notification.ClientSettings_Notification_Step.Order, qtdContext);
+                }
+                else if (notification is Domain.Entities.Core.EMPSkillQualitificationEvaluatorNotification)
+                {
+                    success = await _jobNotificationService.SendEmpSkillQualitificationEvaluatorNotification((notification as Domain.Entities.Core.EMPSkillQualitificationEvaluatorNotification).SkillQualification_Evaluator_LinkId, notification.ClientSettings_Notification_Step.Order, qtdContext);
+                }
                 else
                 {
                     throw new QTDServerException("Notification type unknown" + notification.GetType());

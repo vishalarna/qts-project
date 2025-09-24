@@ -1325,6 +1325,11 @@ namespace QTD2.Data.Initialization.QTDContext
         {
             callMethod(prefix + "UpdateSimulatorScenarioILAsAndPrerequisitesForDeletedILAs");
         }
+
+        public void Update_ClientSettingsNotification_StepsTemplateForTaskQualification()
+        {
+            callMethod(prefix + "Update_ClientSettingsNotification_StepsTemplateForTaskQualification");
+        }
         protected void callMethod(string method)
         {
             Type thisType = GetType();

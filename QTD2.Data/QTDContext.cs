@@ -525,6 +525,10 @@ namespace QTD2.Data
             modelBuilder.ApplyConfiguration(new SimulatorScenario_ScriptMap());
             modelBuilder.ApplyConfiguration(new SimulatorScenario_EventMap());
             modelBuilder.ApplyConfiguration(new SimulatorScenario_Script_CriteriaMap());
+
+
+            modelBuilder.ApplyConfiguration(new EMPSkillQualitificationEvaluatorNotificationMap());
+            modelBuilder.ApplyConfiguration(new EMPSkillQualificationTraineeNotificationMap());
         }
 
         //Add DBSet

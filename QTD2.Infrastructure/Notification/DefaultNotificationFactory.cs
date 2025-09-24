@@ -371,7 +371,7 @@ namespace QTD2.Infrastructure.Notification
 
         public INotification CreateTaskQualitificationEvaluatorNotification(List<string> destination, int order, ClientSettings_Notification setting, TaskQualification_Evaluator_Link link)
         {
-            if (setting.Name == "EMP Task Qualification - Evaluator")
+            if (setting.Name == "EMP Task And Skill Qualification - Evaluator")
             {
                 NotificationMethod method = getNotificationMethod();
                 _contentGenerator = getContentGenerator(method);
@@ -391,9 +391,30 @@ namespace QTD2.Infrastructure.Notification
             }
         }
 
+        public INotification CreateSkillQualitificationEvaluatorNotification(List<string> destination, int order, ClientSettings_Notification setting, SkillQualification_Evaluator_Link link)
+        {
+            if (setting.Name == "EMP Task And Skill Qualification - Evaluator")
+            {
+                NotificationMethod method = getNotificationMethod();
+                _contentGenerator = getContentGenerator(method);
+
+                EmpTaskQualitification_EvaluatorModel empTaskQualitification_EvaluatorModel = new EmpTaskQualitification_EvaluatorModel(link.Evaluator.Person.FirstName, link.Evaluator.Person.LastName, link.SkillQualification.EnablingObjective.FullNumber, link.SkillQualification.EnablingObjective.Description, link.SkillQualification.Employee.Person.FirstName + " " + link.SkillQualification.Employee.Person.LastName);
+
+                var step = setting.Steps.Where(r => r.Order == order).First();
+                var template = step.Template;
+
+                string content = _contentGenerator.GetContent(setting.Name + order.ToString(), template, empTaskQualitification_EvaluatorModel);
+
+                return new Notifications.EmailNotification(content, "EMP Skill Qualification - Evaluator Notification", method, destination);
+            }
+            else
+            {
+                throw new ArgumentException("Invalid Notification Name");
+            }
+        }
         public INotification CreateTaskQualitificationTraineeNotification(List<string> destination, int order, ClientSettings_Notification setting, TaskQualification taskQualification)
         {
-            if (setting.Name == "EMP Task Qualification - Trainee")
+            if (setting.Name == "EMP Task And Skill Qualification - Trainee")
             {
                 NotificationMethod method = getNotificationMethod();
                 _contentGenerator = getContentGenerator(method);
@@ -406,6 +427,28 @@ namespace QTD2.Infrastructure.Notification
                 string content = _contentGenerator.GetContent(setting.Name + order.ToString(), template, empTaskQualitification_TraineeModel);
 
                 return new Notifications.EmailNotification(content, "EMP Task Qualification - Trainee - Notification", method, destination);
+            }
+            else
+            {
+                throw new ArgumentException("Invalid Notification Name");
+            }
+        }
+
+        public INotification CreateSkillQualitificationTraineeNotification(List<string> destination, int order, ClientSettings_Notification setting, SkillQualification skillQualification)
+        {
+            if (setting.Name == "EMP Task And Skill Qualification - Trainee")
+            {
+                NotificationMethod method = getNotificationMethod();
+                _contentGenerator = getContentGenerator(method);
+
+                EmpTaskQualitification_TraineeModel empTaskQualitification_TraineeModel = new EmpTaskQualitification_TraineeModel(skillQualification.Employee.Person.FirstName, skillQualification.Employee.Person.LastName, skillQualification.EnablingObjective.FullNumber, skillQualification.EnablingObjective.Description, skillQualification.SkillQualification_Evaluator_Links.Count() > 0 ? String.Join(Environment.NewLine, skillQualification.SkillQualification_Evaluator_Links.Select(r => r.Evaluator.Person.FirstName + " " + r.Evaluator.Person.LastName).ToList()) : "");
+
+                var step = setting.Steps.Where(r => r.Order == order).First();
+                var template = step.Template;
+
+                string content = _contentGenerator.GetContent(setting.Name + order.ToString(), template, empTaskQualitification_TraineeModel);
+
+                return new Notifications.EmailNotification(content, "EMP Skill Qualification - Trainee - Notification", method, destination);
             }
             else
             {

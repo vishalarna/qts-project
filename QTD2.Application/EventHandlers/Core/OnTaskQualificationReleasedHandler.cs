@@ -37,7 +37,7 @@ namespace QTD2.Application.EventHandlers.Core
 
         public async Task Handle(OnTaskQualificationReleased notification, CancellationToken cancellationToken)
         {
-            var clientSettings_Notification = await _clientSettings_NotificationService.GetClientSettingNotificationByName("EMP Task Qualification - Trainee");
+            var clientSettings_Notification = await _clientSettings_NotificationService.GetClientSettingNotificationByName("EMP Task And Skill Qualification - Trainee");
 
             if (!clientSettings_Notification.Enabled) return;
 

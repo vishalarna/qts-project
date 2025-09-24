@@ -6691,5 +6691,39 @@ Thank you.", 1, false, true }
                     ON ssPre.PrerequisiteId = ila.Id
                 WHERE ila.Deleted = 1 ");
         }
+
+        protected void UAT_Update_ClientSettingsNotification_StepsTemplateForTaskQualification()
+        {
+            _migrationBuilder.UpdateData(
+                table: "ClientSettings_Notification_Steps",
+                keyColumns: new[] { "ClientSettingsNotificationId", "Order" },
+                keyValues: new object[] { 10, 1 },
+                column: "Template",
+                value: @"<p>Hello @Model.EmployeeFirstName @Model.EmployeeLastName,</p> <p> You have been assigned to complete a Task/Skill Qualification as part of your position specific training program. An evaluator has been assigned to sign - off on this task/skill qualification.This will be completed using the Employee Portal(EMP). Please review the table below for further details. To help you prepare for the task/skill qualification, the task(s)/skill(s) below are available in a read - only format in EMP.</p><figure class=""table""><table><tbody><tr><td>Task/Skill #</td><td>@Model.TaskNumber</td></tr><tr><td>Task/Skill Statement</td><td>@Model.TaskStatement</td></tr><tr><td>Evaluator Name</td><td>@Model.EvaluatorName</td></tr></tbody></table></figure><p>If for any reason you cannot complete the assigned Task/Skill Qualification, notify your TaskSkill Qualification Evaluator and/or Training Administrator as soon as possible. Thank you!</p>'"
+            );
+
+            _migrationBuilder.UpdateData(
+                table: "ClientSettings_Notification_Steps",
+                keyColumns: new[] { "ClientSettingsNotificationId", "Order" },
+                keyValues: new object[] { 11, 1 },
+                column: "Template",
+                value: @"Hello @Model.EmployeeFirstName @Model.EmployeeLastName,<p>You have been assigned as an Evaluator to sign off on a Task/Skill Qualification. This will be completed using the Employee Portal (EMP). Please review the table below for further details.</p><figure class=""table""><table><tr><td>Task/Skill #</td><td>@Model.TaskNumber</td></tr><tr><td>Task/Skill Statement</td><td>@Model.TaskStatement</td></tr><tr><td>Trainee Name</td><td>@Model.TraineeName</td></tr></table></figure><p>If for any reason you cannot complete the assigned Task/Skill Qualification(s), notify your Training Administrator as soon as possible.</p><p>Thank you!</p>"
+            );
+
+            _migrationBuilder.UpdateData(
+           table: "ClientSettings_Notifications",
+            keyColumns: new[] { "Id", "Name" },
+            keyValues: new object[] { 10, "EMP Task Qualification - Trainee" },
+            column: "Name",
+            value: "EMP Task And Skill Qualification - Trainee");
+
+            _migrationBuilder.UpdateData(
+             table: "ClientSettings_Notifications",
+              keyColumns: new[] { "Id", "Name" },
+              keyValues: new object[] { 11, "EMP Task Qualification - Evaluator" },
+              column: "Name",
+              value: "EMP Task And Skill Qualification - Evaluator");
+
+        }
     }
 }

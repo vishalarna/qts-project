@@ -43,5 +43,7 @@ namespace QTD2.Infrastructure.Notification.Interfaces
         INotification CreatePublicClassScheduleRequestDeclineNotification(ClientSettings_Notification setting, PublicClassScheduleRequest publicClassScheduleRequest, string defaultTimeZone);
 
         INotification CreatePublicClassScheduleRequestAcceptedNotification(List<string> destination, int order, ClientSettings_Notification setting, PublicClassScheduleRequest publicClassScheduleRequest, string defaultTimeZone, string url, string courseTitle);
+        INotification CreateSkillQualitificationTraineeNotification(List<string> destination, int order, ClientSettings_Notification setting, SkillQualification taskQualification);
+        INotification CreateSkillQualitificationEvaluatorNotification(List<string> destination, int order, ClientSettings_Notification setting, SkillQualification_Evaluator_Link link);
     }
 }
