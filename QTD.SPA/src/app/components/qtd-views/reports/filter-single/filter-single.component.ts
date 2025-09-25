@@ -193,6 +193,8 @@ export class FilterSingleComponent implements OnInit {
   }
 
   setReportOptions(filterOptionData : ReportFilterOption[]){
+    console.log("this.reportsData",this.reportsData)
+    console.log("this.filterOptionData",this.filterOptionData)
     let positionValue =new ReportFilterOption("","");
     if(filterOptionData.length != 0)
     {

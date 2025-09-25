@@ -9,5 +9,6 @@ namespace QTD2.Domain.Interfaces.Service.Core
         Task<List<EnablingObjective_Category>> GetMinimalEOCatData();
 
         Task<EnablingObjective_Category> GetMinimalEOCatDataById(int id);
+        Task<List<EnablingObjective_Category>> GetMinimalEOCatDataByIds(List<int> id);
     }
 }

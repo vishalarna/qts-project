@@ -7,5 +7,6 @@ namespace QTD2.Domain.Interfaces.Service.Core
     public interface IEnablingObjective_SubCategoryService : Common.IService<EnablingObjective_SubCategory>
     {
         Task<List<EnablingObjective_SubCategory>> GetMinimalEOSubCatData();
+        Task<List<EnablingObjective_SubCategory>> GetMinimalEOSubCatDataByIds(List<int> ids);
     }
 }

@@ -32,5 +32,22 @@ namespace QTD2.Domain.Services.Core
 
             return topics;
         }
+
+        public async Task<List<EnablingObjective_Topic>> GetMinimalEOTopicDataByIds(List<int?> ids)
+        {
+            var topics = (await FindAsync(s => ids.Contains(s.Id))).Select(s => new EnablingObjective_Topic
+            {
+                Active = s.Active,
+                Id = s.Id,
+                SubCategoryId = s.SubCategoryId,
+                Description = s.Description,
+                Deleted = s.Deleted,
+                Number = s.Number,
+                Title = s.Title,
+                EffectiveDate = s.EffectiveDate
+            }).ToList();
+
+            return topics;
+        }
     }
 }

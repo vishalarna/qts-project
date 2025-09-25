@@ -7,5 +7,6 @@ namespace QTD2.Domain.Interfaces.Service.Core
     public interface IEnablingObjective_TopicService : Common.IService<EnablingObjective_Topic>
     {
         Task<List<EnablingObjective_Topic>> GetMinimalEOTopicData();
+        Task<List<EnablingObjective_Topic>> GetMinimalEOTopicDataByIds(List<int?> ids);
     }
 }

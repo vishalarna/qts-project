@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Localization;
 using QTD2.Application.Interfaces.Services.Shared;
@@ -8,6 +6,9 @@ using QTD2.Domain.Entities.Core;
 using QTD2.Infrastructure.Model.Employee_Task;
 using QTD2.Infrastructure.Model.EnablingObjective;
 using QTD2.Infrastructure.Model.EnablingObjectiveHistory;
+using QTD2.Infrastructure.Model.Position;
+using System;
+using System.Threading.Tasks;
 
 namespace QTD2.API.QTD.Controllers
 {
@@ -408,6 +409,14 @@ namespace QTD2.API.QTD.Controllers
         {
             var result = await _enablingObjectiveService.GetEOActiveInactive(option);
             return Ok( new { result });
+        }
+
+        [HttpPost]
+        [Route("/enablingObjectives/sqByPositions")]
+        public async Task<IActionResult> GetTaskTreeDataByPositionAsync(PositionIdsModel options)
+        {
+            var listEO = await _enablingObjectiveService.GetSQsByPositionIdsAsync(options.PositionIds);
+            return Ok(new { listEO });
         }
     }
 }

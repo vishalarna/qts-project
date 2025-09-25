@@ -47,6 +47,7 @@ import { SQWithNumberVM } from 'src/app/components/qtd-views/implementation/task
 import { EnablingObjective_Category } from 'src/app/_DtoModels/EnablingObjective_Category/EnablingObjective_Category';
 import { EOCatTreeVM } from 'src/app/_DtoModels/TreeVMs/EOTreeVM';
 import { firstValueFrom } from 'rxjs';
+import { PositionIdsModel } from '@models/Position/PositionIdsModel';
 
 @Injectable({
   providedIn: 'root',
@@ -58,6 +59,18 @@ export class EnablingObjectivesService {
   getAll() {
     return firstValueFrom(this.http
       .get(this.baseUrl)
+      .pipe(
+        map((res: any) => {
+
+          return res['listEO'] as EnablingObjective[];
+        })
+      )
+      );
+  }
+
+  getSQsByPositionIds(option:PositionIdsModel) {
+    return firstValueFrom(this.http
+      .post(this.baseUrl + `/sqByPositions`, option)
       .pipe(
         map((res: any) => {
 

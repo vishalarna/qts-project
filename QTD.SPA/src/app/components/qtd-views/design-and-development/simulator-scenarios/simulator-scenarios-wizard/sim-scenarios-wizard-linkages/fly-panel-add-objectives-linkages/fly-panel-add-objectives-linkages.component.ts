@@ -80,7 +80,9 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
   }
 
   async readyEnablingObjectiveTreeData() {
-    await this.eoSrvc.getAll().then((res: EnablingObjective[]) => {
+    var option = new PositionIdsModel();
+        option.positionIds = [...this.linkedPositionIds];
+    await this.eoSrvc.getSQsByPositionIds(option).then((res: EnablingObjective[]) => {
       res = res.filter(x => x.active === true);
       this.readyEOTreeData(res);
       this.showLoader = false;
