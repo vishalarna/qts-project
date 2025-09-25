@@ -18,6 +18,7 @@ import { SimScenariosWizardInstructorModule } from './sim-scenarios-wizard-instr
 import { SimScenariosWizardIlaModule } from './sim-scenarios-wizard-ila/sim-scenarios-wizard-ila.module';
 import { PublishSimulatorScenarioModalModule } from './publish-simulator-scenario-modal/publish-simulator-scenario-modal.module';
 import { ColloboratorSimulatorScenarioModalModule } from './colloborator-simulator-scenario-modal/colloborator-simulator-scenario-modal.module';
+import { MatLegacyDialogModule as MatDialogModule } from '@angular/material/legacy-dialog';
 
 const routes: Routes = [
   {
@@ -47,7 +48,8 @@ const routes: Routes = [
     SimScenariosWizardIlaModule,
     SimScenariosWizardInstructorModule,
     PublishSimulatorScenarioModalModule,
-    ColloboratorSimulatorScenarioModalModule
+    ColloboratorSimulatorScenarioModalModule,
+    MatDialogModule
   ],
 })
 export class SimulatorScenariosWizardModule { }

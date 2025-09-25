@@ -15,6 +15,7 @@ export class SimScenariosWizardDetailsComponent implements OnInit {
   @Input() mode: string;
   scenarioDetailsForm: UntypedFormGroup;
   editor = ckcustomBuild;
+  originalScenarioDetailsForm: any = {}
 
   constructor(
     private formBuilder: UntypedFormBuilder
@@ -35,6 +36,7 @@ export class SimScenariosWizardDetailsComponent implements OnInit {
     if(this.mode == "view"){
       this.scenarioDetailsForm.disable();
     }
+    this.originalScenarioDetailsForm = {...this.scenarioDetailsForm}
   }
 
   onTitleInput() {

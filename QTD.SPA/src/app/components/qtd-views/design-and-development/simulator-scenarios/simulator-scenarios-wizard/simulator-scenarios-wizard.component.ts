@@ -45,6 +45,35 @@ export class SimulatorScenariosWizardComponent implements OnInit, AfterViewInit 
   get isStep1FormValid(): boolean {
     return (this.simScenariosDetails?.scenarioDetailsForm?.valid ?? false) || (this.mode == "view");
   }
+
+
+get isStep1FormDirty(): boolean {
+  if (!this.simScenariosDetails?.scenarioDetailsForm) return false;
+
+  const currentValues = this.simScenariosDetails?.scenarioDetailsForm.value;
+  return Object.keys(currentValues).some(
+    key => (currentValues[key] ?? "").trim() !== (this.simScenariosDetails.originalScenarioDetailsForm[key] ?? "").trim()
+  );
+}
+
+get isStep4FormDirty(): boolean {
+  if (!this.simScenariosSpecifications.specificationsForm) return false;
+
+  const currentValues = this.simScenariosSpecifications.specificationsForm.value;
+  return Object.keys(currentValues).some(
+    key => (currentValues[key] ?? "").trim() !== (this.simScenariosSpecifications.originalSpecifications[key] ?? "").trim()
+  );
+}
+
+get isStep6FormDirty(): boolean {
+  if (!this.simScenariosInstructor?.ratingScaleForm) return false;
+
+  const currentValues = this.simScenariosInstructor?.ratingScaleForm.value;
+  return Object.keys(currentValues).some(
+    key => (currentValues[key] ?? "").trim() !== (this.simScenariosInstructor.originalratingScaleForm[key] ?? "").trim()
+  );
+}
+
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -137,28 +166,46 @@ export class SimulatorScenariosWizardComponent implements OnInit, AfterViewInit 
  }
 
   exitWizard(templateRef: any) {
-    if (this.mode != 'view' && this.isStep1FormValid ) {
-      const dialogRef = this.dialog.open(templateRef, {
-        width: '600px',
-        height: 'auto',
-        hasBackdrop: true,
-        disableClose: true,
-      });
-    }
-    else {
-      this.router.navigate(['/dnd/simulatorscenarios/overview']);
-    }
+    debugger
+  const currentStep = this.stepper.selectedIndex;
+
+  let isDirty = false;
+  if (currentStep === 0) {
+    isDirty = this.isStep1FormDirty;
+  } else if (currentStep === 3) { 
+    isDirty = this.isStep4FormDirty;
+  } else if (currentStep === 5) { 
+    isDirty = this.isStep6FormDirty;
   }
 
+  if (this.mode !== 'view' && isDirty) {
+    this.dialog.open(templateRef, {
+      width: '600px',
+      hasBackdrop: true,
+      disableClose: true,
+    });
+  } else {
+    this.router.navigate(['/dnd/simulatorscenarios/overview']);
+  }
+}
+
+
+  navigateToOverview(){
+    this.dialog.closeAll();
+     this.router.navigate(['/dnd/simulatorscenarios/overview']);
+  }
+ 
   async closeWizard(){
     await this.router.navigate(['/dnd/simulatorscenarios/overview']);
   }
 
   async backOrExitWizardAsync() {
     if(this.mode == 'create'){
+      this.dialog.closeAll();
       await this.createScenarioAsync(true); 
     }
     else{
+      this.dialog.closeAll();
       await this.updateScenarioAsync(true,0);
     }
   }
