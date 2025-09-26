@@ -86,19 +86,23 @@ namespace QTD2.Domain.Entities.Core
             if(reason != null)
             {
                 GradeNotes = reason;
+                AddDomainEvent(new Domain.Events.Core.OnClassSchedule_Employee_UpdatedCompletionInfo(this));
             }
             if(completionDate.HasValue)
             {
                 CompletionDate = completionDate;
                 AddDomainEvent(new Domain.Events.Core.OnClassSchedule_Employee_Completed(this));
+                AddDomainEvent(new Domain.Events.Core.OnClassSchedule_Employee_UpdatedCompletionInfo(this));
             }
             if(!string.IsNullOrEmpty(grade))
             {
                 FinalGrade = grade;
+                AddDomainEvent(new Domain.Events.Core.OnClassSchedule_Employee_UpdatedCompletionInfo(this));
             }
             if(score.HasValue)
             {
                 FinalScore = score;
+                AddDomainEvent(new Domain.Events.Core.OnClassSchedule_Employee_UpdatedCompletionInfo(this));
             }                   
         }
         public void EnrollStudent(System.DateTime? plannedDate,bool isCallHandler = true)

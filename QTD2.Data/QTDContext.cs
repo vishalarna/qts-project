@@ -527,6 +527,7 @@ namespace QTD2.Data
 
             modelBuilder.ApplyConfiguration(new EMPSkillQualitificationEvaluatorNotificationMap());
             modelBuilder.ApplyConfiguration(new EMPSkillQualificationTraineeNotificationMap());
+            modelBuilder.ApplyConfiguration(new IDPScheduleMap());
         }
 
         //Add DBSet
