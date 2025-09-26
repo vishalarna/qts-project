@@ -110,29 +110,25 @@
   </div>
   <!-- This Drag and drop is causing issues in form fix this -->
   <!-- <div cdkDropList class="qtd-list" (cdkDropListDropped)="drop($event)"> -->
-  <div cdkDropList class="qtd-list px-12" >
-  <div class="qtd-box" formArrayName="quesAns"  cdkDrag *ngFor="let qa of quesAns?.controls; let i = index">
+  <div cdkDropList class="qtd-list px-12">
+  <div class="qtd-box" formArrayName="quesAns" cdkDrag *ngFor="let qa of quesAns?.controls; let i = index">
     <div [formGroupName]="i">
       <div class="flex flex-row font-medium text-gray-400 mt-2">
-        <app-icon icon="drag_indicator" style="cursor:move; color: darkgrey!important;cursor:move" cdkDragHandle></app-icon><p class="text-gray-500 text-sm">Question {{i+1}}</p>
+        <app-icon icon="drag_indicator" style="cursor:move; color: darkgrey!important;" cdkDragHandle></app-icon>
+        <p class="text-gray-500 text-sm">Question {{i + 1}}</p>
       </div>
-      <div>
+
+      <div dir="ltr">
         <ckeditor
-        [disabled]="preview_evaluation"
-        [id]="i"
-        [data]="QuestionAnswerform.value.quesAns[i].questionText"
-        formControlName="questionText"
-        name="questionText" [editor]="Editor" (ready)="onReady($event)"></ckeditor>
+          [editor]="Editor"
+          formControlName="questionText"
+          [disabled]="preview_evaluation"
+          (ready)="onReady($event, i)">
+        </ckeditor>
       </div>
     </div>
-
-   <!--  <div class="flex flex-col px-4 pb-12 ">
-      <div class="py-6 px-6 space-y-6 border-gray-one shadow-xs border-0.5 bg-white-one rounded mb-8">
-
-      </div>
-    </div> -->
   </div>
-  </div>
+</div>
 
 </ng-container>
 

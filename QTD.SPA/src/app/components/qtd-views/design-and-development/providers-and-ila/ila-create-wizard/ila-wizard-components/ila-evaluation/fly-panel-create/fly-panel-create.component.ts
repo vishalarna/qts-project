@@ -266,9 +266,11 @@ export class FlyPanelCreateComponent implements OnInit, AfterViewInit {
   //   }
   // }
 
-  onReady(editor: any) {
-    // 
-  }
+ onReady(editor: any, index: number) {
+  editor.editing.view.change((writer: any) => {
+    writer.setAttribute('dir', 'ltr', editor.editing.view.document.getRoot());
+  });
+}
 
   async OnSaveEvaluation() {
     
