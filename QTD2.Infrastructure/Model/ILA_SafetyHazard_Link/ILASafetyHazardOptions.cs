@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QTD2.Infrastructure.Model.SafetyHazard_ILA_Link
+namespace QTD2.Infrastructure.Model.ILA_SafetyHazard_Link
 {
-    public class SafetyHazard_ILA_LinkOptions
+    public class ILASafetyHazardOptions
     {
         public int[] ILAIds { get; set; }
 

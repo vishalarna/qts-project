@@ -17,8 +17,10 @@ namespace QTD2.Data.Mapping.Core
             builder.Property(o => o.EventId).IsRequired();
             builder.Property(o => o.Title).IsRequired();
             builder.Property(o => o.Description);
-            builder.Property(o => o.InitiatorId);
             builder.Property(o => o.Time);
+            builder.Property(o => o.InitiatorId);
+            builder.Property(o => o.InitiatorOther).IsRequired();
+            builder.Property(o => o.InitiatorInstructor).IsRequired();
             builder.HasOne(o => o.Initiator).WithMany(r => r.SimulatorScenario_Scripts).HasForeignKey(f => f.InitiatorId).OnDelete(DeleteBehavior.NoAction);
             builder.HasOne(o => o.SimulatorScenario_Event).WithMany(r => r.Scripts).HasForeignKey(f => f.EventId).OnDelete(DeleteBehavior.NoAction);
         }

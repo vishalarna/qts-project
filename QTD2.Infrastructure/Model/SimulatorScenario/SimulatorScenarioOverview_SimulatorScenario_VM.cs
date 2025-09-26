@@ -19,8 +19,9 @@ namespace QTD2.Infrastructure.Model.SimulatorScenario
         public string Difficulty { get; set; }
         public SimulatorScenario_CollaboratorPermissions_VM CurrentUserPermissions { get; set; }
         public List<SimulatorScenario_Collaborator_VM> Collaborators { get; set; } = new List<SimulatorScenario_Collaborator_VM>();
+        public List<int> ProviderIds { get; set; } = new List<int>();
 
-        public SimulatorScenarioOverview_SimulatorScenario_VM(int id, string title, string iLAs, string positions, string status, bool active, string difficulty)
+        public SimulatorScenarioOverview_SimulatorScenario_VM(int id, string title, string iLAs, string positions, string status, bool active, string difficulty, List<int> providerIds)
         {
             Id = id;
             Title = title;
@@ -29,6 +30,7 @@ namespace QTD2.Infrastructure.Model.SimulatorScenario
             Status = status;
             Active = active;
             Difficulty = difficulty;
+            ProviderIds = providerIds;
         }
 
         public SimulatorScenarioOverview_SimulatorScenario_VM() { }

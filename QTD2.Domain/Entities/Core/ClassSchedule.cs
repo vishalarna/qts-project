@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -112,6 +114,26 @@ namespace QTD2.Domain.Entities.Core
         public void Update()
         {
             AddDomainEvent(new Domain.Events.Core.OnClassSchedule_Update(this));
+        }
+        public void Update(int? providerID, int? iLAID, DateTime startDateTime, DateTime endDateTime, int? instructorId, int? locationId, int classSize, string specialInstructions, string webinarLink, bool isStartAndEndTimeEmpty, string modifiedBy, DateTime modifiedDate, bool isPubliclyAvailable, bool isRecurring, int? recurrenceId)
+        {
+            this.ProviderID = providerID;
+            this.ILAID = iLAID;
+            this.StartDateTime = startDateTime;
+            this.EndDateTime = endDateTime;
+            this.InstructorId = instructorId;
+            this.LocationId = locationId;
+            this.ClassSize = classSize;
+            this.SpecialInstructions = specialInstructions;
+            this.WebinarLink = webinarLink;
+            this.IsStartAndEndTimeEmpty = isStartAndEndTimeEmpty;
+            this.ModifiedBy = modifiedBy;
+            this.ModifiedDate = modifiedDate;
+            this.IsPubliclyAvailable = isPubliclyAvailable;
+            this.IsRecurring = isRecurring;
+            this.RecurrenceId = recurrenceId;
+
+            this.Update();
         }
 
         public ClassSchedule_Employee LinkEmployee(Employee employee,bool enroll =  false)

@@ -18,7 +18,6 @@ using QTD2.Infrastructure.Authorization.Operations.Core;
 using QTD2.Infrastructure.Model.Procedure;
 using QTD2.Infrastructure.Model.RegulatoryRequirement;
 using QTD2.Infrastructure.Model.SafetyHazard_EO_Link;
-using QTD2.Infrastructure.Model.SafetyHazard_ILA_Link;
 using QTD2.Infrastructure.Model.SafetyHazard_Procedure_Link;
 using QTD2.Infrastructure.Model.SafetyHazard_Set_Link;
 using QTD2.Infrastructure.Model.SafetyHazard_Task_Link;
@@ -34,13 +33,11 @@ using IRegulatoryRequirementDomainService = QTD2.Domain.Interfaces.Service.Core.
 using ISafetyHazard_CategortDomainService = QTD2.Domain.Interfaces.Service.Core.ISaftyHazard_CategoryService;
 using ISafetyHazard_EO_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_EO_LinkService;
 using ISafetyHazard_HistoryDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_HistoryService;
-using ISafetyHazard_ILA_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_ILA_LinkService;
 //using ISafetyHazard_Procedure_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_Procedure_LinkService;
 using IProcedure_SafetyHazard_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.IProcedure_SaftyHazard_LinkService;
 using ISafetyHazard_Task_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_Task_LinkService;
 using ISafetyHazardSetDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_SetService;
 using ISH_EOLinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_EO_LinkService;
-using ISH_ILALinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_ILA_LinkService;
 using ISH_RRLinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISaftyHazard_RR_LinkService;
 using ISH_TaskLinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_Task_LinkService;
 using ITaskDomainService = QTD2.Domain.Interfaces.Service.Core.ITaskService;
@@ -50,6 +47,8 @@ using QTD2.Application.Utils;
 using QTD2.Infrastructure.Model.ILA;
 using QTD2.Domain.Exceptions;
 using QTD2.Infrastructure.Model.ILA_Topic;
+using ILA_SafetyHazard_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.IILA_SafetyHazard_LinkService;
+using QTD2.Infrastructure.Model.ILA_SafetyHazard_Link;
 
 namespace QTD2.Application.Services.Shared
 {
@@ -81,12 +80,9 @@ namespace QTD2.Application.Services.Shared
         private readonly SafetyHazard_Task_Link _sh_Task_Link;
         private readonly ISH_RRLinkDomainService _sh_RR_LinkService;
         private readonly SaftyHazard_RR_Link _sh_rr_link;
-        private readonly ISH_ILALinkDomainService _shILALinkService;
         private readonly ISH_EOLinkDomainService _shEOLinkService;
-        private readonly SafetyHazard_ILA_Link _sh_ILA_Link;
         private readonly SafetyHazard_EO_Link _sh_EO_Link;
         private readonly ISafetyHazard_EO_LinkDomainService _sh_eo_linkService;
-        private readonly ISafetyHazard_ILA_LinkDomainService _sh_ila_linkService;
         private readonly ISafetyHazard_Task_LinkDomainService _sh_task_linkService;
         private readonly ISafetyHazard_CategortDomainService _sh_cat_service;
         private readonly ISafetyHazard_Tool_LinkDomainService _sh_tool_linkService;
@@ -97,6 +93,7 @@ namespace QTD2.Application.Services.Shared
         private readonly ILA_Topic _topics;
         private readonly Domain.Entities.Core.Task _task;
         private readonly Interfaces.Services.Shared.IVersion_TaskService _versionTaskService;
+        private readonly ILA_SafetyHazard_LinkDomainService _ilA_SafetyHazard_LinkDomainService;
 
         public SaftyHazardService(
             IHttpContextAccessor httpContextAccessor,
@@ -118,15 +115,14 @@ namespace QTD2.Application.Services.Shared
             IToolService toolService,
             ISH_TaskLinkDomainService shTaskLinkService,
             ISH_RRLinkDomainService sh_RR_LinkService,
-            ISH_ILALinkDomainService shILALinkService,
             ISH_EOLinkDomainService shEOLinkService,
             ISafetyHazard_EO_LinkDomainService sh_eo_linkService,
-            ISafetyHazard_ILA_LinkDomainService sh_ila_linkService,
             ISafetyHazard_Task_LinkDomainService sh_task_linkService,
             ISafetyHazard_CategortDomainService sh_cat_service,
             ISafetyHazard_Tool_LinkDomainService sh_tool_linkService, IProviderService providerService, IILA_TopicDomainService topicService,
              IProcedure_SafetyHazard_LinkDomainService proc_Sh_Service,
-             Interfaces.Services.Shared.IVersion_TaskService versionTaskService)
+             Interfaces.Services.Shared.IVersion_TaskService versionTaskService,
+             ILA_SafetyHazard_LinkDomainService ilA_SafetyHazard_LinkDomainService)
         {
             _httpContextAccessor = httpContextAccessor;
             _authorizationService = authorizationService;
@@ -154,12 +150,9 @@ namespace QTD2.Application.Services.Shared
             _sh_Task_Link = new SafetyHazard_Task_Link();
             _sh_RR_LinkService = sh_RR_LinkService;
             _sh_rr_link = new SaftyHazard_RR_Link();
-            _shILALinkService = shILALinkService;
-            _sh_ILA_Link = new SafetyHazard_ILA_Link();
             _sh_EO_Link = new SafetyHazard_EO_Link();
             _shEOLinkService = shEOLinkService;
             _sh_eo_linkService = sh_eo_linkService;
-            _sh_ila_linkService = sh_ila_linkService;
             _sh_task_linkService = sh_task_linkService;
             _sh_cat_service = sh_cat_service;
             _sh_tool_linkService = sh_tool_linkService;
@@ -170,6 +163,7 @@ namespace QTD2.Application.Services.Shared
             _topics = new ILA_Topic();
             _versionTaskService = versionTaskService;
             _task = new Domain.Entities.Core.Task();
+            _ilA_SafetyHazard_LinkDomainService = ilA_SafetyHazard_LinkDomainService;
         }
 
         public async Task<SaftyHazard_Abatement> AddAbatementAsync(int shId, SaftyHazard_AbatementCreateOptions options)
@@ -286,11 +280,11 @@ namespace QTD2.Application.Services.Shared
                             nameof(_sh.SafetyHazard_Task_Links),
                             nameof(_sh.SaftyHazard_RR_Links),
                             nameof(_sh.SafetyHazard_EO_Links),
-                            nameof(_sh.SafetyHazard_ILA_Links),
+                            nameof(_sh.ILA_SafetyHazard_Links),
                             nameof(_sh.Procedure_SaftyHazard_Links)
                         },true).FirstOrDefaultAsync();
-                    sh.SafetyHazard_ILA_Links = linkToCopy.SafetyHazard_ILA_Links.DeepCopy();
-                    sh.SafetyHazard_ILA_Links.ToList().ForEach(x => x.Id = 0);
+                    sh.ILA_SafetyHazard_Links = linkToCopy.ILA_SafetyHazard_Links.DeepCopy();
+                    sh.ILA_SafetyHazard_Links.ToList().ForEach(x => x.Id = 0);
                     sh.SafetyHazard_EO_Links = linkToCopy.SafetyHazard_EO_Links.DeepCopy();
                     sh.SafetyHazard_EO_Links.ToList().ForEach(x => x.Id = 0);
                     sh.SaftyHazard_RR_Links = linkToCopy.SaftyHazard_RR_Links.DeepCopy();
@@ -448,7 +442,7 @@ namespace QTD2.Application.Services.Shared
             var linkedEOs = await _sh_eo_linkService.AllQuery().Select(x => x.SafetyHazardId).ToListAsync();
             var linkedRRs = await _sh_RR_LinkService.AllQuery().Select(x => x.RegulatoryRequirementId).ToListAsync();
             var linkedProcs = await _proc_Sh_Service.AllQuery().Select(x => x.ProcedureId).ToListAsync();
-            var linkedILAs = await _sh_ila_linkService.AllQuery().Select(x => x.ILAId).ToListAsync();
+            var linkedILAs = await _ilA_SafetyHazard_LinkDomainService.AllQuery().Select(x => x.ILAId).ToListAsync();
 
             var stats = new SH_StatsVM()
             {
@@ -813,7 +807,7 @@ namespace QTD2.Application.Services.Shared
             }
         }
 
-        public async Task<SaftyHazard> LinkILA(int id, SafetyHazard_ILA_LinkOptions options)
+        public async Task<SaftyHazard> LinkILA(int id, ILASafetyHazardOptions options)
         {
             var sh = await _saftyHazardService.FindQuery(x => x.Id == id).FirstOrDefaultAsync();
 
@@ -838,9 +832,9 @@ namespace QTD2.Application.Services.Shared
             return null;
         }
 
-        public async System.Threading.Tasks.Task UnlinkILA(int shId, SafetyHazard_ILA_LinkOptions options)
+        public async System.Threading.Tasks.Task UnlinkILA(int shId, ILASafetyHazardOptions options)
         {
-            var sh = await _saftyHazardService.GetWithIncludeAsync(shId, new string[] { nameof(_sh.SafetyHazard_ILA_Links) });
+            var sh = await _saftyHazardService.GetWithIncludeAsync(shId, new string[] { nameof(_sh.ILA_SafetyHazard_Links) });
 
             foreach (var ilaId in options.ILAIds)
             {
@@ -869,14 +863,14 @@ namespace QTD2.Application.Services.Shared
 
         public async Task<List<SafetyHazardWithLinkCount>> GetLinkedILAsWithCount(int id)
         {
-            var links = await _shILALinkService.FindWithIncludeAsync(x => x.SafetyHazardId == id, new string[] { nameof(_sh_ILA_Link.ILA) });
+            var links = await _ilA_SafetyHazard_LinkDomainService.FindWithIncludeAsync(x => x.SafetyHazardId == id, new string[] { nameof(ILA_SafetyHazard_Link.ILA) });
             List<Domain.Entities.Core.ILA> ilaList = new List<Domain.Entities.Core.ILA>();
             ilaList.AddRange(links.Select(x => x.ILA));
 
             List<SafetyHazardWithLinkCount> iLAWithCount = new List<SafetyHazardWithLinkCount>();
             foreach (var ila in ilaList)
             {
-                var data = await _shILALinkService.GetCount(x => x.ILAId == ila.Id);
+                var data = await _ilA_SafetyHazard_LinkDomainService.GetCount(x => x.ILAId == ila.Id);
                 iLAWithCount.Add(new SafetyHazardWithLinkCount(ila.Id, ila.Name, Convert.ToString(ila.Number), data, ila.Active));
             }
 
@@ -885,13 +879,13 @@ namespace QTD2.Application.Services.Shared
 
         public async Task<List<SaftyHazardCompactOptions>> getSHLinkedToILA(int id)
         {
-            var data = await _shILALinkService.AllQueryWithInclude(new string[] { nameof(_sh_ILA_Link.SaftyHazard) }).Where(x => x.ILAId == id)
+            var data = await _ilA_SafetyHazard_LinkDomainService.AllQueryWithInclude(new string[] { nameof(ILA_SafetyHazard_Link.SafetyHazard) }).Where(x => x.ILAId == id)
                 .Select(x => new SaftyHazardCompactOptions(
                     x.SafetyHazardId,
-                    x.SaftyHazard.SaftyHazardCategoryId,
-                    x.SaftyHazard.Title,
-                    x.SaftyHazard.Active,
-                    x.SaftyHazard.Number)).ToListAsync();
+                    x.SafetyHazard.SaftyHazardCategoryId,
+                    x.SafetyHazard.Title,
+                    x.SafetyHazard.Active,
+                    x.SafetyHazard.Number)).ToListAsync();
             return data;
         }
 
@@ -1141,7 +1135,7 @@ namespace QTD2.Application.Services.Shared
 
                 case "ilas":
                     {
-                        linkedSHIds = await _sh_ila_linkService.AllQuery().Select(x => x.SafetyHazardId).Distinct().ToListAsync();
+                        linkedSHIds = await _ilA_SafetyHazard_LinkDomainService.AllQuery().Select(x => x.SafetyHazardId).Distinct().ToListAsync();
                         notLinkedSHIds = await _saftyHazardService.FindQuery(x => !linkedSHIds.Contains(x.Id))
                             .Select(x => x.Id).ToListAsync();
                         break;

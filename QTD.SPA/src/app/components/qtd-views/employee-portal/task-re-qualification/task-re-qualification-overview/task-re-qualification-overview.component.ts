@@ -314,10 +314,11 @@ export class qualification implements OnInit {
     }
   }
 
-goToTaskDetail(row: any) {
+ goToTaskDetail(row: any) {
   let id: number | null = null;
   let type: string = '';
   let routeSegment: string = '';
+
   if (row.taskId) {
     id = row.taskId;
     type = 'task';

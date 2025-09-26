@@ -379,7 +379,7 @@ export class BulkEditComponent implements OnInit {
             shouldSelect: null
           })
           sh.saftyHazards.forEach((res, index1) => {
-            if (res.procedure_SaftyHazard_Links.length === 0 && res.safetyHazard_ILA_Links.length === 0 && res.saftyHazard_RR_Links.length === 0
+            if (res.procedure_SaftyHazard_Links.length === 0 && res.ilA_SafetyHazard_Links.length === 0 && res.saftyHazard_RR_Links.length === 0
               && res.safetyHazard_EO_Links.length === 0) {
               treedata[index].children.push({
                 id: res.id,

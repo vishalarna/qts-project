@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using QTD2.Infrastructure.Model.EmployeeCertification;
@@ -43,6 +44,14 @@ namespace QTD2.API.QTD.Controllers
         {
             var result = await _empCertification_historyService.GetCertificationWithEmpCertificationHistory(empCertId);
             return Ok( new { result });
+        }
+
+        [HttpDelete]
+        [Route("/employees/certifications/history/bulk")]
+        public async Task<IActionResult> DeleteBulkCertificationHistoryAsync(EmployeeCertificationHistoryDeleteOptions options)
+        {
+            await _empCertification_historyService.DeleteBulkHistoryAsync(options);
+            return Ok(new { message = _localizer["CertificationHistoryDeleted"] });
         }
     }
 }

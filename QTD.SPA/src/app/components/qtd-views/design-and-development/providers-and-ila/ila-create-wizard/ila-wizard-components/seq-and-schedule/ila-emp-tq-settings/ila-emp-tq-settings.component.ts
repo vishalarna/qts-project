@@ -24,6 +24,7 @@ import { SweetAlertService } from 'src/app/_Shared/services/sweetalert.service';
 export class IlaEmpTqSettingsComponent implements OnInit {
   @Input() ilaId = "";
   @Input() classScheduleId;
+  @Input() mode: string;
   isReordered: boolean;
   spinner = false;
   dataSource = new MatTableDataSource<any>();
@@ -123,6 +124,9 @@ export class IlaEmpTqSettingsComponent implements OnInit {
       this.TQForm.updateValueAndValidity();
       this.readyTQforILA();
       this.originalInitialValues = this.TQForm.value;
+      if (this.mode === 'view') {
+        this.TQForm.disable({ emitEvent: false });  
+      }
     });
 
   }
@@ -171,6 +175,9 @@ export class IlaEmpTqSettingsComponent implements OnInit {
   }
 
   async openFlyInPanel(templateRef: any) {
+    if (this.mode === 'view') {
+      return; 
+    }
     this.qualInfo= this.dataSourceTaskEval.data;
     if (!this.TQForm.get('tqRequired')?.value) {
       const portal = new TemplatePortal(templateRef, this.vcf);

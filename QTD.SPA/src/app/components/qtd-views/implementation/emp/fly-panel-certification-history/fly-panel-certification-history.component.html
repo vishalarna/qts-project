@@ -1,0 +1,73 @@
+<div>
+  <div class="flex flex-row justify-between items-center px-12 mt-5">
+    <p class="text-xl font-bold text-gray-900" *ngIf="mode==='add'">
+      Add {{ "Certification" | labelReplacement | async }} History
+    </p>
+    <p class="text-xl font-bold text-gray-900" *ngIf="mode==='edit'">
+      Edit {{ "Certification" | labelReplacement | async }} History
+    </p>
+    <app-button (click)="flyPanelSrvc.close()" ButtonType="icon" icon="close"></app-button>
+  </div>
+
+  <div class="certificate-container px-12 mt-6">
+
+    <div class="form-field row-field">
+      <app-label class="label inline-label" text="{{('Certification' | labelReplacement)| async}} Name"></app-label>
+      <span class="readonly-field">{{ employeeCertification?.certificateName }}</span>
+    </div>
+
+    <div class="form-field row-field">
+      <app-label class="label inline-label" text="{{('Certification' | labelReplacement)| async}} Number"></app-label>
+      <span class="readonly-field">{{ employeeCertification?.certificationNumber }}</span>
+    </div>
+
+    <div class="form-field row-field">
+      <app-label class="label inline-label" [text]="'Issue Date'"></app-label>
+      <span class="readonly-field">{{ employeeCertification?.issueDate }}</span>
+    </div>
+
+    <form [formGroup]="certificationHistoryForm" class="mt-8">
+      <div class="form-field row-field">
+        <app-label [for]="'renewalDate'" class="label required inline-label" [text]="'Renewal Date'"></app-label>
+        <app-date formControlName="renewalDate" placeholder="Select Date"></app-date>
+      </div>
+
+      <div class="form-field row-field">
+        <app-label [for]="'expirationDate'" class="label required inline-label" [text]="'Expiration Date'"></app-label>
+        <app-date
+          formControlName="expirationDate"
+          placeholder="Select Date"
+          [minDate]="certificationHistoryForm.get('renewalDate')?.value"
+        ></app-date>
+      </div>
+
+      <div class="mt-4" *ngIf="mode==='add'">
+        <mat-checkbox formControlName="addAnother" name="AddAnotherCertification">
+          Add Another {{ "Certification" | labelReplacement | async }}s
+        </mat-checkbox>
+
+        <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='add'">
+          <app-button
+            [spinner]="showSpinner"
+            [disabled]="certificationHistoryForm.invalid"
+            type="button"
+            size="sm"
+            text="Save"
+            (clicked)="addCertificationHistory()"
+          ></app-button>
+        </div>
+      </div>
+
+      <div class="px-12 mt-8 float-right py-3" *ngIf="mode==='edit'">
+        <app-button
+          [spinner]="showSpinner"
+          [disabled]="certificationHistoryForm.invalid"
+          type="button"
+          size="sm"
+          text="Update"
+          (clicked)="UpdateCertification()"
+        ></app-button>
+      </div>
+    </form>
+  </div>
+</div>

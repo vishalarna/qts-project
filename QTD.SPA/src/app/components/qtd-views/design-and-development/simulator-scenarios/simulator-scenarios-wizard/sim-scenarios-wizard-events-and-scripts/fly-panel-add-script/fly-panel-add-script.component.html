@@ -23,37 +23,25 @@
 
                 <div class="mt-4">
                     <app-label [for]="'initiator'" text="Initiator " class="float-left label required"></app-label>
-                    <mat-select placeholder="Select Initiator" #selectControl="matSelect"
+                    <mat-select (selectionChange)="onInitiatorChange($event.value)"  placeholder="Select Initiator" #selectControl="matSelect"
                         class="appearance-none rounded border px-4 py-3 mt-2 align-item-end bg-white"
                         formControlName="initiator">
                         <input matInput class="pt-3 pb-3 pl-3 w-100" type="text" placeholder="Enter Text to Search" formControlName="searchInitiatorTxt" (keyup)="initiatorSearch()" (blur) = "resetSearch()" (keydown)="handleKeydown($event)">
-                        <mat-option *ngFor="let p of filteredPositions" [value]="p.id">{{p.positionTitle}} </mat-option>
+                        <mat-option *ngFor="let p of filteredSimulatorScenario_Positions" [value]="p.id">{{p.positionTitle}} </mat-option>
+                        <mat-option [value]="'Other'">Other</mat-option>
+                        <mat-option [value]="'Instructor'">Instructor</mat-option>
                     </mat-select>
                 </div>
 
                 <div class="mt-4">
                     <app-label [for]="'linkCriteria'" text="Link Criteria" class="float-left"></app-label>
                     <mat-form-field appearance="outline" class="text-sm dropdown w-full">
-                        <mat-select [formControl]="taskCriteriaControl" multiple placeholder="Select Task Criteria" #selectCriteria>
-                            <mat-select-trigger>
-                                <mat-chip-list>
-                                    <mat-chip *ngFor="let i of taskCriteriaControl.value" [removable]="true"
-                                        (removed)="removeCriteria(i)"
-                                        [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
-                                        selected>
-                                        {{ i.completeTaskNumber }}
-                                        <app-icon icon="cancel" [ngStyle]="{'color': 'rgb(92, 155, 49)'}" matChipRemove>
-                                        </app-icon>
-                                    </mat-chip>
-                                </mat-chip-list>
-                            </mat-select-trigger>
-                            <mat-option *ngFor="let i of taskCriteriaList" #matTopicOption
-                                [value]="i">
-                                {{i.completeTaskNumber}}
+                        <mat-select [formControl]="taskCriteriaControl" placeholder="Select Task Criteria">
+                            <mat-option *ngFor="let i of filteredTaskCriteriaList" [value]="i">
+                                {{ i.completeTaskNumber }}
                             </mat-option>
                         </mat-select>
                     </mat-form-field>
-
                 </div>
 
                 <div class="mt-4">

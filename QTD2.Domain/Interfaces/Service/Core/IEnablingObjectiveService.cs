@@ -41,6 +41,6 @@ namespace QTD2.Domain.Interfaces.Service.Core
         public Task<List<EnablingObjective_Step>> GetAllStepAsync(int eoId);
         public Task<List<EnablingObjective_Question>> GetAllQuestionByIdAsync(int eoId);
         public Task<EnablingObjective> GetEnablingObjectiveByIdAsync(int eoId);
-        Task<EnablingObjective> GetMetaEnablingObjectiveAsync(int eoId);
+        public Task<EnablingObjective> GetMetaEnablingObjectiveAsync(int eoId);
     }
 }

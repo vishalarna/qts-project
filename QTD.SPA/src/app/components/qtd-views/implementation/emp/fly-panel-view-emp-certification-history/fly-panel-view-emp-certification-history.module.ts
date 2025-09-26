@@ -4,6 +4,9 @@ import { FlyPanelViewEmpCertificationHistoryComponent } from './fly-panel-view-e
 import { BaseModule } from 'src/app/components/base/base.module';
 import { MatLegacyTableModule as MatTableModule } from '@angular/material/legacy-table';
 import { MatSortModule } from '@angular/material/sort';
+import { FlyPanelCertificationHistoryModule } from '../fly-panel-certification-history/fly-panel-certification-history.module';
+import { MatLegacyMenuModule as MatMenuModule } from '@angular/material/legacy-menu';
+import { MatLegacyCheckboxModule as MatCheckboxModule } from '@angular/material/legacy-checkbox';
 
 @NgModule({
   declarations: [
@@ -13,7 +16,11 @@ import { MatSortModule } from '@angular/material/sort';
     CommonModule,
     BaseModule,
     MatTableModule,
-    MatSortModule
+    MatSortModule,
+    FlyPanelCertificationHistoryModule,
+    MatSortModule,
+    MatMenuModule,
+    MatCheckboxModule,
   ],
   exports:[FlyPanelViewEmpCertificationHistoryComponent]
 })

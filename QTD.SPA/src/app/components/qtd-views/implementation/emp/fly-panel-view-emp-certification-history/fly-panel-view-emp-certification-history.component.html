@@ -1,4 +1,4 @@
-<div>
+<div  *ngIf="!showHistoryPanel">
   <div class="flex flex-row justify-between items-center px-12 mt-5">
     <p class="text-xl font-bold text-gray-900">
       {{("Certification" | labelReplacement)| async}} History
@@ -20,13 +20,45 @@
     </div>
   </div>
   <div class="certification-history-table px-12 pb-4 mt-6" [ngClass]="{'loader':spinner}">
-    <h2>{{("Certification" | labelReplacement)| async}} Histories</h2>
-    <div class="justify-content-center table-spinner" >
+    <div class="flex justify-between items-center mb-4">
+      <h2>{{("Certification" | labelReplacement)| async}} Histories</h2>
+      <div class="flex gap-2">
+        <app-button 
+          color="primary" 
+          size="sm" 
+          text="Delete {{('Certification' | labelReplacement)| async}} History" 
+          class="mr-2"
+          [disabled]="selectedIds.length === 0" 
+          (click)="openDeleteCertificationHistoryDialog(deleteDialogCertificationHistory,'')">
+        </app-button>
+
+        <app-button 
+          color="primary" 
+          size="sm" 
+          text="Add {{('Certification' | labelReplacement)| async}} History" 
+          (click)="openFlyInPanel('add', '')">
+        </app-button>
+      </div>
+    </div>
+  <div class="justify-content-center table-spinner" >
       <app-spinner></app-spinner>
     </div>
     <div class="certification-history-list" >
       <mat-table [dataSource]="empCertHistoryData" matSort #certificationSort="matSort">
-        <ng-container matColumnDef="issueDate">
+      <ng-container matColumnDef="checkbox">
+        <mat-header-cell *matHeaderCellDef>
+          <mat-checkbox
+            (change)="toggleSelectAll($event)" [checked]="selectedIds.length === empCertHistoryData.data.length  && selectedIds.length > 0"
+          ></mat-checkbox>
+        </mat-header-cell>
+
+        <mat-cell *matCellDef="let row">
+          <mat-checkbox
+            (change)="toggleSelection(row.id, $event)" [checked]="selectedIds.includes(row.id)"
+          ></mat-checkbox>
+        </mat-cell>
+      </ng-container>
+      <ng-container matColumnDef="issueDate">
             <mat-header-cell *matHeaderCellDef mat-sort-header> Renewal Date
             </mat-header-cell>
             <mat-cell *matCellDef="let row"> {{row.issueDate | dateFormat | async}} </mat-cell>
@@ -35,7 +67,21 @@
             <mat-header-cell *matHeaderCellDef mat-sort-header> Expiration Date
             </mat-header-cell>
             <mat-cell *matCellDef="let row"> {{row.expirationDate | dateFormat | async}} </mat-cell>
-        </ng-container>
+      </ng-container>
+      <ng-container matColumnDef="action">
+        <mat-header-cell *matHeaderCellDef> </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <div class="flex flex-row items-center text-gray-four btn-group">
+            <button mat-icon-button [matMenuTriggerFor]="menu">
+              <app-icon icon="more_vert"></app-icon>
+            </button>
+            <mat-menu #menu="matMenu">
+              <label mat-menu-item translate (click)="openFlyInPanel('edit',row)">Edit</label>
+              <label mat-menu-itemtranslate mat-menu-item translate (click)="openDeleteCertificationHistoryDialog(deleteDialogCertificationHistory,row)">Delete</label>
+            </mat-menu>
+          </div>
+        </mat-cell>
+      </ng-container>
         <mat-header-row *matHeaderRowDef="displayColumns"></mat-header-row>
         <mat-row *matRowDef="let row; columns: displayColumns;"></mat-row>
         <tr class="mat-row flex text-center " *matNoDataRow>
@@ -46,3 +92,22 @@
   </div>
 </div>
 
+
+  <app-fly-panel-certification-history  *ngIf="showHistoryPanel ==true"[employeeCertificationHistory]="empCertificationHistory" [employeeCertificationHistoryId]="employeecertificationHistoryId"
+   (closed)="closeFlypanel()" (refresh)="loadAsync()" [employeeId]="employeeId" [employeeCertification]="empCertification" [mode]="mode">
+  </app-fly-panel-certification-history>
+
+
+<ng-template #deleteDialogCertificationHistory>
+  <app-qtd-dialogue
+    header="Delete {{('Employee' | labelReplacement)| async}} Certification History"
+    [isHTML]="true"
+    [isQuestion]="true"
+    [description]="deleteDescription"
+    cancelText="No"
+    confirmText="Yes"
+    (canceled)="dialog.closeAll()"
+    (confirmed)="certificationHistoryIdToDelete ? deleteCertificationHistory(certificationHistoryIdToDelete) : bulkDelete()"
+  >
+  </app-qtd-dialogue>
+</ng-template>

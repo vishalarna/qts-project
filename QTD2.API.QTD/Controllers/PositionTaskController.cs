@@ -52,5 +52,14 @@ namespace QTD2.API.QTD.Controllers
             await _positionTaskService.DeleteR5Task(positionTaskId, r5ImpactedTaskId, deleteR5TaskModel);
             return Ok();
         }
+
+        [HttpGet]
+        [Route("/positionTasks/{positionId}")]
+        public async Task<IActionResult> GetPositionTasksAsync(int positionId)
+        {
+            var result = await _positionTaskService.GetPositionTaskByPositionIdAsync(positionId);
+            return Ok(new { result });
+        }
+
     }
 }

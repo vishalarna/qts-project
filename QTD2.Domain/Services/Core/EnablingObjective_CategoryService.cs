@@ -45,7 +45,6 @@ namespace QTD2.Domain.Services.Core
 
             return cats;
         }
-
         public async Task<List<EnablingObjective_Category>> GetMinimalEOCatDataByIds(List<int> id)
         {
             var cats = (await FindAsync(s => id.Contains(s.Id))).Select(s => new EnablingObjective_Category

@@ -29,7 +29,8 @@ export class FilterSingleComponent implements OnInit {
   isDefaultOrder:Boolean = false;
   noneSelectedFlag:boolean = false;
   searchText:string='';
-  originalFilterOptionData: any[] = []; 
+  originalFilterOptionData: any[] = [];
+  parentOptions: any;
 
   constructor(private fb: UntypedFormBuilder, private reportService:ApiReportsService) { }
 
@@ -41,14 +42,15 @@ export class FilterSingleComponent implements OnInit {
           item.id = Number(item.value);
           return item;
         });
+        this.parentOptions = this.filterOptionData.find(opt => opt.filterOptionParents != null )
         if (response[0].filterOptionParents != null) {
           this.isFilterOptionParent = true;
-          this.filterOptionData[0].filterOptionParents.forEach(
+          this.parentOptions.filterOptionParents.forEach(
             (option,index) =>
               {   
                 this.optionDropdownObj.set(option.name, this.getParentDropdownValues(option.name));
                 const isFirstOption = index === 0;
-                const isOptionCascade = isFirstOption ? option.isCascade : this.filterOptionData[0].filterOptionParents[index - 1].isCascade;
+                const isOptionCascade = isFirstOption ? option.isCascade : this.parentOptions.filterOptionParents[index - 1].isCascade;
                 this.optionValueObj.set(option.name.toUpperCase(), isOptionCascade ? undefined : "-- All --");
                 if((option.name.toUpperCase() == 'ACTIVE STATUS' || option.name.toUpperCase() == 'TASK STATUS' || option.name.toUpperCase() == 'STATUS') && !isOptionCascade){
                   this.optionValueObj.set(option.name.toUpperCase(),"Active");
@@ -72,7 +74,7 @@ export class FilterSingleComponent implements OnInit {
       if(this.filterOption.toLowerCase() !== 'providers' && this.filterOption.toLowerCase() != 'employeename'){
         this.filterOptionData = this.isDefaultOrder ? this.filterOptionData : this.filterOptionData.sort((a, b) => a.name.trim().toUpperCase().localeCompare(b.name.trim().toUpperCase(), 'en-US', { numeric: true }));
       }
-      if(this.filterOptionData[0].filterOptionParents !=null){
+      if(this.parentOptions?.filterOptionParents !=null){
         this.getFilteredData();
       }
     }
@@ -124,7 +126,7 @@ export class FilterSingleComponent implements OnInit {
       let values = Array.from(this.optionValueObj.values());
       let index = options.indexOf(filterOptionName.toUpperCase());
       const isFirstOption = index === 0;
-      const isOptionDisabled = isFirstOption ? false :this.filterOptionData[0].filterOptionParents[index-1].isCascade? values[index-1] === undefined:false;
+      const isOptionDisabled = isFirstOption ? false :this.parentOptions.filterOptionParents[index-1].isCascade? values[index-1] === undefined:false;
       return isOptionDisabled;
   }
 
@@ -134,13 +136,13 @@ export class FilterSingleComponent implements OnInit {
     let options = Array.from(this.optionValueObj.keys());
     let index = dropDowns.indexOf(filterOptionName);
     for(let i = index ; i <dropDowns.length ; i++){
-        if(this.filterOptionData[0].filterOptionParents[i].isCascade){
+        if(this.parentOptions.filterOptionParents[i].isCascade){
             this.optionValueObj.set(options[i+1],undefined);  
         }else{break;}
     }
     this.getFilteredData();
     for(let i = index ; i <dropDowns.length ; i++){
-        if(this.filterOptionData[0].filterOptionParents[i].isCascade){
+        if(this.parentOptions.filterOptionParents[i].isCascade){
             let cascadedValues = this.getCascadedValues(i);
             this.updateOptionValues(i + 1, dropDowns[i + 1], options[i + 1], cascadedValues);
         }else{break;}
@@ -193,8 +195,6 @@ export class FilterSingleComponent implements OnInit {
   }
 
   setReportOptions(filterOptionData : ReportFilterOption[]){
-    console.log("this.reportsData",this.reportsData)
-    console.log("this.filterOptionData",this.filterOptionData)
     let positionValue =new ReportFilterOption("","");
     if(filterOptionData.length != 0)
     {

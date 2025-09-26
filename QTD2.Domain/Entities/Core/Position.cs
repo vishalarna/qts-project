@@ -44,7 +44,6 @@ namespace QTD2.Domain.Entities.Core
         public virtual ICollection<DIFSurvey> DIFSurveys { get; set; }= new List<DIFSurvey>();
         public virtual ICollection<SimulatorScenario_Position> SimulatorScenarioPositions { get; set; } = new List<SimulatorScenario_Position>();
         public virtual ICollection<TaskListReview_PositionLink> TaskListReview_PositionLinks { get; set; } = new List<TaskListReview_PositionLink>();
-        public virtual ICollection<SimulatorScenario_Script> SimulatorScenario_Scripts { get; set; } = new List<SimulatorScenario_Script>();
         public Position()
         {
         }

@@ -51,5 +51,13 @@ namespace QTD2.API.QTD.Controllers
             var result = await _simulatorScenarioService.UpdateScriptAsync(scriptId, eventId, options);
             return Ok(new { result });
         }
+
+        [HttpGet]
+        [Route("/simScenario/scripts/all")]
+        public async Task<IActionResult> GetAllScriptAsync()
+        {
+            var result = await _simulatorScenarioService.GetAllScriptAsync();
+            return Ok(new { result });
+        }
     }
 }

@@ -1,5 +1,5 @@
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
-import { Component, EventEmitter, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnDestroy, OnInit, Output, ViewChild } from '@angular/core';
 import * as ckcustomBuild from 'src/app/ckcustomBuild/build/ckeditor.js';
 import { UploadAdapter } from 'src/app/_Shared/Utils/CKEditor_UploadAdapter';
 import { Observable } from 'rxjs';
@@ -58,6 +58,7 @@ export class SeqAndScheduleComponent implements OnInit, OnDestroy {
   isChecked: boolean;
   @Output() isPublicCourseCheckboxChecked = new EventEmitter<boolean>();
   @Output() isNickNameEmpty = new EventEmitter<{ isChecked: boolean; isEmpty: boolean }>();
+  @Input() mode: string;
 
   constructor(
     public breakpointObserver: BreakpointObserver,
@@ -157,12 +158,20 @@ export class SeqAndScheduleComponent implements OnInit, OnDestroy {
       enableWaitlist: new UntypedFormControl(false),
       classSize: new UntypedFormControl(30)
     })
+    if(this.mode === 'view')
+    {
+      this.trainingForm.disable();
+    }
   }
  initializeEvaluationForm(){
   this.evaluationForm = this.fb.group({
     useForEMP: new UntypedFormControl(false),
     IsPubliclyAvailableILA: new UntypedFormControl(false)    
   })
+  if (this.mode === 'view') {
+    this.evaluationForm.get('IsPubliclyAvailableILA')?.disable();
+    this.evaluationForm.get('useForEMP')?.disable();
+  }
  }
   async readyEvalMethodData(){
     var data = await this.ilaService.getEvalMethodData(this.ilaId);

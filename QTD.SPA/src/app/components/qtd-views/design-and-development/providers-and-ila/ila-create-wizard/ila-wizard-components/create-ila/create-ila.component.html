@@ -19,10 +19,10 @@
               <!--change button-->
               <div class="float-right">
 
-                <input type="file" (change)="selectFile($event)" accept="image/*" class="align-right float-right"
+                <input [disabled]="mode === 'view'" type="file" (change)="selectFile($event)" accept="image/*" class="align-right float-right"
                        title=" " id="upload-file" hidden/>
                 <p>{{image_name}}</p>
-                <label for="upload-file" class="text-green-800 align-right">Upload Image</label>
+                <label for="upload-file" [ngClass]="{'text-green-800': mode !== 'view','text-gray-400': mode === 'view'}" class="align-right">Upload Image</label>
 
               </div>
 
@@ -101,7 +101,7 @@
                 <div class="sm:w-full">
                   <div class="flex justify-between w-full">
                     <app-label [for]="'Provider'" [text]="'Provider'" class="mt-6"></app-label>
-                    <app-button variant="text" class="pt-4" text="Add New Provider"
+                    <app-button [disabled]="mode === 'view'" variant="text" class="pt-4" text="Add New Provider"
                                 (clicked)="openFlyInPanel(addNewProvider,'Provider')">
                     </app-button>
                     <!--   <button (click)="openFlyInPanel(addNewProvider)" type="button"
@@ -138,7 +138,7 @@
                 <div class="sm:w-full">
                   <div class="flex justify-between w-full">
                     <app-label [for]="'Topic'" [text]="'Topic'" class="mt-6"></app-label>
-                    <app-button variant="text" class="pt-4" text="Add New Topic"
+                    <app-button [disabled]="mode === 'view'" variant="text" class="pt-4" text="Add New Topic"
                                 (clicked)="openFlyInPanel(addNewTopic,'Topic')">
                     </app-button>
                     <!-- <button (click)="openFlyInPanel(addNewTopic)" type="button"
@@ -155,7 +155,7 @@
                     <mat-select [formControl]="topicsControl" multiple placeholder="Select Topic">
                       <mat-select-trigger>
                         <mat-chip-list>
-                          <mat-chip *ngFor="let i of topicsControl.value" [removable]="true"
+                          <mat-chip *ngFor="let i of topicsControl.value" [removable]="mode !== 'view'"
                                     (removed)="removeTopic(i)"
                                     [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
                                     selected>
@@ -184,7 +184,7 @@
                   <div class="flex justify-between w-full">
                     <app-label [for]="'Position'" text="{{('Position' | labelReplacement)| async}}"
                                class="mt-6"></app-label>
-                    <app-button variant="text" class="pt-4" text=" Add New {{('Position' | labelReplacement)| async}}"
+                    <app-button [disabled]="mode === 'view'" variant="text" class="pt-4" text=" Add New {{('Position' | labelReplacement)| async}}"
                                 (clicked)="openFlyInPanel(posContainer,'Position')">
                     </app-button>
                     <!--        <button (click)="openFlyInPanel(posContainer)" type="button"
@@ -220,7 +220,7 @@
                                   placeholder="Select {{('Position' | labelReplacement)| async}}">
                         <mat-select-trigger>
                           <mat-chip-list>
-                            <mat-chip *ngFor="let i of positionsControl.value" [removable]="true"
+                            <mat-chip *ngFor="let i of positionsControl.value" [removable]="mode !== 'view'"
                                       (removed)="removePosition(ConfirmPossitionRemoval,i)"
                                       [ngStyle]="{'color': 'rgb(92, 155, 49)','background-color':'rgba(243, 244, 246)','border-radius': '1px'}"
                                       selected>

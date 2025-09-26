@@ -394,9 +394,6 @@ namespace QTD2.Application.Startup
             services.AddTransient<Domain.Interfaces.Service.Core.ISaftyHazard_RR_LinkService, Domain.Services.Core.SaftyHazard_RR_LinkService>();
             services.AddTransient<Domain.Interfaces.Validation.Core.ISaftyHazard_RR_LinkValidation, Domain.Entities.Core.Validations.SaftyHazard_RR_LinkValidation>();
 
-            services.AddTransient<Domain.Interfaces.Service.Core.ISafetyHazard_ILA_LinkService, Domain.Services.Core.SafetyHazard_ILA_LinkService>();
-            services.AddTransient<Domain.Interfaces.Validation.Core.ISafetyHazard_ILA_LinkValidation, Domain.Entities.Core.Validations.SafetyHazard_ILA_LinkValidation>();
-
             //services.AddTransient<Domain.Interfaces.Service.Core.ISafetyHazard_Procedure_LinkService, Domain.Services.Core.SafetyHazard_Procedure_LinkService>();
             //services.AddTransient<Domain.Interfaces.Validation.Core.ISafetyHazard_Procedure_LinkValidation, Domain.Entities.Core.Validations.SafetyHazard_Procedure_LinkValidation>();
 
@@ -1365,7 +1362,6 @@ namespace QTD2.Application.Startup
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSimulatorScenario_Event_Deleted>), typeof(OnSimulatorScenario_Event_DeletedHandler));
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSkillQualificationReleased>), typeof(OnSkillQualificationReleasedHandler));
             services.AddTransient(typeof(INotificationHandler<QTD2.Domain.Events.Core.OnSkillQualification_Evalutor_LinkCreated>), typeof(OnSkillQualification_Evalutor_LinkCreatedHandler));
-
             // ------------------ Domain Service and Validations DI End --------------------- //
 
 
@@ -1535,7 +1531,6 @@ namespace QTD2.Application.Startup
             services.AddTransient<Domain.Interfaces.Repository.Core.IProcedure_ILA_LinkRepository, Data.Repository.Core.Procedure_ILA_LinkRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.IProcedure_RR_LinkRepository, Data.Repository.Core.Procedure_RR_LinkRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.ISaftyHazard_RR_LinkRepository, Data.Repository.Core.SaftyHazard_RR_LinkRepository>();
-            services.AddTransient<Domain.Interfaces.Repository.Core.ISafetyHazard_ILA_LinkRepository, Data.Repository.Core.SafetyHazard_ILA_LinkRepository>();
             //services.AddTransient<Domain.Interfaces.Repository.Core.ISafetyHazard_Procedure_LinkRepository, Data.Repository.Core.SafetyHazard_Procedure_LinkRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.ITrainingTopic_CategoryRepository, Data.Repository.Core.TrainingTopic_CategoryRepository>();
             services.AddTransient<Domain.Interfaces.Repository.Core.INERCTargetAudienceRepository, Data.Repository.Core.NERCTargetAudienceRepository>();

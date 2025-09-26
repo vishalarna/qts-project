@@ -79,5 +79,9 @@ namespace QTD2.Application.Interfaces.Services.Shared
         public System.Threading.Tasks.Task DeleteScriptAsync(int scriptId);
         
         public Task<SimulatorScenario_Script_VM> UpdateScriptAsync(int scriptId, int eventId, SimulatorScenario_Script_VM options);
+        
+        public Task<List<SimulatorScenario_Script>> GetAllScriptAsync();
+        
+        public Task<List<SimulatorScenario_Position_VM>> GetSimulatorScenario_PositionsAsync(int id);
     }
 }

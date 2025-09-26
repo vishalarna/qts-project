@@ -58,4 +58,15 @@ export class PositionTaskService {
       )
       );
   }
+
+  getPositionTaskByPositionIdAsync(positionId:string) {
+    return firstValueFrom(this.http
+      .get(this.baseUrl + `/${positionId}`)
+      .pipe(
+        map((res: any) => {
+           return res as any;
+        })
+      )
+      );
+  }
 }

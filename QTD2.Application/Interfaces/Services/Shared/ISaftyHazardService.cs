@@ -2,11 +2,11 @@
 using System.Threading.Tasks;
 using QTD2.Domain.Entities.Core;
 using QTD2.Infrastructure.Model.ILA;
+using QTD2.Infrastructure.Model.ILA_SafetyHazard_Link;
 using QTD2.Infrastructure.Model.ILA_Topic;
 using QTD2.Infrastructure.Model.Procedure;
 using QTD2.Infrastructure.Model.RegulatoryRequirement;
 using QTD2.Infrastructure.Model.SafetyHazard_EO_Link;
-using QTD2.Infrastructure.Model.SafetyHazard_ILA_Link;
 using QTD2.Infrastructure.Model.SafetyHazard_Procedure_Link;
 using QTD2.Infrastructure.Model.SafetyHazard_Set;
 using QTD2.Infrastructure.Model.SafetyHazard_Set_Link;
@@ -77,9 +77,9 @@ namespace QTD2.Application.Interfaces.Services.Shared
 
         public System.Threading.Tasks.Task UnlinkSet(int shId, int shSetId);
 
-        public Task<SaftyHazard> LinkILA(int id, SafetyHazard_ILA_LinkOptions options);
+        public Task<SaftyHazard> LinkILA(int id, ILASafetyHazardOptions options);
 
-        public System.Threading.Tasks.Task UnlinkILA(int shId, SafetyHazard_ILA_LinkOptions options);
+        public System.Threading.Tasks.Task UnlinkILA(int shId, ILASafetyHazardOptions options);
 
         public Task<List<SafetyHazardWithLinkCount>> GetLinkedILAsWithCount(int id);
 

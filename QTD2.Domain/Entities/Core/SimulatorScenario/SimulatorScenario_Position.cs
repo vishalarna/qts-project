@@ -16,6 +16,7 @@ namespace QTD2.Domain.Entities.Core
         public virtual SimulatorScenario SimulatorScenario { get; set; }
 
         public virtual Position Position { get; set; }
+        public virtual ICollection<SimulatorScenario_Script> SimulatorScenario_Scripts { get; set; } = new List<SimulatorScenario_Script>();
 
         public SimulatorScenario_Position()
         {

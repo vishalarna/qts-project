@@ -46,8 +46,6 @@ namespace QTD2.Domain.Entities.Core
 
         public virtual ICollection<SaftyHazard_RR_Link> SaftyHazard_RR_Links { get; set; } = new List<SaftyHazard_RR_Link>();
 
-        public virtual ICollection<SafetyHazard_ILA_Link> SafetyHazard_ILA_Links { get; set; } = new List<SafetyHazard_ILA_Link>();
-
         //public virtual ICollection<SafetyHazard_Procedure_Link> SafetyHazard_Procedure_Links { get; set; } = new List<SafetyHazard_Procedure_Link>();
 
         public virtual ICollection<SafetyHazard_EO_Link> SafetyHazard_EO_Links { get; set; } = new List<SafetyHazard_EO_Link>();
@@ -59,7 +57,6 @@ namespace QTD2.Domain.Entities.Core
         public virtual ICollection<SafetyHazard_History> SafetyHazard_Histories { get; set; } = new List<SafetyHazard_History>();
 
         public virtual ICollection<SafetyHazard_Tool_Link> SafetyHazard_Tool_Links { get; set; } = new List<SafetyHazard_Tool_Link>();
-
         public SaftyHazard()
         {
         }
@@ -185,25 +182,25 @@ namespace QTD2.Domain.Entities.Core
             }
         }
 
-        public SafetyHazard_ILA_Link LinkILA(ILA ila)
+        public ILA_SafetyHazard_Link LinkILA(ILA ila)
         {
-            SafetyHazard_ILA_Link safetyHazard_ILA_Link = SafetyHazard_ILA_Links.FirstOrDefault(x => x.ILAId == ila.Id && x.SafetyHazardId == this.Id);
-            if (safetyHazard_ILA_Link != null)
+            ILA_SafetyHazard_Link iLA_SafetyHazard_Link = ILA_SafetyHazard_Links.FirstOrDefault(x => x.ILAId == ila.Id && x.SafetyHazardId == this.Id);
+            if (iLA_SafetyHazard_Link != null)
             {
-                return safetyHazard_ILA_Link;
+                return iLA_SafetyHazard_Link;
             }
 
-            safetyHazard_ILA_Link = new SafetyHazard_ILA_Link(ila, this);
-            AddEntityToNavigationProperty<SafetyHazard_ILA_Link>(safetyHazard_ILA_Link);
-            return safetyHazard_ILA_Link;
+            iLA_SafetyHazard_Link = new ILA_SafetyHazard_Link(ila, this);
+            AddEntityToNavigationProperty<ILA_SafetyHazard_Link>(iLA_SafetyHazard_Link);
+            return iLA_SafetyHazard_Link;
         }
 
         public void UnLinkILA(ILA ila)
         {
-            SafetyHazard_ILA_Link safetyHazard_ILA_Link = SafetyHazard_ILA_Links.FirstOrDefault(x => x.ILAId == ila.Id && x.SafetyHazardId == this.Id);
-            if (safetyHazard_ILA_Link != null)
+            ILA_SafetyHazard_Link iLA_SafetyHazard_Link = ILA_SafetyHazard_Links.FirstOrDefault(x => x.ILAId == ila.Id && x.SafetyHazardId == this.Id);
+            if (iLA_SafetyHazard_Link != null)
             {
-                RemoveEntityFromNavigationProperty<SafetyHazard_ILA_Link>(safetyHazard_ILA_Link);
+                RemoveEntityFromNavigationProperty<ILA_SafetyHazard_Link>(iLA_SafetyHazard_Link);
             }
         }
 

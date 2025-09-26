@@ -69,7 +69,23 @@
       </div>
     </div>
   </div>
-
+  <div class="px-10 m-3">
+    <div class="card-wrap d-flex" *ngIf="appliedFilters.length > 0">
+      <div class="container-card w-1/5">
+        <div class="flex flex-col justify-between px-2 py-2 bg-white-one pt-2">
+          <span class="font-bold mb-4">Filter(s) Applied</span>
+          <div class="flex flex-col space-y-1">
+            <ng-container *ngFor="let filter of appliedFilters">
+              <ng-container *ngFor="let line of formatFilter(filter)">
+                <span>{{ line }}</span>
+              </ng-container>
+            </ng-container>
+          </div>
+        </div>
+      </div>
+    </div>    
+    <app-button variant="text" *ngIf="appliedFilters.length > 0" class="mt-2 ml-2" (clicked)="clearAllFilters()" text="Clear Filter" icon="clear" iconPosition="right"></app-button>
+  </div>
   <div class="px-10">
     <div class="bg-white rounded m-3 py-3 pl-3 shadow-sm">
       <section class="panel-section">

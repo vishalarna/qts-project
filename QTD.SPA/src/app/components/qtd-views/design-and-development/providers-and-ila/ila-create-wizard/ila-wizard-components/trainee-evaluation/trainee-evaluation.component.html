@@ -49,7 +49,7 @@
                       <mat-radio-button
                         [value]="type.name"
                         (change)="ShowType(type.name, type.id)"
-                        [disabled]="type.name === 'Discuss' || type.name === 'Simulations'"
+                        [disabled]="ilaMode === 'view' || type.name === 'Discuss' || type.name === 'Simulations'"
                       >
                     {{ type.name }}
                   </mat-radio-button>
@@ -588,7 +588,7 @@
           <span class="font-bold mr-12 " *ngIf="ev.isActive">{{ev.evaluationDescription}}</span>
           <span class="font-bold mr-12 " style="color:gray"  *ngIf="!ev.isActive">{{ev.evaluationDescription}}</span>
           <br />
-          <app-button ButtonType="icon" class="mt--4" icon="more_horiz" [matMenuTriggerFor]="menu">
+          <app-button ButtonType="icon" class="mt--4" icon="more_horiz" [matMenuTriggerFor]="menu" [disabled]="ilaMode === 'view'">
             <mat-menu #menu="matMenu">
               <label mat-menu-item (click)="editTest(ev.evaluationMethodType,ev.data)">Edit</label>
               <label [disabled]="ev.evaluationMethodType==='Perform'" mat-menu-item (click)="copyId = ev.evaluationId;copyTraineeEval()">Copy</label>

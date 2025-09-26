@@ -607,62 +607,84 @@ namespace QTD2.Application.Services.Shared
             var obj = await _classScheduleService.FindQuery(x => x.Id == id).FirstOrDefaultAsync();
             var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, obj, AuthorizationOperations.Update);
 
-            if (result.Succeeded)
-            {
-
-                obj.ProviderID = options.ProviderID;
-                obj.ILAID = options.ILAID;
-                obj.StartDateTime = options.StartDateTime;
-                obj.EndDateTime = options.EndDateTime;
-                obj.InstructorId = options.InstructorId;
-                obj.LocationId = options.LocationId;
-                obj.ClassSize = options.ClassSize;
-                obj.SpecialInstructions = options.SpecialInstructions;
-                obj.WebinarLink = options.WebinarLink;
-                obj.IsStartAndEndTimeEmpty = options.IsStartAndEndTimeEmpty;
-                obj.ModifiedBy = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Id;
-                obj.ModifiedDate = DateTime.Now;
-                obj.IsPubliclyAvailable = options.IsPubliclyAvailable;
-                if (options.RecurringOptions.Count > 0)
-                {
-                    obj.IsRecurring = true;
-                    obj.RecurrenceId = obj.Id;
-                }
-                else
-                {
-                    obj.IsRecurring = false;
-                }
-                obj.Update();
-                var validationResult = await _classScheduleService.UpdateAsync(obj);
-                if (!validationResult.IsValid)
-                {
-                    throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
-                }
-                else
-                {
-                    if (obj.IsRecurring)
-                    {
-                        ////Get all previous recurrence
-                        var clRecs = (await _classScheduleService.FindAsync(x => x.RecurrenceId == id && !x.IsRecurring)).ToList();
-                        if (clRecs != null && clRecs.Count > 0)
-                        {
-                            foreach (var item in clRecs)
-                            {
-                                item.Delete();
-                            }
-                            await _classScheduleService.BulkUpdateAsync(clRecs);
-                        }
-                        
-                        await CreateRecurrenceAsync(options, obj);
-                    }
-                    obj.ILA = await _ilaService.FindQuery(x => x.Id == obj.ILAID).FirstOrDefaultAsync();
-                    return obj;
-                }
-            }
-            else
+            if (!result.Succeeded)
             {
                 throw new UnauthorizedAccessException(message: _localizer["OperationNotAllowed"].Value);
             }
+
+            var modifiedBy = (await _userManager.FindByEmailAsync(_httpContextAccessor.HttpContext.User.Identity.Name)).Id;
+
+            var isRecurring = true;
+            int? recurrenceId = null;
+
+            if (options.RecurringOptions.Count > 0)
+            {
+                isRecurring = true;
+                recurrenceId = obj.Id;
+            }
+            else
+            {
+                isRecurring = false;
+            }
+
+            obj.Update(
+                options.ProviderID, 
+                options.ILAID, 
+                options.StartDateTime, 
+                options.EndDateTime,
+                options.InstructorId,
+                options.LocationId,
+                options.ClassSize,
+                options.SpecialInstructions,
+                options.WebinarLink,
+                options.IsStartAndEndTimeEmpty,
+                modifiedBy,
+                DateTime.Now,
+                options.IsPubliclyAvailable,
+                isRecurring,
+                recurrenceId);
+
+            var validationResult = await _classScheduleService.UpdateAsync(obj);
+            if (!validationResult.IsValid)
+            {
+                throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
+            }
+
+            if (obj.IsRecurring)
+            {
+                //Get all previous recurrence
+                var clRecs = (await _classScheduleService.FindAsync(x => x.RecurrenceId == id && !x.IsRecurring)).ToList();
+                if (clRecs != null && clRecs.Count > 0)
+                {
+                    foreach (var item in clRecs)
+                    {
+                        item.Update(
+                            options.ProviderID,
+                            options.ILAID,
+                            item.StartDateTime,
+                            item.EndDateTime,
+                            options.InstructorId,
+                            options.LocationId,
+                            options.ClassSize,
+                            options.SpecialInstructions,
+                            options.WebinarLink,
+                            item.IsStartAndEndTimeEmpty,
+                            modifiedBy,
+                            DateTime.Now,
+                            options.IsPubliclyAvailable, 
+                            false,
+                            recurrenceId);
+
+                    }
+                    await _classScheduleService.BulkUpdateAsync(clRecs);
+                }
+                else
+                {
+                    await CreateRecurrenceAsync(options, obj);
+                }
+            }
+            obj.ILA = await _ilaService.FindQuery(x => x.Id == obj.ILAID).FirstOrDefaultAsync();
+            return obj;
         }
 
 

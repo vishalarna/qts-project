@@ -49,6 +49,7 @@ export class IlaEvaluationComponent implements OnInit {
   ilaStudentEvaluationForm :UntypedFormGroup;
   ilaStudentEvaluationLinkId;
   isStudentEvalRemove:boolean = false;
+  @Input() mode: string;
   constructor(
     public flyPanelService: FlyInPanelService,
     private fb:UntypedFormBuilder,
@@ -112,6 +113,9 @@ export class IlaEvaluationComponent implements OnInit {
     makeEvauationAvailableForEmp: [null],
     isEmployeeRequired: [false],
   });
+  if (this.mode === 'view') {
+    this.ilaStudentEvaluationForm.get('linkStudentFormEvauation')?.disable();
+  }
 }
 
   addEvaluationForm() {

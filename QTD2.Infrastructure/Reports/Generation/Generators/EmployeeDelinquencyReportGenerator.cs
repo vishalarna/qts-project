@@ -57,14 +57,16 @@ namespace QTD2.Infrastructure.Reports.Generation.Generators
             // Limit to only the most recently issued EmployeeCertification per Certification type
             nercCertFulfillmentStatuses = nercCertFulfillmentStatuses.GroupBy(c => new { c.EmployeeId, c.CertificationId }).Select(g => g.OrderByDescending(ec => ec.IssueDate).First()).ToList();
 
-            List<string> additionalCertificationDescriptions = new List<string> { "Reg", "Reg2" };
+            List<string> additionalCertificationDescriptions = new List<string> { "Emergency Response", "Reg", "Reg2" };
             var additionalCertifications = await _certificationService.FindAsync(c => additionalCertificationDescriptions.Contains(c.InternalIdentifier));
             var basicCertCalculator = _certificationFulfillmentCalculatorFactory.CreateBasicCalculator();
             var basicCertFulfillmentStatuses = await basicCertCalculator.GetFulfillmentStatusesAsync(employeeIds, additionalCertifications.Select(c => c.Id).ToList());
 
-            //Limit Reg and Reg2 CertificationFulfillmentStatuses to be only one of each if multiple ex+ist
+            //Limit Emergency Response, Reg and Reg2 CertificationFulfillmentStatuses to be only one of each if multiple ex+ist
+            var firstEmergencyResponse = basicCertFulfillmentStatuses.GroupBy(bc => bc.EmployeeId).Select(g => g.OrderByDescending(c => c.IssueDate).FirstOrDefault(c => c.CertificationId == additionalCertifications.Where(c => c.InternalIdentifier == "Emergency Response").Select(c => c.Id).FirstOrDefault())).Where(c => c != null).ToList();
             var firstReg = basicCertFulfillmentStatuses.GroupBy(bc => bc.EmployeeId).Select(g => g.OrderBy(c => c.IssueDate).FirstOrDefault(c => c.CertificationId == additionalCertifications.Where(c => c.InternalIdentifier == "Reg").Select(c => c.Id).FirstOrDefault())).Where(c => c != null).ToList();
             var firstReg2 = basicCertFulfillmentStatuses.GroupBy(bc => bc.EmployeeId).Select(g => g.OrderBy(c => c.IssueDate).FirstOrDefault(c => c.CertificationId == additionalCertifications.Where(c => c.InternalIdentifier == "Reg2").Select(c => c.Id).FirstOrDefault())).Where(c => c != null).ToList();
+            nercCertFulfillmentStatuses.AddRange(firstEmergencyResponse);
 
             nercCertFulfillmentStatuses.AddRange(firstReg);
             nercCertFulfillmentStatuses.AddRange(firstReg2);
@@ -72,7 +74,7 @@ namespace QTD2.Infrastructure.Reports.Generation.Generators
             var certificationFulfillmentStatuses = nercCertFulfillmentStatuses.Where(r => r != null).OrderBy(cfs => cfs.EmployeeLastName).ToList();
             var organizations = certificationFulfillmentStatuses.SelectMany(cfs => cfs.Employee.EmployeeOrganizations).Select(org => org.Organization).Distinct().ToList();
 
-            return new EmployeeDelinquencyReport(report.InternalReportTitle, templatePath, displayColumns, companyLogo, defaultTimeZone, labelReplacement, certificationFulfillmentStatuses, organizations, nercCertifications.Select(c => c.Id).ToList(), additionalCertifications.Where(c => c.InternalIdentifier == "Reg").Select(c => c.Id).FirstOrDefault(), additionalCertifications.Where(c => c.InternalIdentifier == "Reg2").Select(c => c.Id).FirstOrDefault(), sortEmployeesByOrg);
+            return new EmployeeDelinquencyReport(report.InternalReportTitle, templatePath, displayColumns, companyLogo, defaultTimeZone, labelReplacement, certificationFulfillmentStatuses, organizations, nercCertifications.Select(c => c.Id).ToList(), additionalCertifications.Where(c => c.InternalIdentifier == "Reg").Select(c => c.Id).FirstOrDefault(), additionalCertifications.Where(c => c.InternalIdentifier == "Reg2").Select(c => c.Id).FirstOrDefault(), sortEmployeesByOrg, additionalCertifications.Where(c => c.InternalIdentifier == "Emergency Response").Select(c => c.Id).FirstOrDefault());
         }
     }
 }

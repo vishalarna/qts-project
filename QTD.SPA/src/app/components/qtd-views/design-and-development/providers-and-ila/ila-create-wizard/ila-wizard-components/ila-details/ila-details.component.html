@@ -32,10 +32,11 @@
                 class="align-right float-right"
                 title=" "
                 id="upload-file-2"
+                [disabled]="mode === 'view'"
                 hidden
               />
               <p>{{ image_name }}</p>
-              <label for="upload-file-2" class="text-green-800 align-right"
+              <label for="upload-file-2" [ngClass]="{'text-green-800': mode !== 'view','text-gray-400': mode === 'view'}" class="align-right"
                 >Change</label
               >
             </div>
@@ -191,6 +192,7 @@
             <mat-select
               (selectionChange)="CertificationSelectionChange()"
               [(ngModel)]="value_selected"
+              [disabled]="mode === 'view'"
               placeholder="Select {{('Certification' | labelReplacement)| async}}"
             >
               <mat-option
@@ -587,6 +589,7 @@
                 (selectionChange)="certifyingBodySelectionChange($event)"
                 [value]="certifyingBodySelected"
                 placeholder="Select Certifying Body"
+                [disabled]="mode === 'view'"
               >
                 <mat-option
                   *ngFor="let d of certifyingBodiesList"
@@ -767,8 +770,13 @@
           <div>
             <button
               *ngIf="!prerequisites_edit"
+              [disabled]="mode === 'view'"
               (click)="openFlyInPanelPrerequisites(addPrerequisitesPanel)"
-              class="text-green-600 text-sm"
+              [ngClass]="{
+                'text-green-600': mode !== 'view',
+                'text-gray-400': mode === 'view'
+              }"
+              class="text-sm"
             >
               <app-icon icon="add"></app-icon>Add Pre-requisites
             </button>
@@ -787,6 +795,7 @@
                 text-gray-four
                 items-center
               "
+              [disabled]="mode === 'view'"
             ></app-button>
           </div>
         </div>
@@ -809,7 +818,8 @@
                 <mat-checkbox
                   (change)="$event ? masterToggle() : null"
                   [checked]="selection.hasValue() && isAllSelected()"
-                  [indeterminate]="selection.hasValue() && !isAllSelected()">
+                  [indeterminate]="selection.hasValue() && !isAllSelected()"
+                  [disabled]="mode === 'view'">
                 </mat-checkbox>
               </mat-header-cell>
               <mat-cell *matCellDef="let row">
@@ -817,6 +827,7 @@
                   (click)="$event.stopPropagation()"
                   (change)="$event ? selectrow(row) : null"
                   [checked]="selection.isSelected(row)"
+                  [disabled]="mode === 'view'"
                 >
                 </mat-checkbox>
               </mat-cell>
@@ -837,7 +848,7 @@
               <mat-header-cell *matHeaderCellDef mat-sort-header> 
               </mat-header-cell>
               <mat-cell *matCellDef="let row" class="cursor-pointer flex flex-row justify-center">                                     
-                <app-button  ButtonType="icon" icon="link_off" style="color:lightgray"  (clicked)="unlinkPrerequisitesModal(unlinkModal,row.id)"
+                <app-button [disabled]="mode === 'view'" ButtonType="icon" icon="link_off" style="color:lightgray"  (clicked)="unlinkPrerequisitesModal(unlinkModal,row.id)"
                 ></app-button>
                   </mat-cell>
             </ng-container>
@@ -879,8 +890,13 @@
           <div>
             <button
               *ngIf="!procedures_edit"
+              [disabled]="mode === 'view'"
               (click)="openFlyInPanelProcedures(addproceduresPanel)"
-              class="text-green-600 text-sm"
+              [ngClass]="{
+                'text-green-600': mode !== 'view',
+                'text-gray-400': mode === 'view'
+              }"
+              class="text-sm"
             >
               <app-icon icon="add"></app-icon>Add
               {{ "Procedure" | labelReplacement | async }}s
@@ -900,6 +916,7 @@
                 text-gray-four
                 items-center
               "
+              [disabled]="mode === 'view'"
             ></app-button>
           </div>
         </div>
@@ -936,8 +953,13 @@
           <div>
             <button
               *ngIf="!safetyhazards_edit"
+              [disabled]="mode === 'view'"
               (click)="openFlyInPanelSafetyHazard(addSafetyHazardPanel)"
-              class="text-green-600 text-sm"
+              [ngClass]="{
+                'text-green-600': mode !== 'view',
+                'text-gray-400': mode === 'view'
+              }"
+              class="text-sm"
             >
               <app-icon icon="add"></app-icon>Add
               {{ "Safety Hazard" | labelReplacement | async }}s
@@ -957,6 +979,7 @@
                 text-gray-four
                 items-center
               "
+              [disabled]="mode === 'view'"
             ></app-button>
           </div>
         </div>
@@ -993,10 +1016,15 @@
           <div>
             <button
               *ngIf="!regulatoryrequirements_edit"
+              [disabled]="mode === 'view'"
               (click)="
-                openFlyInPanelRegulatoryRquirements(addRegulatoryRequirement)
+              openFlyInPanelRegulatoryRquirements(addRegulatoryRequirement)
               "
-              class="text-green-600 text-sm"
+              [ngClass]="{
+                'text-green-600': mode !== 'view',
+                'text-gray-400': mode === 'view'
+              }"
+              class="text-sm"
             >
               <app-icon icon="add"></app-icon>Add
               {{ "Regulatory Requirement" | labelReplacement | async }}s
@@ -1018,6 +1046,7 @@
                 text-gray-four
                 items-center
               "
+              [disabled]="mode === 'view'"
             ></app-button>
           </div>
         </div>
@@ -1048,6 +1077,7 @@
         variant="text"
         size="sm"
         text="Edit"
+        [disabled]="mode === 'view'"
         icon="edit"
         iconPosition="left"
         (clicked)="ila_details.emit()"

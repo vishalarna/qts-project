@@ -32,6 +32,14 @@ const routes: Routes = [
           ),
         resolve:{deliveryMethods:DeliveryMethodsResolverService}
       },
+      {
+        path: 'view',
+        loadChildren: () =>
+          import('./ila-create-wizard/ila-create-wizard.module').then(
+            (m) => m.IlaCreateWizardModule
+          ),
+        resolve: { deliveryMethods: DeliveryMethodsResolverService }
+      }      
     ],
   },
 ];

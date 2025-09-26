@@ -62,35 +62,15 @@ namespace QTD2.Domain.Services.Core
         {
             List<Expression<Func<SaftyHazard, bool>>> predicates = new List<Expression<Func<SaftyHazard, bool>>>();
             predicates.Add(sh => safetyHazardIds.Contains(sh.Id));
+            var saftyHazards = (await FindWithIncludeAsync(predicates, new[] { "SaftyHazard_Category", "SaftyHazard_Abatements", "SaftyHazard_Controls", "SafetyHazard_Tool_Links.Tool", "SafetyHazard_Set_Links.SafetyHazardSet", "ILA_SafetyHazard_Links.ILA.Meta_ILAMembers_Links.MetaILA" }, true)).ToList();
             if (!includeInActiveILA)
             {
-                predicates.Add(r => r.SafetyHazard_ILA_Links.Any(link => link.ILA.Active));
-            }
-            var saftyHazards = (await FindWithIncludeAsync(predicates, new[] { "SaftyHazard_Category", "SaftyHazard_Abatements", "SaftyHazard_Controls", "SafetyHazard_Tool_Links.Tool", "SafetyHazard_Set_Links.SafetyHazardSet", "SafetyHazard_ILA_Links.ILA.Meta_ILAMembers_Links.MetaILA" }, true)).ToList();
-            foreach (var hazard in saftyHazards)
-            {
-                Console.WriteLine($"Hazard: {hazard.Title} ({hazard.Id})");
-
-                foreach (var link in hazard.SafetyHazard_ILA_Links)
+                foreach (var hazard in saftyHazards)
                 {
-                    var ila = link.ILA;
-                    if (ila == null) continue;
-
-                    Console.WriteLine($"  ILA: {ila.Name} ({ila.Id})");
-
-                    if (ila.Meta_ILAMembers_Links != null && ila.Meta_ILAMembers_Links.Any())
-                    {
-                        foreach (var metaLink in ila.Meta_ILAMembers_Links)
-                        {
-                            Console.WriteLine($"    MetaILA Link → MetaILAId: {metaLink.MetaILA?.Id}, Title: {metaLink.MetaILA?.Name}");
-                        }
-                    }
-                    else
-                    {
-                        Console.WriteLine("    No MetaILA member links");
-                    }
+                    hazard.ILA_SafetyHazard_Links = hazard.ILA_SafetyHazard_Links.Where(link => link.ILA != null && link.ILA.Active).ToList();
                 }
             }
+
             return saftyHazards;
         }
     }

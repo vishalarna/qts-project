@@ -19,18 +19,18 @@
           >
           <span
             (click)="
-              allowSettings && evaluationForm.get('useForEMP').value
+              allowSettings && evaluationForm.get('useForEMP').value || mode === 'view'
                 ? (selectedTab = 'setting')
                 : null
             "
             [ngClass]="{
               selectedTab: selectedTab === 'setting',
-              pointerClass: selectedTab !== 'setting' && allowSettings,
+              pointerClass: (selectedTab !== 'setting' && allowSettings) || mode === 'view',
               disableClass:
-                !allowSettings || !evaluationForm.get('useForEMP').value
+                (!allowSettings || !evaluationForm.get('useForEMP').value) && mode !== 'view'
             }"
             [matTooltip]="
-              !allowSettings || !evaluationForm.get('useForEMP').value
+              (!allowSettings || !evaluationForm.get('useForEMP').value) && mode !== 'view'
                 ? (('ILA' | labelReplacement)| async) +' not Used for EMP'
                 : ''
             "
@@ -101,29 +101,29 @@
         <mat-tab label="TEST RELEASE">
           <app-ila-emp-test-settings
             [ilaId]="ilaId" [classScheduleId] = ""
-            #ilaTestRelease
+            #ilaTestRelease [mode]="mode"
           ></app-ila-emp-test-settings>
         </mat-tab>
         <mat-tab label="CBT RELEASE">
           <app-cbt-manager
             *ngIf="ila !== null && ila !== undefined"
-            [ila]="ila"
+            [ila]="ila" [mode]="mode"
           ></app-cbt-manager>
         </mat-tab>
         <mat-tab label="TQ RELEASE">
           <app-ila-emp-tq-settings [classScheduleId] = ""
-            [ilaId]="ilaId"
+            [ilaId]="ilaId" [mode]="mode"
             #ilaEmpTqSettings
           ></app-ila-emp-tq-settings>
         </mat-tab>
         <mat-tab label="EVALUATION RELEASE">
           <app-ila-emp-eval-settings
-            [ilaId]="ilaId"
+            [ilaId]="ilaId" [mode]="mode"
             #ilaEmpEvalSettings
           ></app-ila-emp-eval-settings>
         </mat-tab>
         <mat-tab label="SCHEDULING">
-          <app-ila-emp-scheduling [ilaId]="ilaId"></app-ila-emp-scheduling>
+          <app-ila-emp-scheduling [ilaId]="ilaId" [mode]="mode"></app-ila-emp-scheduling>
         </mat-tab>
       </mat-tab-group>
     </section>

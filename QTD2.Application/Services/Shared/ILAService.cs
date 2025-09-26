@@ -2751,10 +2751,19 @@ namespace QTD2.Application.Services.Shared
             }
         }
 
-        public async Task<List<CBT>> GetCBTScormFormsForILAAsync(int ilaId, bool current)
+        public async Task<List<CbtVM>> GetCBTScormFormsForILAAsync(int ilaId, bool current)
         {
-            var cbtSettings = (await _cbtService.FindWithIncludeAsync(x => x.ILAId == ilaId, new string[] { "ScormUploads.CBT_ScormRegistration.ClassScheduleEmployee" }));
-            return cbtSettings.ToList();
+            var cbts = (await _cbtService.FindWithIncludeAsync(x => x.ILAId == ilaId, new string[] { "ScormUploads.CBT_ScormRegistration.ClassScheduleEmployee" }));
+            var cbtVms = new List<CbtVM>();
+
+            foreach(var cbt in cbts)
+            {
+                var cbtVm = new CbtVM();
+                cbtVm.Load(cbt);
+                cbtVms.Add(cbtVm);
+            }
+
+            return cbtVms;
         }
 
 

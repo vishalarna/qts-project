@@ -96,9 +96,9 @@ export class FlyPanelFilterSimulatorScenariosComponent implements OnInit {
   async initializeSimulatorScenariosForm() {  
     this.filterSimulatorScenariosForm = this.fb.group({
       provider: new UntypedFormControl(this.filterSimScenarioValue?.provider),
-      position: new UntypedFormControl(this.filterSimScenarioValue?.position),
-      ila: new UntypedFormControl(this.filterSimScenarioValue?.ila),
-      difficultyLevel: new UntypedFormControl( this.filterSimScenarioValue?.difficultyLevel),
+      position: new UntypedFormControl(this.filterSimScenarioValue?.position || []),
+      ila: new UntypedFormControl(this.filterSimScenarioValue?.ila || []),
+      difficultyLevel: new UntypedFormControl( this.filterSimScenarioValue?.difficultyLevel || []),
       status: new UntypedFormControl(this.filterSimScenarioValue?.status),
       activeStatus: new UntypedFormControl(this.filterSimScenarioValue?.activeStatus),
       simScenariosNotLinkedToILA: new UntypedFormControl(this.filterSimScenarioValue?.simScenariosNotLinkedToILA),
@@ -175,8 +175,11 @@ export class FlyPanelFilterSimulatorScenariosComponent implements OnInit {
   }
 
   getFilterValues() {
+    const selectedProviderId = this.filterSimulatorScenariosForm.get('provider').value;
+    const selectedProvider = this.provider_list.find(p => p.id === selectedProviderId);
     this.filterSimScenarioValue = {
-      provider: this.filterSimulatorScenariosForm.get('provider').value,
+      provider: selectedProviderId,                  // keep ID
+    providerName: selectedProvider?.name || null,
       position: this.filterSimulatorScenariosForm.get('position').value,
       ila: this.filterSimulatorScenariosForm.get('ila').value,
       difficultyLevel: this.filterSimulatorScenariosForm.get('difficultyLevel').value,

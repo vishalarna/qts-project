@@ -241,7 +241,7 @@
                                 <tr class="@(safetyHazard?.Active==true ? "" :"expired-row")">
                                     <td style="border: none;width:15%"></td>
                                     <td style="border: none;padding-top:10px;font-size:16px;padding-left:0;padding-bottom:8px;width:85%" colspan="12">
-                                        <span style="font-weight:700">Personal Protective Equipment:</span>
+                                        <span style="font-weight:700">PPE:</span>
                                     </td>
                                 </tr>
 
@@ -261,13 +261,23 @@
 
                             <tr>
                                 <td style="border: none;"></td>
-                                <td style="border: none; padding-top: 10px; font-size: 18px; color: #2D8ACB; padding-left: 0px; padding-bottom: 3px; width: 85%; text-decoration: underline;">
-                                    <b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements))s linked to @("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements))</b>
-                                </td>
+                                @if (Model.IncludeSafetyHazardsDetail)
+                                {
+                                    <td style="border: none; padding-top: 10px; font-size: 18px; color: #2D8ACB; padding-left: 0px; padding-bottom: 3px; width: 85%; text-decoration: underline;">
+                                        <b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements))s linked to @("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements))</b>
+                                    </td>
+                                }
+                                else
+                                {
+                                    <td style="border: none; padding-top: 10px; font-size: 18px; color: inherit; padding-left: 0px; padding-bottom: 3px; width: 85%;">
+                                        <b>@("ILA".ReplaceLabel(Model.ClientSettings_LabelReplacements))s linked to @("Safety Hazard".ReplaceLabel(Model.ClientSettings_LabelReplacements))</b>
+                                    </td>
+                                }
                             </tr>
 
+
                             @{
-                                var allILAs = safetyHazard.SafetyHazard_ILA_Links.Select(l => l.ILA).Distinct().ToList();
+                                var allILAs = safetyHazard.ILA_SafetyHazard_Links.Select(l => l.ILA).Distinct().ToList();
                                 var allMetaILAs = allILAs.SelectMany(ila => ila.Meta_ILAMembers_Links.Where(m => m.MetaILA != null).Select(m => m.MetaILA)).Distinct().ToList();
                                 var metaMemberILAIds = allMetaILAs.SelectMany(m => m.Meta_ILAMembers_Links.Select(mem => mem.ILAID)).Distinct().ToHashSet();
                             }

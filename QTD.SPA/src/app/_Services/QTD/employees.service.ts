@@ -29,6 +29,8 @@ import { EmployeeAnswerModel } from '@models/Test/EmployeeAnswerModel';
 import { ReviewTestModel } from '@models/Test/ReviewTestModel';
 import { SubmitTestModel } from '@models/Test/SubmitTestModel';
 import { firstValueFrom } from 'rxjs';
+import { EmployeeCertificationHistoryCreateOptions } from '@models/EmployeeCertificationHistory/EmployeeCertificationHistoryCreateOptions';
+import { EmployeeCertificationHistoryDeleteOptions } from '@models/EmployeeCertificationHistory/EmployeeCertificationHistoryDeleteOptions';
 
 @Injectable({
   providedIn: 'root',
@@ -809,5 +811,27 @@ export class EmployeesService {
         })
       ));
     }
+
+  createCertificationsHistory(option: EmployeeCertificationHistoryCreateOptions) {
+    return firstValueFrom(this.http
+      .post(this.baseUrl + `/history`, option)
+      .pipe(
+        map((res: any) => {
+               return res['result'] as EmployeeCertificationHistoryCreateOptions;
+        })
+      ));
+  }
+
+  bulkdeleteCertificationsFromHistoryAsync(options: EmployeeCertificationHistoryDeleteOptions){
+    return firstValueFrom(this.http
+      .delete(this.baseUrl + `/certifications/history/bulk`, {
+        body: options
+      })
+       .pipe(
+        map((res: any) => {
+          return res.message;
+        })
+      ));
+  }
 
 }

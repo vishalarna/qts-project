@@ -37,7 +37,7 @@ namespace QTD2.Application.Interfaces.Services.QTD
 
         public Task<bool> SendPublicClassScheduleRequestNotification(int id, PublicClassScheduleRequestNotification publicClassScheduleRequestNotification, int order, int? toPersonId, QTDContext qtdContext);
         public Task<bool> SendPublicClassScheduleRequestAcceptedNotification(int publicClassScheduleRequestId, int order, int? toPersonId, QTDContext qtdContext,  string url);
-        Task<bool> SendEmpSkillQualitificationTraineeNotification(int skillQualificationId, int order, QTDContext context);
-        Task<bool> SendEmpSkillQualitificationEvaluatorNotification(int skillQualification_Evaluator_LinkId, int order, QTDContext context);
+        public Task<bool> SendEmpSkillQualitificationTraineeNotification(int skillQualificationId, int order, QTDContext context);
+        public Task<bool> SendEmpSkillQualitificationEvaluatorNotification(int skillQualification_Evaluator_LinkId, int order, QTDContext context);
     }
 }

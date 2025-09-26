@@ -87,10 +87,10 @@ export class FlyPanelAddBasicIlaComponent {
       addAnother: new UntypedFormControl(false),
       certificationSelected: new UntypedFormControl(null),
       certifyingBodySelected: new UntypedFormControl(null),
-      cehHours: new UntypedFormControl(),
-      includeSimulation: new UntypedFormControl(),
-      emergencyOPHours: new UntypedFormControl(),
-      partialCredit: new UntypedFormControl(),
+      cehHours: new UntypedFormControl(null), 
+      includeSimulation: new UntypedFormControl(false),
+      emergencyOPHours: new UntypedFormControl(false),
+      partialCredit: new UntypedFormControl(false),
     });
   }
 
@@ -126,10 +126,12 @@ export class FlyPanelAddBasicIlaComponent {
   }
 
   async saveILA(status: 'Draft' | 'Published') {
-    if (this.basicIlaForm.invalid) {
+    if (this.basicIlaForm.get('providerId')?.invalid ||
+      this.basicIlaForm.get('name')?.invalid ||
+      this.basicIlaForm.get('number')?.invalid) {
       this.basicIlaForm.markAllAsTouched();
-      return;
-    }
+    return;
+  }
 
     this.showSpinner = true;
     const options = new ILABasicCreateOptions();
@@ -181,6 +183,12 @@ export class FlyPanelAddBasicIlaComponent {
 
         if (this.basicIlaForm.get('addAnother')?.value) {
           this.basicIlaForm.reset({ addAnother: false });
+          this.certificationSelected = null;
+          this.certifyingBodySelected = null;
+          this.certifyingBodySubRequirements = [];
+          this.subrequirements = [];
+          this.nercCertificatesFiltered = [];
+          this.savedCertifications = [];
         } else {
           this.closed.emit();
         }
@@ -250,23 +258,6 @@ export class FlyPanelAddBasicIlaComponent {
   async certificationSelectionChange(event: any) {
     const newCertId = event.value;
   
-    if (this.certificationSelected) {
-      const certData = {
-        certificationId: this.certificationSelected,
-        cehHours: this.basicIlaForm.get('cehHours')?.value,
-        isIncludeSimulation: this.basicIlaForm.get('includeSimulation')?.value,
-        isEmergencyOpHours: this.basicIlaForm.get('emergencyOPHours')?.value,
-        isPartialCreditHours: this.basicIlaForm.get('partialCredit')?.value,
-      };
-  
-      const index = this.savedCertifications.findIndex(c => c.certificationId === this.certificationSelected);
-      if (index >= 0) {
-        this.savedCertifications[index] = certData;
-      } else {
-        this.savedCertifications.push(certData);
-      }
-    }
-  
     this.certificationSelected = newCertId;
   
     this.basicIlaForm.patchValue({
@@ -276,7 +267,8 @@ export class FlyPanelAddBasicIlaComponent {
       partialCredit: false
     });
   
-    const savedData = this.savedCertifications.find(c => c.certificationId === newCertId);
+    let savedData = this.savedCertifications.find(c => c.certificationId === newCertId);
+  
     if (savedData) {
       this.basicIlaForm.patchValue({
         cehHours: savedData.cehHours,
@@ -285,16 +277,21 @@ export class FlyPanelAddBasicIlaComponent {
         partialCredit: savedData.isPartialCreditHours
       });
     }
-
+  
     if (newCertId) {
       try {
         this.certifyingBodySubRequirements = await this.certService.getSubRequirementsByCertId(newCertId);
+  
         this.certifyingBodySubRequirements.forEach(sub => {
           const controlName = sub.subRequirementId.toString();
+  
+          const savedSub = savedData?.subRequirements?.find(s => s.subRequirementId.toString() === sub.subRequirementId.toString());
+          const value = savedSub ? savedSub.reqHour : (sub.reqHour || null);
+  
           if (!this.basicIlaForm.contains(controlName)) {
-            this.basicIlaForm.addControl(controlName, new FormControl(sub.reqHour || null, Validators.required));
+            this.basicIlaForm.addControl(controlName, new FormControl(value, Validators.required));
           } else {
-            this.basicIlaForm.get(controlName)?.setValue(sub.reqHour || null);
+            this.basicIlaForm.get(controlName)?.setValue(value);
           }
         });
       } catch (err) {
@@ -302,28 +299,31 @@ export class FlyPanelAddBasicIlaComponent {
         this.certifyingBodySubRequirements = [];
       }
     }
-    
   }
   
-
+  
   certifyingBodySelectionChange(event: any) {
     this.certifyingBodySelected = event.value;
     this.subrequirements = [];
   
-    const saved = this.savedCertifications.find(
+    const saved = this.savedCertifications.filter(
       b => b.certifyingBody === this.certifyingBodySelected
     );
   
-    if (saved) {
+    if (saved.length) {
       this.basicIlaForm.patchValue({
-        certifyingBodySelected: saved.certifyingBody,
-        cehHours: saved.cehHours,
-        includeSimulation: saved.includeSimulation,
-        emergencyOPHours: saved.emergencyOPHours,
-        partialCredit: saved.partialCredit
+        certifyingBodySelected: saved[0].certifyingBody,
+        cehHours: saved[0].cehHours,
+        includeSimulation: saved[0].isIncludeSimulation,
+        emergencyOPHours: saved[0].isEmergencyOpHours,
+        partialCredit: saved[0].isPartialCreditHours
       });
-  
-      this.nercCertificatesFiltered = saved.certifications || [];
+    
+      this.nercCertificatesFiltered = saved.map(s => ({
+        certificationId: s.certificationId,
+        certificationName: s.certificationName,
+        IsNerc: true
+      }));
     } else {
       this.basicIlaForm.patchValue({
         certifyingBodySelected: this.certifyingBodySelected,
@@ -352,7 +352,7 @@ export class FlyPanelAddBasicIlaComponent {
         })
         .catch(err => console.error('Failed to load subrequirements', err));
     }
-    if (event.value === 'NERC' && !saved) {
+    if (event.value === 'NERC' && saved.length === 0) {
       const nercBody = this.certifyingBodiesList.find(
         x => x.certifyingBody?.name === 'NERC'
       );
@@ -366,8 +366,8 @@ export class FlyPanelAddBasicIlaComponent {
   }
   
   saveByCertifications() {
-    const selectedCertId = this.basicIlaForm.get('certificationSelected')?.value;
-    const selectedCert = this.CertificatesList.find(c => c.certificationId === selectedCertId)
+    const selectedCertId = this.certificationSelected?.toString();
+    const selectedCert = this.CertificatesList.find(c => c.certificationId.toString() === selectedCertId);
 
     const subRequirements: SubRequirementVM[] = [];
     if (this.certifyingBodySubRequirements?.length) {
@@ -408,8 +408,15 @@ export class FlyPanelAddBasicIlaComponent {
   }
   
   deleteLinksByCertifications() {
-    const selectedCertId = this.basicIlaForm.get('certificationSelected')?.value;
+    const selectedCertId = this.certificationSelected;
     this.savedCertifications = this.savedCertifications.filter(c => c.certificationId !== selectedCertId);
+    if (this.certifyingBodySubRequirements?.length) {
+      this.certifyingBodySubRequirements.forEach(sub => {
+        if (this.basicIlaForm.contains(sub.subRequirementId.toString())) {
+          this.basicIlaForm.removeControl(sub.subRequirementId.toString());
+        }
+      });
+    }
   
     this.basicIlaForm.patchValue({
       certificationSelected: null,
@@ -420,22 +427,24 @@ export class FlyPanelAddBasicIlaComponent {
     });
   
     this.certificationSelected = null;
+    this.certifyingBodySubRequirements = [];
   }
   
   saveByCertifyingBody() {
     const bodyName = this.basicIlaForm.get('certifyingBodySelected')?.value;
-    this.nercCertificatesFiltered.forEach(cert => {
-      const subRequirements: SubRequirementVM[] = [];
-      if (this.subrequirements?.length) {
-        this.subrequirements.forEach(sub => {
-          subRequirements.push({
-            subRequirementId: sub.subRequirementId,
-            reqName: sub.reqName,
-            reqHour: this.basicIlaForm.get(sub.subRequirementId.toString())?.value || 0
-          });
-        });
-      }
   
+    const subRequirements: SubRequirementVM[] = [];
+    if (this.subrequirements?.length) {
+      this.subrequirements.forEach(sub => {
+        subRequirements.push({
+          subRequirementId: sub.subRequirementId,
+          reqName: sub.reqName,
+          reqHour: this.basicIlaForm.get(sub.subRequirementId.toString())?.value || 0
+        });
+      });
+    }
+  
+    this.nercCertificatesFiltered.forEach(cert => {
       const certData = {
         certifyingBody: bodyName,
         certificationId: cert.certificationId,
@@ -470,6 +479,14 @@ export class FlyPanelAddBasicIlaComponent {
   deleteLinksByCertifyingBody() {
     const bodyName = this.basicIlaForm.get('certifyingBodySelected')?.value;
     this.savedCertifications = this.savedCertifications.filter(b => b.certifyingBody !== bodyName);
+
+    if (this.subrequirements?.length) {
+      this.subrequirements.forEach(sub => {
+        if (this.basicIlaForm.contains(sub.subRequirementId.toString())) {
+          this.basicIlaForm.removeControl(sub.subRequirementId.toString());
+        }
+      });
+    }
   
     this.basicIlaForm.patchValue({
       certifyingBodySelected: null,
@@ -479,13 +496,14 @@ export class FlyPanelAddBasicIlaComponent {
       partialCredit: false
     });
   
+    this.subrequirements = [];
     this.certifyingBodySelected = null;
     this.nercCertificatesFiltered = [];
   }
   
   isSelectedAndSaved(): boolean {
     if (this.creditHoursView === 'ByCertification') {
-      const selectedCertId = this.basicIlaForm.get('certificationSelected')?.value;
+      const selectedCertId = this.certificationSelected;
       return !!selectedCertId && this.savedCertifications.some(c => c.certificationId === selectedCertId);
     }
   
@@ -497,6 +515,87 @@ export class FlyPanelAddBasicIlaComponent {
     return false;
   }
 
+  closeCertificationForm() {
+    this.certificationSelected = null;
+    this.certifyingBodySubRequirements = [];
+  
+    const controlsToReset = ['certificationSelected', 'cehHours', 'includeSimulation', 'emergencyOPHours', 'partialCredit'];
+    controlsToReset.forEach(ctrl => {
+      if (this.basicIlaForm.contains(ctrl)) {
+        this.basicIlaForm.get(ctrl)?.reset(ctrl === 'cehHours' ? null : false);
+      }
+    });
+  
+    Object.keys(this.basicIlaForm.controls).forEach(ctrl => {
+      if (this.certifyingBodySubRequirements.find(s => s.subRequirementId.toString() === ctrl)) {
+        this.basicIlaForm.removeControl(ctrl);
+      }
+    });
+  }
+  
+  closeCertifyingBodyForm() {
+    this.subrequirements?.forEach(sub => {
+      if (this.basicIlaForm.contains(sub.subRequirementId.toString())) {
+        this.basicIlaForm.removeControl(sub.subRequirementId.toString());
+      }
+    });
+  
+    const controlsToReset = ['certifyingBodySelected', 'cehHours', 'includeSimulation', 'emergencyOPHours', 'partialCredit'];
+    controlsToReset.forEach(ctrl => {
+      if (this.basicIlaForm.contains(ctrl)) {
+        this.basicIlaForm.get(ctrl)?.reset(ctrl === 'cehHours' ? null : false);
+      }
+    });
+  
+    this.certifyingBodySelected = null;
+    this.subrequirements = [];
+    this.nercCertificatesFiltered = [];
+  }  
+
+  isByCertifyingBodyFormValid(): boolean {
+    if (!this.certifyingBodySelected) return false;
+  
+    const cehValid = (this.basicIlaForm.get('cehHours')?.value ?? 0) > 0;
+  
+    const subReqValid = this.subrequirements?.every(sub => {
+      const val = this.basicIlaForm.get(sub.subRequirementId.toString())?.value ?? 0;
+      return val > 0;
+    }) ?? true;
+  
+    return cehValid && subReqValid;
+  }
+  
+  isByCertificationFormValid(): boolean {
+    if (!this.certificationSelected) return false;
+  
+    const cehValid = (this.basicIlaForm.get('cehHours')?.value ?? 0) > 0;
+  
+    const subReqValid = this.certifyingBodySubRequirements?.every(sub => {
+      const val = this.basicIlaForm.get(sub.subRequirementId.toString())?.value ?? 0;
+      return val > 0;
+    }) ?? true;
+  
+    return cehValid && subReqValid;
+  }  
+  
+  isMainFormValid(): boolean {
+    const baseValid = !!this.basicIlaForm.get('providerId')?.value &&
+                      !!this.basicIlaForm.get('name')?.value &&
+                      !!this.basicIlaForm.get('number')?.value;
+  
+    if (!baseValid) return false;
+  
+    if (this.creditHoursView === 'ByCertification' && this.certificationSelected) {
+      return this.isByCertificationFormValid();
+    }
+  
+    if (this.creditHoursView === 'ByCertifyingBody' && this.certifyingBodySelected) {
+      return this.isByCertifyingBodyFormValid();
+    }
+  
+    return true;
+  } 
+  
   keyPressNumbers(event: any) {
     var charCode = event.which ? event.which : event.keyCode;
      if (charCode < 48 || charCode > 57) {

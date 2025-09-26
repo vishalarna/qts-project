@@ -29,6 +29,7 @@
           [(ngModel)]="trainingPlan"
           [editor]="Editor"
           (ready)="onReady($event)"
+          [disabled]="mode === 'view'"
         ></ckeditor>
       </div>
     </div>
@@ -56,7 +57,9 @@
                 <app-icon
                   icon="link"
                   class="mr-2"
-                  style="color: rgb(92, 155, 49) !important"
+                  [ngStyle]="{
+                    color: mode === 'view' ? 'gray' : 'rgb(92, 155, 49)'
+                  }"
                 >
                 </app-icon>
                 <app-button
@@ -64,6 +67,7 @@
                   text="Link Objectives to {{('ILA' | labelReplacement)| async}}s"
                   style="color: rgb(92, 155, 49) !important"
                   (clicked)="openFlyInPanel(objectives, false, null, null)"
+                  [disabled]="mode === 'view'"
                 ></app-button>
               </li>
               <li>
@@ -72,6 +76,7 @@
                   text="Create Custom Objectives"
                   (clicked)="openFlyInPanel(objectives, true, 'add', null)"
                   style="color: rgb(92, 155, 49) !important"
+                  [disabled]="mode === 'view'"
                 >
                 </app-button>
                 <app-icon
@@ -89,6 +94,7 @@
               (clicked)="unlinkObjectivesFunctions()"
               text="Unlink Objectives"
               *ngIf="selection.hasValue()"
+              [disabled]="mode === 'view'"
             ></app-button>
           </div>
           <app-data-loader *ngIf="!DataSource"></app-data-loader>
@@ -115,6 +121,7 @@
                     (change)="$event ? masterToggle() : null"
                     [checked]="selection.hasValue() && isAllSelected()"
                     [indeterminate]="selection.hasValue() && !isAllSelected()"
+                    [disabled]="mode === 'view'"
                   >
                   </mat-checkbox>
                 </mat-header-cell>
@@ -123,6 +130,7 @@
                     (click)="$event.stopPropagation()"
                     (change)="$event ? selection.toggle(row) : null"
                     [checked]="selection.isSelected(row)"
+                    [disabled]="mode === 'view'"
                   >
                   </mat-checkbox>
                 </mat-cell>
@@ -169,6 +177,7 @@
                       class="text-gray-four"
                       icon="more_horiz"
                       [matMenuTriggerFor]="menu"
+                      [disabled]="mode === 'view'"
                     >
                     </app-button>
                     <mat-menu #menu="matMenu">
@@ -281,7 +290,7 @@
                               style="vertical-align: sub"
                               class="mt-1"
                             >
-                              <mat-select value="min">
+                              <mat-select value="min" [disabled]="mode === 'view'">
                                 <mat-option value="min"> (min) </mat-option>
                               </mat-select>
                             </mat-form-field>
@@ -296,7 +305,7 @@
                         >
                         <ul *ngIf="isNercProvider" class="mt-4" style="list-style: none !important;">
                           <li>
-                            <mat-checkbox formControlName="isPartialCredit"
+                            <mat-checkbox formControlName="isPartialCredit" [disabled]="mode === 'view'"
                               >Is Partial Credit</mat-checkbox
                             >
                           </li>
@@ -323,6 +332,7 @@
                           formControlName="description"
                           [editor]="Editor"
                           (ready)="onReady($event)"
+                          [disabled]="mode === 'view'"
                         >
                         </ckeditor>
                         <app-input-error
@@ -339,6 +349,7 @@
                           (clicked)="
                             openLinkSegmentFlyPanel(addObjectives, false, i)
                           "
+                          [disabled]="mode === 'view'"
                         ></app-button>
                       </div>
                       <div class="flex flex-row justify-end">
@@ -360,6 +371,7 @@
                           class="table-bordered"
                           [cdkDropListData]="selectedId[i]"
                           (cdkDropListDropped)="dropTable($event, i)"
+                          [cdkDropListDisabled]="mode === 'view'"
                         >
                           <ng-container matColumnDef="drag">
                             <mat-header-cell *matHeaderCellDef>
@@ -367,7 +379,7 @@
                             <mat-cell *matCellDef="let row">
                               <app-icon
                                 cdkDragHandle
-                                matTooltip="Drag to reorder the row"
+                                [matTooltip]="mode !== 'view' ? 'Drag to reorder the row' : ''"
                                 style="
                                   pointer-events: all;
                                   color: darkgrey !important;
@@ -425,7 +437,7 @@
                             </mat-header-cell>
                             <mat-cell *matCellDef="let row">
                               <app-icon
-                                (click)="unlinkEO(row, i)"
+                                (click)="mode !== 'view' && unlinkEO(row, i)"
                                 style="color: grey; cursor: pointer"
                                 icon="link_off"
                               >
@@ -465,6 +477,7 @@
                           text="Cancel"
                           class="mr-5"
                           (clicked)="cancelClicked(i)"
+                          [disabled]="mode === 'view'"
                         >
                         </app-button>
                         <app-button
@@ -475,6 +488,7 @@
                           size="sm"
                           [text]="saved[i] ? 'Update' : 'Save'"
                           [disabled]="
+                            mode === 'view' ||
                             val.get('description')?.errors?.required ||
                             val.get('title')?.errors?.required ||
                             val.get('duration')?.errors?.required ||
@@ -498,7 +512,7 @@
         </div>
       </div>
       <app-button
-        [disabled]="!allSegmentsSaved()"
+        [disabled]="mode === 'view' || !allSegmentsSaved()"
         variant="text"
         text="Add next segment"
         iconPosition="left"
@@ -522,6 +536,7 @@
           iconPosition="left"
           (clicked)="edit.emit($event)"
           class="flex flex-row text-sm font-normal text-gray-four items-center"
+          [disabled]="mode === 'view'"
         >
         </app-button>
       </div>

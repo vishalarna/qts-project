@@ -3,7 +3,7 @@
   <div class="col mb-4">
     <h2 class="navbar-heading mb-3">CBT Release Settings</h2>
     <div class="d-flex align-items-center">
-      <input type="checkbox" id="course" (click)="setCbtRequired($event)" [checked]="setCbtRequiredValue()">
+      <input type="checkbox" id="course" (click)="setCbtRequired($event)" [checked]="setCbtRequiredValue()" [disabled]="mode==='view'">
       <label class="label-spacing m-0 text-style" for="course"> CBT required for course</label>
     </div>
   </div>
@@ -17,11 +17,11 @@
           <h2 class=" m-0 text-style">Previously Imported CBT</h2>
           <div>
             <app-button variant="text" text="Disconnect Scorm Package" *ngIf="this.currentScormUpload"
-                        (clicked)="onDisconnectPackageClick(true)"></app-button> &nbsp;
+                        (clicked)="onDisconnectPackageClick(true)" [disabled]="mode==='view'"></app-button> &nbsp;
             &nbsp;
             <span *ngIf="this.currentScormUpload">| &nbsp; &nbsp;</span>
             <app-button variant="text" text="Import Scorm Package"
-            (clicked)="onImportScormClick(true)"></app-button>
+            (clicked)="onImportScormClick(true)" [disabled]="mode==='view'"></app-button>
           </div>
         </div>
       </div>
@@ -49,7 +49,7 @@
                   [config]="config"
                   [(ngModel)]="cbtLearningInstructions"
                   (change)="setCbtInstructionContent($event)"
-                  toolbarPosition="bottom">
+                  toolbarPosition="bottom" [disabled]="mode==='view'">
         </ckeditor>
       </div>
       <div class="d-block pt-4">
@@ -57,7 +57,7 @@
         <div class="d-block align-items-center checkbox-spacing pd-left-10">
           <div>
             <mat-radio-group aria-labelledby="example-radio-group-label" class="example-radio-group"
-                             [value]="getCbtAvailability()" (change)="setCbtAvailabilityChange($event)">
+                             [value]="getCbtAvailability()" (change)="setCbtAvailabilityChange($event)" [disabled]="mode==='view'">
               <mat-radio-button class="example-radio-button pr-3"
                                 *ngFor="let availability of cbtAvailabilityEnum;let idx = index"
                                 [value]="availability.id">
@@ -76,8 +76,8 @@
                     grade.</span>
         <div class="border-number-box bg-white py-2 flex mt-3" style="width: 20%; align-items: center">
           <input #dateAmount name="dueDateAmount" (keypress)="keyPressNumbers($event)" class=" text-base w-full h-5 px-4 py-6 mt-2 hover:outline-none focus:outline-none focus:ring focus:ring-offset-2 focus:ring-green-900 focus:ring-opacity-50 rounded modifiedTextbox"
-          [value]="getDueDateValues('amount')" (input)="handleDueDateAmountChange(dateAmount.value)" />
-          <mat-select [value]="getDueDateValues('dateInterval')" (selectionChange)="handleDueDateIntervalChange($event)">
+          [value]="getDueDateValues('amount')" (input)="handleDueDateAmountChange(dateAmount.value)" [disabled]="mode==='view'"/>
+          <mat-select [value]="getDueDateValues('dateInterval')" (selectionChange)="handleDueDateIntervalChange($event)" [disabled]="mode==='view'">
             <mat-option *ngFor="let type of empSettingsReleaseTypes" [value]="type.typeId">{{type.typeName}}</mat-option>
           </mat-select>
         </div>
@@ -86,7 +86,7 @@
   </div>
 </div>
 <div class="d-flex justify-content-end pt-4" *ngIf="!spinner">
-  <app-button [disabled]="disableSaveButton()" text="Save" size="sm" class="mr-3 btn-sm" (clicked)="onSaveButtonClickAsync()"></app-button>
+  <app-button [disabled]="mode==='view' || disableSaveButton()" text="Save" size="sm" class="mr-3 btn-sm" (clicked)="onSaveButtonClickAsync()"></app-button>
 </div>
 <div *ngIf="openDisconnectScormPopup" class="modal-wrap datawrap-model">
   <div class="modal-dialog modal-lg m-t-9r">

@@ -46,6 +46,7 @@ export class IlaDetailsComponent implements OnInit, OnDestroy {
   @Output() nerc_check = new EventEmitter<any>();
   @Output() loadingEvent = new EventEmitter<boolean>();
   @Input() editIlaCheck: any;
+  @Input() mode: string;
   CertificatesList: CertificationListVM[] = [];
   certifyingBodiesList: CertifyingBodyWithSubRequirementsVM[] = [];
   LinkedCertificatesList: string[] = [];
@@ -165,6 +166,10 @@ export class IlaDetailsComponent implements OnInit, OnDestroy {
   ngOnInit(): void {      
     this.loadingEvent.emit(true);
     this.mainSpinner = true;
+    if (this.mode === 'view') {
+      this.TotalCreditHourForm.disable();
+      this.PrerequisitesForm.disable();
+    }
     this.subscription.sink = this.saveStore.select('saveIla').pipe().subscribe((res) => {
       
       if (res['saveData']['result'] !== undefined && res['tabIndex'] === 1) {

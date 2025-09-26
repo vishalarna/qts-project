@@ -75,6 +75,7 @@ export class IlaEmpEvalSettingsComponent implements OnInit, OnDestroy {
   })
 
   @Input() ilaId = "";
+  @Input() mode: string;
   evaluationReleaseCheckNUll: boolean = false;
   displayedColumnsStudentEvaluators: string[] = ['id', 'date'];
   classes_List: any[] = [];
@@ -102,6 +103,9 @@ export class IlaEmpEvalSettingsComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.evalValues = this.evalForm.value;
+    if (this.mode === 'view') {
+      this.evalForm.disable({ emitEvent: false });
+    }
     this.empSettingsReleaseTypeService.getEmpSettingsReleaseTypes().then(res=>{
       this.empSettingsReleaseTypes = res;
       this.defaultEmpSettingReleaseTypeId = this.empSettingsReleaseTypes.find(x=> x.typeName == "Days")?.typeId;

@@ -32,7 +32,6 @@ export class FilterParentComponent implements OnInit {
     private reportService: ApiReportsService) {}
 
   async ngOnInit() { 
-    console.log("paernt report data",this.reportData)
     this.filterListData=[];
     this.reportSkeletonFilterData=this.reportSkeletonFilter;
     await this.getOptionsDisplayData();

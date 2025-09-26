@@ -75,11 +75,11 @@ export class TrainingPlanComponent implements OnInit, OnDestroy, AfterViewInit {
   isCustomEO: boolean = false;
   linkSegment: boolean = false;
   addSegment: boolean = false;
-  mode:string ='';
   delivery_method: any[] = [];
   @Output() formEvent = new EventEmitter<any>();
   @Output() loadingEvent = new EventEmitter<boolean>();
   @Input() editIlaCheck: any;
+  @Input() mode: string;
   eo: any[] = [];
   to: any[] = [];
   unlinkIdList: any = [];
@@ -223,6 +223,9 @@ export class TrainingPlanComponent implements OnInit, OnDestroy, AfterViewInit {
     this.group = this.fb.group({
       segmentsForm: this.fb.array([this.initializeSegmentForm()]),
     });
+    if (this.mode === 'view') {
+      this.group.disable(); 
+    }
   }
 
   initializeSegmentForm() {
@@ -404,6 +407,9 @@ export class TrainingPlanComponent implements OnInit, OnDestroy, AfterViewInit {
             isOperationTopic: new UntypedFormControl(data.isNercOperatingTopics),
             isSimulation: new UntypedFormControl(data.isNercSimulation),
           });
+          if (this.mode === 'view') {
+            tempForm.disable();
+          }
           controls.push(tempForm);
           if(this.segments.findIndex(x=>x == `Segment ${i + 1}`) == -1){
             this.segments.push(`Segment ${i + 1}`);

@@ -269,8 +269,7 @@ namespace QTD2.Application.Interfaces.Services.Shared
         public Task<bool> CheckCanEOBeDeactivatedAsync(int id);
 
         public Task<List<EnablingObjective>> GetEOActiveInactive(string option);
-
-        Task<List<EnablingObjective_Category>> GetSQsByPositionIdsAsync(List<int> positionIds);
+        public Task<List<EnablingObjective_Category>> GetSQsByPositionIdsAsync(List<int> positionIds);
 
     }
 }

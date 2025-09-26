@@ -211,7 +211,7 @@ namespace QTD2.Application.Interfaces.Services.Shared
         public Task<CBT> GetCBTSettingAsync(int id);
 
         public Task<CBT> GetCBTSettingForILAAsync(int ilaId, bool current);
-        public Task<List<CBT>> GetCBTScormFormsForILAAsync(int ilaId, bool current);
+        public Task<List<CbtVM>> GetCBTScormFormsForILAAsync(int ilaId, bool current);
 
         public Task<CBT> CreateCBTSettingAsync(int ilaId, CBTCreateOptions options);
 

@@ -67,6 +67,7 @@ export class FlyPanelContentComponent implements OnInit, OnDestroy {
   @ViewChild('UploadFileInput') uploadFileInput: ElementRef;
   myfilename = 'Select File';
   @Input() myData: any;
+  @Input() mode: string;
 
   showLoader = false;
   saved = false;

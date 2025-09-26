@@ -45,7 +45,7 @@ const routes: Routes = [
     MatToolbarModule,
     MatCheckboxModule,
     MatRadioModule,
-    FlyPanelTaskReQualificationTaskFeedbackModule
+    FlyPanelTaskReQualificationTaskFeedbackModule 
   ],
 })
 export class FlyPanelTaskReQualificationSuggestionsModule { }

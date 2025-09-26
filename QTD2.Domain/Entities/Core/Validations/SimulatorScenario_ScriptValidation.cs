@@ -15,7 +15,6 @@ namespace QTD2.Domain.Entities.Core.Validations
         public SimulatorScenario_ScriptValidation(IStringLocalizerFactory stringLocalizerFactory)
             : base(stringLocalizerFactory)
         {
-            AddRule(new ValidationRule<SimulatorScenario_Script>(new SimulatorScenario_Script_InitiatorIdRequiredSpec(), _validationStringLocalizer["SimulatorScenario_Script_InitiatorIdRequiredSpec"]));
             AddRule(new ValidationRule<SimulatorScenario_Script>(new SimulatorScenario_Script_TitleRequiredSpec(), _validationStringLocalizer["SimulatorScenario_Script_TitleRequiredSpec"]));
             AddRule(new ValidationRule<SimulatorScenario_Script>(new SimulatorScenario_Script_EventIdRequiredSpec(), _validationStringLocalizer["SimulatorScenario_Script_EventIdRequiredSpec"]));
         }

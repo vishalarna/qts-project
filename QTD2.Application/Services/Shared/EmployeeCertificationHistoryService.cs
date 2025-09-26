@@ -41,7 +41,7 @@ namespace QTD2.Application.Services.Shared
 
         public async Task<EmployeeCertifictaionHistory> CreateAsync(EmployeeCertificationHistoryCreateOptions options)
         {
-            var obj = new EmployeeCertifictaionHistory(options.EmployeeCertificationId, options.ChangeEffectiveDate, options.ChangeNotes);
+            var obj = new EmployeeCertifictaionHistory(options.EmployeeCertificationId, (options.ChangeEffectiveDate != default(DateOnly) ? options.ChangeEffectiveDate : DateOnly.FromDateTime(DateTime.UtcNow)), options.ChangeNotes);
             var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, obj, Proc_IssuingAuthority_HistoryOperations.Create);
             if (result.Succeeded)
             {
@@ -231,5 +231,30 @@ namespace QTD2.Application.Services.Shared
             return empCertificationHistory.ToList();
         }
 
+        public async System.Threading.Tasks.Task DeleteBulkHistoryAsync(EmployeeCertificationHistoryDeleteOptions options)
+        {
+            foreach (var historyId in options.EmployeeCertificationHistoryIds)
+            {
+                var historyRecord = await GetAsync(historyId);
+                if (historyRecord == null) continue;
+
+                var authResult = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, historyRecord, ReportOperations.Delete);
+
+                if (authResult.Succeeded)
+                {
+                    historyRecord.Delete();
+                    var validationResult = await _employeeCertificationHistoryService.UpdateAsync(historyRecord);
+
+                    if (!validationResult.IsValid)
+                    {
+                        throw new System.ComponentModel.DataAnnotations.ValidationException(message: string.Join(',', validationResult.Errors));
+                    }
+                }
+                else
+                {
+                    throw new UnauthorizedAccessException("OperationNotAllowed");
+                }
+            }
+        }
     }
 }

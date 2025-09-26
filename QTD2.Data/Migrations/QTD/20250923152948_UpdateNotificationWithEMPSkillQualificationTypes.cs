@@ -5,7 +5,7 @@
 namespace QTD2.Data.Migrations.QTD
 {
     /// <inheritdoc />
-    public partial class SkillQualificationNotification : Migration
+    public partial class UpdateNotificationWithEMPSkillQualificationTypes : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -45,11 +45,6 @@ namespace QTD2.Data.Migrations.QTD
                 column: "SkillQualificationId",
                 principalTable: "SkillQualifications",
                 principalColumn: "Id");
-
-            Initialization.QTDContext.SeedData seed = new Initialization.QTDContext.SeedData(
-                       System.Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
-                       migrationBuilder);
-            seed.Update_ClientSettingsNotification_StepsTemplateForTaskQualification();
         }
 
         /// <inheritdoc />

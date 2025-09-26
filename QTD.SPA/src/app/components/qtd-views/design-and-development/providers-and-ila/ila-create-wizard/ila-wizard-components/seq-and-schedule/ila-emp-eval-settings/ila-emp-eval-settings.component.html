@@ -82,7 +82,7 @@
                 </mat-checkbox>
                 <div style="width: 25%" class="py-2 ml-5">
                   <mat-select
-                    [disabled]="evalForm.get('evaluationRequired')?.value === true || evalForm.get('releaseOnSpecificTimeAfterClassEndDate')?.value === false"
+                    [disabled]="mode === 'view' || evalForm.get('evaluationRequired')?.value === true || evalForm.get('releaseOnSpecificTimeAfterClassEndDate')?.value === false"
                     style="margin-right: 0px" (change)="uncheckOthers('setAvailabilityTimeEvaluate',$event)"
                     formControlName="setAvailabilityTimeEvaluate" class="
                           appearance-none

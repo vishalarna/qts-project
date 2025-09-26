@@ -12749,50 +12749,6 @@ namespace QTD2.Data.Migrations.QTD
                     b.ToTable("SafetyHazard_Histories");
                 });
 
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.SafetyHazard_ILA_Link", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Deleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("ILAId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SafetyHazardId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SafetyHazardId");
-
-                    b.HasIndex("ILAId", "SafetyHazardId")
-                        .IsUnique();
-
-                    b.ToTable("SafetyHazard_ILA_Links");
-                });
-
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SafetyHazard_Set", b =>
                 {
                     b.Property<int>("Id")
@@ -14183,8 +14139,14 @@ namespace QTD2.Data.Migrations.QTD
                     b.Property<int>("EventId")
                         .HasColumnType("int");
 
-                    b.Property<int>("InitiatorId")
+                    b.Property<int?>("InitiatorId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("InitiatorInstructor")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("InitiatorOther")
+                        .HasColumnType("bit");
 
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
@@ -25948,25 +25910,6 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("SafetyHazard");
                 });
 
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.SafetyHazard_ILA_Link", b =>
-                {
-                    b.HasOne("QTD2.Domain.Entities.Core.ILA", "ILA")
-                        .WithMany("SafetyHazard_ILA_Links")
-                        .HasForeignKey("ILAId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("QTD2.Domain.Entities.Core.SaftyHazard", "SaftyHazard")
-                        .WithMany("SafetyHazard_ILA_Links")
-                        .HasForeignKey("SafetyHazardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ILA");
-
-                    b.Navigation("SaftyHazard");
-                });
-
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SafetyHazard_Set_Link", b =>
                 {
                     b.HasOne("QTD2.Domain.Entities.Core.SaftyHazard", "SafetyHazard")
@@ -26357,11 +26300,10 @@ namespace QTD2.Data.Migrations.QTD
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
-                    b.HasOne("QTD2.Domain.Entities.Core.Position", "Initiator")
+                    b.HasOne("QTD2.Domain.Entities.Core.SimulatorScenario_Position", "Initiator")
                         .WithMany("SimulatorScenario_Scripts")
                         .HasForeignKey("InitiatorId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.NoAction);
 
                     b.Navigation("Initiator");
 
@@ -29555,8 +29497,6 @@ namespace QTD2.Data.Migrations.QTD
 
                     b.Navigation("Procedure_ILA_Links");
 
-                    b.Navigation("SafetyHazard_ILA_Links");
-
                     b.Navigation("SimulatorScenarioILA_Links");
 
                     b.Navigation("SimulatorScenario_ILAs");
@@ -29762,8 +29702,6 @@ namespace QTD2.Data.Migrations.QTD
 
                     b.Navigation("SimulatorScenarioPositon_Links");
 
-                    b.Navigation("SimulatorScenario_Scripts");
-
                     b.Navigation("TaskListReview_PositionLinks");
 
                     b.Navigation("Task_Positions");
@@ -29923,8 +29861,6 @@ namespace QTD2.Data.Migrations.QTD
 
                     b.Navigation("SafetyHazard_Histories");
 
-                    b.Navigation("SafetyHazard_ILA_Links");
-
                     b.Navigation("SafetyHazard_Set_Links");
 
                     b.Navigation("SafetyHazard_Task_Links");
@@ -29999,6 +29935,11 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("SimulatorScenarioTaskObjectives_Links");
 
                     b.Navigation("SimulatorScenario_EnablingObjectives_Links");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Position", b =>
+                {
+                    b.Navigation("SimulatorScenario_Scripts");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Script", b =>

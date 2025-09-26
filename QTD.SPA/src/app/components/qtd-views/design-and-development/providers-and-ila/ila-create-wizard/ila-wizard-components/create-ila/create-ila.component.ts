@@ -60,6 +60,7 @@ export class CreateIlaComponent implements OnInit, OnDestroy {
   @Input() isMetaILA: boolean = false;
   @Input() tabchange_bool: boolean;
   @Input() ILAdescription: string;
+  @Input() mode: string;
   provider_edit_mode: boolean;
   provider_change_mode: boolean;
   change_topic: boolean;
@@ -503,6 +504,10 @@ export class CreateIlaComponent implements OnInit, OnDestroy {
   }
 
   readyContinueButtonEnableLogic() {
+    if (this.mode === 'view') {
+      this.formChanges.emit('VALID');
+      return;
+    }
     this.positionsControl.statusChanges.subscribe((res) => {
       if (this.createILAForm.valid && res === 'VALID') {
         this.formChanges.emit(res);
@@ -605,21 +610,27 @@ export class CreateIlaComponent implements OnInit, OnDestroy {
   }
 
   readyCreateILAForm() {
+    const isView = this.mode === 'view';
     this.createILAForm = this.fb.group({
-      ILANumber: new UntypedFormControl(this.ILANumber, [Validators.required]),
-      ILAName: new UntypedFormControl(this.ILAName, [Validators.required]),
-      ILADescription: new UntypedFormControl(this.ILADescription),
-      topicsControl: new UntypedFormControl(),
-      nickName: new UntypedFormControl(),
-      provider: new UntypedFormControl('', [Validators.required]),
-      positionsControl: new UntypedFormControl(),
-      deliveryMethode: new UntypedFormControl(this.allDeliveryMethods,[Validators.required]),
-      other: new UntypedFormControl(''),
-      IsAvailableForAllIla: new UntypedFormControl(),
-      IsSelfPacedILA: new UntypedFormControl(),
-      searchTxt: new UntypedFormControl(''),
+      ILANumber: new UntypedFormControl({ value: this.ILANumber, disabled: isView }, [Validators.required]),
+      ILAName: new UntypedFormControl({ value: this.ILAName, disabled: isView }, [Validators.required]),
+      ILADescription: new UntypedFormControl({ value: this.ILADescription, disabled: isView }),
+      topicsControl: new UntypedFormControl({ value: '', disabled: isView }),
+      nickName: new UntypedFormControl({ value: '', disabled: isView }),
+      provider: new UntypedFormControl({ value: '', disabled: isView }, [Validators.required]),
+      positionsControl: new UntypedFormControl({ value: '', disabled: isView }),
+      deliveryMethode: new UntypedFormControl({ value: this.allDeliveryMethods, disabled: isView }, [Validators.required]),
+      other: new UntypedFormControl({ value: '', disabled: isView }),
+      IsAvailableForAllIla: new UntypedFormControl({ value: false, disabled: isView }),
+      IsSelfPacedILA: new UntypedFormControl({ value: false, disabled: isView }),
+      searchTxt: new UntypedFormControl({ value: '', disabled: isView }),
     });
+    if (isView) {
+      this.topicsControl.disable({ emitEvent: false });
+      this.positionsControl.disable({ emitEvent: false });
+    }
   }
+  
 
   selectFile(event: any) {
     //Angular 11, for stricter type

@@ -244,5 +244,12 @@ namespace QTD2.API.QTD.Controllers
             return Ok();
         }
 
+        [HttpGet]
+        [Route("/simulatorScenarios/{id}/positions")]
+        public async Task<IActionResult> GetSimulatorScenario_PositionsAsync(int id)
+        {
+            var result = await _simulatorScenarioService.GetSimulatorScenario_PositionsAsync(id);
+            return Ok(new { result });
+        }
     }
 }

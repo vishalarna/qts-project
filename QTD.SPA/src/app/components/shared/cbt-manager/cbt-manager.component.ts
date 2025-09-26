@@ -49,6 +49,7 @@ export class CbtManagerComponent implements OnInit {
   public defaultEmpSettingReleaseTypeId : string = "";
   openImportScormPopup = false;
   public launchedStudentsList: any[] = [];
+  @Input() mode: string;
 
   @Output()
   OnAttachCourseBegin: EventEmitter<any> = new EventEmitter();

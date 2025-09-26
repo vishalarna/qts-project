@@ -68,18 +68,6 @@ export class EnablingObjectivesService {
       );
   }
 
-  getSQsByPositionIds(option:PositionIdsModel) {
-    return firstValueFrom(this.http
-      .post(this.baseUrl + `/sqByPositions`, option)
-      .pipe(
-        map((res: any) => {
-
-          return res['listEO'] as EnablingObjective[];
-        })
-      )
-      );
-  }
-
   getMinimizedForTree() {
     return firstValueFrom(this.http
       .get(this.baseUrl + `/tree`)
@@ -927,5 +915,17 @@ export class EnablingObjectivesService {
         return res['result'] as boolean;
       })
     ));
+  }
+
+  getSQsByPositionIds(option:PositionIdsModel) {
+    return firstValueFrom(this.http
+      .post(this.baseUrl + `/sqByPositions`, option)
+      .pipe(
+        map((res: any) => {
+ 
+          return res['listEO'] as EnablingObjective[];
+        })
+      )
+      );
   }
 }

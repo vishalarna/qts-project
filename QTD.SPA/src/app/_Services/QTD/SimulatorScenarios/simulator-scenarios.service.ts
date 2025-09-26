@@ -371,4 +371,15 @@ export class SimulatorScenariosService {
     );
   }
 
+  getAllSimulatorScenario_PositionAsync(id:string) {
+    return firstValueFrom(this.http
+      .get(this.baseUrlWithSim + `/${id}/positions`)
+      .pipe(
+        map((res: any) => {
+          return res['result'] as SimulatorScenario_Position_VM[];
+        })
+      )
+      );
+  }
+
 }

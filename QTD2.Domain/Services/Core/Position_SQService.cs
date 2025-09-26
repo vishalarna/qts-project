@@ -23,7 +23,6 @@ namespace QTD2.Domain.Services.Core
             var positions_SQs = await FindAsync(r => r.EOId == eoId);
             return positions_SQs.ToList();
         }
-
         public async Task<List<EnablingObjective>> GetSQByPositionIdsAsync(List<int> positionIds)
         {
 

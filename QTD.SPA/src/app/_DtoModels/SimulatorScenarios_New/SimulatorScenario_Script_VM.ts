@@ -8,4 +8,6 @@ export class SimulatorScenario_Script_VM {
     criterias: SimulatorScenario_Script_Criteria_VM[] = [];
     time?: Date;
     eventId:string;
+      initiatorOther: boolean;
+    initiatorInstructor: boolean;
 }

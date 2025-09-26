@@ -18,6 +18,7 @@ import { ColloboratorSimulatorScenarioModalComponent } from './colloborator-simu
 import { SimulatorScenario_Collaborator_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Collaborator_VM';
 import { SimScenariosWizardCriteriaComponent } from './sim-scenarios-wizard-criteria/sim-scenarios-wizard-criteria.component';
 import { LabelReplacementPipe } from 'src/app/_Pipes/label-replacement.pipe';
+import { SimScenariosWizardIlaComponent } from './sim-scenarios-wizard-ila/sim-scenarios-wizard-ila.component';
 
 @Component({
   selector: 'app-simulator-scenarios-wizard',
@@ -33,6 +34,7 @@ export class SimulatorScenariosWizardComponent implements OnInit, AfterViewInit 
   @ViewChild('simScenariosInstructor') simScenariosInstructor: SimScenariosWizardInstructorComponent;
   @ViewChild('publishSimulatorScenario') publishSimulatorScenario: PublishSimulatorScenarioModalComponent;
   @ViewChild('collaboratorSimulatorScenario') collaboratorSimulatorScenario: ColloboratorSimulatorScenarioModalComponent;
+  @ViewChild('simScenariosILA') simScenariosILA: SimScenariosWizardIlaComponent;
   simulatorScenario_VM: SimulatorScenario_VM = new SimulatorScenario_VM();
   difficultyList: SimulatorScenario_Difficulty_VM[];
   collaborator_List: SimulatorScenario_Collaborator_VM[] = [];
@@ -46,34 +48,40 @@ export class SimulatorScenariosWizardComponent implements OnInit, AfterViewInit 
     return (this.simScenariosDetails?.scenarioDetailsForm?.valid ?? false) || (this.mode == "view");
   }
 
+  get isScenarioDetailsFormDirty(): boolean {
+    if (!this.simScenariosDetails?.scenarioDetailsForm) return false;
+    const currentValues = this.simScenariosDetails.scenarioDetailsForm.value;
+    const originalValues = this.simScenariosDetails.originalScenarioDetailsForm;
+    return Object.keys(currentValues).some(key => {
+      const current = currentValues[key] ?? '';
+      const original = originalValues[key] ?? '';
+      if (typeof current === 'number' || typeof original === 'number') {
+        return Number(current) !== Number(original);
+      }
+      return String(current).trim() !== String(original).trim();
+    });
+  }
 
-get isStep1FormDirty(): boolean {
-  if (!this.simScenariosDetails?.scenarioDetailsForm) return false;
+  get isSpecificationsFormDirty(): boolean {
+    if (!this.simScenariosSpecifications.specificationsForm) return false;
+    const currentValues = this.simScenariosSpecifications.specificationsForm.value;
+    return Object.keys(currentValues).some(
+      key => (currentValues[key] ?? "").trim() !== (this.simScenariosSpecifications.originalSpecifications[key] ?? "").trim()
+    );
+  }
 
-  const currentValues = this.simScenariosDetails?.scenarioDetailsForm.value;
-  return Object.keys(currentValues).some(
-    key => (currentValues[key] ?? "").trim() !== (this.simScenariosDetails.originalScenarioDetailsForm[key] ?? "").trim()
-  );
-}
+  get isInstructorRatingScaleFormDirty(): boolean {
+    if (!this.simScenariosInstructor?.ratingScaleForm) return false;
+    const currentValues = this.simScenariosInstructor?.ratingScaleForm.value;
+    return Object.keys(currentValues).some(
+      key => (currentValues[key] ?? "").trim() !== (this.simScenariosInstructor.originalratingScaleForm[key] ?? "").trim()
+    );
+  }
 
-get isStep4FormDirty(): boolean {
-  if (!this.simScenariosSpecifications.specificationsForm) return false;
-
-  const currentValues = this.simScenariosSpecifications.specificationsForm.value;
-  return Object.keys(currentValues).some(
-    key => (currentValues[key] ?? "").trim() !== (this.simScenariosSpecifications.originalSpecifications[key] ?? "").trim()
-  );
-}
-
-get isStep6FormDirty(): boolean {
-  if (!this.simScenariosInstructor?.ratingScaleForm) return false;
-
-  const currentValues = this.simScenariosInstructor?.ratingScaleForm.value;
-  return Object.keys(currentValues).some(
-    key => (currentValues[key] ?? "").trim() !== (this.simScenariosInstructor.originalratingScaleForm[key] ?? "").trim()
-  );
-}
-
+  get isILAStepDirty(): boolean {
+   return this.simScenariosILA?.isModified ?? false;
+  }
+  
   constructor(
     private formBuilder: UntypedFormBuilder,
     private router: Router,
@@ -109,7 +117,7 @@ get isStep6FormDirty(): boolean {
       this.simulatorScenario_VM = state.data;
       this.goToNext = true;
       this.patchReviewDetails();
- 
+
       if (this.stepper) {
         setTimeout(() => {
           this.stepper.selectedIndex = 1;
@@ -166,35 +174,38 @@ get isStep6FormDirty(): boolean {
  }
 
   exitWizard(templateRef: any) {
-    debugger
-  const currentStep = this.stepper.selectedIndex;
+  const selectedStepIndex = this.stepper.selectedIndex;
 
-  let isDirty = false;
-  if (currentStep === 0) {
-    isDirty = this.isStep1FormDirty;
-  } else if (currentStep === 3) { 
-    isDirty = this.isStep4FormDirty;
-  } else if (currentStep === 5) { 
-    isDirty = this.isStep6FormDirty;
+  let hasUnsavedChanges = false;
+  if (selectedStepIndex === 0) {
+    hasUnsavedChanges = this.isScenarioDetailsFormDirty;
+  } else if (selectedStepIndex === 3) {
+    hasUnsavedChanges = this.isSpecificationsFormDirty;
+  } else if (selectedStepIndex === 5) {
+    hasUnsavedChanges = this.isInstructorRatingScaleFormDirty;
   }
-
-  if (this.mode !== 'view' && isDirty) {
-    this.dialog.open(templateRef, {
-      width: '600px',
-      hasBackdrop: true,
-      disableClose: true,
-    });
-  } else {
-    this.router.navigate(['/dnd/simulatorscenarios/overview']);
-  }
-}
-
-
-  navigateToOverview(){
-    this.dialog.closeAll();
-     this.router.navigate(['/dnd/simulatorscenarios/overview']);
+  else if(selectedStepIndex === 6){
+    hasUnsavedChanges = this.isILAStepDirty;
   }
  
+  if (this.mode != 'view' && hasUnsavedChanges ) {
+      const dialogRef = this.dialog.open(templateRef, {
+        width: '600px',
+        height: 'auto',
+        hasBackdrop: true,
+        disableClose: true,
+      });
+    }
+    else {
+      this.router.navigate(['/dnd/simulatorscenarios/overview']);
+    }
+  }
+
+  navigateToOverview(){
+     this.dialog.closeAll();
+     this.router.navigate(['/dnd/simulatorscenarios/overview']);
+  }
+
   async closeWizard(){
     await this.router.navigate(['/dnd/simulatorscenarios/overview']);
   }

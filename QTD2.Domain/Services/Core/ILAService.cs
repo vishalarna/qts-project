@@ -468,7 +468,6 @@ namespace QTD2.Domain.Services.Core
 
             var ilaWithLinks = FindQueryWithIncludeAsync(r => r.Id == id, new string[]
            {
-                 "SafetyHazard_ILA_Links",
                 "ILA_PreRequisite_Links",
                 "ILA_NERCAudience_Links",
                 "ILACustomObjective_Links",
@@ -513,7 +512,6 @@ namespace QTD2.Domain.Services.Core
             predicates.Add(r => r.Id == id);
             var ilaWithCBTs = await FindWithIncludeAsync(predicates, new string[] { "CBTs.ScormUploads" }, true);
 
-            ilaCopy.SafetyHazard_ILA_Links = ilaWithLinks.SafetyHazard_ILA_Links;
             ilaCopy.ILA_PreRequisite_Links = ilaWithLinks.ILA_PreRequisite_Links;
             ilaCopy.ILA_NERCAudience_Links = ilaWithLinks.ILA_NERCAudience_Links;
             ilaCopy.ILACustomObjective_Links = ilaWithLinks.ILACustomObjective_Links;

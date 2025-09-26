@@ -400,19 +400,15 @@
                                             var per005Eops = Model.CertificationFulfillmentStatuses
                                             .Where(cfs => cfs.CertificationId == Model.EmergencyResponseCertification.Id && cfs.EmployeeId == certStatus.EmployeeId)
                                             .SelectMany(cfs => cfs.FulfillmentRecords)
-                                            .Where(fr => fr.ClassScheduleEmployeeId == record?.ClassScheduleEmployeeId)
+                                            .Where(fr => (record != null && fr.ClassScheduleEmployeeId == record.ClassScheduleEmployeeId) || (fr.ILAId == idpSchedule.IDP.ILA.Id))
                                             .Sum(fr => fr.CEHAwarded);
 
-                                            var reg = Model.CertificationFulfillmentStatuses
-                                            .Where(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus.EmployeeId)
-                                            .SelectMany(cfs => cfs.FulfillmentRecords)
-                                            .Where(fr => fr.ClassScheduleEmployeeId == record?.ClassScheduleEmployeeId)
+                                            var reg = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords)
+                                            .Where(fr => (record != null && fr.ClassScheduleEmployeeId == record.ClassScheduleEmployeeId) || (idpSchedule?.IDP?.ILA != null && fr.ILAId == idpSchedule.IDP.ILA.Id))
                                             .Sum(fr => fr.CEHAwarded);
 
-                                            var reg2 = Model.CertificationFulfillmentStatuses
-                                            .Where(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus.EmployeeId)
-                                            .SelectMany(cfs => cfs.FulfillmentRecords)
-                                            .Where(fr => fr.ClassScheduleEmployeeId == record?.ClassScheduleEmployeeId)
+                                            var reg2 = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus.EmployeeId)
+                                            .SelectMany(cfs => cfs.FulfillmentRecords).Where(fr => (record != null && fr.ClassScheduleEmployeeId == record.ClassScheduleEmployeeId) || (idpSchedule?.IDP?.ILA != null && fr.ILAId == idpSchedule.IDP.ILA.Id))
                                             .Sum(fr => fr.CEHAwarded);
 
                                             var other = Model.CertificationFulfillmentStatuses
@@ -446,7 +442,7 @@
                                 {
                                     @{
                                         var record = relevantAllRecords
-                                            .Where(r => idpSchedule.ClassSchedule?.ClassSchedule_Employee.Any(cse => cse.Id == r.ClassScheduleEmployeeId) == true).FirstOrDefault();
+                                        .Where(r => idpSchedule.ClassSchedule?.ClassSchedule_Employee.Any(cse => cse.Id == r.ClassScheduleEmployeeId) == true).FirstOrDefault();
                                     }
                                     <tr class="@(!idpSchedule.IDP.ILA.Active ? "expired-row" : "")" style="border-bottom: 1px solid #000;">
                                         @if (totalColspan == 0)
@@ -511,19 +507,17 @@
                                             var per005Eops = Model.CertificationFulfillmentStatuses
                                             .Where(cfs => cfs.CertificationId == Model.EmergencyResponseCertification.Id && cfs.EmployeeId == certStatus.EmployeeId)
                                             .SelectMany(cfs => cfs.FulfillmentRecords)
-                                            .Where(fr => fr.ClassScheduleEmployeeId == record?.ClassScheduleEmployeeId)
+                                            .Where(fr => (record != null && fr.ClassScheduleEmployeeId == record.ClassScheduleEmployeeId) || (fr.ILAId == idpSchedule.IDP.ILA.Id))
                                             .Sum(fr => fr.CEHScheduled);
 
-                                            var reg = Model.CertificationFulfillmentStatuses
-                                            .Where(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus.EmployeeId)
-                                            .SelectMany(cfs => cfs.FulfillmentRecords)
-                                            .Where(fr => fr.ClassScheduleEmployeeId == record?.ClassScheduleEmployeeId)
+                                            var reg = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords)
+                                            .Where(fr => (record != null && fr.ClassScheduleEmployeeId == record.ClassScheduleEmployeeId) || (idpSchedule?.IDP?.ILA != null && fr.ILAId == idpSchedule.IDP.ILA.Id))
                                             .Sum(fr => fr.CEHScheduled);
 
                                             var reg2 = Model.CertificationFulfillmentStatuses
                                             .Where(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus.EmployeeId)
                                             .SelectMany(cfs => cfs.FulfillmentRecords)
-                                            .Where(fr => fr.ClassScheduleEmployeeId == record?.ClassScheduleEmployeeId)
+                                            .Where(fr => (record != null && fr.ClassScheduleEmployeeId == record.ClassScheduleEmployeeId) || (idpSchedule?.IDP?.ILA != null && fr.ILAId == idpSchedule.IDP.ILA.Id))
                                             .Sum(fr => fr.CEHScheduled);
 
                                             var other = Model.CertificationFulfillmentStatuses
@@ -562,22 +556,18 @@
 
                                 var totalCEHs = filteredRelevantCompletedRecords.Sum(r => r.CEHAwarded);
 
-                                var per005EOPs = Model.CertificationFulfillmentStatuses
-                                .Where(cfs => cfs.CertificationId == Model.EmergencyResponseCertification.Id && cfs.EmployeeId == certStatus.EmployeeId)
-                                .SelectMany(cfs => cfs.FulfillmentRecords)
-                                .Where(fr => filteredRelevantCompletedRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId))
+                                var per005EOPs = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.EmergencyResponseCertification.Id && cfs.EmployeeId == certStatus.EmployeeId)
+                                .SelectMany(cfs => cfs.FulfillmentRecords).Where(fr => filteredRelevantCompletedRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId || (rr.ILAId == fr.ILAId)))
                                 .Sum(fr => fr.CEHAwarded);
 
                                 var regValue = Model.CertificationFulfillmentStatuses
                                 .Where(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus.EmployeeId)
                                 .SelectMany(cfs => cfs.FulfillmentRecords)
-                                .Where(fr => filteredRelevantCompletedRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId))
+                                .Where(fr => filteredRelevantCompletedRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId || (rr.ILAId == fr.ILAId)))
                                 .Sum(fr => fr.CEHAwarded);
 
-                                var reg2Value = Model.CertificationFulfillmentStatuses
-                                .Where(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus.EmployeeId)
-                                .SelectMany(cfs => cfs.FulfillmentRecords)
-                                .Where(fr => filteredRelevantCompletedRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId))
+                                var reg2Value = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords)
+                                .Where(fr => filteredRelevantCompletedRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId || (rr.ILAId == fr.ILAId)))
                                 .Sum(fr => fr.CEHAwarded);
 
                                 var otherValue = Model.CertificationFulfillmentStatuses
@@ -621,22 +611,17 @@
                                 var totalTrainingHrsReq = filteredRelevantAllRecords.Sum(rr => rr.TotalTrainingHoursAwarded);
                                 var totalCEHReq = filteredRelevantAllRecords.Sum(rr => rr.CEHScheduled);
 
-                                var per005EOPsReq = Model.CertificationFulfillmentStatuses
-                                .Where(cfs => cfs.CertificationId == Model.EmergencyResponseCertification.Id && cfs.EmployeeId == certStatus.EmployeeId)
-                                .SelectMany(cfs => cfs.FulfillmentRecords)
-                                .Where(fr => filteredRelevantAllRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId))
+                                var per005EOPsReq = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.EmergencyResponseCertification.Id && cfs.EmployeeId == certStatus.EmployeeId).SelectMany(cfs => cfs.FulfillmentRecords)
+                                .Where(fr => filteredRelevantAllRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId || (rr.ILAId == fr.ILAId)))
                                 .Sum(fr => fr.CEHScheduled);
 
-                                var regCEHScheduled = Model.CertificationFulfillmentStatuses
-                                .Where(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus.EmployeeId)
-                                .SelectMany(cfs => cfs.FulfillmentRecords)
-                                .Where(fr => filteredRelevantAllRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId))
+                                var regCEHScheduled = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.RegCertificationId && cfs.EmployeeId == certStatus.EmployeeId)
+                                .SelectMany(cfs => cfs.FulfillmentRecords).Where(fr => filteredRelevantAllRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId || (rr.ILAId == fr.ILAId)))
                                 .Sum(fr => fr.CEHScheduled);
 
-                                var reg2CEHScheduled = Model.CertificationFulfillmentStatuses
-                                .Where(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus.EmployeeId)
+                                var reg2CEHScheduled = Model.CertificationFulfillmentStatuses.Where(cfs => cfs.CertificationId == Model.Reg2CertificationId && cfs.EmployeeId == certStatus.EmployeeId)
                                 .SelectMany(cfs => cfs.FulfillmentRecords)
-                                .Where(fr => filteredRelevantAllRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId))
+                                .Where(fr => filteredRelevantAllRecords.Any(rr => rr.ClassScheduleEmployeeId == fr.ClassScheduleEmployeeId || (rr.ILAId == fr.ILAId)))
                                 .Sum(fr => fr.CEHScheduled);
 
                                 var otherCEHScheduled = Model.CertificationFulfillmentStatuses
@@ -708,7 +693,7 @@
                     }
                 }
             </td>
-        </tr> 
+        </tr>
     }
     else
     {

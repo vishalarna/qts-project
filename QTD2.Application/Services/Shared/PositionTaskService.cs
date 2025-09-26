@@ -223,5 +223,11 @@ namespace QTD2.Application.Services.Shared
             histOptions.Version_TaskId = version.Id;
             await _taskHistoryService.SaveHistoryAsync(histOptions);
         }
-	}
+
+        public async Task<List<Position_Task>> GetPositionTaskByPositionIdAsync(int id)
+        {
+            var position_Tasks = await _positionTaskService.GetPositionTaskByPositionId(id);
+            return position_Tasks.ToList();
+        }
+    }
 }

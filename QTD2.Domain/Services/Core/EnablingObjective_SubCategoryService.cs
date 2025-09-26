@@ -32,7 +32,6 @@ namespace QTD2.Domain.Services.Core
 
             return subCats;
         }
-
         public async Task<List<EnablingObjective_SubCategory>> GetMinimalEOSubCatDataByIds(List<int> ids)
         {
             var subCats = (await FindAsync(s => ids.Contains(s.Id))).Select(s => new EnablingObjective_SubCategory
@@ -49,5 +48,6 @@ namespace QTD2.Domain.Services.Core
 
             return subCats;
         }
+
     }
 }

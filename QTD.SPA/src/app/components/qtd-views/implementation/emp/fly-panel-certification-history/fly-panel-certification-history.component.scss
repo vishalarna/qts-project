@@ -1,0 +1,33 @@
+.row-field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 1rem;
+  width: 70%;
+}
+
+.row-field app-label {
+  flex: 0 0 200px;
+  margin-right: 12px;
+}
+
+.readonly-field {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+  background: rgba(239, 239, 239, 0.3);
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.row-field app-date {
+  flex: 1;
+}
+
+.inline-label {
+  flex: 0 0 200px; 
+  margin-right: 12px;
+  white-space: normal;
+  word-break: break-word;
+}
+

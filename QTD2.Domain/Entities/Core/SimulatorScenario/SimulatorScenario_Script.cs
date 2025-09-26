@@ -11,10 +11,12 @@ namespace QTD2.Domain.Entities.Core
     {
         public string Title { get; set; }
         public string? Description { get; set; }
-        public int InitiatorId { get; set; }
         public DateTime? Time { get; set; }
         public int EventId { get; set; }
-        public virtual Position Initiator { get; set; }
+        public bool InitiatorOther { get; set; }
+        public bool InitiatorInstructor { get; set; }
+        public int? InitiatorId { get; set; }
+        public virtual SimulatorScenario_Position Initiator { get; set; }
         public virtual SimulatorScenario_Event  SimulatorScenario_Event { get; set; }
         public virtual List<SimulatorScenario_Script_Criteria> Criterias { get; set; } = new List<SimulatorScenario_Script_Criteria>();
 
@@ -23,13 +25,15 @@ namespace QTD2.Domain.Entities.Core
 
         }
 
-        public SimulatorScenario_Script(string title, string description, int initiatorId, DateTime? time, int eventId)
+        public SimulatorScenario_Script(string title, string description, int? initiatorId, DateTime? time, int eventId, bool initiatorOther, bool initiatorInstructor)
         {
             Title = title;
             Description = description;
             InitiatorId = initiatorId;
             Time = time;
             EventId = eventId;
+            InitiatorOther = initiatorOther;
+            InitiatorInstructor = initiatorInstructor;
         }
 
         public void SetCriterias(SimulatorScenario_Script_Criteria criteria)
@@ -51,13 +55,21 @@ namespace QTD2.Domain.Entities.Core
             Time = time;
 
         }
-        public void SetInitiatorId(int initiatorId)
+        public void SetInitiatorId(int? initiatorId)
         {
             InitiatorId = initiatorId;
         }
         public void SetEventId(int eventId)
         {
             EventId = eventId;
+        }
+        public void SetInitiatorOther(bool initiatorOther)
+        {
+            InitiatorOther = initiatorOther;
+        }
+        public void SetInitiatorInstructor(bool initiatorInstructor)
+        {
+            InitiatorInstructor = initiatorInstructor;
         }
 
         public override T Copy<T>(string createdBy)

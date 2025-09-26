@@ -14,12 +14,7 @@ namespace QTD2.Data.Mapping.Core
         public override void Configure(EntityTypeBuilder<EMPSkillQualificationTraineeNotification> builder)
         {
             builder.HasBaseType<Notification>();
-
-            builder
-                .HasOne(x=>x.SkillQualification)
-                .WithMany()
-                .HasForeignKey(x=>x.SkillQualificationId)
-                .OnDelete(DeleteBehavior.NoAction);
+            builder.HasOne(x => x.SkillQualification).WithMany().HasForeignKey(x => x.SkillQualificationId).OnDelete(DeleteBehavior.NoAction);
         }
     }
 }

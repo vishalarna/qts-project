@@ -10,5 +10,6 @@ namespace QTD2.Domain.Interfaces.Service.Core
     public interface ISimulatorScenario_ScriptService : Common.IService<SimulatorScenario_Script>
     {
         public System.Threading.Tasks.Task<List<SimulatorScenario_Script>> GetScriptsByEventIdAsync(int eventId);
+        public System.Threading.Tasks.Task<List<SimulatorScenario_Script>> GetAllScriptAsync();
     }
 }

@@ -198,12 +198,11 @@
 
               <div class="flex flex-row justify-end py-8">
                 <app-button
-                [disabled]="!isSelectedAndSaved()"
-                  (click)="deleteLinksByCertifications()"
+                  (click)="isSelectedAndSaved() ? deleteLinksByCertifications() : closeCertificationForm()"
                   type="button"
                   color="secondary"
                   size="sm"
-                  text="Delete"
+                  [text]="isSelectedAndSaved() ? 'Delete' : 'Close'"
                   style="margin-right: 4px"
                 >
                 </app-button>
@@ -213,6 +212,7 @@
                   color="secondary"
                   size="sm"
                   text="Save"
+                  [disabled]="!isByCertificationFormValid()"
                 >
                 </app-button>
               </div>
@@ -321,12 +321,11 @@
 
               <div class="flex flex-row justify-end py-8">
                 <app-button
-                [disabled]="!isSelectedAndSaved()"
-                  (click)="deleteLinksByCertifyingBody()"
+                (click)="isSelectedAndSaved() ? deleteLinksByCertifyingBody() : closeCertifyingBodyForm()"
                   type="button"
                   color="secondary"
                   size="sm"
-                  text="Delete"
+                  [text]="isSelectedAndSaved() ? 'Delete' : 'Close'"
                   style="margin-right: 4px"
                 >
                 </app-button>
@@ -336,6 +335,7 @@
                   color="secondary"
                   size="sm"
                   text="Save"
+                  [disabled]="!isByCertifyingBodyFormValid()"
                 >
                 </app-button>
               </div>
@@ -429,7 +429,7 @@
         size="sm"
         text="Save as Draft"
         (clicked)="saveILA('Draft')"
-        [disabled]="!basicIlaForm.valid"
+        [disabled]="!isMainFormValid()"
       >
       </app-button>
       <app-button
@@ -438,7 +438,7 @@
         size="sm"
         text="Save as Published"
         (clicked)="saveILA('Published')"
-        [disabled]="!basicIlaForm.valid"
+        [disabled]="!isMainFormValid()"
       >
       </app-button>
     </div>

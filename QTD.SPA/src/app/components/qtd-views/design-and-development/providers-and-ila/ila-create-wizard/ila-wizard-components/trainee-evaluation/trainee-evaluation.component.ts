@@ -75,6 +75,7 @@ export class TraineeEvaluationComponent implements OnInit, OnDestroy, AfterViewI
   @Input() simulation_status: boolean;
   @Input() editIlaCheck: any;
   @Input() contorlCheckSimulation: any;
+  @Input() ilaMode: string;
 
   @Output() create_new = new EventEmitter<any>();
   @Input() show_simulations: boolean;
@@ -233,6 +234,10 @@ export class TraineeEvaluationComponent implements OnInit, OnDestroy, AfterViewI
   // editorData = {};
   ngOnInit(){
     this.loadAsync();
+    if(this.ilaMode === 'view')
+    {
+      this.evaluationForm.disable();
+    }
   }
 
   async loadAsync() {

@@ -40,7 +40,7 @@
                 <div class="col-md-12 p-0 report-comp-section-padding">
                     <label class="report-comp-section-label" style="font-size: 18px;font-weight: 500;margin-bottom: 16px;">{{(reportSkeletonFilter.name| dynamicLabelReplacement) | async}}</label>
                     <div class="d-flex" style="gap: 5px;">
-                        <div *ngFor="let filterOptionParent of filterOptionData[0]?.filterOptionParents" class="w-100">
+                        <div *ngFor="let filterOptionParent of parentOptions?.filterOptionParents" class="w-100">
                             <label class="report-comp-section-label">{{(filterOptionParent?.name | dynamicLabelReplacement) | async}}</label>
                             <mat-select  [placeholder]="'Select '+ filterOptionParent?.name | dynamicLabelReplacement | async" [disabled]="getCurrentState(filterOptionParent?.name)"  [value]="getSelectedValue(filterOptionParent?.name)" (selectionChange)="setDropdownValue($event,filterOptionParent?.name)" class="appearance-none rounded border w-full px-4 py-2.5 mt-2 mb-3">
                                 <mat-option *ngFor="let value of this.optionDropdownObj.get(filterOptionParent.name)" [value]="value" >

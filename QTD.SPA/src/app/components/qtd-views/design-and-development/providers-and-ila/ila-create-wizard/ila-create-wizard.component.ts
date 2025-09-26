@@ -71,7 +71,7 @@ export class IlaCreateWizardComponent implements OnInit, OnDestroy {
   providerIsNerc = false;
   header : string;
   description = "Leaving this page will discard any unsaved changes.";
-  mode:string ='create';
+  mode:string;
   isILASaved:boolean = false;
   isPublicCourseChecked: boolean = false;
 
@@ -107,13 +107,17 @@ export class IlaCreateWizardComponent implements OnInit, OnDestroy {
       if(res.data !== undefined){
         this.ilaId = res.data;
         this.getILAData();
-        if(res.isCreateMode !== undefined && res.isCreateMode){
+        if(res.isViewMode) {
+          this.mode = 'view';
+        }else if(res.isCreateMode)
+        {
           this.mode='create';
         }else{
           this.mode='edit';
         }
       }
       else{
+        this.mode = 'create';
       }
     })
     this.isLoading = false;
@@ -340,8 +344,27 @@ export class IlaCreateWizardComponent implements OnInit, OnDestroy {
     this.previewContainer = undefined;
     this.selectedIndex = 1;
   }
-  async continueClicked() { 
+  async continueClicked() {
     this.isLoading=true;
+    if (this.mode === 'view') {
+      if (this.stepper) {
+        const currentStep = this.stepper.steps.toArray()[this.selectedIndex];
+        if (currentStep) {
+          currentStep.completed = true;
+        }
+  
+        const nextIndex = this.selectedIndex + 1;
+        if (nextIndex < this.stepper.steps.length) {
+          this.stepper.selectedIndex = nextIndex;
+        }
+        const headers = document.querySelectorAll(".create-ila-stepper .mat-horizontal-stepper-header-container .mat-step-header");
+        const lines = document.querySelectorAll(".create-ila-stepper .mat-horizontal-stepper-header-container .mat-stepper-horizontal-line");
+        if (headers[this.selectedIndex]) headers[this.selectedIndex].classList.add('interacted');
+        if (lines[this.selectedIndex]) lines[this.selectedIndex].classList.add('interacted');
+      }
+      this.showSpinner = false;
+      return;
+    }
     if(this.mode==='create'){
       let matStepHeaders = document.querySelectorAll(".create-ila-stepper .mat-horizontal-stepper-header-container .mat-step-header");
       let matStepHeadersAdjacent = document.querySelectorAll(".create-ila-stepper .mat-horizontal-stepper-header-container .mat-stepper-horizontal-line");
@@ -494,4 +517,9 @@ export class IlaCreateWizardComponent implements OnInit, OnDestroy {
   isPublicCourseCheckboxChecked(event: boolean){
     this.isPublicCourseChecked = event;
   }
+  
+  async closeView() {
+    await this.router.navigate(['dnd/ila']);
+  }
+  
 }

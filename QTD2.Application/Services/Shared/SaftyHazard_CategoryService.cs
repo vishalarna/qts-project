@@ -20,7 +20,7 @@ using ISaftyHazardDomainService = QTD2.Domain.Interfaces.Service.Core.ISaftyHaza
 using IProcedure_SaftyHazard_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.IProcedure_SaftyHazard_LinkService;
 using ISaftyHazard_EO_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_EO_LinkService;
 using ISaftyHazard_RR_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISaftyHazard_RR_LinkService;
-using ISaftyHazard_ILA_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.ISafetyHazard_ILA_LinkService;
+using IILA_SafetyHazard_LinkDomainService = QTD2.Domain.Interfaces.Service.Core.IILA_SafetyHazard_LinkService;
 using QTD2.Domain.Exceptions;
 
 namespace QTD2.Application.Services.Shared
@@ -40,7 +40,7 @@ namespace QTD2.Application.Services.Shared
         private readonly IProcedure_SaftyHazard_LinkDomainService _proc_sh_linkService;
         private readonly ISaftyHazard_EO_LinkDomainService _sh_eo_linkService;
         private readonly ISaftyHazard_RR_LinkDomainService _sh__rr_linkService;
-        private readonly ISaftyHazard_ILA_LinkDomainService _sh_ila_linkService;
+        private readonly IILA_SafetyHazard_LinkDomainService _iLA_SafetyHazard_LinkDomainService;
 
         public SaftyHazard_CategoryService(
             ISaftyHazard_CategoryDomainService sh_cat_service,
@@ -52,8 +52,7 @@ namespace QTD2.Application.Services.Shared
             ISafetyHazard_CategoryHistoryDomainService shCatHistService,
             IProcedure_SaftyHazard_LinkDomainService proc_sh_linkService,
             ISaftyHazard_EO_LinkDomainService sh_eo_linkService,
-            ISaftyHazard_RR_LinkDomainService sh__rr_linkService,
-            ISaftyHazard_ILA_LinkDomainService sh_ila_linkService)
+            ISaftyHazard_RR_LinkDomainService sh__rr_linkService, IILA_SafetyHazard_LinkDomainService iLA_SafetyHazard_LinkDomainService)
         {
             _sh_cat_service = sh_cat_service;
             _httpContextAccessor = httpContextAccessor;
@@ -68,7 +67,7 @@ namespace QTD2.Application.Services.Shared
             _proc_sh_linkService = proc_sh_linkService;
             _sh_eo_linkService = sh_eo_linkService;
             _sh__rr_linkService = sh__rr_linkService;
-            _sh_ila_linkService = sh_ila_linkService;
+            _iLA_SafetyHazard_LinkDomainService = iLA_SafetyHazard_LinkDomainService;
         }
 
         public async System.Threading.Tasks.Task ActiveAsync(SaftyHazardCategoryOptions options)
@@ -170,7 +169,7 @@ namespace QTD2.Application.Services.Shared
                     sh_cats[i].SaftyHazards.ToList()[j].Procedure_SaftyHazard_Links = await _proc_sh_linkService.FindQuery(x => x.SaftyHazardId == sh_cats[i].SaftyHazards.ToList()[j].Id).ToListAsync();
                     sh_cats[i].SaftyHazards.ToList()[j].SafetyHazard_EO_Links = await _sh_eo_linkService.FindQuery(x => x.SafetyHazardId == sh_cats[i].SaftyHazards.ToList()[j].Id).ToListAsync();
                     sh_cats[i].SaftyHazards.ToList()[j].SaftyHazard_RR_Links = await _sh__rr_linkService.FindQuery(x => x.SafetyHazardId == sh_cats[i].SaftyHazards.ToList()[j].Id).ToListAsync();
-                    sh_cats[i].SaftyHazards.ToList()[j].SafetyHazard_ILA_Links = await _sh_ila_linkService.FindQuery(x => x.SafetyHazardId == sh_cats[i].SaftyHazards.ToList()[j].Id).ToListAsync();
+                    sh_cats[i].SaftyHazards.ToList()[j].ILA_SafetyHazard_Links = await _iLA_SafetyHazard_LinkDomainService.FindQuery(x => x.SafetyHazardId == sh_cats[i].SaftyHazards.ToList()[j].Id).ToListAsync();
                 }
             }
             sh_cats = sh_cats.Where(sh_cat => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, sh_cat, SaftyHazard_CategoryOperations.Read).Result.Succeeded).ToList();

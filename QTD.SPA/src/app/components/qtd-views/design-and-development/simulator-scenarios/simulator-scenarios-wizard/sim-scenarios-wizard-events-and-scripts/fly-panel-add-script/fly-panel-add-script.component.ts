@@ -1,12 +1,13 @@
 import { Component, EventEmitter, Input, OnInit, Output, ViewChild } from '@angular/core';
 import { UntypedFormBuilder, UntypedFormControl, UntypedFormGroup, Validators } from '@angular/forms';
 import { MatLegacySelect as MatSelect } from '@angular/material/legacy-select';
-import { Position } from '@models/Position/Position';
+import { SimulatorScenario_Position_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Position_VM';
 import { SimulatorScenario_Script_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Script_VM';
 import { SimulatorScenario_Task_Criteria_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_Task_Criteria_VM';
 import { SimulatorScenario_VM } from '@models/SimulatorScenarios_New/SimulatorScenario_VM';
-import { PositionsService } from 'src/app/_Services/QTD/positions.service';
+import { PositionTaskService } from 'src/app/_Services/QTD/Position_Task/api.positiontask.service';
 import { SimulatorScenarioService } from 'src/app/_Services/QTD/simulator-scenario.service';
+import { SimulatorScenariosService } from 'src/app/_Services/QTD/SimulatorScenarios/simulator-scenarios.service';
 import { FlyInPanelService } from 'src/app/_Shared/services/flyInPanel.service';
 import { SweetAlertService } from 'src/app/_Shared/services/sweetalert.service';
 
@@ -27,8 +28,6 @@ export class FlyPanelAddScriptComponent  implements OnInit  {
   simScenarioScript: SimulatorScenario_Script_VM;
   addScriptForm: UntypedFormGroup;
   taskCriteriaControl = new UntypedFormControl([]);
-  positionsList: Position[];
-  filteredPositions: Position[];
   taskCrtiterias: SimulatorScenario_Task_Criteria_VM[] = [];
   criteriaIds: string[] = [];
   dayPeriod: string = 'AM';
@@ -38,15 +37,20 @@ export class FlyPanelAddScriptComponent  implements OnInit  {
   @ViewChild('selectCriteria') selectCriteria:any;
   @ViewChild('selectControl', { static: false }) selectControl!: MatSelect;
   editScriptDetails:SimulatorScenario_Script_VM;
+  simulatorScenario_PositionsList:SimulatorScenario_Position_VM[];
+  filteredSimulatorScenario_Positions: SimulatorScenario_Position_VM[];
   get taskCriteriaList(): SimulatorScenario_Task_Criteria_VM[] {
    return (this.inputSimulatorScenario_VM?.taskCriterias ?? []);
   }
+  filteredTaskCriteriaList: SimulatorScenario_Task_Criteria_VM[] = [];
+
   constructor(
     private formBuilder: UntypedFormBuilder,
     public flyPanelService: FlyInPanelService,
-    private positionService: PositionsService,
+    private positionTaskService: PositionTaskService,
     private alert: SweetAlertService,
-    private simScenarioService: SimulatorScenarioService
+    private simScenarioService: SimulatorScenarioService,
+     private simSceariosService: SimulatorScenariosService,
   ) { }
 
   ngOnInit() {
@@ -57,10 +61,20 @@ export class FlyPanelAddScriptComponent  implements OnInit  {
 
 
   initializeAddScriptForm() {
+    let initiatorValue: string | null = this.editScriptDetails?.initiatorId ?? null;
+    if (this.editScriptDetails?.initiatorOther) {
+      initiatorValue = 'Other';
+       this.taskCriteriaControl.disable();
+       this.filteredTaskCriteriaList = [];
+    } else if (this.editScriptDetails?.initiatorInstructor) {
+      initiatorValue = 'Instructor';
+      this.taskCriteriaControl.disable();
+      this.filteredTaskCriteriaList = [];
+    }
     this.addScriptForm = this.formBuilder.group({
       scriptTitle: [this.editScriptDetails?.title,Validators.required],
       scriptDescription: [this.editScriptDetails?.description],
-      initiator: [this.editScriptDetails?.initiatorId, Validators.required],
+      initiator: [initiatorValue, Validators.required],
       scriptHours: [],
       scriptMins: [],
       isAnotherScript: [false],
@@ -70,17 +84,22 @@ export class FlyPanelAddScriptComponent  implements OnInit  {
   }
 
   async loadAsync(){
-    await this.getPositionsAsync();
+    await this.loadSimulatorScenarioPositions();
     await this.getScriptAsync();
   }
 
   async getScriptAsync(){
     if(this.scriptId != null && this.scriptId){
-      await this.simScenarioService.getScriptAsync(this.scriptId,this.editEventId).then(res=>{
+      await this.simScenarioService.getScriptAsync(this.scriptId,this.editEventId).then(async res=>{
         this.editScriptDetails = res ;
-        let alreadyLinkedCriterias = this.editScriptDetails.criterias.map(x=>x.criteriaId);
-        let selectedCriterias = this.taskCriteriaList.filter(x=> alreadyLinkedCriterias.includes(x.id));
-        this.taskCriteriaControl = new UntypedFormControl(selectedCriterias);
+        const selectedSimScenarioPosId = this.editScriptDetails.initiatorId;
+        const selectedPosition = this.filteredSimulatorScenario_Positions.find(p => p.id === selectedSimScenarioPosId);
+        if (selectedPosition) {
+          await this.filterCriteriaByPosition(selectedPosition.positionId);
+          const linkedCriteriaId = this.editScriptDetails.criterias[0]?.criteriaId;
+          const selectedCriteria = this.filteredTaskCriteriaList.find(x => x.id === linkedCriteriaId) ?? null;
+          this.taskCriteriaControl = new UntypedFormControl(selectedCriteria);
+        }
         this.enteredDate = this.editScriptDetails.time !=  null ? new Date(this.editScriptDetails.time) : null ;
         this.initializeAddScriptForm();
         this.setTimeValues();
@@ -105,34 +124,72 @@ export class FlyPanelAddScriptComponent  implements OnInit  {
     this.addScriptForm.get('scriptMins')?.setValue(minutes);
   }
 
-  async getPositionsAsync() {
-    this.loader = true;
-    await this.positionService.getAllWithoutIncludes().then((res) => {
-      this.positionsList = res.filter(x=> x.active);
-      this.filteredPositions = this.positionsList;
+  async loadSimulatorScenarioPositions(){
+    await this.simSceariosService.getAllSimulatorScenario_PositionAsync(this.inputSimScenariosId).then((res)=>{
+       this.simulatorScenario_PositionsList = res;
+       this.filteredSimulatorScenario_Positions=this.simulatorScenario_PositionsList;
       this.loader = false;
     }).catch((error) => {
       this.loader = false;
     });
   }
 
+  onInitiatorChange(selectedSimScenarioPosId: string) {
+    if (selectedSimScenarioPosId === 'Other' || selectedSimScenarioPosId === 'Instructor') {
+    this.taskCriteriaControl.disable();
+    this.filteredTaskCriteriaList = [];
+    return;
+    }
+    const selectedPosition = this.filteredSimulatorScenario_Positions.find(p => p.id === selectedSimScenarioPosId);
+    if (!selectedPosition) {
+      return;
+    }
+    this.taskCriteriaControl.enable();
+    this.filterCriteriaByPosition(selectedPosition.positionId);
+  }
+
+ async filterCriteriaByPosition(positionId: string) {
+    try {
+      const res: any = await this.positionTaskService.getPositionTaskByPositionIdAsync(positionId);
+      const allowedTaskIds = res.result.map((pt: any) => pt.taskId);
+      this.filteredTaskCriteriaList = this.taskCriteriaList.filter(tc => allowedTaskIds.includes(tc.taskId));
+    } catch (err) {
+      console.error('Error fetching Position tasks:', err);
+    }
+  }
+
   setCreateUpdateOptions(){
+    const selectedInitiator = this.addScriptForm.get('initiator')?.value;
+    this.simScenarioScript.initiatorOther = false;
+    this.simScenarioScript.initiatorInstructor = false;
+
+    if (selectedInitiator === 'Other') {
+      this.simScenarioScript.initiatorOther = true;
+      this.simScenarioScript.initiatorId = null; 
+    } 
+    else if (selectedInitiator === 'Instructor') {
+      this.simScenarioScript.initiatorInstructor = true;
+      this.simScenarioScript.initiatorId = null;
+    } 
+    else {
+      this.simScenarioScript.initiatorId = selectedInitiator;
+    }
     this.simScenarioScript.title = this.addScriptForm.get('scriptTitle')?.value;
     this.simScenarioScript.description = this.addScriptForm.get('scriptDescription')?.value;
-    this.simScenarioScript.initiatorId = this.addScriptForm.get('initiator')?.value;
     this.simScenarioScript.time = this.convertToDateTime();
     this.simScenarioScript.eventId =this.editEventId;
   }
+
   async addScriptAsync() {
     this.setCreateUpdateOptions();
     this.simScenarioScript.criterias = [];
     const selectedCriterias = this.addScriptForm.get('taskCriteriaControl')?.value ?? [];
-    selectedCriterias.forEach((criteria: any) => {
+     if (selectedCriterias.id != null) {
       this.simScenarioScript.criterias.push({
         id: null,
-        criteriaId: criteria.id
+        criteriaId: selectedCriterias.id
       });
-    });
+    }
     await this.simScenarioService.createScriptAsync(this.simScenarioScript).then((res) => {
       this.alert.successToast('Simulator Scenario Script Added Successfully');
      this.newScriptAdded.emit(res);
@@ -153,13 +210,13 @@ export class FlyPanelAddScriptComponent  implements OnInit  {
     this.setCreateUpdateOptions();
     this.simScenarioScript.criterias = [];
     this.simScenarioScript.eventId = this.editEventId;
-    const selectedCriterias = this.addScriptForm.get('taskCriteriaControl')?.value ?? [];
-    selectedCriterias.forEach((criteria: any) => {
+    const selectedCriteria = this.addScriptForm.get('taskCriteriaControl')?.value;
+    if (selectedCriteria.id != null) {
       this.simScenarioScript.criterias.push({
-        id: this.editScriptDetails.criterias.find(x=>x.criteriaId == criteria.id)?.id,
-        criteriaId: criteria.id
+        id: this.editScriptDetails?.criterias.find(x => x.criteriaId === selectedCriteria.id)?.id ?? null,
+        criteriaId: selectedCriteria.id
       });
-    });
+    }
     await this.simScenarioService.updateScriptAsync(this.scriptId,this.editEventId, this.simScenarioScript).then((res) => {
       this.alert.successToast('Simulator Scenario Script Updated Successfully');
       this.scriptUpdated.emit(res);
@@ -169,11 +226,6 @@ export class FlyPanelAddScriptComponent  implements OnInit  {
     });
   }
 
-  removeCriteria(i: any) {
-    const taskCriterias = this.taskCriteriaControl.value as SimulatorScenario_Task_Criteria_VM[];
-    this.removeFirst(taskCriterias, i);
-    this.taskCriteriaControl.setValue(taskCriterias);
-  }
 
   private removeFirst(array: any[], toRemove: any): void {
     const index = array.indexOf(toRemove);
@@ -248,7 +300,7 @@ export class FlyPanelAddScriptComponent  implements OnInit  {
     } else {
       searchValue = "";
     }
-    this.filteredPositions =  this.positionsList.filter((x) => {
+    this.filteredSimulatorScenario_Positions =  this.simulatorScenario_PositionsList.filter((x) => {
       return x.positionTitle.trim().toLowerCase().includes(searchValue)
   })
   }

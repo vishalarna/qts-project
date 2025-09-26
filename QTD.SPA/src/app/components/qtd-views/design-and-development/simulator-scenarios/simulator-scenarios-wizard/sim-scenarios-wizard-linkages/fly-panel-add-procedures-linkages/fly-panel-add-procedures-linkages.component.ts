@@ -71,6 +71,7 @@ export class FlyPanelAddProceduresLinkagesComponent implements OnInit {
   async makeProcTreeDataSource() {
 
     await this.issuingAuthoritiesService.getAll().then((res) => {
+      res = res.filter(res => res.active === true)
       res.forEach(res => {
         res.procedures = res.procedures.filter(procedure => procedure.active === true);
     });

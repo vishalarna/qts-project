@@ -43,6 +43,7 @@ import { StudentEvaluationHistoryCreateOptions } from '@models/StudentEvaluation
 export class FlyPanelCreateComponent implements OnInit, AfterViewInit {
   @Input() preview_evaluation?: any;
   @Input() updateResult: any;
+  @Input() mode: string;
   @Output() refreshEvals = new EventEmitter<any>();
 
   show_panel: boolean = false;
@@ -103,6 +104,9 @@ export class FlyPanelCreateComponent implements OnInit, AfterViewInit {
         description: 'Include Comments Section following each section',
       },
     ];
+    if (this.mode === 'view') {
+      this.ratingScaleId.disable();
+    }
 
     if (this.preview_evaluation) {
       this.readyadditionaloptionsForm();
@@ -159,6 +163,9 @@ export class FlyPanelCreateComponent implements OnInit, AfterViewInit {
       allowNAoption: new UntypedFormControl(false),
       includeComments: new UntypedFormControl(false),
     });
+    if (this.mode === 'view') {
+      this.additionalOptionsForm.disable();
+    }
   }
   async readyEvaluationQuestion(id: any) {
     let tempSrc: QuestionBank[] = [];
@@ -216,6 +223,9 @@ export class FlyPanelCreateComponent implements OnInit, AfterViewInit {
     });
     for (let i = 0; i < this.totalQuestions; i++) {
       this.addArray();
+    }
+    if (this.mode === 'view') {
+      this.QuestionAnswerform.disable();
     }
   }
 

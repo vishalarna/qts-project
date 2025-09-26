@@ -5,9 +5,9 @@
   <!--Buttons Starts-->
   <div class="flex justify-between pt-2 pb-4">
     <div class="flex items-center">
-      <app-button *ngIf="!hasAddedEvaluation" text= "Add Evaluation to {{('ILA' | labelReplacement)| async}}" size = "sm" type = "button" (clicked) = "addEvaluationForm()"></app-button>
+      <app-button *ngIf="!hasAddedEvaluation" text= "Add Evaluation to {{('ILA' | labelReplacement)| async}}" size = "sm" type = "button" (clicked) = "addEvaluationForm()" [disabled]="mode === 'view'"></app-button>
     </div>
-    <button type="text" class="btn btn-success mr-4" (click)="openFlyInPanelCreateNewStudentEvaluation(addCreateEvaluation)"><app-icon icon="add" class="mr-2"></app-icon>New Student Evaluation Form</button>
+    <button type="text" class="btn btn-success mr-4" [ngClass]="{ 'btn-view-mode': mode === 'view' }" (click)="openFlyInPanelCreateNewStudentEvaluation(addCreateEvaluation)" [disabled]="mode === 'view'"><app-icon icon="add" class="mr-2"></app-icon>New Student Evaluation Form</button>
   </div>
   <!--Buttons Ends-->
 
@@ -66,7 +66,7 @@
             </div>
           </div> -->
           <div class="flex flex-row-reverse flex flex-col ml-12 mr-16 mb-3">
-            <app-button text = "Remove" size = "sm" type = "button" (clicked)="deleteEvaluationForm()"></app-button>
+            <app-button text = "Remove" size = "sm" type = "button" (clicked)="deleteEvaluationForm()" [disabled]="mode === 'view'"></app-button>
           </div>
         </div>
         <!--Make all EMP avaliable ends-->
@@ -85,7 +85,7 @@
 
 <!--fly in for create new student evaluation-->
 <ng-template #addCreateEvaluation>
-  <app-fly-panel-create (refreshEvals)="readyEvaluationForms()" [preview_evaluation]="preview_evaluation">
+  <app-fly-panel-create [mode]="mode" (refreshEvals)="readyEvaluationForms()" [preview_evaluation]="preview_evaluation">
   </app-fly-panel-create>
 </ng-template>
 

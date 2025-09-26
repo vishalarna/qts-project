@@ -6,7 +6,7 @@
         Training Material Development
       </p>
       <app-button variant="text" text="Add new Lesson/Segments" icon="add" iconPosition="left"
-        (clicked)="openSegmentPanel(lessonsegment)"></app-button>
+        (clicked)="openSegmentPanel(lessonsegment)" [disabled]="mode === 'view'"></app-button>
     </div>
 
     <!--1st segment-->
@@ -14,7 +14,7 @@
       <div class="border-0.5 rounded mat-elevation-z2 h-40 px-4 py-3">
         <div class="flex flex-row justify-between mb-10">
           <p class="text-sm text-gray-four">Delivery Method: <b>{{deliveryMethod}}</b></p>
-          <app-button (clicked)="training_material.emit()" variant="text" text="Edit" icon="edit" iconPosition="left">
+          <app-button (clicked)="training_material.emit()" variant="text" text="Edit" icon="edit" iconPosition="left" [disabled]="mode === 'view'">
           </app-button>
         </div>
       </div>
@@ -26,11 +26,11 @@
         <div class="flex flex-row justify-between mb-4">
           <p class="text-sm text-gray-four">Add a Self Study document by choosing one of the following options</p>
         </div>
-        <button (click)="OnClickUpload()" class="text-sm font-semibold">
+        <button (click)="OnClickUpload()" class="text-sm font-semibold" [disabled]="mode === 'view'">
           <app-icon class="mr-2" style="color: rgb(92, 155, 49);" icon="file_upload"></app-icon>Upload a Self Study
           Guide
         </button><br>
-        <button (click)="previewEvent.emit('edit')" class="text-sm font-semibold">
+        <button (click)="previewEvent.emit('edit')" class="text-sm font-semibold" [disabled]="mode === 'view'">
           <app-icon class="mr-2" style="color: rgb(92, 155, 49);" icon="arrow_forward"></app-icon>Create new Guide in
           Editor
         </button>
@@ -46,18 +46,18 @@
 
         <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
           <app-data-loader *ngIf="isEmpty"></app-data-loader>
-          <div class="flex flex-col pb-4  example-box" *ngFor="let item of lsegs,index as i" cdkDrag>
+          <div class="flex flex-col pb-4  example-box" *ngFor="let item of lsegs,index as i" cdkDrag [cdkDragDisabled]="mode === 'view'">
             <div class="border-0.5 rounded mat-elevation-z2 h-40 px-4 py-3"
               [ngClass]="{'bg-gray-200':item.content.length === 0}">
               <div class="flex flex-row justify-between mb-10">
                 <div class="text-lg font-semibold" [innerHTML]="item.content"></div>
                 <span>
-                  <app-button variant="text" text="Delete" icon="delete" iconPosition="left" (click)="deleteEmp(item)">
+                  <app-button variant="text" text="Delete" icon="delete" iconPosition="left" (click)="deleteEmp(item)" [disabled]="mode === 'view'">
                   </app-button>
                   <app-button *ngIf="item.content.length > 0" variant="text" text="Review Content" icon="edit"
                     iconPosition="left" (clicked)="openFlyInPanel(Content,i)"></app-button>
                   <app-button *ngIf="item.content.length === 0" variant="text" text="Add Content" icon="add"
-                    iconPosition="left" (clicked)="openFlyInPanel(Content,i)"></app-button>
+                    iconPosition="left" (clicked)="openFlyInPanel(Content,i)" [disabled]="mode === 'view'"></app-button>
                 </span>
               </div>
 
@@ -71,7 +71,7 @@
         <div class="flex flex-row items-center">
           <p class="flex-grow font-medium">All {{("ILA" | labelReplacement)| async}} Resources</p>
         </div>
-        <ngx-dropzone [multiple]="false" (change)="onSelect($event)">
+        <ngx-dropzone [multiple]="false" (change)="onSelect($event)" [disabled]="mode === 'view'">
           <ngx-dropzone-label style="color: rgb(92, 155, 49);">
             <app-icon icon="cloud_upload"></app-icon> <br> Choose file to upload <br> <span
               class="text-gray-500">or</span> <br> <span class="text-gray-500">Drag and Drop your files here</span>
@@ -81,7 +81,7 @@
           </ngx-dropzone-preview>
         </ngx-dropzone>
         <div class="flex float-right pt-3">
-          <app-button [spinner]="showSpinner" class="float-right" [disabled]="files.length < 1 || showSpinner"
+          <app-button [spinner]="showSpinner" class="float-right" [disabled]="mode === 'view' || files.length < 1 || showSpinner"
             (clicked)="uploadFiles()" color="secondary" text="Upload"></app-button>
         </div>
       </div>
@@ -123,7 +123,7 @@
             (keyup)="searchUpdate($event)"
           />
         </div>
-        <app-button  class="float-right" icon="add" iconPosition="left" size="sm"
+        <app-button  class="float-right" icon="add" iconPosition="left" size="sm" [disabled]="mode === 'view'"
         (clicked)="addILAResouce(addNewTrainingMaterial)" color="primary" text="Add {{('ILA' | labelReplacement)| async}} Resource"></app-button>
       </div>
       <mat-table [dataSource]="trainingMaterialList" class="manager-table" matSort>
@@ -150,8 +150,8 @@
             Edit
           </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <button mat-icon-button (click)="editILAResource(row, addNewTrainingMaterial)">
-              <mat-icon>edit</mat-icon>
+            <button mat-icon-button (click)="editILAResource(row, addNewTrainingMaterial)" [disabled]="mode === 'view'">
+              <mat-icon [ngClass]="{'text-gray-400': mode === 'view'}">edit</mat-icon>
             </button>
           </mat-cell>
         </ng-container>
@@ -160,8 +160,8 @@
             Remove
           </mat-header-cell>
           <mat-cell *matCellDef="let row">
-            <button mat-icon-button (click)="removeILAResource(row,removeResourceILA)">
-              <mat-icon>delete</mat-icon>
+            <button mat-icon-button (click)="removeILAResource(row,removeResourceILA)" [disabled]="mode === 'view'">
+              <mat-icon [ngClass]="{'text-gray-400': mode === 'view'}">delete</mat-icon>
             </button>
           </mat-cell>
         </ng-container>
@@ -182,7 +182,7 @@
           <div class="mb-4 mt-4">
             <span>{{file.fileName}}</span>
             <div class="flex float-right ml-5">
-              <app-button [disabled]="deleteSpinner[i]" [spinner]="deleteSpinner[i]" variant="text" iconPosition="left"
+              <app-button [disabled]="mode === 'view' || deleteSpinner[i]" [spinner]="deleteSpinner[i]" variant="text" iconPosition="left"
                 icon="delete" (clicked)="deleteFile(file,i)" text="delete"></app-button>
               <app-button [disabled]="downloadSpinner[i]" [spinner]="downloadSpinner[i]" variant="text"
                 iconPosition="left" icon="cloud_download" (clicked)="downloadFile(file,i)" class="ml-3" text="download">
@@ -201,7 +201,7 @@
   <app-fly-panel-lesson-segment (segSaved)="refreshSegments($event)"></app-fly-panel-lesson-segment>
 </ng-template>
 <ng-template #Content>
-  <app-fly-panel-content (close)="refreshSegments($event)" [myData]="dataForReview" (close)="flyPanelSrvc.close()">
+  <app-fly-panel-content [mode]="mode" (close)="refreshSegments($event)" [myData]="dataForReview" (close)="flyPanelSrvc.close()">
   </app-fly-panel-content>
 </ng-template>
 <ng-template #removeResourceILA>

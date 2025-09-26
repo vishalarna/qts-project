@@ -1,4 +1,5 @@
-﻿using QTD2.Domain.Entities.Core;
+﻿using Microsoft.Extensions.Logging;
+using QTD2.Domain.Entities.Core;
 using QTD2.Domain.Interfaces.Repository.Core;
 using QTD2.Domain.Interfaces.Service.Core;
 using QTD2.Domain.Interfaces.Validation.Core;
@@ -20,6 +21,12 @@ namespace QTD2.Domain.Services.Core
         public async System.Threading.Tasks.Task<List<SimulatorScenario_Script>> GetScriptsByEventIdAsync(int eventId)
         {
             var simulatorScenario_Scripts = await FindAsync(r => r.EventId == eventId);
+            return simulatorScenario_Scripts.ToList();
+        }
+
+        public async System.Threading.Tasks.Task<List<SimulatorScenario_Script>> GetAllScriptAsync()
+        {
+            var simulatorScenario_Scripts = await FindAsync(r => r.Active);
             return simulatorScenario_Scripts.ToList();
         }
     }

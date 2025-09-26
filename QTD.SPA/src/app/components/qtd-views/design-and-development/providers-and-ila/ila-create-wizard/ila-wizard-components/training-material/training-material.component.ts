@@ -69,6 +69,7 @@ export class TrainingMaterialComponent implements OnInit, OnDestroy {
   @Output() previewEvent = new EventEmitter<string>();
   @Output() training_material = new EventEmitter<any>();
   @Input() editIlaCheck:any;
+  @Input() mode: string;
 
   constructor(
     public flyPanelSrvc: FlyInPanelService,

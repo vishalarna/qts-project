@@ -22,8 +22,8 @@ import { TaskMetaOjtGuideModule } from '../../../my-data/tasks/task-detail/task-
 
 
 const routes: Routes = [
-  { path: '', component: FlyPanelTaskReQualificationTaskFeedbackComponent },
-  { path: ':id', component: FlyPanelTaskReQualificationTaskFeedbackComponent }
+  { path: 'feedback', component: FlyPanelTaskReQualificationTaskFeedbackComponent },
+  { path: 'feedback/:id', component: FlyPanelTaskReQualificationTaskFeedbackComponent }
 ];
 
 @NgModule({

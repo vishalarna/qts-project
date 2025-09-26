@@ -41,6 +41,7 @@ export class SimulatorScenariosOverviewComponent implements OnInit {
   editorPermissionId : string;
   viewerPermissionId : string;
   isOverviewLoading:boolean;
+  appliedFilters: { key: string, value: any }[] = [];
   @ViewChild('metaPaginator') set metaPaginator(paging: MatPaginator) {
     if (paging) this.dataSource.paginator = paging;
   }
@@ -94,19 +95,9 @@ export class SimulatorScenariosOverviewComponent implements OnInit {
   }
 
   searchUpdate(event: any) {
-    const searchText = event.target.value.trim().toLowerCase();
-    this.searchText = searchText; 
-    const baseData = this.filterValues?.activeStatus ? this.simulatorScenario_VM.simulatorScenarios.filter(x => x.active) : this.simulatorScenario_VM.simulatorScenarios;
-    this.filteredSimScenario = baseData.filter(item => {
-      return (item?.title?.trim().toLowerCase().includes(this.searchText) ||item?.ilAs?.trim().toLowerCase().includes(this.searchText));
-    });
-    if (!this.searchText) {
-      this.filteredSimScenario = [...baseData];
-    }
-    this.dataSource = new MatTableDataSource(this.filteredSimScenario);
-    setTimeout(() => {
-      this.dataSource.sort = this.sort;
-    }, 1);
+    const searchText = event.target.value.toLowerCase();
+    this.searchText = searchText;
+    this.getSimScenariosFilterValues(this.filterValues);
  }
 
   openFlyInPanel(templateRef: any) {
@@ -228,29 +219,48 @@ export class SimulatorScenariosOverviewComponent implements OnInit {
   getSimScenariosFilterValues(value:any){
     this.filterValues = value;
     this.filteredSimScenario = this.simulatorScenario_VM.simulatorScenarios;
+    if (this.searchText) {
+      const searchTextLower = this.searchText.toLowerCase();
+      this.filteredSimScenario = this.filteredSimScenario.filter(item =>
+        (item?.title?.toLowerCase().includes(searchTextLower) ||
+         item?.ilAs?.toLowerCase().includes(searchTextLower))
+      );
+    }
+    this.appliedFilters = [];
 
-    if(this.filterValues?.position){
+    if (this.filterValues?.provider) {
+      this.applyProviderFilter();
+      this.appliedFilters.push({ key: 'Provider', value: this.filterValues.providerName });
+    }
+
+    if (this.filterValues?.position?.length) {
       this.applyPositionFilter();
+      this.appliedFilters.push({ key: 'Position', value: this.filterValues.position.join(', ') });
     }
 
-    if(this.filterValues?.activeStatus){
+    if (this.filterValues?.activeStatus ) {
       this.applyActiveStatusFilter();
-    }
+      this.appliedFilters.push({ key: 'Active', value: this.filterValues.activeStatus });
+    }    
 
     if(this.filterValues?.status){
       this.applyStatusFilter();
+      this.appliedFilters.push({ key: 'Status', value: this.filterValues.status });
     }
 
-    if(this.filterValues?.ila){
+    if (this.filterValues?.ila?.length) {
       this.applyILAFilter();
+      this.appliedFilters.push({ key: 'ILA', value: this.filterValues.ila.join(', ') });
     }
 
     if(this.filterValues?.simScenariosNotLinkedToILA){
       this.applyScenariosNotLinkedToILa();
+      this.appliedFilters.push({ key: 'Unlinked ILA', value: 'Yes' });
     }
 
-    if(this.filterValues?.difficultyLevel){
+    if(this.filterValues?.difficultyLevel?.length){
       this.applyDifficultyLevelFilter();
+      this.appliedFilters.push({ key: 'Difficulty', value: this.filterValues.difficultyLevel.join(', ') });
     }
 
     this.dataSource = new MatTableDataSource(this.filteredSimScenario);
@@ -259,14 +269,21 @@ export class SimulatorScenariosOverviewComponent implements OnInit {
     },1);
   }
 
+  applyProviderFilter(){
+    const providerIdToFilter = this.filterValues.provider;
+    this.filteredSimScenario = this.filteredSimScenario.filter(scenario => scenario.providerIds && scenario.providerIds.includes(providerIdToFilter));
+  }
+
   applyPositionFilter(){
-      const positionToFilter = this.filterValues.position.toString().trim();
-      this.filteredSimScenario = this.filteredSimScenario.filter(x => x.positions && x.positions.includes(positionToFilter));
+    const positionsToFilter: string[] = this.filterValues.position || [];
+    if (positionsToFilter.length) {
+      this.filteredSimScenario = this.filteredSimScenario.filter(scenario => scenario.positions && scenario.positions.split(',').some(pos => positionsToFilter.includes(pos.trim())));
+    }
   }
 
   applyILAFilter() {
-    const ilaToFilter = this.filterValues.ila.toString().trim();
-    this.filteredSimScenario = this.filteredSimScenario.filter(x => x.ilAs && x.ilAs.includes(ilaToFilter));
+    const selectedILAs: string[] = this.filterValues.ila; 
+    this.filteredSimScenario = this.filteredSimScenario.filter(scenario => scenario.ilAs && selectedILAs.some(ila => scenario.ilAs.includes(ila)));
   }
 
   applyActiveStatusFilter(){
@@ -291,17 +308,12 @@ export class SimulatorScenariosOverviewComponent implements OnInit {
     this.filteredSimScenario =this.filteredSimScenario.filter(x => x.ilAs.toString() === "" || x.ilAs === null);
   }
 
-  applyDifficultyLevelFilter(){
-    if (this.filterValues?.difficultyLevel === "High") {
-      this.filteredSimScenario = this.filteredSimScenario.filter(x => x.difficulty === "1");
-    }
-    if (this.filterValues?.difficultyLevel === "Medium") {
-      this.filteredSimScenario = this.filteredSimScenario.filter(x => x.difficulty === "2");
-    }
-    if (this.filterValues?.difficultyLevel === "Low") {
-      this.filteredSimScenario = this.filteredSimScenario.filter(x => x.difficulty === "3");
-    }
-  }
+  applyDifficultyLevelFilter() {
+    const selectedLabels: string[] = this.filterValues?.difficultyLevel || [];
+    const labelToValue: Record<string, string> = {High: "1",Medium: "2",Low: "3"};
+    const selectedValues = selectedLabels.map(label => labelToValue[label]);
+    this.filteredSimScenario = this.filteredSimScenario.filter(scenario => selectedValues.includes(scenario.difficulty));
+  } 
   
   filterByTilesClick(value: string) {
     this.clearFlypanelFilters();
@@ -335,6 +347,7 @@ export class SimulatorScenariosOverviewComponent implements OnInit {
   clearFlypanelFilters(){
     this.filterValues = {
       provider: null,
+      providerName:null,
       position: null,
       ila: null,
       difficultyLevel: null,
@@ -342,5 +355,30 @@ export class SimulatorScenariosOverviewComponent implements OnInit {
       activeStatus: null,
       simScenariosNotLinkedToILA: null,
     };
+  }
+
+  formatFilter(filter: { key: string, value: any }): string[] {
+    if (Array.isArray(filter.value)) {
+      return filter.value.map(v => `${filter.key}: ${v}`);
+    } else {
+      return [`${filter.key}: ${filter.value}`];
+    }
+  }
+
+  clearAllFilters() {
+    this.filterValues = {
+      provider: null,
+      providerName: null,
+      position: [],
+      ila: [],
+      difficultyLevel: [],
+      status: null,
+      activeStatus: null,
+      simScenariosNotLinkedToILA: null
+    };
+    this.appliedFilters = [];
+    this.filteredSimScenario = [...this.simulatorScenario_VM.simulatorScenarios];
+    this.dataSource = new MatTableDataSource(this.filteredSimScenario);
+    setTimeout(() => { this.dataSource.sort = this.sort; }, 1);
   }
 }

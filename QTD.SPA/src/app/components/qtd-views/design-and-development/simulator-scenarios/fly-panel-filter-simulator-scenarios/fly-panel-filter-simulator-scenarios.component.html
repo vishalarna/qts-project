@@ -86,6 +86,7 @@
               formControlName="ila"
               (click)="handleILAFilters()"
               placeholder="Select {{ 'ILA' | labelReplacement | async }}"
+              [multiple]="true" 
               [ngClass]="{'loading-disabled': filterSimulatorScenariosForm.get('provider')?.value == null}"
               style="margin-right: 4px"
             >
@@ -134,6 +135,7 @@
             <mat-select
               #posSelect="matSelect"
               formControlName="position"
+              multiple
               placeholder="Select {{ 'Position' | labelReplacement | async }}"
             >
               <input
@@ -178,6 +180,7 @@
               <mat-select
                 #difficultySelect="matSelect"
                 formControlName="difficultyLevel"
+                multiple
                 placeholder="Select Difficulty Level"
               >
                 <mat-option

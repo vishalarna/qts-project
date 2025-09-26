@@ -1,7 +1,8 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using QTD2.Infrastructure.Model.SafetyHazard_ILA_Link;
+using QTD2.Domain.Entities.Core;
+using QTD2.Infrastructure.Model.ILA_SafetyHazard_Link;
 using QTD2.Infrastructure.Model.SaftyHazard;
 
 namespace QTD2.API.QTD.Controllers
@@ -10,7 +11,7 @@ namespace QTD2.API.QTD.Controllers
     {
         [HttpPost]
         [Route("/saftyHazards/{id}/ila")]
-        public async Task<IActionResult> LinkIla(int id, SafetyHazard_ILA_LinkOptions options)
+        public async Task<IActionResult> LinkIla(int id, ILASafetyHazardOptions options)
         {
             var result = await _saftyHazard.LinkILA(id, options);
 
@@ -25,7 +26,7 @@ namespace QTD2.API.QTD.Controllers
 
         [HttpDelete]
         [Route("/saftyHazards/{id}/ila")]
-        public async Task<IActionResult> UnlinkILA(int id, SafetyHazard_ILA_LinkOptions options)
+        public async Task<IActionResult> UnlinkILA(int id, ILASafetyHazardOptions options)
         {
             await _saftyHazard.UnlinkILA(id, options);
 

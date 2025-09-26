@@ -6,6 +6,7 @@ using QTD2.Domain.Entities.Core;
 using System.Linq;
 using Microsoft.Data.SqlClient;
 using static System.Net.Mime.MediaTypeNames;
+using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace QTD2.Data.Initialization.QTDContext
 {
@@ -4770,7 +4771,7 @@ Thank you.", 1, false, true }
                   { "Public Classes", false,true,false },
                 });
 
-            
+
         }
 
         protected void Development_UpdateReportFilters_TrainingIssuesActionItems()
@@ -7053,6 +7054,52 @@ Thank you.", 1, false, true }
                         ");
         }
 
+        protected void Development_CopySafetyHazardILALinksToILASafetyHazardLinks()
+        {
+            _migrationBuilder.Sql(@"
+                    INSERT INTO [dbo].[ILA_SafetyHazard_Links]
+                           ([ILAId]
+                           ,[SafetyHazardId]
+                           ,[Deleted]
+                           ,[Active]
+                           ,[CreatedBy]
+                           ,[CreatedDate]
+                           ,[ModifiedBy]
+                           ,[ModifiedDate])
+                    SELECT DISTINCT
+                           sh.[ILAId]
+                          ,sh.[SafetyHazardId]
+                          ,sh.[Deleted]
+                          ,sh.[Active]
+                          ,sh.[CreatedBy]
+                          ,sh.[CreatedDate]
+                          ,sh.[ModifiedBy]
+                          ,sh.[ModifiedDate]
+                    FROM [dbo].[SafetyHazard_ILA_Links] sh
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM [dbo].[ILA_SafetyHazard_Links] ila
+                        WHERE ila.[ILAId] = sh.[ILAId]
+                          AND ila.[SafetyHazardId] = sh.[SafetyHazardId]
+                    );
+                ");
+        }
+
+        protected void Development_MigrateSimulatorScenarioScriptInitiatorData()
+        {
+            _migrationBuilder.Sql(@"
+                                       UPDATE s
+                    SET s.SimulatorScenario_PositionId = sp.Id
+                    FROM SimulatorScenario_Scripts s
+                    INNER JOIN SimulatorScenario_Events e
+                        ON e.Id = s.EventId
+                    INNER JOIN SimulatorScenario_Positions sp
+                        ON sp.SimulatorScenarioId = e.SimulatorScenarioId
+                       AND sp.PositionId = s.InitiatorId
+                    WHERE s.InitiatorId IS NOT NULL;
+                ");
+        }
+
         protected void Development_Update_ClientSettingsNotification_StepsTemplateForTaskQualification()
         {
             _migrationBuilder.UpdateData(
@@ -7066,7 +7113,7 @@ Thank you.", 1, false, true }
             _migrationBuilder.UpdateData(
                 table: "ClientSettings_Notification_Steps",
                 keyColumns: new[] { "ClientSettingsNotificationId", "Order" },
-                keyValues: new object[] {11, 1 },
+                keyValues: new object[] { 11, 1 },
                 column: "Template",
                 value: @"Hello @Model.EmployeeFirstName @Model.EmployeeLastName,<p>You have been assigned as an Evaluator to sign off on a Task/Skill Qualification. This will be completed using the Employee Portal (EMP). Please review the table below for further details.</p><figure class=""table""><table><tr><td>Task/Skill #</td><td>@Model.TaskNumber</td></tr><tr><td>Task/Skill Statement</td><td>@Model.TaskStatement</td></tr><tr><td>Trainee Name</td><td>@Model.TraineeName</td></tr></table></figure><p>If for any reason you cannot complete the assigned Task/Skill Qualification(s), notify your Training Administrator as soon as possible.</p><p>Thank you!</p>"
             );
@@ -7076,14 +7123,15 @@ Thank you.", 1, false, true }
             keyColumns: new[] { "Id", "Name" },
             keyValues: new object[] { 10, "EMP Task Qualification - Trainee" },
             column: "Name",
-            value: "EMP Task and Skill Qualification - Trainee");
+            value: "EMP Task And Skill Qualification - Trainee");
 
             _migrationBuilder.UpdateData(
              table: "ClientSettings_Notifications",
               keyColumns: new[] { "Id", "Name" },
               keyValues: new object[] { 11, "EMP Task Qualification - Evaluator" },
               column: "Name",
-              value: "EMP Task and Skill Qualification - Evaluator");
+              value: "EMP Task And Skill Qualification - Evaluator");
         }
+
     }
 }

@@ -474,6 +474,7 @@
             <label mat-menu-item (click)="OnEditILA(row)">Edit</label>
             <label mat-menu-item (click)="OnClickCopy(row)">Copy</label>
             <button mat-menu-item (click)="OnDelete(deleteTopic, 'ILA', row)" [disabled]="row?.disableDelete">Delete</button>
+            <label mat-menu-item (click)="OnViewILA(row)">View Only</label>
             <label mat-menu-item (click)="onMakeILAInactive(activeInactive,row)">Make {{row.active ?
               "Inactive":"Active"}}</label>
             <label mat-menu-item *ngIf="viewSelected==='provider'"

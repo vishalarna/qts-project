@@ -160,5 +160,15 @@ export class SimulatorScenarioService {
       );
   }
 
+  getAllScriptAsync() {
+    return firstValueFrom(this.http
+      .get(this.baseUrl + `/scripts/all`)
+      .pipe(
+        map((res: any) => {
+          return res.result as any ;
+        })
+      )
+      );
+  }
 
 }

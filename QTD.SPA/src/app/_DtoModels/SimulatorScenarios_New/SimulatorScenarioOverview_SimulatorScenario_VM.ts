@@ -11,4 +11,5 @@ export class SimulatorScenarioOverview_SimulatorScenario_VM {
     difficulty:string;
     collaborators:SimulatorScenario_Collaborator_VM[];
     currentUserPermissions: SimulatorScenario_CollaboratorPermissions_VM;
+    providerIds: string[] = [];
 }

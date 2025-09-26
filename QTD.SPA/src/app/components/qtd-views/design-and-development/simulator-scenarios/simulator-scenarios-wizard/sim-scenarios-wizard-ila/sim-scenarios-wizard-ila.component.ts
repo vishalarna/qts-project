@@ -68,6 +68,8 @@ export class SimScenariosWizardIlaComponent implements OnInit {
   isILAUnlink : boolean = false ;
   isPreReqLinkUnlink : boolean = false;
   isPreReqUnlink : boolean = false ;
+  isModified = false;
+  
   constructor(
     public dialog: MatDialog,
     private formBuilder: UntypedFormBuilder,
@@ -82,8 +84,10 @@ export class SimScenariosWizardIlaComponent implements OnInit {
     this.initializeILAForm();
     await this.loadAsync();
     this.simScanrioILAUpdateOptions = new SimulatorScenario_UpdateILAs_VM();
-    this.simScanrioPrerequisitesUpdateOptions =
-      new SimulatorScenario_UpdatePrerequisites_VM();
+    this.simScanrioPrerequisitesUpdateOptions =new SimulatorScenario_UpdatePrerequisites_VM();
+    this.ilaForm.get('isAvailableForAll')?.valueChanges.subscribe(val => {
+      this.isModified = !!val;
+    });
   }
 
   initializeILAForm() {

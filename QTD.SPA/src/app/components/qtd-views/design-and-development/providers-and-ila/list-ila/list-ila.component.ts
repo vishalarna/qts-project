@@ -1167,6 +1167,11 @@ export class ListIlaComponent implements OnInit, OnDestroy {
       queryParams: { data: row.id },
     });
   }
+  OnViewILA(row: any) {
+    this.router.navigate(['/dnd/ila/view'], {
+      queryParams: { data: row.id, isViewMode: true },
+    });
+  }
 
   OnClickCopy(row: any) {
     this.expandedDataSource = undefined;

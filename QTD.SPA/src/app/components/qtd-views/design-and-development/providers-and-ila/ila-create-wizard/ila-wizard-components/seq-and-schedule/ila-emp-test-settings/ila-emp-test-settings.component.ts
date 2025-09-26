@@ -25,6 +25,7 @@ export class IlaEmpTestSettingsComponent implements OnInit {
   empSettingsReleaseTypes : EmpSettingsReleaseTypeVM[];
   defaultEmpSettingReleaseTypeId : string = "";
   isComingFromClassSchedule:boolean;
+  @Input() mode: string;
 
   constructor(
     private saveStore: Store<{ saveIla: any }>,
@@ -41,6 +42,11 @@ export class IlaEmpTestSettingsComponent implements OnInit {
       this.isComingFromClassSchedule = true;
     }else{
       this.isComingFromClassSchedule = false;
+    }
+    if (this.mode === 'view') {
+      this.trainingForm.disable({ emitEvent: false });
+    } else {
+      this.trainingForm.enable({ emitEvent: false });
     }
     this.testAvailabiilityTime = [
       {

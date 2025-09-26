@@ -12,7 +12,7 @@ export class EOTree {
     isLink?: boolean;
     IsEO?: boolean = false;
     level?:string;
+    position_SQs?: EO_LinkPositions[] = [];
     isMeta?: boolean = false;
     isSkillQualification?: boolean = false;
-    position_SQs?: EO_LinkPositions[] = [];
   }

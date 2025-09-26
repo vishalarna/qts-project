@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 })
 export class IlaEmpSchedulingComponent implements OnInit {
   @Input() ilaId = "";
+  @Input() mode: string;
   editor = ckcustomBuild;
   public Editor = ckcustomBuild;
   cbtReleaseCheckNUll: false;

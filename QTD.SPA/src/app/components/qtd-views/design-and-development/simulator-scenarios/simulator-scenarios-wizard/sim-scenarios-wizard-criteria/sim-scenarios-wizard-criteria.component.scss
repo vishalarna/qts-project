@@ -4,12 +4,11 @@
   border: 0.5px solid #e1e5e4;
   overflow: hidden;
 }
-
+ 
 :host ::ng-deep .table-list .mat-cell,
 :host ::ng-deep .table-list .mat-header-cell {
   padding: 1rem;
 }
-
 
 .table-list {
   margin-top: 1.125rem;
@@ -17,22 +16,22 @@
   border: 0.5px solid #e1e5e4;
   overflow: hidden;
 }
-
+ 
 :host ::ng-deep .table-list .mat-cell,
 :host ::ng-deep .table-list .mat-header-cell {
   padding: 1rem;
 }
-
+ 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(1),
 :host ::ng-deep .table-list .mat-cell:nth-child(1) {
   max-width: 15%;
 }
-
+ 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(2),
 :host ::ng-deep .table-list .mat-cell:nth-child(2) {
   max-width: 10%;
 }
-
+ 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(3),
 :host ::ng-deep .table-list .mat-cell:nth-child(3) {
   max-width: 25%;
@@ -40,12 +39,12 @@
   word-break: break-word;
   overflow-wrap: anywhere;
 }
-
+ 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(4),
 :host ::ng-deep .table-list .mat-cell:nth-child(4) {
   max-width: 25%;
 }
-
+ 
 :host ::ng-deep .table-list .mat-header-cell:nth-child(5),
 :host ::ng-deep .table-list .mat-cell:nth-child(5) {
   max-width: 25%;
@@ -54,36 +53,36 @@
   list-style-type: disc;
   padding-left: 1.5rem;
 }
-
+ 
 :host ::ng-deep .table-list .mat-cell:nth-child(4) .rich-html ol {
   list-style-type: decimal;
   padding-left: 1.5rem;
 }
-
+ 
 :host ::ng-deep .table-list .mat-cell:nth-child(5) .rich-html ul {
   list-style-type: disc;
   padding-left: 1.5rem;
 }
-
+ 
 :host ::ng-deep .table-list .mat-cell:nth-child(5) .rich-html ol {
   list-style-type: decimal;
   padding-left: 1.5rem;
 }
-
+ 
 :host ::ng-deep .table-list .mat-cell:nth-child(4) .rich-html,
 :host ::ng-deep .table-list .mat-cell:nth-child(4) .rich-html * {
   white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
-
+ 
 :host ::ng-deep .table-list .mat-cell:nth-child(5) .rich-html,
 :host ::ng-deep .table-list .mat-cell:nth-child(5) .rich-html * {
   white-space: normal;
   word-break: break-word;
   overflow-wrap: anywhere;
 }
-
+ 
 :host .rich-html li {
   margin-bottom: 0.25rem;
 }

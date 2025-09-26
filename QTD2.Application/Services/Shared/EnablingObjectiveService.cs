@@ -767,76 +767,6 @@ namespace QTD2.Application.Services.Shared
             return mycat;
         }
 
-        public async Task<List<EnablingObjective_Category>> GetSQsByPositionIdsAsync(List<int> positionIds)
-        {
-            var eos = await _pos_sq_service.GetSQByPositionIdsAsync(positionIds);
-            var categoryIds = eos.Select(eo => eo.CategoryId).Distinct().ToList();
-            var subCatIds = eos.Select(eo => eo.SubCategoryId).Distinct().ToList();
-            var topicIds = eos.Select(eo => eo.TopicId).Distinct().ToList();
-
-            var mycat = await _enablingObjective_CategoryService.GetMinimalEOCatDataByIds(categoryIds);
-            var mySubCats = await _enablingObjective_SubCategoryService.GetMinimalEOSubCatDataByIds(subCatIds);
-            var topics = await _enablingObjective_TopicService.GetMinimalEOTopicDataByIds(topicIds);
-
-            var subCatsByCategory = mySubCats.GroupBy(sc => sc.CategoryId).ToDictionary(g => g.Key, g => g.OrderBy(o => o.Number).ToList());
-
-            var topicsBySubCat = topics.GroupBy(t => t.SubCategoryId).ToDictionary(g => g.Key, g => g.OrderBy(o => o.Number).ToList());
-
-            var eosBySubCat = eos.Where(eo => eo.TopicId == null).GroupBy(eo => (eo.CategoryId, eo.SubCategoryId))
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.OrderBy(eo => ParseEoNumber(eo.Number)).ToList()
-                );
-
-            var eosByTopic = eos.Where(eo => eo.TopicId != null).GroupBy(eo => (eo.CategoryId, eo.SubCategoryId, eo.TopicId.Value))
-                .ToDictionary(
-                    g => g.Key,
-                    g => g.OrderBy(eo => ParseEoNumber(eo.Number)).ToList()
-                );
-
-            mycat = mycat.OrderBy(c => c.Number).ToList();
-            foreach (var cat in mycat)
-            {
-                if (subCatsByCategory.TryGetValue(cat.Id, out var subcats))
-                {
-                    cat.EnablingObjective_SubCategories = subcats;
-                    foreach (var sub in subcats)
-                    {
-                        if (eosBySubCat.TryGetValue((cat.Id, sub.Id), out var eoList))
-                            sub.EnablingObjectives = eoList;
-
-                        if (topicsBySubCat.TryGetValue(sub.Id, out var topicList))
-                        {
-                            sub.EnablingObjective_Topics = topicList;
-                            foreach (var topic in topicList)
-                            {
-                                if (eosByTopic.TryGetValue((cat.Id, sub.Id, topic.Id), out var topicEos))
-                                    topic.EnablingObjectives = topicEos;
-                            }
-                        }
-                    }
-                }
-            }
-
-            mycat = mycat.Where(da => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, da, EnablingObjective_CategoryOperations.Read).Result.Succeeded).ToList();
-
-            return mycat;
-        }
-
-        private static long ParseEoNumber(string number)
-        {
-            if (long.TryParse(number, out long num))
-                return num;
-
-            if (number.Contains("."))
-            {
-                var parts = number.Split('.');
-                if (parts.Length > 3 && long.TryParse(parts[3], out long subNum))
-                    return subNum;
-            }
-
-            return 0; 
-        }
 
         public async Task<List<EOCatTreeVM>> GetMinimalDataForTreeAsync()
         {
@@ -2884,6 +2814,76 @@ namespace QTD2.Application.Services.Shared
             OrderBy(s => s.Number)
             .ToListAsync();
             return categories;
+        }
+        public async Task<List<EnablingObjective_Category>> GetSQsByPositionIdsAsync(List<int> positionIds)
+        {
+            var eos = await _pos_sq_service.GetSQByPositionIdsAsync(positionIds);
+            var categoryIds = eos.Select(eo => eo.CategoryId).Distinct().ToList();
+            var subCatIds = eos.Select(eo => eo.SubCategoryId).Distinct().ToList();
+            var topicIds = eos.Select(eo => eo.TopicId).Distinct().ToList();
+
+            var mycat = await _enablingObjective_CategoryService.GetMinimalEOCatDataByIds(categoryIds);
+            var mySubCats = await _enablingObjective_SubCategoryService.GetMinimalEOSubCatDataByIds(subCatIds);
+            var topics = await _enablingObjective_TopicService.GetMinimalEOTopicDataByIds(topicIds);
+
+            var subCatsByCategory = mySubCats.GroupBy(sc => sc.CategoryId).ToDictionary(g => g.Key, g => g.OrderBy(o => o.Number).ToList());
+
+            var topicsBySubCat = topics.GroupBy(t => t.SubCategoryId).ToDictionary(g => g.Key, g => g.OrderBy(o => o.Number).ToList());
+
+            var eosBySubCat = eos.Where(eo => eo.TopicId == null).GroupBy(eo => (eo.CategoryId, eo.SubCategoryId))
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderBy(eo => ParseEoNumber(eo.Number)).ToList()
+                );
+
+            var eosByTopic = eos.Where(eo => eo.TopicId != null).GroupBy(eo => (eo.CategoryId, eo.SubCategoryId, eo.TopicId.Value))
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderBy(eo => ParseEoNumber(eo.Number)).ToList()
+                );
+
+            mycat = mycat.OrderBy(c => c.Number).ToList();
+            foreach (var cat in mycat)
+            {
+                if (subCatsByCategory.TryGetValue(cat.Id, out var subcats))
+                {
+                    cat.EnablingObjective_SubCategories = subcats;
+                    foreach (var sub in subcats)
+                    {
+                        if (eosBySubCat.TryGetValue((cat.Id, sub.Id), out var eoList))
+                            sub.EnablingObjectives = eoList;
+
+                        if (topicsBySubCat.TryGetValue(sub.Id, out var topicList))
+                        {
+                            sub.EnablingObjective_Topics = topicList;
+                            foreach (var topic in topicList)
+                            {
+                                if (eosByTopic.TryGetValue((cat.Id, sub.Id, topic.Id), out var topicEos))
+                                    topic.EnablingObjectives = topicEos;
+                            }
+                        }
+                    }
+                }
+            }
+
+            mycat = mycat.Where(da => _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, da, EnablingObjective_CategoryOperations.Read).Result.Succeeded).ToList();
+
+            return mycat;
+        }
+
+        private static long ParseEoNumber(string number)
+        {
+            if (long.TryParse(number, out long num))
+                return num;
+
+            if (number.Contains("."))
+            {
+                var parts = number.Split('.');
+                if (parts.Length > 3 && long.TryParse(parts[3], out long subNum))
+                    return subNum;
+            }
+
+            return 0;
         }
     }
 }

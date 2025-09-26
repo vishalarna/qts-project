@@ -1,7 +1,6 @@
 ﻿using MediatR;
 using QTD2.Domain.Events.Core;
 using QTD2.Domain.Interfaces.Service.Core;
-using QTD2.Domain.Services.Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace QTD2.Application.EventHandlers.Core
 {
-    internal class OnSkillQualificationReleasedHandler : INotificationHandler<OnSkillQualificationReleased>
+    public class OnSkillQualificationReleasedHandler : INotificationHandler<OnSkillQualificationReleased>
     {
         private readonly INotificationService _notificationService;
         private readonly IClientSettings_NotificationService _clientSettings_NotificationService;

@@ -169,7 +169,6 @@ namespace QTD2.Data
             modelBuilder.ApplyConfiguration(new Procedure_ILA_LinkMap());
             modelBuilder.ApplyConfiguration(new Procedure_RR_LinkMap());
             modelBuilder.ApplyConfiguration(new SaftyHazard_RR_LinkMap());
-            modelBuilder.ApplyConfiguration(new SafetyHazard_ILA_LinkMap());
             //modelBuilder.ApplyConfiguration(new SafetyHazard_Procedure_LinkMap());
             modelBuilder.ApplyConfiguration(new ILA_PreRequisite_LinkMap());
             modelBuilder.ApplyConfiguration(new TrainingTopic_CategoryMap());
@@ -526,7 +525,6 @@ namespace QTD2.Data
             modelBuilder.ApplyConfiguration(new SimulatorScenario_EventMap());
             modelBuilder.ApplyConfiguration(new SimulatorScenario_Script_CriteriaMap());
 
-
             modelBuilder.ApplyConfiguration(new EMPSkillQualitificationEvaluatorNotificationMap());
             modelBuilder.ApplyConfiguration(new EMPSkillQualificationTraineeNotificationMap());
         }
@@ -729,8 +727,6 @@ namespace QTD2.Data
         public DbSet<Procedure_RR_Link> Procedure_RR_Links { get; set; }
 
         public DbSet<SaftyHazard_RR_Link> SaftyHazard_RR_Links { get; set; }
-
-        public DbSet<SafetyHazard_ILA_Link> SafetyHazard_ILA_Links { get; set; }
 
         //public DbSet<SafetyHazard_Procedure_Link> SafetyHazard_Procedure_Links { get; set; }
 

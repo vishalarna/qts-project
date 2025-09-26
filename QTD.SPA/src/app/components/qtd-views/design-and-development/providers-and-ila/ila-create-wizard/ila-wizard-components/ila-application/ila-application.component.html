@@ -7,7 +7,7 @@
         size="sm"
         text="Save"
         [spinner]="saveSpinner"
-        [disabled]="ILAApplicationForm.invalid || saveSpinner"
+        [disabled]="mode=== 'view' || ILAApplicationForm.invalid || saveSpinner"
         (click)="saveApplicationInfo()"
       >
       </app-button>
@@ -15,16 +15,16 @@
     <!--Export As CSV-->
     <!-- <app-button (clicked)="downloadAsCSV()" size="sm" variant="text" [ngStyle]="{'color':ILAApplicationForm.valid ? 'primary' : 'grey' }" [disabled]="!ILAApplicationForm.valid" class="ml-4" text="Export as CSV" icon="upload" iconPosition="left">
     </app-button> -->
-    <button (click)="downloadAsCSV()" [ngStyle]="{'color':ILAApplicationForm.valid ? 'rgb(92, 155, 49)' : 'grey' }" [disabled]="!ILAApplicationForm.valid" class="ml-4">
-     <app-icon [ngStyle]="{'color':ILAApplicationForm.valid ? 'rgb(92, 155, 49)' : 'grey' }" icon="upload"></app-icon> Export As CSV
+    <button (click)="downloadAsCSV()" [ngStyle]="{'color':ILAApplicationForm.valid || mode==='view' ? 'rgb(92, 155, 49)' : 'grey' }" [disabled]="!ILAApplicationForm.valid && mode!=='view'" class="ml-4">
+     <app-icon [ngStyle]="{'color':ILAApplicationForm.valid || mode==='view' ? 'rgb(92, 155, 49)' : 'grey' }" icon="upload"></app-icon> Export As CSV
     </button>
 
     <!--Preview ILA Application-->
     <!-- <app-button  [disabled]="!ILAApplicationForm.valid" (click)="previewIlaApplication()" variant="text" text="Preview ILA Application" icon="visibility" iconPosition="left">
     </app-button> -->
     <app-spinner *ngIf = "spinner"></app-spinner>
-    <button *ngIf = "!spinner" (click)="downloadILAApplicationReport()" [ngStyle]="{'color':ILAApplicationForm.valid ? 'rgb(92, 155, 49)' : 'grey' }" [disabled]="!ILAApplicationForm.valid" class="ml-4">
-      <app-icon [ngStyle]="{'color':ILAApplicationForm.valid ? 'rgb(92, 155, 49)' : 'grey' }" icon="visibility"></app-icon> Preview NERC {{("ILA" | labelReplacement)| async}} Application
+    <button *ngIf = "!spinner" (click)="downloadILAApplicationReport()" [ngStyle]="{'color':ILAApplicationForm.valid || mode==='view' ? 'rgb(92, 155, 49)' : 'grey' }" [disabled]="!ILAApplicationForm.valid && mode!=='view'" class="ml-4">
+      <app-icon [ngStyle]="{'color':ILAApplicationForm.valid || mode==='view' ? 'rgb(92, 155, 49)' : 'grey' }" icon="visibility"></app-icon> Preview NERC {{("ILA" | labelReplacement)| async}} Application
      </button>
   </div>
   <div class="border-gray-one shadow-xs border-0.5 rounded mat-elevation-z8 px-2 py-5 pb-3">

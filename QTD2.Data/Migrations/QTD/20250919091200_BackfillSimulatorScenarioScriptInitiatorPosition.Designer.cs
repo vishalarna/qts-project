@@ -12,8 +12,8 @@ using QTD2.Data;
 namespace QTD2.Data.Migrations.QTD
 {
     [DbContext(typeof(QTDContext))]
-    [Migration("20250923064851_SkillQualificationNotification")]
-    partial class SkillQualificationNotification
+    [Migration("20250919091200_BackfillSimulatorScenarioScriptInitiatorPosition")]
+    partial class BackfillSimulatorScenarioScriptInitiatorPosition
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -12752,50 +12752,6 @@ namespace QTD2.Data.Migrations.QTD
                     b.ToTable("SafetyHazard_Histories");
                 });
 
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.SafetyHazard_ILA_Link", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<bool>("Active")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("CreatedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("CreatedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("Deleted")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bit")
-                        .HasDefaultValue(false);
-
-                    b.Property<int>("ILAId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("ModifiedBy")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime?>("ModifiedDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<int>("SafetyHazardId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SafetyHazardId");
-
-                    b.HasIndex("ILAId", "SafetyHazardId")
-                        .IsUnique();
-
-                    b.ToTable("SafetyHazard_ILA_Links");
-                });
-
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SafetyHazard_Set", b =>
                 {
                     b.Property<int>("Id")
@@ -14189,11 +14145,20 @@ namespace QTD2.Data.Migrations.QTD
                     b.Property<int>("InitiatorId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("InitiatorInstructor")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("InitiatorOther")
+                        .HasColumnType("bit");
+
                     b.Property<string>("ModifiedBy")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("ModifiedDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<int?>("SimulatorScenario_PositionId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime?>("Time")
                         .HasColumnType("datetime2");
@@ -14207,6 +14172,8 @@ namespace QTD2.Data.Migrations.QTD
                     b.HasIndex("EventId");
 
                     b.HasIndex("InitiatorId");
+
+                    b.HasIndex("SimulatorScenario_PositionId");
 
                     b.ToTable("SimulatorScenario_Scripts");
                 });
@@ -22202,30 +22169,6 @@ namespace QTD2.Data.Migrations.QTD
                     b.HasDiscriminator().HasValue("EMPSelfRegistrationDenialNotification");
                 });
 
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.EMPSkillQualificationTraineeNotification", b =>
-                {
-                    b.HasBaseType("QTD2.Domain.Entities.Core.Notification");
-
-                    b.Property<int>("SkillQualificationId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("SkillQualificationId");
-
-                    b.HasDiscriminator().HasValue("EMPSkillQualificationTraineeNotification");
-                });
-
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.EMPSkillQualitificationEvaluatorNotification", b =>
-                {
-                    b.HasBaseType("QTD2.Domain.Entities.Core.Notification");
-
-                    b.Property<int>("SkillQualification_Evaluator_LinkId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("SkillQualification_Evaluator_LinkId");
-
-                    b.HasDiscriminator().HasValue("EMPSkillQualitificationEvaluatorNotification");
-                });
-
             modelBuilder.Entity("QTD2.Domain.Entities.Core.EMPStudentEvaluationNotication", b =>
                 {
                     b.HasBaseType("QTD2.Domain.Entities.Core.Notification");
@@ -25951,25 +25894,6 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("SafetyHazard");
                 });
 
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.SafetyHazard_ILA_Link", b =>
-                {
-                    b.HasOne("QTD2.Domain.Entities.Core.ILA", "ILA")
-                        .WithMany("SafetyHazard_ILA_Links")
-                        .HasForeignKey("ILAId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("QTD2.Domain.Entities.Core.SaftyHazard", "SaftyHazard")
-                        .WithMany("SafetyHazard_ILA_Links")
-                        .HasForeignKey("SafetyHazardId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ILA");
-
-                    b.Navigation("SaftyHazard");
-                });
-
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SafetyHazard_Set_Link", b =>
                 {
                     b.HasOne("QTD2.Domain.Entities.Core.SaftyHazard", "SafetyHazard")
@@ -26366,9 +26290,16 @@ namespace QTD2.Data.Migrations.QTD
                         .OnDelete(DeleteBehavior.NoAction)
                         .IsRequired();
 
+                    b.HasOne("QTD2.Domain.Entities.Core.SimulatorScenario_Position", "SimulatorScenario_Position")
+                        .WithMany("SimulatorScenario_Scripts")
+                        .HasForeignKey("SimulatorScenario_PositionId")
+                        .OnDelete(DeleteBehavior.NoAction);
+
                     b.Navigation("Initiator");
 
                     b.Navigation("SimulatorScenario_Event");
+
+                    b.Navigation("SimulatorScenario_Position");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Script_Criteria", b =>
@@ -28671,28 +28602,6 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("ClassScheduleEmployee");
                 });
 
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.EMPSkillQualificationTraineeNotification", b =>
-                {
-                    b.HasOne("QTD2.Domain.Entities.Core.SkillQualification", "SkillQualification")
-                        .WithMany()
-                        .HasForeignKey("SkillQualificationId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("SkillQualification");
-                });
-
-            modelBuilder.Entity("QTD2.Domain.Entities.Core.EMPSkillQualitificationEvaluatorNotification", b =>
-                {
-                    b.HasOne("QTD2.Domain.Entities.Core.SkillQualification_Evaluator_Link", "SkillQualification_Evaluator_Link")
-                        .WithMany()
-                        .HasForeignKey("SkillQualification_Evaluator_LinkId")
-                        .OnDelete(DeleteBehavior.NoAction)
-                        .IsRequired();
-
-                    b.Navigation("SkillQualification_Evaluator_Link");
-                });
-
             modelBuilder.Entity("QTD2.Domain.Entities.Core.EMPStudentEvaluationNotication", b =>
                 {
                     b.HasOne("QTD2.Domain.Entities.Core.ClassSchedule_Evaluation_Roster", "ClassSchedule_Evaluation_Roster")
@@ -29558,8 +29467,6 @@ namespace QTD2.Data.Migrations.QTD
 
                     b.Navigation("Procedure_ILA_Links");
 
-                    b.Navigation("SafetyHazard_ILA_Links");
-
                     b.Navigation("SimulatorScenarioILA_Links");
 
                     b.Navigation("SimulatorScenario_ILAs");
@@ -29926,8 +29833,6 @@ namespace QTD2.Data.Migrations.QTD
 
                     b.Navigation("SafetyHazard_Histories");
 
-                    b.Navigation("SafetyHazard_ILA_Links");
-
                     b.Navigation("SafetyHazard_Set_Links");
 
                     b.Navigation("SafetyHazard_Task_Links");
@@ -30002,6 +29907,11 @@ namespace QTD2.Data.Migrations.QTD
                     b.Navigation("SimulatorScenarioTaskObjectives_Links");
 
                     b.Navigation("SimulatorScenario_EnablingObjectives_Links");
+                });
+
+            modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Position", b =>
+                {
+                    b.Navigation("SimulatorScenario_Scripts");
                 });
 
             modelBuilder.Entity("QTD2.Domain.Entities.Core.SimulatorScenario_Script", b =>

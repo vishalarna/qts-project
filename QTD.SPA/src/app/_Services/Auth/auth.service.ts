@@ -108,8 +108,10 @@ export class AuthService extends jwtAuthHelper {
     sendResetLink(username: string) {
         return this.http
             .put(
-                this.baseUrl + `users/password/reset-token?email=${username}`,
-                {},
+                this.baseUrl + `users/password/reset-token`,
+                {
+                  email: username
+                },
                 {withCredentials: true}
             )
             .pipe(

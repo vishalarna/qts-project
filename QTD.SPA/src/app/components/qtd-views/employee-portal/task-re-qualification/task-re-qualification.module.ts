@@ -4,7 +4,6 @@ import { TaskReQualificationComponent } from './task-re-qualification.component'
 import { RouterModule, Routes } from '@angular/router';
 import { AuthGuard } from 'src/app/_Guards/auth.guard';
 import { RouteGuard } from 'src/app/_Guards/route.guard';
-import { FlyPanelTaskReQualificationTaskFeedbackComponent } from './fly-panel-task-re-qualification-task-feedback/fly-panel-task-re-qualification-task-feedback.component';
 
 const routes: Routes = [
   {

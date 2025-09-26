@@ -13,7 +13,7 @@
 <div class="ml-12 mt-8 pr-4">
   <app-label [for]="'Title'" [text]="'Title'" class="label required"></app-label>
  <!--    <app-label class="required font-medium">Title</app-label> -->
-    <input [disabled]="preview_evaluation" type="text" class="h-10 border w-23/24 rounded p-2 bg-white-one" placeholder="Enter Title" [(ngModel)]="title"/>
+    <input [disabled]="mode === 'view' || preview_evaluation" type="text" class="h-10 border w-23/24 rounded p-2 bg-white-one" placeholder="Enter Title" [(ngModel)]="title"/>
 </div>
 <!--Title Ends-->
 
@@ -30,7 +30,7 @@
   </div>
 
   <mat-form-field appearance="outline" class="text-sm dropdown w-23/24">
-    <mat-select [disabled]="preview_evaluation" [formControl]="ratingScaleId" placeholder="Select Rating Scale">
+    <mat-select [disabled]="mode === 'view' || preview_evaluation" [formControl]="ratingScaleId" placeholder="Select Rating Scale">
    <!--    <mat-select-trigger>
         <mat-chip-list>
           <mat-chip *ngFor="let i of RatingControl.value" [removable]="true"

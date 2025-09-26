@@ -13,7 +13,7 @@ import { DutyAreaService } from 'src/app/_Services/QTD/duty-area.service';
 import { EnablingObjectivesService } from 'src/app/_Services/QTD/enabling-objectives.service';
 import { SweetAlertService } from 'src/app/_Shared/services/sweetalert.service';
 import { PositionIdsModel } from '@models/Position/PositionIdsModel';
-
+ 
 @Component({
   selector: 'app-fly-panel-add-objectives-linkages',
   templateUrl: './fly-panel-add-objectives-linkages.component.html',
@@ -55,7 +55,7 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
   selectedFilter:string;
   showOnlySelected: boolean;
   isIncludeMetaEO:boolean = false;
-
+ 
   constructor(
     public eoSrvc: EnablingObjectivesService,
     private dutyAreaService: DutyAreaService,
@@ -89,7 +89,6 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
     });
   }
 
-
   readyEOTreeData(res: any[]) {
     this.notTopicEOs = 0;
     if (res.length === 0) {
@@ -101,14 +100,14 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
           children: [],
           description: cat['number'] + ". " + cat['title'],
           id: cat.id,
-          IsEO:false,
+          IsEO: false,
         })
         cat['enablingObjective_SubCategories'].forEach((subCat, j) => {
           treeData[i].children?.push({
             children: [],
             description: `${cat['number']}.${subCat['number']} ` + subCat['title'],
             id: subCat.id,
-            IsEO:false,
+            IsEO: false,
           });
           subCat['enablingObjectives'].forEach((eo) => {
             treeData[i].children[j].children?.push({
@@ -117,11 +116,10 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
               id: eo.id,
               active: eo['active'],
               checkbox: !this.linkedObjectiveIds.includes(eo.id),
-           //   selected: this.linkedObjectiveIds.includes(eo.id), 
               IsEO: true,
               isMeta: eo['isMetaEO'],
               isSkillQualification: eo['isSkillQualification'],
-              
+             
             })
             this.notTopicEOs++;
           });
@@ -130,7 +128,7 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
               children: [],
               description: `${cat['number']}.${subCat['number']}.${topic['number']} ${topic['title']}`,
               id: topic.id,
-              IsEO:false,
+              IsEO: false,
             });
             topic['enablingObjectives'].forEach((eo, l) => {
                 treeData[i].children[j]?.children[k + this.notTopicEOs]?.children?.push({
@@ -139,21 +137,19 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
                 active: eo['active'],
                 id: eo['id'],
                 checkbox: !this.linkedObjectiveIds.includes(eo.id),
-            //    selected: this.linkedObjectiveIds.includes(eo.id), 
                 IsEO: true,
                 isMeta: eo['isMetaEO'],
                 isSkillQualification: eo['isSkillQualification'],
               });
               if(this.linkedObjectiveIds.includes(eo.id)){
-
+ 
               }
-
             });
           });
           this.notTopicEOs = 0;
         });
       })
-      
+
       this.eoTreeControl.dataNodes = Object.assign(treeData);
       this.enablingObjectiveDataSource.data = Object.assign([], treeData);
       this.originalSource.data = Object.assign([], treeData);
@@ -222,39 +218,37 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
     }
     this.toggleTaskItem(event.checked, node);
   }
-
+ 
   toggleTaskItem(checked: boolean, node: any) {
-  node.selected = checked;  
-
-  if (node.children && node.children.length > 0) {
-    node.children.forEach((child) => {
-      this.toggleTaskItem(checked, child);
-    });
-  } else {
-    if (node.checkbox) {
-      if (checked) {
-        this.taskCheckListSelection.select(node);
-      } else {
-        this.taskCheckListSelection.deselect(node);
+    node.selected = checked;  
+ 
+    if (node.children && node.children.length > 0) {
+      node.children.forEach((child) => {
+        this.toggleTaskItem(checked, child);
+      });
+    } else {
+      if (node.checkbox) {
+        if (checked) {
+          this.taskCheckListSelection.select(node);
+        } else {
+          this.taskCheckListSelection.deselect(node);
+        }
       }
     }
+    this.checkAllParentTasks(node);
   }
-
-  this.checkAllParentTasks(node);
-}
-
 
  private checkAllParentTasks(node: any) {
   if (node.parent) {
     const descendants = this.treeControl.getDescendants(node.parent);
-
+ 
     node.parent.selected = descendants.length > 0 && descendants.every(c => c.selected);
     node.parent.indeterminate = !node.parent.selected && descendants.some(c => c.selected);
-
+ 
     this.checkAllParentTasks(node.parent);
   }
 }
-
+ 
   searchTask(event : any){
     const searchTerm = event.target.value.toLowerCase();
     this.searchText = searchTerm;
@@ -264,21 +258,21 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
       this.setFilteredDataSource(null);
     }
   }
-
+ 
   setFilteredDataSource(condition: ((item: any) => boolean) | null) {
     function filterTree(node) {
       if (!node.children || node.children.length === 0) return node;
-  
+ 
       node.children = node.children
         .map(filterTree)
         .filter(child => child.children?.length > 0 || (child.children?.length === 0 && !child.children));
-  
+ 
       if (node.children.length === 0 && node.children !== undefined) {
         return null;
       }
       return node;
     }
-  
+ 
     let temparr = this.originalTaskDataSource.data.map((element) => {
       let filteredChildren = element.children?.map((e) => {
         let filteredGrandchildren = e.children?.filter((c) => {
@@ -291,43 +285,43 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
           children: filteredGrandchildren
         };
       }).filter(e => e.children && e.children.length > 0) || [];
-  
+ 
       return {
         ...element,
         children: filteredChildren
       };
     }).filter(element => element.children && element.children.length > 0);
-  
+ 
     temparr.forEach(node => {
       this.setTaskParent(node, undefined);
-      this.updateNodeSelectionState(node); 
+      this.updateNodeSelectionState(node);
     });
     this.dataSource.data = temparr;
     this.treeControl.dataNodes = this.dataSource.data;
     this.searchText.length > 0 ? this.treeControl.expandAll() : this.treeControl.collapseAll();
   }
-  
+ 
 
   public hideLeafNode(node: any) {
     return this.showOnlySelected && !node.selected
       ? true
       : new RegExp(this.searchText, 'i').test(node.description) === false || (!(node?.isTask ?? false));
   }
-
+ 
   public hideParentNode(node: any) {
     return this.treeControl
       .getDescendants(node)
       .filter((node) => node.children == null || node.children.length === 0)
       .every((node) => this.hideLeafNode(node));
   }
-
+ 
   clearTaskSearchString(){
     this.filterTaskString = "" ;
     this.searchTask(this.filterTaskString);
   }
-  
  
-
+ 
+ 
   itemToggle2(checked: boolean, node: EOTree) {
     node.selected = node.checkbox ? checked : false;
     if (node.children !== undefined && node.children?.length > 0) {
@@ -361,7 +355,7 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
         this.isTaskLoading = false;
       });
   }
-
+ 
   makeTaskTreeDataSource(res: any[]) {
     var treeData = [];
     res.forEach((da, i) => {
@@ -386,7 +380,6 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
               description: `${da.letter} ${da.number}.${sda.subNumber}.${task.number} - ${task.description}`,
               id: task.id,
               checkbox: !this.alreadyLinkedTasks.includes(task.id),
-           //   selected: this.alreadyLinkedTasks.includes(task.id),
               isTask: true,
               isMeta: task.isMeta,
               isReliablity: task.isReliability,
@@ -404,7 +397,7 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
     this.updateNodeSelectionState(treeData);
     this.isTaskLoading = true;
   }
-
+ 
   private setTaskParent(node: any, parent: any | undefined) {
     node.parent = parent;
     if (node.children) {
@@ -413,46 +406,44 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
       });
     }
   }
-
+ 
   updateNodeSelectionState(nodes: any[] | any) {
-    nodes.forEach(node => {
-          if (node.children && node.children.length > 0) {
-
-              this.updateNodeSelectionState(node.children);
-
-              const allChildrenSelectedOrLinked = node.children.every(
-                  (child: any) => child.selected || this.alreadyLinkedTasks.includes(child.id)
-              );
-              const anyChildSelectedOrLinked = node.children.some(
-                  (child: any) => child.selected || this.alreadyLinkedTasks.includes(child.id) || child.indeterminate
-              );
-
-              node.selected = allChildrenSelectedOrLinked;
-              node.indeterminate = !allChildrenSelectedOrLinked && anyChildSelectedOrLinked;
-          }
-      });
+    const nodeArray = Array.isArray(nodes) ? nodes : [nodes];
+  
+    nodeArray.forEach(node => {
+      if (node.children && node.children.length > 0) {
+        this.updateNodeSelectionState(node.children);
+  
+        const allChildrenSelectedOrLinked = node.children.every((child: any) => child.selected);
+        const anyChildSelectedOrLinked = node.children.some(
+          (child: any) => child.selected || child.indeterminate
+        );
+  
+        node.selected = allChildrenSelectedOrLinked;
+        node.indeterminate = !allChildrenSelectedOrLinked && anyChildSelectedOrLinked;
+      }
+    });
   }
-
-
+ 
   updateEONodeSelectionState(nodes: any[] | any) {
-  const nodeArray = Array.isArray(nodes) ? nodes : [nodes];
-
-  nodeArray.forEach(node => {
-    if (node.children && node.children.length > 0) {
-      this.updateEONodeSelectionState(node.children);
-
-      const allChildrenSelectedOrLinked = node.children.every(
-        (child: any) => child.selected || child.indeterminate
-      );
-      const anyChildSelectedOrLinked = node.children.some(
-        (child: any) => child.selected || child.indeterminate
-      );
-
-      node.selected = allChildrenSelectedOrLinked; 
-      node.indeterminate = !allChildrenSelectedOrLinked && anyChildSelectedOrLinked;
-    }
-  });
-}
+    const nodeArray = Array.isArray(nodes) ? nodes : [nodes];
+  
+    nodeArray.forEach(node => {
+      if (node.children && node.children.length > 0) {
+        this.updateEONodeSelectionState(node.children);
+  
+        const allChildrenSelectedOrLinked = node.children.every(
+          (child: any) => child.selected || child.indeterminate
+        );
+        const anyChildSelectedOrLinked = node.children.some(
+          (child: any) => child.selected || child.indeterminate
+        );
+  
+        node.selected = allChildrenSelectedOrLinked;
+        node.indeterminate = !allChildrenSelectedOrLinked && anyChildSelectedOrLinked;
+      }
+    });
+  }
 
   toggleIncludeEos() {
     this.includeEos = !this.includeEos;
@@ -468,18 +459,18 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
   }
 
   linkObjectivesToScenario() {
-  this.newObjectivesLinked.emit({
-    selected: this.eoCheckListSelection.selected,
-    includeMetaEO: this.isIncludeMetaEO
-  });
-  this.closed.emit();
-}
-
+    this.newObjectivesLinked.emit({
+      selected: this.eoCheckListSelection.selected,
+      includeMetaEO: this.isIncludeMetaEO
+    });
+    this.closed.emit();
+  }
+ 
   filterTask(s: string) {
     this.selectedFilter = s;
     this.searchTask({ target: { value: this.searchText } });
   }
-
+ 
   applyFilterAndSearch(filter: string) {
     switch (filter) {
       case 'rr':
@@ -496,7 +487,7 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
         break;
     }
   }
-
+ 
   applyEOFilterAndSearch(filter: string) {
     switch (filter) {
       case 'eo':
@@ -513,42 +504,42 @@ export class FlyPanelAddObjectivesLinkagesComponent implements OnInit {
         break;
     }
   }
-
+ 
   setEOFilteredDataSource(condition: ((item: any) => boolean) | null) {
-  const searchText = String(this.searchText).toLowerCase();
-
-  function filterNode(node): any | null {
-    const matchesSearch = node.description?.toLowerCase().includes(searchText) ?? true;
-    const matchesCondition = condition ? condition(node) : true;
-    const selfMatches = matchesSearch && matchesCondition;
-
-    const filteredChildren = node.children
-      ? node.children.map(filterNode).filter(c => c !== null)
-      : [];
-
-    if (selfMatches || filteredChildren.length > 0) {
-      return {
-        ...node,
-        children: filteredChildren
-      };
+    const searchText = String(this.searchText).toLowerCase();
+  
+    function filterNode(node): any | null {
+      const matchesSearch = node.description?.toLowerCase().includes(searchText) ?? true;
+      const matchesCondition = condition ? condition(node) : true;
+      const selfMatches = matchesSearch && matchesCondition;
+  
+      const filteredChildren = node.children
+        ? node.children.map(filterNode).filter(c => c !== null)
+        : [];
+  
+      if (selfMatches || filteredChildren.length > 0) {
+        return {
+          ...node,
+          children: filteredChildren
+        };
+      }
+      return null;
     }
-    return null;
+  
+    const temparr = this.originalSource.data
+      .map(filterNode)
+      .filter(node => node !== null);
+  
+    temparr.forEach(node => {
+      this.setParent(node, undefined);
+      this.updateEONodeSelectionState(node);
+    });
+  
+    this.enablingObjectiveDataSource.data = temparr;
+    this.eoTreeControl.dataNodes = this.enablingObjectiveDataSource.data;
+    this.searchText.length > 0 ? this.eoTreeControl.expandAll() : this.eoTreeControl.collapseAll();
   }
-
-  const temparr = this.originalSource.data
-    .map(filterNode)
-    .filter(node => node !== null);
-
-  temparr.forEach(node => {
-    this.setParent(node, undefined);
-    this.updateEONodeSelectionState(node); 
-  });
-
-  this.enablingObjectiveDataSource.data = temparr;
-  this.eoTreeControl.dataNodes = this.enablingObjectiveDataSource.data;
-  this.searchText.length > 0 ? this.eoTreeControl.expandAll() : this.eoTreeControl.collapseAll();
-}
-
+ 
   onIncludeMetaEOChange(event: any){
     this.isIncludeMetaEO = event.checked;
   }

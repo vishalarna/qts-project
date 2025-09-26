@@ -34,8 +34,7 @@ export class SimScenariosWizardInstructorComponent implements OnInit {
       operatingSkills: [this.inputSimulatorScenario_VM?.operatingSkillsEvaluationMethod ?? ""],
       notes: [this.inputSimulatorScenario_VM?.notes ?? ""],
     });
-
-    this.originalratingScaleForm = {...this.ratingScaleForm}
+    this.originalratingScaleForm = {...this.ratingScaleForm.value}
   }
 
   async getRatingScaleAllAsync() {
@@ -50,17 +49,15 @@ export class SimScenariosWizardInstructorComponent implements OnInit {
 
   onOperatingSkillsInput() {
     this.inputSimulatorScenario_VM.operatingSkillsEvaluationMethod = this.ratingScaleForm.get('operatingSkills')?.value;
-
     if (this.inputSimulatorScenario_VM.operatingSkillsEvaluationMethod.trim() !== '') {
       this.ratingScaleForm.get('operatingSkills')?.markAsDirty();
     } else {
       this.ratingScaleForm.get('operatingSkills')?.markAsPristine();
     }
   }
-
+ 
   onNotesInput() {
     this.inputSimulatorScenario_VM.notes = this.ratingScaleForm.get('notes')?.value;
-
     if (this.inputSimulatorScenario_VM.operatingSkillsEvaluationMethod.trim() !== '') {
       this.ratingScaleForm.get('notes')?.markAsDirty();
     } else {

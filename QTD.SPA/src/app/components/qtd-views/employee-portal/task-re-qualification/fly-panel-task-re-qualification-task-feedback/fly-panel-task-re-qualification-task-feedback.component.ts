@@ -21,7 +21,7 @@ import { EOWithAllDataVM } from '@models/EnablingObjective/EOWithAllDataVM';
 @Component({
   selector: 'app-fly-panel-task-re-qualification-task-feedback',
   templateUrl: './fly-panel-task-re-qualification-task-feedback.component.html',
-  styleUrls: ['./fly-panel-task-re-qualification-task-feedback.component.scss']
+  styleUrls: ['./fly-panel-task-re-qualification-task-feedback.component.scss'],
 })
 export class FlyPanelTaskReQualificationTaskFeedbackComponent implements OnInit {
   @Input() isOpenInFlyPanel:boolean=false;

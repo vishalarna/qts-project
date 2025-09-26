@@ -1325,7 +1325,15 @@ namespace QTD2.Data.Initialization.QTDContext
         {
             callMethod(prefix + "UpdateSimulatorScenarioILAsAndPrerequisitesForDeletedILAs");
         }
+        public void CopySafetyHazardILALinksToILASafetyHazardLinks()
+        {
+            callMethod(prefix + "CopySafetyHazardILALinksToILASafetyHazardLinks");
+        }
 
+        public void MigrateSimulatorScenarioScriptInitiatorData()
+        {
+            callMethod(prefix + "MigrateSimulatorScenarioScriptInitiatorData");
+        }
         public void Update_ClientSettingsNotification_StepsTemplateForTaskQualification()
         {
             callMethod(prefix + "Update_ClientSettingsNotification_StepsTemplateForTaskQualification");

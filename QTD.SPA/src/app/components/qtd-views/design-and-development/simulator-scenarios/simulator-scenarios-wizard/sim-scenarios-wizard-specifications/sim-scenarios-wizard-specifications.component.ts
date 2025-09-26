@@ -23,18 +23,20 @@ import * as ckcustomBuild from 'src/app/ckcustomBuild/build/ckeditor.js'
 export class SimScenariosWizardSpecificationsComponent implements OnInit {
   @Input() inputSimulatorScenario_VM: SimulatorScenario_VM = new SimulatorScenario_VM();
   @Input() inputSimScenariosId: string;
-  @Input() mode: string;
+  @Input() mode:string;
   @Input() stepper!: MatStepper;
   specificationsForm: UntypedFormGroup;
   displayObjectivesColumns: string[] = ['number', 'description']
   displayPositionsColumns: string[] = ['number', 'description']
-  taskEoObjectivesData: any[];
-  positionsData: SimulatorScenario_Position_VM[];
+  taskEoObjectivesData:any[];
+  positionsData:SimulatorScenario_Position_VM[];
   editor = ckcustomBuild;
   positionsUpdateOptions: SimulatorScenario_UpdatePositions_VM;
-  linkedPositionIds: any[] = [];
-  private stepperSub!: Subscription;
+  linkedPositionIds: any[] = []; 
   originalSpecifications: any = {};
+ 
+  private stepperSub!: Subscription;
+
   constructor(
     public flyPanelService: FlyInPanelService,
     public vcf: ViewContainerRef,
@@ -68,9 +70,8 @@ export class SimScenariosWizardSpecificationsComponent implements OnInit {
       validityChecks: [this.inputSimulatorScenario_VM?.validityChecks ?? ""],
       rolePlays: [this.inputSimulatorScenario_VM?.rolePlays ?? ""],
       documentation: [this.inputSimulatorScenario_VM?.documentation ?? ""],
-    });
-
-     this.originalSpecifications = { ...this.specificationsForm.value };
+    }); 
+   this.originalSpecifications = { ...this.specificationsForm.value };
   }
 
   reload(): void {
@@ -82,7 +83,7 @@ export class SimScenariosWizardSpecificationsComponent implements OnInit {
   }
 
   async loadAsync() {
-    this.taskEoObjectivesData = [... this.inputSimulatorScenario_VM?.enablingObjectives, ...this.inputSimulatorScenario_VM?.tasks];
+    this.taskEoObjectivesData = [... this.inputSimulatorScenario_VM?.enablingObjectives,...this.inputSimulatorScenario_VM?.tasks];
     this.positionsData = this.inputSimulatorScenario_VM?.positions;
     this.linkedPositionIds =
       this.inputSimulatorScenario_VM?.positions?.map(
@@ -98,14 +99,13 @@ export class SimScenariosWizardSpecificationsComponent implements OnInit {
 
   onNetworkConfigurationInput() {
     this.inputSimulatorScenario_VM.networkConfiguration = this.specificationsForm.get('networkConfiguration')?.value;
-
     if (this.inputSimulatorScenario_VM.networkConfiguration.trim() !== '') {
       this.specificationsForm.get('networkConfiguration')?.markAsDirty();
     } else {
       this.specificationsForm.get('networkConfiguration')?.markAsPristine();
     }
   }
-
+ 
   onLoadingConditionsInput() {
     this.inputSimulatorScenario_VM.loadingConditions = this.specificationsForm.get('loadingConditions')?.value;
     if (this.inputSimulatorScenario_VM.loadingConditions.trim() !== '') {
@@ -114,60 +114,55 @@ export class SimScenariosWizardSpecificationsComponent implements OnInit {
       this.specificationsForm.get('loadingConditions')?.markAsPristine();
     }
   }
-
+ 
   onGenerationInput() {
     this.inputSimulatorScenario_VM.generation = this.specificationsForm.get('generations')?.value;
-
     if (this.inputSimulatorScenario_VM.loadingConditions.trim() !== '') {
       this.specificationsForm.get('generations')?.markAsDirty();
     } else {
       this.specificationsForm.get('generations')?.markAsPristine();
     }
   }
-
+ 
   onInterchangeInput() {
     this.inputSimulatorScenario_VM.interchange = this.specificationsForm.get('interchange')?.value;
-
     if (this.inputSimulatorScenario_VM.loadingConditions.trim() !== '') {
       this.specificationsForm.get('interchange')?.markAsDirty();
     } else {
       this.specificationsForm.get('interchange')?.markAsPristine();
     }
   }
-
+ 
   onOtherBaseCaseInput() {
     this.inputSimulatorScenario_VM.otherBaseCase = this.specificationsForm.get('otherBaseCase')?.value;
-
     if (this.inputSimulatorScenario_VM.loadingConditions.trim() !== '') {
       this.specificationsForm.get('otherBaseCase')?.markAsDirty();
     } else {
       this.specificationsForm.get('otherBaseCase')?.markAsPristine();
     }
   }
-
+ 
   onValidityChecksInput() {
     this.inputSimulatorScenario_VM.validityChecks = this.specificationsForm.get('validityChecks')?.value;
-
+ 
     if (this.inputSimulatorScenario_VM.loadingConditions.trim() !== '') {
       this.specificationsForm.get('validityChecks')?.markAsDirty();
     } else {
       this.specificationsForm.get('validityChecks')?.markAsPristine();
     }
   }
-
+ 
   onRolePlaysInput() {
     this.inputSimulatorScenario_VM.rolePlays = this.specificationsForm.get('rolePlays')?.value;
-
     if (this.inputSimulatorScenario_VM.loadingConditions.trim() !== '') {
       this.specificationsForm.get('rolePlays')?.markAsDirty();
     } else {
       this.specificationsForm.get('rolePlays')?.markAsPristine();
     }
   }
-
+ 
   onDocumentationInput() {
     this.inputSimulatorScenario_VM.documentation = this.specificationsForm.get('documentation')?.value;
-
     if (this.inputSimulatorScenario_VM.loadingConditions.trim() !== '') {
       this.specificationsForm.get('documentation')?.markAsDirty();
     } else {
@@ -199,7 +194,7 @@ export class SimScenariosWizardSpecificationsComponent implements OnInit {
     await this.linkPosToScenariosAsync();
     this.alert.successToast('Simulator Scenario ' + await this.labelPipe.transform('Position') + 's Linked Successfully');
   }
-
+    
   async linkPosToScenariosAsync() {
     this.positionsUpdateOptions.positions = this.positionsData;
     let options = this.positionsUpdateOptions

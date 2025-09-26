@@ -6692,6 +6692,52 @@ Thank you.", 1, false, true }
                 WHERE ila.Deleted = 1 ");
         }
 
+        protected void UAT_CopySafetyHazardILALinksToILASafetyHazardLinks()
+        {
+            _migrationBuilder.Sql(@"
+                    INSERT INTO [dbo].[ILA_SafetyHazard_Links]
+                           ([ILAId]
+                           ,[SafetyHazardId]
+                           ,[Deleted]
+                           ,[Active]
+                           ,[CreatedBy]
+                           ,[CreatedDate]
+                           ,[ModifiedBy]
+                           ,[ModifiedDate])
+                    SELECT DISTINCT
+                           sh.[ILAId]
+                          ,sh.[SafetyHazardId]
+                          ,sh.[Deleted]
+                          ,sh.[Active]
+                          ,sh.[CreatedBy]
+                          ,sh.[CreatedDate]
+                          ,sh.[ModifiedBy]
+                          ,sh.[ModifiedDate]
+                    FROM [dbo].[SafetyHazard_ILA_Links] sh
+                    WHERE NOT EXISTS (
+                        SELECT 1
+                        FROM [dbo].[ILA_SafetyHazard_Links] ila
+                        WHERE ila.[ILAId] = sh.[ILAId]
+                          AND ila.[SafetyHazardId] = sh.[SafetyHazardId]
+                    );
+                ");
+        }
+
+        protected void UAT_MigrateSimulatorScenarioScriptInitiatorData()
+        {
+            _migrationBuilder.Sql(@"
+                                       UPDATE s
+                    SET s.SimulatorScenario_PositionId = sp.Id
+                    FROM SimulatorScenario_Scripts s
+                    INNER JOIN SimulatorScenario_Events e
+                        ON e.Id = s.EventId
+                    INNER JOIN SimulatorScenario_Positions sp
+                        ON sp.SimulatorScenarioId = e.SimulatorScenarioId
+                       AND sp.PositionId = s.InitiatorId
+                    WHERE s.InitiatorId IS NOT NULL;
+                ");
+        }
+
         protected void UAT_Update_ClientSettingsNotification_StepsTemplateForTaskQualification()
         {
             _migrationBuilder.UpdateData(
@@ -6725,5 +6771,6 @@ Thank you.", 1, false, true }
               value: "EMP Task And Skill Qualification - Evaluator");
 
         }
+
     }
 }

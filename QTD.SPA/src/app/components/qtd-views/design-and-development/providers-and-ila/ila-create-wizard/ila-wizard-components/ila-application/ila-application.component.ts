@@ -68,6 +68,7 @@ export class IlaApplicationComponent implements OnInit {
   datePipe = new DatePipe('en-us');
 
   @Input() assessment_tool!: string;
+  @Input() mode: string;
   @Output() previewEvent = new EventEmitter<string>();
   @Output() loadingEvent = new EventEmitter<boolean>();
   accordion_titles: TrainingTopics[];
@@ -105,6 +106,15 @@ export class IlaApplicationComponent implements OnInit {
     this.readyCourseDetails();
     this.reportSkeletonName = 'NERC ILA Application - Report Version';
     this.getReportSkeletonData();
+    if (this.mode === 'view') {
+      this.disableForms();
+    }  
+  }
+  disableForms() {
+    this.ILAApplicationForm.disable();
+    this.assessmentCheckBoxes.disable();
+    this.TRainingTopicForm.disable();
+    this.NercTargetAudienceForm.disable();
   }
 
   saveSpinner = false;
@@ -185,6 +195,9 @@ export class IlaApplicationComponent implements OnInit {
         );
       });
       this.nercTargetArray = res;
+      if (this.mode === 'view') {
+        this.NercTargetAudienceForm.disable();
+      }
 
     })
   }
@@ -202,6 +215,9 @@ export class IlaApplicationComponent implements OnInit {
 
       });
       this.accordion_titles = res;
+      if (this.mode === 'view') {
+        this.TRainingTopicForm.disable();
+      }
 
     })
   }

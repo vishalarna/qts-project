@@ -122,7 +122,9 @@ namespace QTD2.Application.Services.Shared
             {
                 foreach (var scenario in simScenarios)
                 {
-                    var simScenarioOverview_VM = new SimulatorScenarioOverview_SimulatorScenario_VM(scenario.Id, scenario.Title, string.Join(", ", scenario.ILAs.Select(x => x.ILA.Name)), string.Join(", ", scenario.Positions.Select(x => x.Position.PositionTitle)), scenario.StatusId.ToString(), scenario.Active, scenario.DifficultyId.ToString());
+                    var providerIds = scenario.ILAs.Select(x => x.ILA.ProviderId).Distinct().ToList();
+
+                    var simScenarioOverview_VM = new SimulatorScenarioOverview_SimulatorScenario_VM(scenario.Id, scenario.Title, string.Join(", ", scenario.ILAs.Select(x => x.ILA.Name)), string.Join(", ", scenario.Positions.Select(x => x.Position.PositionTitle)), scenario.StatusId.ToString(), scenario.Active, scenario.DifficultyId.ToString(), providerIds);
                     simScenarioOverview_VM.setCollaborators(scenario.Collaborators.ToList(), person.Id);
                     simScenarioOverview.SimulatorScenarios.Add(simScenarioOverview_VM);
                 }
@@ -211,7 +213,7 @@ namespace QTD2.Application.Services.Shared
 
                     foreach (var script in simScenario_Event.Scripts)
                     {
-                        var scriptVm = new SimulatorScenario_Script_VM(script.Id, script.Title, script.Description, script.InitiatorId, script.Time, simScenario_Event.Id);
+                        var scriptVm = new SimulatorScenario_Script_VM(script.Id, script.Title, script.Description, script.InitiatorId, script.Time, simScenario_Event.Id, script.InitiatorOther, script.InitiatorInstructor);
                         foreach (var criteria in script.Criterias)
                         {
                             scriptVm.Criterias.Add(new SimulatorScenario_Script_Criteria_VM
@@ -512,8 +514,6 @@ namespace QTD2.Application.Services.Shared
                         }
                     }
                 }
-
-                
             }
             var validationResult = await _simulatorScenarioService.UpdateAsync(simScenario);
             if (!validationResult.IsValid)
@@ -658,8 +658,6 @@ namespace QTD2.Application.Services.Shared
                 throw new QTDServerException(_localizer["RecordNotFound"].Value);
             }
         }
-
-
 
         public SimulatorScenario_Position_VM MapSimulatorScenarioToSimulatorScenario_Position_VM(SimulatorScenario_Position simulatorScenario_Position)
         {
@@ -1512,7 +1510,7 @@ namespace QTD2.Application.Services.Shared
             }
             else
             {
-                var simulatorScenario_Script = new QTD2.Domain.Entities.Core.SimulatorScenario_Script(options.Title, options.Description, options.InitiatorId, options.Time, options.EventId);
+                var simulatorScenario_Script = new QTD2.Domain.Entities.Core.SimulatorScenario_Script(options.Title, options.Description, options.InitiatorId, options.Time, options.EventId, options.InitiatorOther, options.InitiatorInstructor);
                 var result = await _authorizationService.AuthorizeAsync(_httpContextAccessor.HttpContext.User, simulatorScenario_Script, AuthorizationOperations.Create);
                 if (result.Succeeded)
                 {
@@ -1554,7 +1552,7 @@ namespace QTD2.Application.Services.Shared
                 var scripts = simScenario_Event.Scripts.Where(k => k.Id == scriptId).FirstOrDefault();
                 if (scripts != null)
                 {
-                    var simScenario_Script_VM = new SimulatorScenario_Script_VM(scripts.Id, scripts.Title, scripts.Description, scripts.InitiatorId, scripts.Time, scripts.EventId);
+                    var simScenario_Script_VM = new SimulatorScenario_Script_VM(scripts.Id, scripts.Title, scripts.Description, scripts.InitiatorId, scripts.Time, scripts.EventId, scripts.InitiatorOther, scripts.InitiatorInstructor);
 
                     foreach (var criteria in scripts.Criterias)
                     {
@@ -1644,6 +1642,8 @@ namespace QTD2.Application.Services.Shared
                     simScenarioScript.SetTime(options.Time);
                     simScenarioScript.SetInitiatorId(options.InitiatorId);
                     simScenarioScript.SetEventId(options.EventId);
+                    simScenarioScript.SetInitiatorOther(options.InitiatorOther);
+                    simScenarioScript.SetInitiatorInstructor(options.InitiatorInstructor);
 
                     foreach (var currentCriteria in simScenarioScript.Criterias)
                     {
@@ -1691,6 +1691,19 @@ namespace QTD2.Application.Services.Shared
                     throw new InvalidOperationException("SimulatorScenarioScript not found.");
                 }
             }
+        }
+
+        public async Task<List<SimulatorScenario_Script>> GetAllScriptAsync()
+        {
+            var simulatorScenario_Scripts = await _simulatorScenario_ScriptDomainService.GetAllScriptAsync();
+            return simulatorScenario_Scripts.ToList();
+        }
+
+        public async Task<List<SimulatorScenario_Position_VM>> GetSimulatorScenario_PositionsAsync(int id)
+        {
+            var simulatorScenario_Positions = await _simulatorScenarioPositionDomainService.GetSimulatorScenarioBySimulatorIdAsync(id);
+            var scenarioPositionVMs = simulatorScenario_Positions.Select(x => new SimulatorScenario_Position_VM(x.Id,x.PositionID,  x.Position?.PositionTitle)).ToList();
+            return scenarioPositionVMs;
         }
     }
 }

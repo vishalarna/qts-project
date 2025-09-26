@@ -53,9 +53,14 @@
             background-color: white;
         }
     }
+
+    .expired-row {
+        color: lightgray;
+        font-style: italic;
+    }
 </style>
 
-<table id="content-table" class="table" style="border-collapse: collapse">
+<table id="content-table" class="table landscape-report" style="border-collapse: collapse">
     <tr>
         <td colspan="12" style="vertical-align: middle; text-align: center; border: none !important;padding-bottom:0px">
             <div class="repeatedReportHeader" style="border-bottom: 3px solid #020378;padding-bottom:1px">
@@ -134,10 +139,10 @@
                                 </tr>
                                 @{
                                     var groupedCertificationStatuses = Model.CertificationFulfillmentStatuses
-                                        .Where(cfs => cfs != null)
-                                        .GroupBy(cfs => cfs.EmployeeId)
-                                        .OrderBy(group => group.First().EmployeeLastName)
-                                        .ToList();
+                                    .Where(cfs => cfs != null)
+                                    .GroupBy(cfs => cfs.EmployeeId)
+                                    .OrderBy(group => group.First().EmployeeLastName)
+                                    .ToList();
                                 }
 
                                 @foreach (var group in groupedCertificationStatuses)
@@ -146,8 +151,15 @@
                                     var employeeLastName = firstItem.EmployeeLastName;
                                     var employeeFirstName = firstItem.EmployeeFirstName;
                                     var employeeNumber = firstItem.Employee?.EmployeeNumber;
+                                    var greyItalicClass = firstItem.ExpirationDate.HasValue
+                                    && (DateOnly.FromDateTime(DateTime.UtcNow) > firstItem.ExpirationDate.Value
+                                    && DateOnly.FromDateTime(DateTime.UtcNow) <= firstItem.ExpirationDate.Value.AddYears(1)
+                                    || DateOnly.FromDateTime(DateTime.UtcNow) > firstItem.ExpirationDate.Value.AddYears(1))
+                                    ? "expired-row"
+                                    : "";
 
-                                    <tr style="border-bottom: 2px solid #000;">
+
+                                    <tr class="@greyItalicClass" style="border-bottom: 2px solid #000;">
                                         @if (Model.DisplayColumns.Where(r => r == "Employee Name").Count() > 0)
                                         {
                                             <td style="border-bottom: 2px solid #000 !important; padding: 5px; text-align: left;">
@@ -193,50 +205,59 @@
                                             var endDate = currentDate < yearEndDate ? currentDate : yearEndDate;
 
                                             var totalCEHs = group.Where(cfs => Model.NERCCertificationIds.Contains(cfs.CertificationId))
-                                                                 .SelectMany(cfs => cfs.FulfillmentRecords)
-                                                                 .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
-                                                                 .Sum(record => record.CEHAwarded);
+                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                            .Sum(record => record.CEHAwarded);
 
-                                            var stds = group.Where(cfs => Model.NERCCertificationIds.Contains(cfs.CertificationId))
-                                                            .SelectMany(cfs => cfs.FulfillmentRecords)
-                                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate && record.IsComplete)
-                                                            .SelectMany(record => record.CertificationFulfillmentSubRequirements)
-                                                            .Where(subReq => subReq.CertificationSubRequirementName == "Standards")
-                                                            .Sum(subReq => subReq.Hours);
+                                            var filteredRecords = group
+                                            .Where(cfs => Model.NERCCertificationIds.Contains(cfs.CertificationId))
+                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate && record.IsComplete)
+                                            .ToList();
 
-                                            var simHrs = group.Where(cfs => Model.NERCCertificationIds.Contains(cfs.CertificationId))
-                                                              .SelectMany(cfs => cfs.FulfillmentRecords)
-                                                              .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate && record.IsComplete)
-                                                              .SelectMany(record => record.CertificationFulfillmentSubRequirements)
-                                                              .Where(subReq => subReq.CertificationSubRequirementName == "Simulations")
-                                                              .Sum(subReq => subReq.Hours);
+                                            var cehHoursDict = filteredRecords.ToDictionary(
+                                            r => r,
+                                            r => r.CEHAwarded
+                                            );
+
+                                            var stds = filteredRecords
+                                            .SelectMany(record => record.CertificationFulfillmentSubRequirements
+                                            .Where(subReq => subReq.CertificationSubRequirementName == "Standards")
+                                            .Select(subReq => Math.Min(cehHoursDict[record], subReq.Hours))) // min(CEH, Standards)
+                                            .Sum();
+
+                                            var simHrs = filteredRecords
+                                            .SelectMany(record => record.CertificationFulfillmentSubRequirements
+                                            .Where(subReq => subReq.CertificationSubRequirementName == "Simulations")
+                                            .Select(subReq => Math.Min(cehHoursDict[record], subReq.Hours))) // min(CEH, Simulations)
+                                            .Sum();
 
                                             var emOp = group.Where(cfs => Model.NERCCertificationIds.Contains(cfs.CertificationId))
-                                                            .SelectMany(cfs => cfs.FulfillmentRecords)
-                                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate && record.IsEmergencyOpHours)
-                                                            .Sum(record => record.CEHAwarded);
+                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                            .Sum(record => record.CEHAwarded);
 
                                             var reg = group.Where(cfs => cfs.CertificationId == Model.RegCertificationId)
-                                                           .SelectMany(cfs => cfs.FulfillmentRecords)
-                                                           .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
-                                                           .Sum(record => record.CEHAwarded);
+                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                            .Sum(record => record.CEHAwarded);
 
                                             var reg2 = group.Where(cfs => cfs.CertificationId == Model.Reg2CertificationId)
-                                                            .SelectMany(cfs => cfs.FulfillmentRecords)
-                                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
-                                                            .Sum(record => record.CEHAwarded);
+                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                            .Sum(record => record.CEHAwarded);
 
                                             var other = group.Where(cfs => cfs.CertificationId == Model.OtherCertificationId)
-                                                             .SelectMany(cfs => cfs.FulfillmentRecords)
-                                                             .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
-                                                             .Sum(record => record.CEHAwarded);
+                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                            .Sum(record => record.CEHAwarded);
 
                                             var allCertificationIds = Model.NERCCertificationIds.Concat(new[] { Model.RegCertificationId, Model.Reg2CertificationId, Model.OtherCertificationId }).Distinct().ToList();
 
                                             var totalTrainingHours = group.Where(cfs => allCertificationIds.Contains(cfs.CertificationId))
-                                                                          .SelectMany(cfs => cfs.FulfillmentRecords)
-                                                                          .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
-                                                                          .Sum(record => record.TotalTrainingHours);
+                                            .SelectMany(cfs => cfs.FulfillmentRecords)
+                                            .Where(record => record.CreditAwardedDate >= startDate && record.CreditAwardedDate <= endDate)
+                                            .Sum(record => record.TotalTrainingHours);
                                         }
 
                                         <td style="border: none; text-align: center;">@totalCEHs</td>

@@ -42,11 +42,11 @@
                   <div class="flex flex-row justify-between" style="align-items: center">
                     <app-label [for]="'pretest'" [text]="'Select Pretest '" class="label"></app-label>
 
-                    <a *ngIf="trainingForm.get('preTestId')?.invalid || trainingForm.get('preTestId')?.value === '' || trainingForm.get('preTestId')?.value === null" pointer-events: none  class="text-qtd">Preview Test</a>
+                    <a *ngIf="trainingForm.get('preTestId')?.invalid || trainingForm.get('preTestId')?.value === '' || trainingForm.get('preTestId')?.value === null" pointer-events: none  class="text-qtd" [ngClass]="{'text-gray-400': mode === 'view'}">Preview Test</a>
                     <!-- [disabled]="trainingForm.get('preTestId')?.value === '' || trainingForm.get('preTestId')?.value === null" -->
                     <a *ngIf="trainingForm.get('preTestId')?.invalid ===false && trainingForm.get('preTestId')?.value !== '' && trainingForm.get('preTestId')?.value !== null" target="_blank"
                       variant="text"
-                      class="text-qtd" [routerLink]="['/dnd/tests/publish/'+trainingForm.get('preTestId')?.value+'/false']" routerLinkActive="router-link-active" >Preview Test</a>
+                      class="text-qtd" [routerLink]="['/dnd/tests/publish/'+trainingForm.get('preTestId')?.value+'/false']" routerLinkActive="router-link-active" [ngClass]="{'text-gray-400': mode === 'view'}" [style.pointer-events]="mode === 'view' ? 'none' : 'auto'">Preview Test</a>
                   </div>
 
                   <mat-select style="margin-right: 0px" formControlName="preTestId"
@@ -208,10 +208,10 @@
                     <app-label [for]="'test'" [text]="'Select Test '" class="label"></app-label>
                     <!-- [disabled]="trainingForm.get('finalTestId')?.invalid" -->
 
-                    <a *ngIf="trainingForm.get('finalTestId')?.value === '' || trainingForm.get('finalTestId')?.value === null" pointer-events: none  class="text-qtd">Preview Test</a>
+                    <a *ngIf="trainingForm.get('finalTestId')?.value === '' || trainingForm.get('finalTestId')?.value === null" pointer-events: none  class="text-qtd" [ngClass]="{'text-gray-400': mode === 'view'}">Preview Test</a>
 
                     <a  *ngIf="trainingForm.get('finalTestId')?.value !== '' && trainingForm.get('finalTestId')?.value !== null" text="Preview Test" target="_blank"
-                     class="text-qtd" [routerLink]="['/dnd/tests/publish/'+trainingForm.get('finalTestId')?.value+'/false']" routerLinkActive="router-link-active"> Preview Test</a>
+                     class="text-qtd" [routerLink]="['/dnd/tests/publish/'+trainingForm.get('finalTestId')?.value+'/false']" routerLinkActive="router-link-active" [ngClass]="{'text-gray-400': mode === 'view'}" [style.pointer-events]="mode === 'view' ? 'none' : 'auto'"> Preview Test</a>
                   </div>
 
                   <mat-select [disabled]="trainingForm.get('usePreTestAndTest')?.value === true" style="margin-right: 0px" formControlName="finalTestId" class="
@@ -361,17 +361,18 @@
                   <div class="flex flex-row justify-between" style="align-items: center">
                     <app-label [for]="'pretest'" [text]="updateReTake(item)" class="label"></app-label>
 
-                    <a *ngIf="selectedRetakeId[i] === undefined" pointer-events: none  class="text-qtd">Preview Test</a>
+                    <a *ngIf="selectedRetakeId[i] === undefined" pointer-events: none  class="text-qtd" [ngClass]="{'text-gray-400': mode === 'view'}">Preview Test</a>
                     <!-- [disabled]="selectedRetakeId[i] === undefined" -->
                     <a *ngIf="selectedRetakeId[i] !== undefined"
 
                     text="Preview Test" (clicked)="previewTest('retake',i)"
-                    class="text-qtd" target="_blank" class="text-qtd" [routerLink]="['/dnd/tests/publish/'+selectedRetakeId[i]+'/false']" routerLinkActive="router-link-active">Preview Test</a>
+                    class="text-qtd" target="_blank" class="text-qtd" [ngClass]="{'text-gray-400': mode === 'view'}"
+                    [routerLink]="['/dnd/tests/publish/'+selectedRetakeId[i]+'/false']" [style.pointer-events]="mode === 'view' ? 'none' : 'auto'" routerLinkActive="router-link-active">Preview Test</a>
 
                   </div>
 
                   <mat-select [(value)]="selectedRetakeId[i] === undefined ? null:selectedRetakeId[i]"
-                    [disabled]="trainingForm.get('usePreTestAndTest')?.value === true" style="margin-right: 0px"
+                    [disabled]="mode === 'view' || trainingForm.get('usePreTestAndTest')?.value === true" style="margin-right: 0px"
                     (selectionChange)="getTestReTakeId($event.value,i)" class="
                     appearance-none
                     rounded

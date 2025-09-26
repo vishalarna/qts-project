@@ -27,6 +27,7 @@ import { SweetAlertService } from 'src/app/_Shared/services/sweetalert.service';
 import { MatStepper } from '@angular/material/stepper';
 import { StepperSelectionEvent } from '@angular/cdk/stepper';
 import { Subscription } from 'rxjs';
+import { SimulatorScenarioService } from 'src/app/_Services/QTD/simulator-scenario.service';
 
 @Component({
   selector: 'app-sim-scenarios-wizard-linkages',
@@ -88,6 +89,7 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
   isProcedureUnlink : boolean = false;
   isObjectiveUnlink : boolean = false;
   private stepperSub!: Subscription;
+  scriptData:any;
   get selectedTasks() {
     return this.objectiveSelection.selected.filter((x) => x.type == 'Task');
   }
@@ -100,7 +102,8 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
     private simSceariosService: SimulatorScenariosService,
     private alert: SweetAlertService,
     private labelPipe: LabelReplacementPipe,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private simScenarioService: SimulatorScenarioService
   ) {}
 
   async ngOnInit(): Promise<void> {
@@ -123,6 +126,10 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
         this.reload();
       }
     });
+  }
+
+  async getAllScriptDataAsync(){
+    this.scriptData = await this.simScenarioService.getAllScriptAsync();
   }
 
   reload(): void {
@@ -214,8 +221,16 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
   }
 
   async unlinkPositionModal(templateRef: any, position?: any) {
-    this.unlinkPositionDesc = `You are selecting to unlink ` + await this.labelPipe.transform('Position') +` <b> ${position?.positionTitle} </b> from the Simulator Scenario.`;
-    this.unlinkPositionId = position?.positionId;
+    await this.getAllScriptDataAsync();
+    const matchedPosition = this.inputSimulatorScenario_VM.positions.find((p: any) => p.positionId === position.positionId);
+    const isPositionInUse = this.scriptData.some((script: any) => script.initiatorId === matchedPosition.id);
+    if (isPositionInUse) {
+      const warningMsg = `This Position is currently linked to one or more events or scripts in this Scenario.Please review and update any associated events or scripts and remove references to this Position to avoid breaking scenario logic.`;
+      this.alert.warningAlert(warningMsg);
+      return;
+    }
+
+    this.unlinkPositionDesc = `You are selecting to unlink ${await this.labelPipe.transform('Position')} <b>${position?.positionTitle}</b> from the Simulator Scenario.`;
     const dialogRef = this.dialog.open(templateRef, {
       width: '600px',
       height: 'auto',
@@ -245,7 +260,6 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
         val.description,
         includeMetaEO
       );
-      
       this.objectiveUpdateOptions.setEnablingObjectives(objectivesVm);
     });
     this.inputSimulatorScenario_VM.enablingObjectives.forEach((res) => {
@@ -271,6 +285,7 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
           ...this.inputSimulatorScenario_VM.enablingObjectives,
         ];
         this.objAndTasksDataSource.data = this.eoTaskList;
+       
       });
       setTimeout(() => {
         this.objAndTasksDataSource.sort = this.sort;
@@ -324,7 +339,6 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
         ];
         this.objAndTasksDataSource.data = this.eoTaskList;
       });
-
       setTimeout(() => {
         this.objAndTasksDataSource.sort = this.sort;
       }, 1);
@@ -560,6 +574,7 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
     this.alert.successToast('Simulator Scenario ' + (await this.labelPipe.transform('Enabling Objective')) + 's Updated Successfully' );
   }
   this.isObjectiveLinkUnlink = false;
+
   }
 
    getUnlinkSelectedText(){
@@ -572,7 +587,7 @@ export class SimScenariosWizardLinkagesComponent implements OnInit {
     text += eoCount > 0 ? `${eoLabel} selected` : '';
     return text;
   }
-
+  
   getAlreadyLinkedIds(){
     var taskIds = this.inputSimulatorScenario_VM?.tasks?.map(x=>x.taskId) ?? [] ;
     return Array.from(new Set(taskIds));

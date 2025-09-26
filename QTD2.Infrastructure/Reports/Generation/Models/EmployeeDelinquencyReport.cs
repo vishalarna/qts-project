@@ -21,8 +21,9 @@ namespace QTD2.Infrastructure.Reports.Generation.Models
         public int RegCertificationId { get; set; }
         public int Reg2CertificationId { get; set; }
         public bool SortEmployeesByOrganization { get;set;}
+        public int EmergencyResponseCertificationId { get; set; }
 
-        public EmployeeDelinquencyReport(string title, string templatePath, List<string> displayColumns, string companyLogo, string defaultTimeZone, List<Domain.Entities.Core.ClientSettings_LabelReplacement> clientSettings_LabelReplacements, List<CertificationFulfillmentStatus> certificationFulfillmentStatuses, List<Organization> organizations,  List<int> nercCertificationIds, int regCertificationId, int reg2CertificationId, bool sortEmployeesByOrganization)
+        public EmployeeDelinquencyReport(string title, string templatePath, List<string> displayColumns, string companyLogo, string defaultTimeZone, List<Domain.Entities.Core.ClientSettings_LabelReplacement> clientSettings_LabelReplacements, List<CertificationFulfillmentStatus> certificationFulfillmentStatuses, List<Organization> organizations,  List<int> nercCertificationIds, int regCertificationId, int reg2CertificationId, bool sortEmployeesByOrganization,int emergencyResponseCertificationId)
         {
             Title = title;
             TemplatePath = templatePath;
@@ -36,6 +37,7 @@ namespace QTD2.Infrastructure.Reports.Generation.Models
             RegCertificationId = regCertificationId;
             Reg2CertificationId = reg2CertificationId;
             SortEmployeesByOrganization = sortEmployeesByOrganization;
+            EmergencyResponseCertificationId = emergencyResponseCertificationId;
         }
     }
 }

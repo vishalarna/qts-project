@@ -109,8 +109,6 @@ namespace QTD2.Domain.Entities.Core
 
         public virtual ICollection<Procedure_ILA_Link> Procedure_ILA_Links { get; set; } = new List<Procedure_ILA_Link>();
 
-        public virtual ICollection<SafetyHazard_ILA_Link> SafetyHazard_ILA_Links { get; set; } = new List<SafetyHazard_ILA_Link>();
-
         public virtual ICollection<ILA_StudentEvaluation_Link> ILA_StudentEvaluation_Links { get; set; } = new List<ILA_StudentEvaluation_Link>();
 
         // [InverseProperty(nameof(ILA_PreRequisite_Link.PreRequisite))]
@@ -767,14 +765,6 @@ namespace QTD2.Domain.Entities.Core
                 var iLA_AssessmentTool_Linkcopy = iLA_AssessmentTool_Link.Copy<ILA_AssessmentTool_Link>(createdBy);
                 iLA_AssessmentTool_Linkcopy.ILAId = 0;
                 copy.ILA_AssessmentTool_Links.Add(iLA_AssessmentTool_Linkcopy);
-            }
-
-            //public virtual ICollection<SafetyHazard_ILA_Link> SafetyHazard_ILA_Links { get; set; } = new List<SafetyHazard_ILA_Link>();
-            foreach (var safetyHazard_ILA_Link in this.SafetyHazard_ILA_Links)
-            {
-                var safetyHazard_ILA_Linkcopy = safetyHazard_ILA_Link.Copy<SafetyHazard_ILA_Link>(createdBy);
-                safetyHazard_ILA_Linkcopy.ILAId = 0;
-                copy.SafetyHazard_ILA_Links.Add(safetyHazard_ILA_Linkcopy);
             }
 
             //public virtual ICollection<ILA_StudentEvaluation_Link> ILA_StudentEvaluation_Links { get; set; } = new List<ILA_StudentEvaluation_Link>();
